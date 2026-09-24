@@ -6,13 +6,21 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
+from app.core.errors import ExternalCapabilityError
 from app.dependencies import get_analysis_ingestion_service
+from app.medical.entities import MedicalEntity
 from app.models.claim import Claim
 from app.models.enums import InputType
 from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
+from app.pipeline.pico import NormalizedPico
 from app.schemas.analysis import CreateAnalysisRequest
-from app.services.analysis_ingestion import OcrPreview, OcrPreviewLine
+from app.services.analysis_ingestion import (
+    ClaimExtractionPreview,
+    ClaimPreviewItem,
+    OcrPreview,
+    OcrPreviewLine,
+)
 from app.services.image_ingestion import SanitizedImage
 
 
@@ -52,6 +60,19 @@ class FakeAnalysisIngestionService:
                 risk_class="standard",
                 verifiability=0.8,
                 coreference_uncertain=False,
+                linked_entities=[
+                    MedicalEntity(
+                        surface_text="sunscreen use", entity_type="intervention_or_exposure"
+                    ).model_dump(mode="json")
+                ],
+                pico_json=NormalizedPico(
+                    original_claim="A public health claim.",
+                    population="adults",
+                    intervention_or_exposure="sunscreen use",
+                    outcome="melanoma incidence",
+                    claim_type="association",
+                ).model_dump(mode="json"),
+                normalization_status="pico_only",
             )
         ]
 
@@ -104,6 +125,50 @@ class FakeAnalysisIngestionService:
             ),
         )
 
+    async def preview_claim_extraction(
+        self, *, session: object, request: CreateAnalysisRequest
+    ) -> ClaimExtractionPreview:
+        del session, request
+        pico = NormalizedPico(
+            original_claim="Frequent sunscreen use causes melanoma.",
+            intervention_or_exposure="Frequent sunscreen use",
+            outcome="melanoma",
+            claim_type="causal",
+        )
+        return ClaimExtractionPreview(
+            input_type="text",
+            extractor_provider="test",
+            extractor_model="test-model",
+            pii_redaction_count=0,
+            claims=(
+                ClaimPreviewItem(
+                    ordinal=1,
+                    span_start=0,
+                    span_end=len(pico.original_claim),
+                    raw_text=pico.original_claim,
+                    normalized_text=None,
+                    claim_type="causal",
+                    population=None,
+                    intervention_or_exposure=pico.intervention_or_exposure,
+                    comparator=None,
+                    outcome=pico.outcome,
+                    timeframe=None,
+                    risk_class="standard",
+                    verifiability=None,
+                    coreference_uncertain=False,
+                    entities=(
+                        MedicalEntity(
+                            surface_text="sunscreen",
+                            entity_type="intervention_or_exposure",
+                        ),
+                    ),
+                    pico=pico,
+                    normalization_status="pico_only",
+                ),
+            ),
+            screenshot_ocr=None,
+        )
+
 
 def _submission_payload() -> dict[str, object]:
     return {
@@ -144,7 +209,43 @@ def test_get_analysis_returns_redacted_claim_contract(phase_two_client: TestClie
     assert response.json()["claims"][0]["span_start"] == 0
     assert response.json()["claims"][0]["population"] == "adults"
     assert response.json()["claims"][0]["outcome"] == "melanoma incidence"
+    assert response.json()["claims"][0]["normalization_status"] == "pico_only"
+    assert response.json()["claims"][0]["entities"][0]["umls_cui"] is None
+    assert response.json()["claims"][0]["pico"]["original_claim"] == "A public health claim."
     assert "is_mock" not in response.json()
+
+
+def test_claim_preview_includes_phase_three_a_fields(phase_two_client: TestClient) -> None:
+    response = phase_two_client.post("/v1/analyses/claim-preview", json=_submission_payload())
+
+    assert response.status_code == 200
+    claim = response.json()["claims"][0]
+    assert claim["pico"]["claim_type"] == "causal"
+    assert claim["entities"][0]["surface_text"] == "sunscreen"
+    assert claim["normalization_status"] == "pico_only"
+
+
+def test_extraction_deadline_error_hides_provider_details(
+    phase_two_client: TestClient, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def fail_preview(
+        self: FakeAnalysisIngestionService, *, session: object, request: CreateAnalysisRequest,
+    ) -> ClaimExtractionPreview:
+        del self, session, request
+        raise ExternalCapabilityError(
+            code="claim_extractor_deadline_exceeded",
+            message="Claim extraction exceeded its time limit.",
+            status_code=504,
+        )
+
+    monkeypatch.setattr(FakeAnalysisIngestionService, "preview_claim_extraction", fail_preview)
+    response = phase_two_client.post("/v1/analyses/claim-preview", json=_submission_payload())
+
+    assert response.status_code == 504
+    assert response.json()["error"]["code"] == "claim_extractor_deadline_exceeded"
+    assert response.json()["error"]["request_id"] == response.headers["X-Request-ID"]
+    assert "A public health claim." not in response.text
+    assert "gateway" not in response.text
 
 
 def test_analysis_events_use_real_completed_stages(phase_two_client: TestClient) -> None:

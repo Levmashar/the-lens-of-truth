@@ -1,4 +1,4 @@
-"""Phase 2 analysis routes: ingestion, OCR, and atomic claims only."""
+"""Analysis routes for intake, atomic claims, and medical normalization."""
 
 import json
 from collections.abc import AsyncIterator
@@ -7,14 +7,19 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Header, UploadFile, status
 from fastapi.responses import StreamingResponse
+from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_runtime_settings
 from app.core.errors import LensError
 from app.db.session import get_db_session
 from app.dependencies import get_analysis_ingestion_service
+from app.medical.entities import MedicalEntity
 from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
+from app.pipeline.claim_types import legacy_claim_type
+from app.pipeline.completeness import NormalizationQuality
+from app.pipeline.pico import NormalizationStatus, NormalizedPico
 from app.schemas.analysis import (
     AnalysisAccepted,
     AnalysisClaim,
@@ -31,6 +36,7 @@ from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.image_ingestion import ScreenshotSanitizer
 
 router = APIRouter()
+_status_adapter: TypeAdapter[NormalizationStatus] = TypeAdapter(NormalizationStatus)
 
 
 @router.post(
@@ -139,6 +145,10 @@ async def preview_claim_extraction(
                 risk_class=claim.risk_class,
                 verifiability=claim.verifiability,
                 coreference_uncertain=claim.coreference_uncertain,
+                entities=list(claim.entities),
+                pico=claim.pico,
+                normalization_status=claim.normalization_status,
+                normalization_quality=claim.normalization_quality,
             )
             for claim in preview.claims
         ],
@@ -242,7 +252,7 @@ def _analysis_detail(submission: Submission) -> AnalysisDetail:
                 span_end=claim.span_end,
                 raw_text=claim.raw_text,
                 normalized_text=claim.normalized_text,
-                claim_type=claim.claim_type,
+                claim_type=legacy_claim_type(claim.claim_type),
                 population=claim.population,
                 intervention_or_exposure=claim.intervention_or_exposure,
                 comparator=claim.comparator,
@@ -253,6 +263,15 @@ def _analysis_detail(submission: Submission) -> AnalysisDetail:
                 coreference_uncertain=claim.coreference_uncertain,
                 resolved_from_span_start=claim.resolved_from_span_start,
                 resolved_from_span_end=claim.resolved_from_span_end,
+                entities=[
+                    MedicalEntity.model_validate(entity) for entity in claim.linked_entities or []
+                ],
+                pico=(NormalizedPico.model_validate(claim.pico_json) if claim.pico_json else None),
+                normalization_status=_status_adapter.validate_python(claim.normalization_status),
+                normalization_quality=(
+                    NormalizationQuality.model_validate(claim.normalization_quality)
+                    if claim.normalization_quality else None
+                ),
             )
             for claim in sorted(submission.claims, key=lambda value: value.ordinal)
         ],

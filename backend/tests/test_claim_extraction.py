@@ -30,7 +30,7 @@ def test_validated_claims_keep_exact_source_offsets() -> None:
                 span_start=0,
                 span_end=len(source),
                 normalized_claim="Vitamin C prevents common colds.",
-                claim_type="preventive",
+                claim_type="prevention",
                 verifiability=0.9,
                 resolved_from_span_start=0,
                 resolved_from_span_end=9,
@@ -161,7 +161,8 @@ def test_miri_configuration_defaults_to_chatgpt_auto() -> None:
 
     assert isinstance(adapter, MiriClaimExtractor)
     assert adapter.model_id == "chatgpt-auto"
-    assert adapter.timeout_seconds == 180
+    assert adapter.timeout_seconds == 55
+    assert adapter.total_timeout_seconds == 115
 
 
 def test_miri_without_address_fails_closed() -> None:
@@ -175,7 +176,7 @@ def test_miri_without_address_fails_closed() -> None:
     assert error.value.code == "claim_extractor_unavailable"
 
 
-def test_pico_fields_are_redacted_before_persistence() -> None:
+def test_unstated_pico_fields_are_not_persisted() -> None:
     service = AnalysisIngestionService(
         storage=Mock(),
         ocr=Mock(),
@@ -218,4 +219,7 @@ def test_pico_fields_are_redacted_before_persistence() -> None:
 
     assert submission.claims[0].intervention_or_exposure == "Vitamin C"
     assert submission.claims[0].outcome == "colds"
-    assert "123-45-6789" not in submission.claims[0].population
+    assert submission.claims[0].population is None
+    assert submission.claims[0].normalization_status == "pico_only"
+    assert submission.claims[0].pico_json["original_claim"] == "Vitamin C prevents colds."
+    assert submission.claims[0].linked_entities[0]["umls_cui"] is None

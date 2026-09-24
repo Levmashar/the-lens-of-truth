@@ -64,10 +64,17 @@ class Settings(BaseSettings):
         default=None, validation_alias="CLAIM_EXTRACTOR_API_KEY"
     )
     claim_extractor_timeout_seconds: float = Field(
-        default=180.0, gt=0, validation_alias="CLAIM_EXTRACTOR_TIMEOUT_SECONDS"
+        default=55.0, gt=0, le=60, validation_alias="CLAIM_EXTRACTOR_TIMEOUT_SECONDS"
+    )
+    claim_extractor_total_timeout_seconds: float = Field(
+        default=115.0, gt=0, le=120,
+        validation_alias="CLAIM_EXTRACTOR_TOTAL_TIMEOUT_SECONDS",
     )
     claim_extractor_max_claims: int = Field(
         default=20, ge=1, le=50, validation_alias="CLAIM_EXTRACTOR_MAX_CLAIMS"
+    )
+    mesh_index_path: Path = Field(
+        default=Path("./runtime/mesh/mesh.sqlite3"), validation_alias="MESH_INDEX_PATH"
     )
 
     @property

@@ -2,7 +2,10 @@
 
 Base path: `/v1`. Phase 2 performs secure intake, OCR for screenshots, PII
 masking, and atomic-claim extraction only. It does not retrieve evidence or
-return a medical verdict.
+return a medical verdict. Phase 3A additionally returns claim-grounded PICO
+and terminology-linking state; it does not retrieve evidence. Phase 3B can
+resolve MeSH descriptors from an installed official NLM release. Phase 3C
+adds controlled claim types and a source-grounded completeness audit.
 
 ## `POST /v1/analyses/uploads/screenshots`
 
@@ -38,7 +41,8 @@ It is intentionally unavailable in staging and production.
 Available only when `APP_ENV` is `development` or `test`. Accepts the same
 request body as `POST /v1/analyses` and performs OCR when given a screenshot
 upload ID. It returns the configured AI extractor's redacted atomic claims,
-PICO fields, model metadata, and screenshot OCR metadata without creating a
+grounded PICO fields, entity mentions, normalization status, model metadata,
+and screenshot OCR metadata without creating a
 submission or claim row in PostgreSQL.
 
 This is the quickest way to test a configured gateway:
@@ -58,7 +62,10 @@ Invoke-RestMethod -Method Post `
   -Body $body | ConvertTo-Json -Depth 8
 ```
 
-The response is ephemeral. It does not expose the gateway's raw response or
+The response is ephemeral. Each claim also includes `normalization_quality`
+with lexical `normalization_coverage`, `missing_explicit_concepts`,
+`required_slots_missing`, `ambiguous_concepts`, and `normalization_warnings`.
+It does not expose the gateway's raw response or
 unredacted source text.
 The `verifiability` field is a numeric estimate of testability, not medical
 truth. If the browser gateway supplies a qualitative label instead of a number,
@@ -106,10 +113,20 @@ Successful extraction returns HTTP `201`:
 
 Extraction requires a configured adapter. The `miri` adapter calls the
 gateway's ChatGPT Auto chat completion and validates its JSON reply and source
-offsets locally. When disabled or unavailable, the endpoint returns `503` with
+offsets locally. It retries at most once for malformed output, timeout,
+transport errors, HTTP 429, or HTTP 5xx; ordinary HTTP 4xx fails immediately.
+Each attempt is limited to 55 seconds by default, with a 115-second deadline
+for the complete extraction. Both limits are configurable within a 60-second
+attempt maximum and a 120-second total maximum.
+Retrying malformed output never includes the invalid answer in the new prompt.
+When disabled or unavailable, the endpoint returns `503` with
 `claim_extractor_unavailable`; malformed replies return `502` with
-`claim_extractor_invalid_response`. URL input is reserved for Phase 3 and
+`claim_extractor_invalid_response`. URL input is reserved for a later phase and
 returns `501`.
+Two exhausted timeouts return HTTP `504` with `claim_extractor_timeout`;
+an overall deadline returns HTTP `504` with
+`claim_extractor_deadline_exceeded`. Public errors include a request ID but
+never provider response bodies, prompts, credentials, or internal trace IDs.
 
 ## `GET /v1/analyses/{analysis_id}`
 
@@ -119,6 +136,93 @@ not exposing structured identifiers. There is no verdict field.
 Each claim also includes nullable `population`, `intervention_or_exposure`,
 `comparator`, `outcome`, and `timeframe` fields for PICO framing. Null means the
 source did not supply that detail; these model-produced fields are not evidence.
+Phase 3A adds `pico` (including `original_claim` and `claim_type`), `entities`,
+and `normalization_status` to each claim. Existing flat PICO fields remain for
+compatibility. `entities` includes source-grounded mentions; `umls_cui` and
+`mesh_id` are null unless an authorized provider resolves them above the
+confidence threshold. An installed MeSH index enables descriptor resolution;
+without it claims normally report `pico_only` (or `unresolved` when no usable
+PICO slots exist). The other statuses are `pending` for pre-migration records,
+`partially_linked` when only some identified mentions are linked, `partial`
+when a required slot/source concept is missing or the source scan is
+incomplete, and `normalized` only when required slots and source-concept
+coverage pass and all identified mentions are linked. A `normalized` label
+does not imply medical truth. Prior `normalized` rows are migrated to
+`partial` with `legacy_not_audited` until separately checked.
+None of these statuses is a medical verdict.
+
+`claim_type` is one of `causal`, `association`, `prevention`, `treatment`,
+`diagnostic`, `safety`, `recommendation`, `statistical_or_study_result`,
+`methodology`, or `other` (or null on legacy/unclassified claims). Explicit
+English causal/association wording controls that distinction if the model
+proposes a conflicting type. The original source span remains unchanged.
+Unknown new model types fail schema validation; known historic aliases are
+converted to canonical types. This is an assertion category, not a verdict.
+
+`normalization_coverage` is the fraction of high-confidence exact/synonym
+MeSH source phrases represented by a grounded PICO field or entity mention;
+it is null when none are detected and is not a truth/confidence score. Fuzzy
+suggestions cannot create missing-concept warnings. For example, if the model
+omits `common cold` from the outcome of “Vitamin C prevents the common cold,”
+the claim is `partial` and its quality object includes:
+
+```json
+{
+  "normalization_coverage": 0.5,
+  "missing_explicit_concepts": ["common cold"],
+  "required_slots_missing": ["outcome"],
+  "ambiguous_concepts": [],
+  "normalization_warnings": [
+    "required_pico_slots_missing",
+    "explicit_medical_concepts_not_represented"
+  ],
+  "terminology_version": "2026",
+  "terminology_sha256": "<SHA-256 of the imported official MeSH XML>"
+}
+```
+
+Each entity also carries `match_type` (`exact`, `synonym`, `fuzzy`, or
+`unresolved`), `ambiguous`, `terminology_source`, `terminology_version`, optional
+`terminology_sha256`, `tree_numbers`, optional `umls_version`, and up to three
+unassigned `candidates`.
+A fuzzy or ambiguous
+candidate never forces `mesh_id`; `umls_cui` remains null without a licensed
+UMLS provider. The original surface text is retained.
+
+For example, without an installed terminology index, a claim may contain:
+
+```json
+{
+  "pico": {
+    "original_claim": "Frequent sunscreen use causes melanoma.",
+    "population": null,
+    "intervention_or_exposure": "Frequent sunscreen use",
+    "comparator": null,
+    "outcome": "melanoma",
+    "timeframe": null,
+    "claim_type": "causal"
+  },
+  "entities": [
+    {
+      "surface_text": "Frequent sunscreen use",
+      "entity_type": "intervention_or_exposure",
+      "umls_cui": null,
+      "mesh_id": null,
+      "preferred_name": null,
+      "confidence": null
+    },
+    {
+      "surface_text": "melanoma",
+      "entity_type": "outcome",
+      "umls_cui": null,
+      "mesh_id": null,
+      "preferred_name": null,
+      "confidence": null
+    }
+  ],
+  "normalization_status": "pico_only"
+}
+```
 
 ## `GET /v1/analyses/{analysis_id}/events`
 

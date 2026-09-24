@@ -35,6 +35,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: http://localhost:5173
       UPLOAD_STORAGE_PATH: /app/runtime/uploads
+      MESH_INDEX_PATH: /app/runtime/mesh/mesh.sqlite3
     ports:
       - "8000:8000"
     depends_on:
@@ -44,6 +45,7 @@ services:
         condition: service_healthy
     volumes:
       - upload_data:/app/runtime/uploads
+      - mesh_data:/app/runtime/mesh
 
   frontend:
     build:
@@ -61,3 +63,4 @@ services:
 volumes:
   postgres_data:
   upload_data:
+  mesh_data:

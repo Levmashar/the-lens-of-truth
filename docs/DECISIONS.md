@@ -75,3 +75,83 @@ the ChatGPT Auto picker mode. Its browser-backed responses do not guarantee
 schema-constrained JSON or an exact underlying model version. Fail closed on
 invalid responses, and do not assign UMLS/MeSH IDs without a verified
 vocabulary source.
+
+## ADR-009 — Ground PICO and leave terminology unresolved by default
+
+**Decision:** consume the structured PICO proposal already returned by the
+approved claim-extraction adapter, then retain only slot text present in that
+same redacted atomic claim. Do not make an additional model call for each
+claim. UMLS and MeSH remain separate provider interfaces; local providers
+accept only caller-supplied fixture mappings. Runtime providers return no
+identifiers until an authorized terminology source is connected. A candidate
+below the configured confidence threshold is unresolved.
+
+**Reason:** this prevents cross-claim leakage and invented clinical details,
+avoids repeated gateway latency for the competition MVP, and distinguishes
+query framing from verified vocabulary concepts or medical evidence.
+
+## ADR-010 — Use a local, versioned official NLM MeSH descriptor index
+
+**Decision:** import NLM's annual MeSH descriptor XML into an atomic SQLite
+index outside source control. Use preferred labels and official entry terms for
+deterministic exact/synonym matching; keep fuzzy results as suggestions below
+the assignment threshold. Record MeSH production year and source-file SHA-256.
+When no index is installed, leave IDs unresolved. Keep the UMLS provider
+optional and independent. Re-normalize only untouched pending claims using
+stored PICO, with dry-run as the default.
+
+**Reason:** a local official source avoids sending sensitive claims to a
+terminology API, makes matching reproducible, requires no UMLS license, and
+does not fabricate identifiers. The claim's existing JSONB entity field can
+carry provenance without another migration. NLM attribution and release
+currency remain deployment responsibilities under its data terms.
+
+## ADR-011 — Canonical assertion type and source-grounded completeness
+
+**Decision:** use one controlled claim-type enum rather than a second relation
+field. Explicit English causal/association wording deterministically takes
+precedence over a conflicting model label; other wording uses the validated
+model category. A bounded set of historic labels maps to canonical values,
+while unknown new labels are rejected. The exact raw span remains separate.
+
+**Decision:** `normalized` requires source-grounded required-slot and lexical
+MeSH completeness checks, plus resolved identified mentions. Preserve
+`pending`, `unresolved`, `pico_only`, and `partially_linked`; add `partial` for
+missing slots/source concepts or an incomplete source scan. A nullable JSONB
+quality audit stores coverage and warnings. On migration, legacy `normalized`
+rows become `partial` with `legacy_not_audited`; existing mappings remain
+untouched. The pending-only re-normalizer does not rewrite them.
+
+**Reason:** linked extracted mentions are not proof that all explicitly stated
+concepts were extracted. The Vitamin C/common-cold omission demonstrated this
+failure mode. MeSH exact/entry-term checks are reproducible but lexical, not
+medical evidence; generic terms and fuzzy suggestions cannot force a finding.
+
+## ADR-012 — One bounded extraction retry, then fail closed
+
+**Decision:** both existing OpenAI-shaped adapters make at most two requests.
+Malformed JSON/schema/empty/unsupported responses receive one strict-JSON
+repair prompt with the same redacted source, never the invalid answer.
+Timeouts, transport failures, HTTP 429, and HTTP 5xx retry once; other HTTP
+errors fail immediately. Exhaustion keeps the existing public 502/503 error
+codes. Diagnostics log only non-sensitive provider/model, failure class,
+attempt count, latency, and a validated upstream request ID.
+
+**Reason:** browser-backed responses can violate JSON structure despite an
+HTTP 200. A small retry improves resilience without weakening validation,
+adding an unapproved provider, or fabricating claims.
+
+## ADR-013 — Bound claim-extraction wall time
+
+**Decision:** each extractor attempt has a configurable 55-second default
+timeout (maximum 60 seconds), and the entire operation has a configurable
+115-second default deadline (maximum 120 seconds). An asynchronous deadline
+wraps the actual HTTP request, even if an HTTP client ignores its own timeout.
+At most one retry remains available. Empty responses still qualify for that
+retry. Exhausted attempt timeouts return `claim_extractor_timeout`; an overall
+deadline returns `claim_extractor_deadline_exceeded`, both with HTTP 504.
+
+**Reason:** a browser gateway can return slowly or produce an empty first
+reply. Two former 180-second attempts allowed the API to outlast common client
+timeouts. Distinct failure codes and logs make timeout behavior observable
+without disclosing prompts, credentials, or provider responses to users.

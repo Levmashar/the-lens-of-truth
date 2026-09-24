@@ -3,9 +3,9 @@
 ## Implemented boundary
 
 The repository implements the foundation plus secure text/screenshot
-ingestion, bounded local OCR, PII masking, atomic claim extraction, and nullable
-PICO framing. It does not retrieve evidence, invoke judges, or make a medical
-judgment.
+ingestion, bounded local OCR, PII masking, atomic claim extraction, and grounded
+PICO framing and source-grounded normalization completeness auditing. It does
+not retrieve evidence, invoke judges, or make a medical judgment.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -63,6 +63,27 @@ The current model-produced PICO slots may be null and must be treated as query
 framing candidates until entity and evidence validation are implemented. The
 gateway's ChatGPT model picker is best-effort, so its requested mode is logged
 without claiming an exact underlying model version.
+
+Phase 3A checks every PICO value against its own redacted atomic claim before
+storing it. Phase 3B adds a local read-only index generated from official NLM
+MeSH descriptor XML. The index contains preferred labels, entry terms, tree
+numbers, source hash, and production year; it is installed at runtime rather
+than committed. Exact preferred and entry-term matches can resolve a MeSH ID.
+Ambiguity and fuzzy/low-confidence suggestions remain unassigned. UMLS is a
+separate optional provider, and no CUI is invented without licensed data.
+Stored entity JSONB carries the terminology provenance; no schema migration is
+needed. A batch command re-normalizes untouched pending claims only, with a
+dry-run default. Future retrieval must distinguish coded concepts from
+unresolved suggestions and never treat terminology matches as evidence.
+
+Phase 3C restricts new claim types to a controlled taxonomy and locks explicit
+English causal/association wording to its source meaning. A deterministic
+quality check compares strong source MeSH phrases with grounded PICO/entity
+mentions and checks type-specific required slots. Missing concepts become
+`partial`, not `normalized`; the JSONB quality record explains why. Legacy
+`normalized` rows become `partial` until re-audited. The extractor makes at
+most one retry for malformed output or transient provider failures, without
+weakening response validation or passing an invalid answer back to the model.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

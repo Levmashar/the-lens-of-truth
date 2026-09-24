@@ -57,7 +57,8 @@ treated as proof of causation.
 
 ## Current implementation status
 
-Phase 1 foundation and the scoped Phase 2 intake path are implemented:
+Phase 1 foundation, Phase 2 intake, Phase 3A normalization, Phase 3B
+terminology resolution, and Phase 3C hardening are implemented:
 
 - FastAPI initialization, configuration, structured error boundary, request
   logging, health endpoint, and a typed analysis lifecycle contract.
@@ -78,13 +79,55 @@ Phase 1 foundation and the scoped Phase 2 intake path are implemented:
   available for approved providers.
 - Nullable PICO fields are extracted with each claim and redacted before
   persistence. They describe the submitted claim, not supporting evidence.
+- Phase 3A grounds those model-produced fields in each exact redacted atomic
+  span, preserves the original claim in a validated PICO object, and persists
+  explicit `pending`, `unresolved`, `pico_only`, `partially_linked`, or
+  `normalized` status. Unstated PICO fields are discarded.
+- MeSH descriptors and entry terms are imported from NLM's official annual XML
+  into a read-only local SQLite index. Matching records exact preferred names,
+  synonyms, optional tree numbers, source and release. Ambiguous or fuzzy/weak
+  suggestions remain unassigned, with at most three candidates. The official
+  file SHA-256 and import metadata are retained in the index.
+- UMLS remains a separate optional provider. Without licensed data there is no
+  CUI; a confident MeSH assignment is preserved independently. If the MeSH
+  index is not installed, mentions remain unresolved instead of receiving
+  fabricated identifiers.
+- A dry-run-by-default batch command re-normalizes only untouched `pending`
+  claims from stored, source-grounded PICO fields. It never calls an LLM and
+  skips any claim carrying existing mapping or PICO JSON.
+- New claims use a controlled ten-label claim taxonomy. Explicit English
+  `causes` versus `is associated with` / `linked to` wording overrides a
+  conflicting model label. Known old labels are mapped to a canonical label;
+  unsupported model labels fail schema validation. Claim type describes the
+  assertion, not whether it is true.
+- A deterministic completeness audit compares high-confidence exact/official
+  synonym MeSH mentions in the atomic source span with grounded PICO slots and
+  entity mentions. Required intervention/outcome slots are checked for causal,
+  association, prevention, treatment, diagnostic, and safety claims. Fuzzy
+  suggestions do not trigger omissions. `normalization_quality` stores lexical
+  coverage, missing concepts/slots, ambiguity, and warnings. `normalized` now
+  requires those checks to pass and all identified mentions to be linked;
+  `partial` exposes a detected omission or incomplete source scan. Prior
+  `normalized` rows are marked `partial` until separately re-audited.
+- Extractors retry at most once on malformed output or retryable provider
+  failures, using the same redacted source and a strict-JSON repair instruction
+  without replaying the invalid answer. They retain strict JSON/Pydantic and
+  offset checks. Each request has a 55-second attempt limit and a 115-second
+  total deadline by default. Exhausted attempt timeouts and total deadlines
+  return typed 504 failures without claims; empty replies remain retryable once.
+  Diagnostics record provider/model, attempt number, failure class, elapsed
+  time, whether a retry occurred, and a sanitized upstream request ID when
+  supplied. Logs do not contain source text or credentials.
 - A web flow to submit text or screenshots and review extracted claims.
 - Docker Compose services for API, web, PostgreSQL/pgvector, and Redis.
 - GitHub Actions checks for API tests/static analysis and frontend type/build validation.
 
-Verified UMLS/MeSH linking, retrieval, evidence packs, independent judging,
-citation validation, and verdicts are not implemented. Phase 2 claim framing
-is not medical analysis and must not be presented as a verdict.
+Licensed UMLS source integration, evidence retrieval, evidence packs,
+independent judging, citation validation, and verdicts are not implemented.
+MeSH linking and PICO framing are terminology operations, not medical truth
+assessment. The 2026 MeSH index must be imported separately in each runtime;
+the generated vocabulary is not committed to the repository.
+Phase 4 is evidence retrieval; no retrieval or judging is included in 3C.
 
 ## Rules for future developers
 
@@ -105,3 +148,9 @@ is not medical analysis and must not be presented as a verdict.
     retention of 24 hours. Keep request-time and lifespan cleanup working;
     production must replace local storage with an approved isolated
     object-storage adapter before public deployment.
+11. Refresh the local MeSH index deliberately for each NLM release. Record
+    release and file hash, and acknowledge NLM under its data terms when
+    exposing vocabulary-derived content. Do not treat a MeSH match as evidence.
+12. Do not interpret `normalization_coverage` as medical confidence. A missing
+    source concept or required slot must not be silently promoted to
+    `normalized`; review the `partial` warning before downstream retrieval.

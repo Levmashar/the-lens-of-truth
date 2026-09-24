@@ -4,6 +4,10 @@ PostgreSQL is the durable record. Alembic enables the `vector` extension,
 creates the Phase 1 foundation, and adds Phase 2 short-lived upload metadata
 and coreference provenance. Existing nullable claim PICO columns are now
 populated when the extractor supplies source-grounded fields.
+Phase 3A added `pico_json`, `linked_entities`, and `normalization_status` to
+`Claim`. Phase 3B stores MeSH source, production year, descriptor ID, match
+type, ambiguity, confidence, candidate suggestions, and optional tree numbers
+inside the existing `linked_entities` JSONB. No new migration is required.
 
 | Model | Responsibility |
 |---|---|

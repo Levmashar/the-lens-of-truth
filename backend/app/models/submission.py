@@ -31,7 +31,12 @@ class Submission(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     client: Mapped[str] = mapped_column(String(32), nullable=False)
     language: Mapped[str] = mapped_column(String(16), nullable=False, default="auto")
     input_type: Mapped[InputType] = mapped_column(
-        Enum(InputType, name="input_type"), nullable=False
+        Enum(
+            InputType,
+            name="input_type",
+            values_callable=lambda enum_type: [member.value for member in enum_type],
+        ),
+        nullable=False,
     )
     content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     privacy_notice_version: Mapped[str] = mapped_column(String(64), nullable=False)

@@ -1,17 +1,22 @@
 """Structured atomic-claim extraction adapters."""
 
+import asyncio
 import json
+import logging
 import re
 from dataclasses import dataclass
+from time import monotonic
 from typing import Protocol
 
 import httpx
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from app.adapters.http import HttpAdapterBase
 from app.core.errors import ExternalCapabilityError
+from app.pipeline.claim_types import ClaimType, explicit_relation, legacy_claim_type
 
-CLAIM_EXTRACTION_PROMPT_VERSION = "phase2-pico-2026-09-24-r2"
+CLAIM_EXTRACTION_PROMPT_VERSION = "phase3c-canonical-2026-09-24"
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are a health-claim extraction engine.
 
@@ -33,7 +38,17 @@ or present it as confidence that the claim is medically true.
 Also return pico with population, intervention_or_exposure, comparator,
 outcome, and timeframe. Use null for information absent from the source.
 Never infer a population, comparator, or outcome that the content does not state.
+claim_type must be exactly one of: causal, association, prevention, treatment,
+diagnostic, safety, recommendation, statistical_or_study_result, methodology,
+other. Use causal for explicit causal wording and association for explicit
+association/correlation wording; never change the source's epistemic strength.
 """
+
+REPAIR_INSTRUCTION = (
+    "Your previous response could not be parsed or validated. Return only one "
+    "complete JSON object conforming to the requested schema. Preserve source "
+    "offsets and exact wording. Do not add commentary or invent missing facts."
+)
 
 MIRI_FORMAT_INSTRUCTION = """Return exactly one JSON object, with no Markdown or explanation:
 {"claims":[{"raw_span":"exact source substring","span_start":0,"span_end":1,
@@ -66,13 +81,38 @@ class ExtractedClaimCandidate(BaseModel):
     span_start: int = Field(ge=0)
     span_end: int = Field(ge=0)
     normalized_claim: str | None = None
-    claim_type: str | None = Field(default=None, max_length=64)
+    claim_type: ClaimType | None = None
     risk_class: str = Field(default="standard", pattern="^(standard|high)$")
     verifiability: float | None = Field(default=None, ge=0, le=1)
     coreference_uncertain: bool = False
     resolved_from_span_start: int | None = Field(default=None, ge=0)
     resolved_from_span_end: int | None = Field(default=None, ge=0)
     pico: PicoCandidate | None = None
+
+    @field_validator("claim_type", mode="before")
+    @classmethod
+    def canonicalize_known_legacy_label(cls, value: object) -> object:
+        if isinstance(value, str) and value in {
+            "preventive", "causal_numeric", "risk_association", "study_description",
+            "reported_statistical_result", "treatment_recommendation",
+        }:
+            return legacy_claim_type(value)
+        return value
+
+    @model_validator(mode="after")
+    def preserve_explicit_relation(self) -> "ExtractedClaimCandidate":
+        """Source wording wins when an explicit causal/association cue is present."""
+
+        relation = explicit_relation(self.raw_span)
+        if relation is not None:
+            self.claim_type = relation
+            if (
+                self.normalized_claim is not None
+                and explicit_relation(self.normalized_claim) not in (None, relation)
+            ):
+                # Never expose a model paraphrase that reverses epistemic strength.
+                self.normalized_claim = None
+        return self
 
 
 class ClaimExtractionPayload(BaseModel):
@@ -133,6 +173,8 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
     content only.
     """
 
+    timeout_seconds: float = 55.0
+    total_timeout_seconds: float = 115.0
     base_url: str = ""
     model: str = ""
     api_key: str = ""
@@ -146,7 +188,7 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
     async def extract(self, *, text: str, language: str) -> ClaimExtractionPayload:
         """Call the configured endpoint and reject malformed structured output."""
 
-        request_body = {
+        request_body: dict[str, object] = {
             "model": self.model,
             "temperature": 0,
             "messages": [
@@ -171,30 +213,15 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
             },
         }
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        endpoint = f"{self.base_url.rstrip('/')}/chat/completions"
-
-        try:
-            async with self.build_client() as client:
-                response = await client.post(endpoint, headers=headers, json=request_body)
-                response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise ExternalCapabilityError(
-                code="claim_extractor_unavailable",
-                message="Claim extraction is temporarily unavailable.",
-            ) from exc
-
-        try:
-            body = response.json()
-            content = body["choices"][0]["message"]["content"]
-            return _parse_claim_payload(content)
-        except (IndexError, KeyError, TypeError, json.JSONDecodeError, ValidationError) as exc:
-            raise _invalid_structured_response() from exc
+        return await _extract_with_retry(self, request_body, headers)
 
 
 @dataclass(frozen=True, slots=True)
 class MiriClaimExtractor(HttpAdapterBase):
     """Use the browser-backed miri-api chat completion without assuming JSON mode."""
 
+    timeout_seconds: float = 55.0
+    total_timeout_seconds: float = 115.0
     base_url: str = ""
     model: str = "chatgpt-auto"
     api_key: str | None = None
@@ -208,7 +235,7 @@ class MiriClaimExtractor(HttpAdapterBase):
     async def extract(self, *, text: str, language: str) -> ClaimExtractionPayload:
         """Request JSON, then validate the browser response as untrusted data."""
 
-        request_body = {
+        request_body: dict[str, object] = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT + "\n" + MIRI_FORMAT_INSTRUCTION},
@@ -224,24 +251,161 @@ class MiriClaimExtractor(HttpAdapterBase):
             ],
         }
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
-        endpoint = f"{self.base_url.rstrip('/')}/chat/completions"
+        return await _extract_with_retry(
+            self, request_body, headers, normalize_miri_labels=True
+        )
 
-        try:
-            async with self.build_client() as client:
-                response = await client.post(endpoint, headers=headers, json=request_body)
-                response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise ExternalCapabilityError(
-                code="claim_extractor_unavailable",
-                message="Claim extraction is temporarily unavailable.",
-            ) from exc
 
-        try:
-            body = response.json()
-            content = body["choices"][0]["message"]["content"]
-            return _parse_claim_payload(content, normalize_miri_labels=True)
-        except (IndexError, KeyError, TypeError, json.JSONDecodeError, ValidationError) as exc:
-            raise _invalid_structured_response() from exc
+class _ResponseFailure(Exception):
+    def __init__(self, failure_type: str) -> None:
+        self.failure_type = failure_type
+        super().__init__(failure_type)
+
+
+async def _extract_with_retry(
+    adapter: OpenAICompatibleClaimExtractor | MiriClaimExtractor,
+    request_body: dict[str, object],
+    headers: dict[str, str],
+    *,
+    normalize_miri_labels: bool = False,
+) -> ClaimExtractionPayload:
+    """Enforce per-attempt and total deadlines with at most one safe retry."""
+
+    endpoint = f"{adapter.base_url.rstrip('/')}/chat/completions"
+    started = monotonic()
+    attempt_started = started
+    attempt = 0
+    trace_id: str | None = None
+    repair_needed = False
+    try:
+        async with asyncio.timeout(adapter.total_timeout_seconds):
+            for attempt in (1, 2):
+                attempt_started = monotonic()
+                trace_id = None
+                if attempt == 2 and repair_needed:
+                    messages = request_body["messages"]
+                    assert isinstance(messages, list)
+                    request_body = {
+                        **request_body,
+                        "messages": [
+                            {
+                                **messages[0],
+                                "content": (
+                                    str(messages[0]["content"]) + "\n" + REPAIR_INSTRUCTION
+                                ),
+                            },
+                            *messages[1:],
+                        ],
+                    }
+                try:
+                    async with asyncio.timeout(adapter.timeout_seconds):
+                        async with adapter.build_client() as client:
+                            response = await client.post(
+                                endpoint, headers=headers, json=request_body
+                            )
+                            trace_id = _safe_trace_id(response.headers.get("x-request-id"))
+                            response.raise_for_status()
+                        payload = _parse_response(
+                            response, normalize_miri_labels=normalize_miri_labels
+                        )
+                    _log_extraction_attempt(
+                        adapter, attempt=attempt, failure_type="none", started=started,
+                        attempt_started=attempt_started, trace_id=trace_id,
+                    )
+                    return payload
+                except (TimeoutError, httpx.TimeoutException) as exc:
+                    failure_type = "attempt_timeout"
+                    cause: Exception = exc
+                    retryable = True
+                except httpx.HTTPStatusError as exc:
+                    failure_type = "provider_error"
+                    cause = exc
+                    retryable = exc.response.status_code == 429 or exc.response.status_code >= 500
+                except httpx.RequestError as exc:
+                    failure_type = "transport_error"
+                    cause = exc
+                    retryable = True
+                except _ResponseFailure as exc:
+                    failure_type = exc.failure_type
+                    cause = exc
+                    retryable = True
+                _log_extraction_attempt(
+                    adapter, attempt=attempt, failure_type=failure_type, started=started,
+                    attempt_started=attempt_started, trace_id=trace_id,
+                )
+                repair_needed = isinstance(cause, _ResponseFailure)
+                if attempt == 2 or not retryable:
+                    if isinstance(cause, _ResponseFailure):
+                        raise _invalid_structured_response() from cause
+                    if failure_type == "attempt_timeout":
+                        raise ExternalCapabilityError(
+                            code="claim_extractor_timeout",
+                            message="Claim extraction timed out.",
+                            status_code=504,
+                        ) from cause
+                    raise ExternalCapabilityError(
+                        code="claim_extractor_unavailable",
+                        message="Claim extraction is temporarily unavailable.",
+                    ) from cause
+    except TimeoutError as exc:
+        _log_extraction_attempt(
+            adapter, attempt=attempt, failure_type="total_deadline_exceeded",
+            started=started, attempt_started=attempt_started, trace_id=trace_id,
+        )
+        raise ExternalCapabilityError(
+            code="claim_extractor_deadline_exceeded",
+            message="Claim extraction exceeded its time limit.",
+            status_code=504,
+        ) from exc
+    raise AssertionError("Unreachable retry state")
+
+
+def _log_extraction_attempt(
+    adapter: OpenAICompatibleClaimExtractor | MiriClaimExtractor,
+    *,
+    attempt: int,
+    failure_type: str,
+    started: float,
+    attempt_started: float,
+    trace_id: str | None,
+) -> None:
+    """Log timing and failure category without source text, URL, or credentials."""
+
+    logger.log(
+        logging.INFO if failure_type == "none" else logging.WARNING,
+        "claim_extraction provider=%s model=%s attempt_number=%d attempt_count=%d "
+        "failure_type=%s elapsed_ms=%d attempt_elapsed_ms=%d retry_occurred=%s trace_id=%s",
+        adapter.service_name, adapter.model_id, attempt, attempt, failure_type,
+        round((monotonic() - started) * 1000),
+        round((monotonic() - attempt_started) * 1000),
+        attempt > 1, trace_id,
+    )
+
+
+def _safe_trace_id(value: str | None) -> str | None:
+    if value and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value):
+        return value
+    return None
+
+
+def _parse_response(
+    response: httpx.Response, *, normalize_miri_labels: bool
+) -> ClaimExtractionPayload:
+    try:
+        body = response.json()
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise _ResponseFailure("invalid_json") from exc
+    if not isinstance(body, dict):
+        raise _ResponseFailure("unsupported_structured_response")
+    choices = body.get("choices")
+    if not isinstance(choices, list) or not choices:
+        raise _ResponseFailure("empty_response")
+    choice = choices[0]
+    if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
+        raise _ResponseFailure("unsupported_structured_response")
+    return _parse_claim_payload(
+        choice["message"].get("content"), normalize_miri_labels=normalize_miri_labels
+    )
 
 
 def _parse_claim_payload(
@@ -249,13 +413,20 @@ def _parse_claim_payload(
 ) -> ClaimExtractionPayload:
     """Accept a single JSON object, optionally wrapped in one JSON code fence."""
 
+    if content is None or content == "":
+        raise _ResponseFailure("empty_response")
     if not isinstance(content, str):
-        raise TypeError("Expected text content from claim extractor.")
+        raise _ResponseFailure("unsupported_structured_response")
     stripped = content.strip()
+    if not stripped:
+        raise _ResponseFailure("empty_response")
     match = re.fullmatch(r"```(?:json)?\s*\n([\s\S]*?)\n```", stripped, flags=re.IGNORECASE)
     if match:
         stripped = match.group(1)
-    parsed = json.loads(stripped)
+    try:
+        parsed = json.loads(stripped)
+    except json.JSONDecodeError as exc:
+        raise _ResponseFailure("invalid_json") from exc
     if normalize_miri_labels and isinstance(parsed, dict):
         claims = parsed.get("claims")
         if isinstance(claims, list):
@@ -268,7 +439,10 @@ def _parse_claim_payload(
                         except ValueError:
                             # A qualitative label is not a numeric testability score.
                             claim["verifiability"] = None
-    return ClaimExtractionPayload.model_validate(parsed)
+    try:
+        return ClaimExtractionPayload.model_validate(parsed)
+    except ValidationError as exc:
+        raise _ResponseFailure("schema_validation_failure") from exc
 
 
 def _invalid_structured_response() -> ExternalCapabilityError:

@@ -6,6 +6,11 @@ from uuid import UUID
 
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, model_validator
 
+from app.medical.entities import MedicalEntity
+from app.pipeline.claim_types import ClaimType
+from app.pipeline.completeness import NormalizationQuality
+from app.pipeline.pico import NormalizationStatus, NormalizedPico
+
 
 class Consent(BaseModel):
     """Versioned acknowledgement required before submitting health-related content."""
@@ -102,7 +107,7 @@ class ClaimPreviewItem(BaseModel):
     span_end: int
     raw_text: str
     normalized_text: str | None = None
-    claim_type: str | None = None
+    claim_type: ClaimType | None = None
     population: str | None = None
     intervention_or_exposure: str | None = None
     comparator: str | None = None
@@ -111,6 +116,10 @@ class ClaimPreviewItem(BaseModel):
     risk_class: str
     verifiability: float | None = None
     coreference_uncertain: bool
+    entities: list[MedicalEntity] = Field(default_factory=list)
+    pico: NormalizedPico | None = None
+    normalization_status: NormalizationStatus = "pending"
+    normalization_quality: NormalizationQuality | None = None
 
 
 class ClaimExtractionPreviewResponse(BaseModel):
@@ -141,7 +150,7 @@ class AnalysisClaim(BaseModel):
     span_end: int | None
     raw_text: str
     normalized_text: str | None = None
-    claim_type: str | None = None
+    claim_type: ClaimType | None = None
     population: str | None = None
     intervention_or_exposure: str | None = None
     comparator: str | None = None
@@ -152,6 +161,10 @@ class AnalysisClaim(BaseModel):
     coreference_uncertain: bool
     resolved_from_span_start: int | None = None
     resolved_from_span_end: int | None = None
+    entities: list[MedicalEntity] = Field(default_factory=list)
+    pico: NormalizedPico | None = None
+    normalization_status: NormalizationStatus = "pending"
+    normalization_quality: NormalizationQuality | None = None
 
 
 class AnalysisDetail(BaseModel):

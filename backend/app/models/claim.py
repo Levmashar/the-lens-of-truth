@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -34,6 +35,12 @@ class Claim(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     comparator: Mapped[str | None] = mapped_column(Text)
     outcome: Mapped[str | None] = mapped_column(Text)
     timeframe: Mapped[str | None] = mapped_column(Text)
+    linked_entities: Mapped[list[dict[str, object]] | None] = mapped_column(JSONB)
+    pico_json: Mapped[dict[str, object] | None] = mapped_column(JSONB)
+    normalization_quality: Mapped[dict[str, object] | None] = mapped_column(JSONB)
+    normalization_status: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="pending", server_default="pending"
+    )
     risk_class: Mapped[str] = mapped_column(String(32), nullable=False, default="standard")
     verifiability: Mapped[float | None] = mapped_column(Float)
     coreference_uncertain: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

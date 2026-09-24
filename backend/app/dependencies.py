@@ -13,6 +13,9 @@ from app.adapters.claim_extractor import (
 from app.adapters.ocr import TesseractOcrAdapter
 from app.adapters.storage import LocalFilesystemUploadStorage
 from app.core.config import Settings, get_settings
+from app.medical.linker import MedicalEntityLinker
+from app.medical.mesh import IndexedMeshProvider, UnconfiguredMeshProvider
+from app.medical.umls import UnconfiguredUmlsProvider
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.redaction import PiiRedactor
 
@@ -50,6 +53,7 @@ def get_claim_extractor(
         return MiriClaimExtractor(
             service_name="miri_chatgpt_claim_extractor",
             timeout_seconds=settings.claim_extractor_timeout_seconds,
+            total_timeout_seconds=settings.claim_extractor_total_timeout_seconds,
             base_url=settings.claim_extractor_base_url,
             model=settings.claim_extractor_model or "chatgpt-auto",
             api_key=api_key.get_secret_value() if api_key else None,
@@ -64,6 +68,7 @@ def get_claim_extractor(
     return OpenAICompatibleClaimExtractor(
         service_name="openai_compatible_claim_extractor",
         timeout_seconds=settings.claim_extractor_timeout_seconds,
+        total_timeout_seconds=settings.claim_extractor_total_timeout_seconds,
         base_url=settings.claim_extractor_base_url,
         model=settings.claim_extractor_model,
         api_key=api_key.get_secret_value(),
@@ -88,7 +93,18 @@ def build_analysis_ingestion_service(
         maximum_claims=settings.claim_extractor_max_claims,
         upload_max_bytes=settings.upload_max_bytes,
         upload_max_pixels=settings.upload_max_pixels,
+        entity_linker=build_entity_linker(settings),
     )
+
+
+def build_entity_linker(settings: Settings) -> MedicalEntityLinker:
+    """Use an imported NLM release when installed; UMLS remains optional."""
+
+    mesh = (
+        IndexedMeshProvider(settings.mesh_index_path)
+        if settings.mesh_index_path.is_file() else UnconfiguredMeshProvider()
+    )
+    return MedicalEntityLinker(umls=UnconfiguredUmlsProvider(), mesh=mesh)
 
 
 def get_analysis_ingestion_service(

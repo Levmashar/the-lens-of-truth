@@ -1,4 +1,4 @@
-"""Phase 2 orchestration for private ingestion, OCR, and atomic claims."""
+"""Private ingestion, atomic claims, and Phase 3A medical framing."""
 
 import hashlib
 from dataclasses import dataclass
@@ -13,15 +13,28 @@ from app.adapters.claim_extractor import (
     CLAIM_EXTRACTION_PROMPT_VERSION,
     ClaimExtractionPayload,
     ClaimExtractorAdapter,
+    ExtractedClaimCandidate,
     validate_claim_candidates,
 )
 from app.adapters.ocr import TesseractOcrAdapter
 from app.adapters.storage import LocalFilesystemUploadStorage
 from app.core.errors import LensError
+from app.medical.entities import MedicalEntity
+from app.medical.linker import MedicalEntityLinker
+from app.medical.mesh import UnconfiguredMeshProvider
+from app.medical.umls import UnconfiguredUmlsProvider
 from app.models.claim import Claim
 from app.models.enums import InputType
 from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
+from app.pipeline.claim_types import ClaimType
+from app.pipeline.completeness import NormalizationQuality, assess_completeness
+from app.pipeline.pico import (
+    NormalizationStatus,
+    NormalizedPico,
+    normalization_status,
+    normalize_pico,
+)
 from app.schemas.analysis import CreateAnalysisRequest
 from app.services.image_ingestion import SanitizedImage
 from app.services.redaction import PiiRedactor
@@ -61,7 +74,7 @@ class ClaimPreviewItem:
     span_end: int
     raw_text: str
     normalized_text: str | None
-    claim_type: str | None
+    claim_type: ClaimType | None
     population: str | None
     intervention_or_exposure: str | None
     comparator: str | None
@@ -70,6 +83,10 @@ class ClaimPreviewItem:
     risk_class: str
     verifiability: float | None
     coreference_uncertain: bool
+    entities: tuple[MedicalEntity, ...]
+    pico: NormalizedPico
+    normalization_status: NormalizationStatus
+    normalization_quality: NormalizationQuality | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,6 +115,7 @@ class AnalysisIngestionService:
         maximum_claims: int,
         upload_max_bytes: int,
         upload_max_pixels: int,
+        entity_linker: MedicalEntityLinker | None = None,
     ) -> None:
         self._storage = storage
         self._ocr = ocr
@@ -107,6 +125,9 @@ class AnalysisIngestionService:
         self._maximum_claims = maximum_claims
         self.upload_max_bytes = upload_max_bytes
         self.upload_max_pixels = upload_max_pixels
+        self._entity_linker = entity_linker or MedicalEntityLinker(
+            umls=UnconfiguredUmlsProvider(), mesh=UnconfiguredMeshProvider()
+        )
 
     async def create_screenshot_upload(
         self, *, session: Session, image: SanitizedImage
@@ -361,13 +382,15 @@ class AnalysisIngestionService:
             extraction_prompt_version=CLAIM_EXTRACTION_PROMPT_VERSION,
             purge_after=datetime.now(UTC) + timedelta(hours=self._retention_hours),
         )
-        def safe_pico(value: str | None) -> str | None:
-            return self._redactor.redact(value).text if value else None
-
         for ordinal, candidate in enumerate(verified_candidates, start=1):
             normalized = candidate.normalized_claim
             safe_normalized = self._redactor.redact(normalized).text if normalized else None
-            pico = candidate.pico
+            pico = normalize_pico(candidate)
+            entities = self._entity_linker.link(pico)
+            quality = assess_completeness(pico, entities, self._entity_linker.mesh)
+            linked_count = sum(
+                entity.umls_cui is not None or entity.mesh_id is not None for entity in entities
+            )
             submission.claims.append(
                 Claim(
                     ordinal=ordinal,
@@ -376,13 +399,18 @@ class AnalysisIngestionService:
                     raw_text=redacted_text[candidate.span_start : candidate.span_end],
                     normalized_text=safe_normalized,
                     claim_type=candidate.claim_type,
-                    population=safe_pico(pico.population) if pico else None,
-                    intervention_or_exposure=(
-                        safe_pico(pico.intervention_or_exposure) if pico else None
+                    population=pico.population,
+                    intervention_or_exposure=pico.intervention_or_exposure,
+                    comparator=pico.comparator,
+                    outcome=pico.outcome,
+                    timeframe=pico.timeframe,
+                    pico_json=pico.model_dump(mode="json"),
+                    linked_entities=[entity.model_dump(mode="json") for entity in entities],
+                    normalization_quality=quality.model_dump(mode="json"),
+                    normalization_status=normalization_status(
+                        pico, linked_count=linked_count, mention_count=len(entities),
+                        quality=quality,
                     ),
-                    comparator=safe_pico(pico.comparator) if pico else None,
-                    outcome=safe_pico(pico.outcome) if pico else None,
-                    timeframe=safe_pico(pico.timeframe) if pico else None,
                     risk_class=candidate.risk_class,
                     verifiability=candidate.verifiability,
                     coreference_uncertain=candidate.coreference_uncertain,
@@ -417,31 +445,44 @@ class AnalysisIngestionService:
         def redact(value: str | None) -> str | None:
             return self._redactor.redact(value).text if value else None
 
+        def item(ordinal: int, candidate: ExtractedClaimCandidate) -> ClaimPreviewItem:
+            pico = normalize_pico(candidate)
+            entities = self._entity_linker.link(pico)
+            quality = assess_completeness(pico, entities, self._entity_linker.mesh)
+            linked_count = sum(
+                entity.umls_cui is not None or entity.mesh_id is not None for entity in entities
+            )
+            return ClaimPreviewItem(
+                ordinal=ordinal,
+                span_start=candidate.span_start,
+                span_end=candidate.span_end,
+                raw_text=redacted_text[candidate.span_start : candidate.span_end],
+                normalized_text=redact(candidate.normalized_claim),
+                claim_type=candidate.claim_type,
+                population=pico.population,
+                intervention_or_exposure=pico.intervention_or_exposure,
+                comparator=pico.comparator,
+                outcome=pico.outcome,
+                timeframe=pico.timeframe,
+                risk_class=candidate.risk_class,
+                verifiability=candidate.verifiability,
+                coreference_uncertain=candidate.coreference_uncertain,
+                entities=entities,
+                pico=pico,
+                normalization_status=normalization_status(
+                    pico, linked_count=linked_count, mention_count=len(entities),
+                    quality=quality,
+                ),
+                normalization_quality=quality,
+            )
+
         return ClaimExtractionPreview(
             input_type=input_type,
             extractor_provider=self._extractor.service_name,
             extractor_model=self._extractor.model_id,
             pii_redaction_count=pii_redaction_count,
             claims=tuple(
-                ClaimPreviewItem(
-                    ordinal=ordinal,
-                    span_start=candidate.span_start,
-                    span_end=candidate.span_end,
-                    raw_text=redacted_text[candidate.span_start : candidate.span_end],
-                    normalized_text=redact(candidate.normalized_claim),
-                    claim_type=candidate.claim_type,
-                    population=redact(candidate.pico.population) if candidate.pico else None,
-                    intervention_or_exposure=(
-                        redact(candidate.pico.intervention_or_exposure) if candidate.pico else None
-                    ),
-                    comparator=redact(candidate.pico.comparator) if candidate.pico else None,
-                    outcome=redact(candidate.pico.outcome) if candidate.pico else None,
-                    timeframe=redact(candidate.pico.timeframe) if candidate.pico else None,
-                    risk_class=candidate.risk_class,
-                    verifiability=candidate.verifiability,
-                    coreference_uncertain=candidate.coreference_uncertain,
-                )
-                for ordinal, candidate in enumerate(candidates, start=1)
+                item(ordinal, candidate) for ordinal, candidate in enumerate(candidates, 1)
             ),
             screenshot_ocr=screenshot_ocr,
         )
