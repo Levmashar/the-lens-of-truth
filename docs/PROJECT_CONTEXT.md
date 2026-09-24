@@ -57,17 +57,31 @@ treated as proof of causation.
 
 ## Current implementation status
 
-Phase 1 is the repository foundation only:
+Phase 1 foundation and the scoped Phase 2 intake path are implemented:
 
 - FastAPI initialization, configuration, structured error boundary, request
-  logging, health endpoint, and mock analysis lifecycle contract.
-- Database models and an initial Alembic migration, without business logic.
-- Responsive web navigation shell and backend health display.
+  logging, health endpoint, and a typed analysis lifecycle contract.
+- Database models, initial migration, and the Phase 2 screenshot-upload
+  migration.
+- Secure screenshot intake: decoded-image validation, byte/pixel limits,
+  single-frame enforcement, metadata-safe PNG re-encoding, and private
+  short-lived filesystem storage for local/container use.
+- A local Tesseract adapter (English, Simplified Chinese, Traditional Chinese)
+  with OCR confidence metadata; raw OCR text is never persisted.
+- A development/test-only OCR preview endpoint that returns ephemeral redacted
+  output for diagnostics; it is unavailable in staging and production.
+- Position-preserving structured-PII masking before extraction and persisted
+  redacted atomic claim spans.
+- An OpenAI-compatible, schema-constrained claim-extraction adapter. It is
+  disabled by default and fails closed until an approved endpoint, pinned model
+  ID, and secret are configured; no heuristic or mock claims are substituted.
+- A web flow to submit text or screenshots and review extracted claims.
 - Docker Compose services for API, web, PostgreSQL/pgvector, and Redis.
 - GitHub Actions checks for API tests/static analysis and frontend type/build validation.
 
-OCR, uploads, extraction, PICO, retrieval, provider calls, and verdicts are
-not implemented. A mock response must never be presented as medical analysis.
+UMLS/MeSH linking, PICO normalization, retrieval, evidence packs, independent
+judging, citation validation, and verdicts are not implemented. Phase 2 claim
+extraction is not medical analysis and must not be presented as a verdict.
 
 ## Rules for future developers
 
@@ -84,3 +98,7 @@ not implemented. A mock response must never be presented as medical analysis.
    material architecture decisions.
 9. Update `backend/requirements.lock` whenever Python dependencies change;
    builds and CI must not resolve unpinned dependencies.
+10. Raw screenshots and their related Phase 2 submissions have a hard maximum
+    retention of 24 hours. Keep request-time and lifespan cleanup working;
+    production must replace local storage with an approved isolated
+    object-storage adapter before public deployment.

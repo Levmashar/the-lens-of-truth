@@ -26,16 +26,37 @@ hide technical degradation as medical uncertainty.
 
 ## ADR-004 — Adapter boundary for external services
 
-**Decision:** all future OCR, evidence, model, storage, and other outbound
-services are accessed through an adapter owned by the backend.
+**Decision:** all OCR, evidence, model, storage, and other outbound services
+are accessed through an adapter owned by the backend.
 
 **Reason:** it prevents provider details from leaking into pipeline logic and
 supports testing, fallbacks, auditing, and vendor changes.
 
-## ADR-005 — No fake AI in Phase 1
+## ADR-005 — No fake AI
 
-**Decision:** routes return explicit mock lifecycle data only; no heuristic or
-simulated claim/verdict is shown as an actual result.
+**Decision:** routes must never generate simulated claims, evidence, or verdict
+data that resembles a real analysis.
 
 **Reason:** fabricated medical reasoning would undermine safety and make
 integration behavior indistinguishable from a real verification result.
+
+## ADR-006 — Phase 2 extraction fails closed
+
+**Decision:** use a configured, OpenAI-compatible structured-output adapter
+for semantic atomic-claim extraction and return an availability error when it
+is not configured or returns invalid offsets.
+
+**Reason:** sentence splitting or a simulated response cannot reliably produce
+atomic medical propositions. A provider response is treated as untrusted too:
+the backend verifies every returned span against the redacted source before it
+can become a stored claim.
+
+## ADR-007 — Re-encode then retain raw screenshots for at most 24 hours
+
+**Decision:** accept only decoded static PNG/JPEG/WebP images, re-encode them
+to metadata-free PNG, keep their bytes outside PostgreSQL, and purge uploads
+and their short-lived analyses after 24 hours.
+
+**Reason:** client-declared MIME types and image metadata are not trustworthy.
+Short retention and position-preserving PII masking minimize exposure while
+preserving source offsets required for claim auditing.

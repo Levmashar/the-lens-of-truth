@@ -37,6 +37,8 @@ class Claim(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     risk_class: Mapped[str] = mapped_column(String(32), nullable=False, default="standard")
     verifiability: Mapped[float | None] = mapped_column(Float)
     coreference_uncertain: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    resolved_from_span_start: Mapped[int | None] = mapped_column(Integer)
+    resolved_from_span_end: Mapped[int | None] = mapped_column(Integer)
 
     submission: Mapped["Submission"] = relationship(back_populates="claims")
     model_evaluations: Mapped[list["ModelEvaluation"]] = relationship(

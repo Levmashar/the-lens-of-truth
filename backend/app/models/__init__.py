@@ -3,6 +3,7 @@
 from app.models.claim import Claim
 from app.models.evaluation import FinalVerdict, ModelEvaluation
 from app.models.evidence import EvidenceDocument, EvidencePassage
+from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
 
 __all__ = [
@@ -11,5 +12,6 @@ __all__ = [
     "EvidencePassage",
     "FinalVerdict",
     "ModelEvaluation",
+    "ScreenshotUpload",
     "Submission",
 ]

@@ -11,6 +11,7 @@ from app.models.enums import InputType
 
 if TYPE_CHECKING:
     from app.models.claim import Claim
+    from app.models.screenshot_upload import ScreenshotUpload
 
 
 class Submission(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -36,8 +37,14 @@ class Submission(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     privacy_notice_version: Mapped[str] = mapped_column(String(64), nullable=False)
     consent_accepted: Mapped[bool] = mapped_column(Boolean, nullable=False)
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="received")
+    extraction_provider: Mapped[str | None] = mapped_column(String(64))
+    extraction_model: Mapped[str | None] = mapped_column(String(128))
+    extraction_prompt_version: Mapped[str | None] = mapped_column(String(64))
     purge_after: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     claims: Mapped[list["Claim"]] = relationship(
         back_populates="submission", cascade="all, delete-orphan"
+    )
+    screenshot_upload: Mapped["ScreenshotUpload | None"] = relationship(
+        back_populates="submission", uselist=False
     )

@@ -1,6 +1,6 @@
-"""Public API contracts for analysis lifecycle endpoints."""
+"""Public contracts for Phase 2 ingestion and atomic-claim extraction."""
 
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
@@ -15,7 +15,7 @@ class Consent(BaseModel):
 
 
 class AnalysisInput(BaseModel):
-    """Input shape only; ingestion, upload storage, and fetching come later."""
+    """Reference an ephemeral screenshot upload or supply text directly."""
 
     type: Literal["text", "screenshot", "url"]
     text: str | None = Field(default=None, min_length=1, max_length=20_000)
@@ -30,11 +30,17 @@ class AnalysisInput(BaseModel):
             raise ValueError("Screenshot submissions require upload_id.")
         if self.type == "url" and self.url is None:
             raise ValueError("URL submissions require url.")
+        if self.type != "text" and self.text is not None:
+            raise ValueError("Only text submissions may include text.")
+        if self.type != "screenshot" and self.upload_id is not None:
+            raise ValueError("Only screenshot submissions may include upload_id.")
+        if self.type != "url" and self.url is not None:
+            raise ValueError("Only URL submissions may include url.")
         return self
 
 
 class CreateAnalysisRequest(BaseModel):
-    """Accepted analysis request, designed to remain compatible with later phases."""
+    """Request Phase 2 extraction; later phases extend the same lifecycle."""
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -45,40 +51,81 @@ class CreateAnalysisRequest(BaseModel):
     consent: Consent
 
 
+class ScreenshotUploadAccepted(BaseModel):
+    """Acknowledgement for a sanitized raw screenshot held for no more than 24 hours."""
+
+    upload_id: UUID
+    status: Literal["uploaded"]
+    media_type: Literal["image/png"]
+    byte_count: int
+    width: int
+    height: int
+    purge_after: datetime
+
+
+class OcrPreviewLine(BaseModel):
+    """One redacted development-preview OCR line with layout metadata."""
+
+    text: str
+    confidence: float
+    left: int
+    top: int
+    width: int
+    height: int
+
+
+class OcrPreviewResponse(BaseModel):
+    """Development-only OCR preview; it never writes recognized text to the database."""
+
+    upload_id: UUID
+    provider: str
+    language_used: str
+    confidence: float | None
+    redacted_text: str
+    pii_redaction_count: int
+    lines: list[OcrPreviewLine]
+
+
 class AnalysisAccepted(BaseModel):
-    """Asynchronous acknowledgement; Phase 1 returns this without persistence."""
+    """A completed Phase 2 extraction, not a medical-evidence result."""
 
     analysis_id: UUID
-    status: Literal["processing"]
-    is_mock: Literal[True] = True
+    status: Literal["claims_extracted"]
+    claim_count: int
 
 
 class AnalysisClaim(BaseModel):
-    """Placeholder for a future atomic claim response."""
+    """Redacted atomic claim with offsets into the redacted source representation."""
 
     claim_id: UUID
+    ordinal: int
+    span_start: int | None
+    span_end: int | None
     raw_text: str
     normalized_text: str | None = None
+    claim_type: str | None = None
+    risk_class: str
+    verifiability: float | None = None
+    coreference_uncertain: bool
+    resolved_from_span_start: int | None = None
+    resolved_from_span_end: int | None = None
+
+
+class ScreenshotOcrMetadata(BaseModel):
+    """Safe OCR metadata; recognized text itself is not returned here."""
+
+    provider: str
+    confidence: float | None
+    pii_redaction_count: int
 
 
 class AnalysisDetail(BaseModel):
-    """Current analysis lifecycle state."""
+    """Current Phase 2 state, before retrieval or any medical verdict exists."""
 
     analysis_id: UUID
-    status: Literal["processing", "complete", "failed"]
+    status: Literal["claims_extracted"]
     language: str
+    input_type: Literal["text", "screenshot"]
     claims: list[AnalysisClaim]
+    screenshot_ocr: ScreenshotOcrMetadata | None = None
     updated_at: datetime
-    is_mock: Literal[True] = True
-
-    @classmethod
-    def processing(cls, analysis_id: UUID) -> "AnalysisDetail":
-        """Build the explicit Phase 1 mock response."""
-
-        return cls(
-            analysis_id=analysis_id,
-            status="processing",
-            language="auto",
-            claims=[],
-            updated_at=datetime.now(UTC),
-        )

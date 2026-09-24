@@ -10,6 +10,7 @@ def test_initial_metadata_contains_required_phase_one_models() -> None:
         "evidence_passage",
         "model_evaluation",
         "final_verdict",
+        "screenshot_upload",
     }.issubset(Base.metadata.tables)
 
 

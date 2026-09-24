@@ -1,5 +1,10 @@
 """FastAPI application factory."""
 
+import asyncio
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +22,51 @@ from app.core.errors import (
 )
 from app.core.logging import configure_logging
 from app.core.request_context import RequestContextMiddleware
+from app.db.session import SessionLocal
+from app.maintenance import purge_expired_uploads
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Run raw-upload retention cleanup without placing sensitive data in logs."""
+
+    settings: Settings = app.state.settings
+    if settings.app_env == "test":
+        yield
+        return
+
+    stop_event = asyncio.Event()
+    task = asyncio.create_task(_retention_cleanup_loop(stop_event, settings))
+    try:
+        yield
+    finally:
+        stop_event.set()
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+
+async def _retention_cleanup_loop(stop_event: asyncio.Event, settings: Settings) -> None:
+    """Purge at startup and at a bounded interval, including during idle periods."""
+
+    while not stop_event.is_set():
+        try:
+            with SessionLocal() as session:
+                removed = await purge_expired_uploads(session=session, settings=settings)
+            if removed:
+                logger.info("Expired upload records purged", extra={"count": removed})
+        except Exception:
+            logger.error("Retention cleanup failed")
+        try:
+            await asyncio.wait_for(
+                stop_event.wait(), timeout=settings.retention_cleanup_interval_seconds
+            )
+        except TimeoutError:
+            continue
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -24,7 +74,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     runtime_settings = settings or get_settings()
     configure_logging(runtime_settings.log_level)
-    app = FastAPI(title=runtime_settings.app_name, version="0.1.0")
+    app = FastAPI(title=runtime_settings.app_name, version="0.1.0", lifespan=_lifespan)
+    app.state.settings = runtime_settings
 
     app.add_middleware(RequestContextMiddleware)
     app.add_middleware(

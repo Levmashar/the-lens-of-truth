@@ -34,6 +34,24 @@ class LensError(Exception):
         super().__init__(message)
 
 
+class UploadValidationError(LensError):
+    """A screenshot failed server-side safety validation."""
+
+    def __init__(
+        self, *, code: str, message: str, status_code: int = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    ) -> None:
+        super().__init__(status_code=status_code, code=code, message=message)
+
+
+class ExternalCapabilityError(LensError):
+    """A required configured adapter is unavailable or returned unusable output."""
+
+    def __init__(
+        self, *, code: str, message: str, status_code: int = status.HTTP_503_SERVICE_UNAVAILABLE
+    ) -> None:
+        super().__init__(status_code=status_code, code=code, message=message)
+
+
 def _request_id(request: Request) -> str:
     return str(getattr(request.state, "request_id", "unknown"))
 

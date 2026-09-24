@@ -12,9 +12,9 @@
 
 ## Phase 2: Claim extraction
 
-- [ ] Secure text/screenshot ingestion and retention enforcement
-- [ ] OCR adapter with PII redaction and confidence metadata
-- [ ] Atomic claim extraction with source offsets and ambiguity handling
+- [x] Secure text/screenshot ingestion and 24-hour retention enforcement
+- [x] OCR adapter with PII redaction and confidence metadata
+- [x] Atomic claim extraction with source offsets and ambiguity handling
 - [ ] UMLS/MeSH linking and PICO normalization
 
 ## Phase 3: Evidence retrieval

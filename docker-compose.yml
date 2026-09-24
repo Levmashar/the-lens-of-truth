@@ -34,6 +34,7 @@ services:
       DATABASE_URL: postgresql+psycopg://lens:lens@postgres:5432/lens
       REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: http://localhost:5173
+      UPLOAD_STORAGE_PATH: /app/runtime/uploads
     ports:
       - "8000:8000"
     depends_on:
@@ -41,6 +42,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      - upload_data:/app/runtime/uploads
 
   frontend:
     build:
@@ -57,3 +60,4 @@ services:
 
 volumes:
   postgres_data:
+  upload_data:

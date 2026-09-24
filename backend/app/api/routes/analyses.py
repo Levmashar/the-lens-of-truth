@@ -1,48 +1,202 @@
-"""Mock analysis endpoints that establish the Phase 1 API contract."""
+"""Phase 2 analysis routes: ingestion, OCR, and atomic claims only."""
 
 import json
 from collections.abc import AsyncIterator
-from typing import Annotated
-from uuid import UUID, uuid4
+from typing import Annotated, Literal
+from uuid import UUID
 
-from fastapi import APIRouter, Header, status
+from fastapi import APIRouter, Depends, File, Header, UploadFile, status
 from fastapi.responses import StreamingResponse
+from sqlalchemy.orm import Session
 
-from app.schemas.analysis import AnalysisAccepted, AnalysisDetail, CreateAnalysisRequest
+from app.core.config import Settings, get_runtime_settings
+from app.core.errors import LensError
+from app.db.session import get_db_session
+from app.dependencies import get_analysis_ingestion_service
+from app.models.screenshot_upload import ScreenshotUpload
+from app.models.submission import Submission
+from app.schemas.analysis import (
+    AnalysisAccepted,
+    AnalysisClaim,
+    AnalysisDetail,
+    CreateAnalysisRequest,
+    OcrPreviewLine,
+    OcrPreviewResponse,
+    ScreenshotOcrMetadata,
+    ScreenshotUploadAccepted,
+)
+from app.services.analysis_ingestion import AnalysisIngestionService
+from app.services.image_ingestion import ScreenshotSanitizer
 
 router = APIRouter()
 
 
-@router.post("", response_model=AnalysisAccepted, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/uploads/screenshots",
+    response_model=ScreenshotUploadAccepted,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_screenshot_upload(
+    screenshot: Annotated[UploadFile, File(description="PNG, JPEG, or WebP screenshot")],
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+) -> ScreenshotUploadAccepted:
+    """Accept one sanitized screenshot before it is referenced by an analysis."""
+
+    sanitizer = ScreenshotSanitizer(
+        max_bytes=service.upload_max_bytes,
+        max_pixels=service.upload_max_pixels,
+    )
+    image = await sanitizer.sanitize_upload(screenshot)
+    upload = await service.create_screenshot_upload(session=session, image=image)
+    return _upload_response(upload)
+
+
+@router.post(
+    "/uploads/screenshots/{upload_id}/ocr-preview",
+    response_model=OcrPreviewResponse,
+)
+async def preview_screenshot_ocr(
+    upload_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> OcrPreviewResponse:
+    """Expose redacted OCR diagnostics only in development/test environments."""
+
+    if settings.app_env not in {"development", "test"}:
+        raise LensError(
+            status_code=404,
+            code="ocr_preview_not_available",
+            message="OCR preview is not available in this environment.",
+        )
+    preview = await service.preview_screenshot_ocr(session=session, upload_id=upload_id)
+    return OcrPreviewResponse(
+        upload_id=preview.upload_id,
+        provider=preview.provider,
+        language_used=preview.language_used,
+        confidence=preview.confidence,
+        redacted_text=preview.redacted_text,
+        pii_redaction_count=preview.pii_redaction_count,
+        lines=[
+            OcrPreviewLine(
+                text=line.text,
+                confidence=line.confidence,
+                left=line.left,
+                top=line.top,
+                width=line.width,
+                height=line.height,
+            )
+            for line in preview.lines
+        ],
+    )
+
+
+@router.post("", response_model=AnalysisAccepted, status_code=status.HTTP_201_CREATED)
 async def create_analysis(
-    _request: CreateAnalysisRequest,
+    request: CreateAnalysisRequest,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
     _idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
 ) -> AnalysisAccepted:
-    """Accept an analysis request without starting the future medical pipeline."""
+    """Run only ingestion, OCR when needed, redaction, and claim extraction."""
 
-    return AnalysisAccepted(analysis_id=uuid4(), status="processing")
+    submission = await service.create_analysis(session=session, request=request)
+    return AnalysisAccepted(
+        analysis_id=submission.id,
+        status="claims_extracted",
+        claim_count=len(submission.claims),
+    )
 
 
 @router.get("/{analysis_id}", response_model=AnalysisDetail)
-async def get_analysis(analysis_id: UUID) -> AnalysisDetail:
-    """Return the explicit mock state until persistence/orchestration exists."""
+async def get_analysis(
+    analysis_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+) -> AnalysisDetail:
+    """Return persisted redacted claims and safe OCR metadata for one analysis."""
 
-    return AnalysisDetail.processing(analysis_id)
+    return _analysis_detail(service.get_submission(session=session, analysis_id=analysis_id))
 
 
-async def _mock_events(analysis_id: UUID) -> AsyncIterator[str]:
-    stages = (
-        {"stage": "accepted", "progress": 0.0, "mock": True},
-        {"stage": "awaiting_pipeline", "progress": 0.0, "mock": True},
-    )
+async def _analysis_events(submission: Submission) -> AsyncIterator[str]:
+    """Emit completed Phase 2 stages, never simulated pipeline progress."""
+
+    stages = [{"stage": "ingested", "progress": 0.25}]
+    if submission.input_type.value == "screenshot":
+        stages.extend(
+            [
+                {"stage": "ocr_complete", "progress": 0.55},
+                {"stage": "pii_redaction_complete", "progress": 0.7},
+            ]
+        )
+    else:
+        stages.append({"stage": "pii_redaction_complete", "progress": 0.55})
+    stages.append({"stage": "claims_extracted", "progress": 1.0})
     for event in stages:
         yield f"event: stage\ndata: {json.dumps(event)}\n\n"
-    completed = {"analysis_id": str(analysis_id), "mock": True}
-    yield f"event: completed\ndata: {json.dumps(completed)}\n\n"
+    yield f"event: completed\ndata: {json.dumps({'analysis_id': str(submission.id)})}\n\n"
 
 
 @router.get("/{analysis_id}/events")
-async def get_analysis_events(analysis_id: UUID) -> StreamingResponse:
-    """Expose a valid SSE contract with clearly marked mock events."""
+async def get_analysis_events(
+    analysis_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+) -> StreamingResponse:
+    """Expose a server-sent snapshot of the completed Phase 2 stages."""
 
-    return StreamingResponse(_mock_events(analysis_id), media_type="text/event-stream")
+    submission = service.get_submission(session=session, analysis_id=analysis_id)
+    return StreamingResponse(_analysis_events(submission), media_type="text/event-stream")
+
+
+def _upload_response(upload: ScreenshotUpload) -> ScreenshotUploadAccepted:
+    return ScreenshotUploadAccepted(
+        upload_id=upload.id,
+        status="uploaded",
+        media_type="image/png",
+        byte_count=upload.byte_count,
+        width=upload.width,
+        height=upload.height,
+        purge_after=upload.purge_after,
+    )
+
+
+def _analysis_detail(submission: Submission) -> AnalysisDetail:
+    screenshot_ocr = None
+    if submission.screenshot_upload is not None:
+        upload = submission.screenshot_upload
+        screenshot_ocr = ScreenshotOcrMetadata(
+            provider=upload.ocr_provider or "unknown",
+            confidence=upload.ocr_confidence,
+            pii_redaction_count=upload.pii_redaction_count or 0,
+        )
+    input_type: Literal["text", "screenshot"] = (
+        "screenshot" if submission.input_type.value == "screenshot" else "text"
+    )
+    return AnalysisDetail(
+        analysis_id=submission.id,
+        status="claims_extracted",
+        language=submission.language,
+        input_type=input_type,
+        claims=[
+            AnalysisClaim(
+                claim_id=claim.id,
+                ordinal=claim.ordinal,
+                span_start=claim.span_start,
+                span_end=claim.span_end,
+                raw_text=claim.raw_text,
+                normalized_text=claim.normalized_text,
+                claim_type=claim.claim_type,
+                risk_class=claim.risk_class,
+                verifiability=claim.verifiability,
+                coreference_uncertain=claim.coreference_uncertain,
+                resolved_from_span_start=claim.resolved_from_span_start,
+                resolved_from_span_end=claim.resolved_from_span_end,
+            )
+            for claim in sorted(submission.claims, key=lambda value: value.ordinal)
+        ],
+        screenshot_ocr=screenshot_ocr,
+        updated_at=submission.updated_at,
+    )
