@@ -20,7 +20,10 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     """Add non-secret metadata that identifies a real extraction run."""
 
-    op.add_column("submission", sa.Column("extraction_provider", sa.String(length=64), nullable=True))
+    op.add_column(
+        "submission",
+        sa.Column("extraction_provider", sa.String(length=64), nullable=True),
+    )
     op.add_column("submission", sa.Column("extraction_model", sa.String(length=128), nullable=True))
     op.add_column(
         "submission", sa.Column("extraction_prompt_version", sa.String(length=64), nullable=True)

@@ -3,8 +3,9 @@
 ## Implemented boundary
 
 The repository implements the foundation plus secure text/screenshot
-ingestion, bounded local OCR, PII masking, and atomic claim extraction. It
-does not retrieve evidence, invoke judges, or make a medical judgment.
+ingestion, bounded local OCR, PII masking, atomic claim extraction, and nullable
+PICO framing. It does not retrieve evidence, invoke judges, or make a medical
+judgment.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -51,9 +52,17 @@ Phase 2 adapters are concrete but replaceable: `TesseractOcrAdapter` starts a
 bounded local process with no shell interpolation, `LocalFilesystemUploadStorage`
 stores only sanitized images for development/container use, and
 `OpenAICompatibleClaimExtractor` calls a configured structured-output endpoint.
+`MiriClaimExtractor` calls the gateway documented in `../ai api.md` using
+`chatgpt-auto` by default. The gateway drives browser UIs and does not promise
+strict JSON schema enforcement, so the adapter parses its text response as JSON
+and the backend validates every source span locally.
 The extractor receives redacted text between untrusted-data delimiters. Its
 candidate spans are checked locally against the exact redacted source before
 persistence. When no approved extractor is configured, the API fails closed.
+The current model-produced PICO slots may be null and must be treated as query
+framing candidates until entity and evidence validation are implemented. The
+gateway's ChatGPT model picker is best-effort, so its requested mode is logged
+without claiming an exact underlying model version.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

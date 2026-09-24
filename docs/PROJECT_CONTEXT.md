@@ -72,16 +72,19 @@ Phase 1 foundation and the scoped Phase 2 intake path are implemented:
   output for diagnostics; it is unavailable in staging and production.
 - Position-preserving structured-PII masking before extraction and persisted
   redacted atomic claim spans.
-- An OpenAI-compatible, schema-constrained claim-extraction adapter. It is
-  disabled by default and fails closed until an approved endpoint, pinned model
-  ID, and secret are configured; no heuristic or mock claims are substituted.
+- A `miri-api` claim-extraction adapter that requests ChatGPT Auto, validates
+  returned JSON and source offsets locally, and fails closed if the configured
+  gateway is unavailable. The generic structured-output adapter remains
+  available for approved providers.
+- Nullable PICO fields are extracted with each claim and redacted before
+  persistence. They describe the submitted claim, not supporting evidence.
 - A web flow to submit text or screenshots and review extracted claims.
 - Docker Compose services for API, web, PostgreSQL/pgvector, and Redis.
 - GitHub Actions checks for API tests/static analysis and frontend type/build validation.
 
-UMLS/MeSH linking, PICO normalization, retrieval, evidence packs, independent
-judging, citation validation, and verdicts are not implemented. Phase 2 claim
-extraction is not medical analysis and must not be presented as a verdict.
+Verified UMLS/MeSH linking, retrieval, evidence packs, independent judging,
+citation validation, and verdicts are not implemented. Phase 2 claim framing
+is not medical analysis and must not be presented as a verdict.
 
 ## Rules for future developers
 

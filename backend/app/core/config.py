@@ -12,8 +12,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Runtime settings for the API process.
 
-    Secrets are intentionally absent from this foundation. Future provider keys
-    are supplied only through environment variables or a secret manager.
+    Provider credentials are supplied only through environment variables or a
+    secret manager, never source code.
     """
 
     model_config = SettingsConfigDict(
@@ -51,8 +51,8 @@ class Settings(BaseSettings):
     )
     ocr_timeout_seconds: float = Field(default=20.0, gt=0, validation_alias="OCR_TIMEOUT_SECONDS")
     ocr_executable: str = Field(default="tesseract", validation_alias="OCR_EXECUTABLE")
-    claim_extractor_provider: Literal["disabled", "openai_compatible"] = Field(
-        default="disabled", validation_alias="CLAIM_EXTRACTOR_PROVIDER"
+    claim_extractor_provider: Literal["disabled", "openai_compatible", "miri"] = Field(
+        default="miri", validation_alias="CLAIM_EXTRACTOR_PROVIDER"
     )
     claim_extractor_base_url: str | None = Field(
         default=None, validation_alias="CLAIM_EXTRACTOR_BASE_URL"
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
         default=None, validation_alias="CLAIM_EXTRACTOR_API_KEY"
     )
     claim_extractor_timeout_seconds: float = Field(
-        default=20.0, gt=0, validation_alias="CLAIM_EXTRACTOR_TIMEOUT_SECONDS"
+        default=180.0, gt=0, validation_alias="CLAIM_EXTRACTOR_TIMEOUT_SECONDS"
     )
     claim_extractor_max_claims: int = Field(
         default=20, ge=1, le=50, validation_alias="CLAIM_EXTRACTOR_MAX_CLAIMS"

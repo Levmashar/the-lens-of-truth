@@ -29,6 +29,11 @@ export type AnalysisClaim = {
   raw_text: string;
   normalized_text: string | null;
   claim_type: string | null;
+  population: string | null;
+  intervention_or_exposure: string | null;
+  comparator: string | null;
+  outcome: string | null;
+  timeframe: string | null;
   risk_class: string;
   verifiability: number | null;
   coreference_uncertain: boolean;

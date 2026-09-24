@@ -33,6 +33,34 @@ per-line confidence, aggregate confidence, and the number of structured-PII
 redactions. The preview output is ephemeral and is never written to PostgreSQL.
 It is intentionally unavailable in staging and production.
 
+## `POST /v1/analyses/claim-preview`
+
+Available only when `APP_ENV` is `development` or `test`. Accepts the same
+request body as `POST /v1/analyses` and performs OCR when given a screenshot
+upload ID. It returns the configured AI extractor's redacted atomic claims,
+PICO fields, model metadata, and screenshot OCR metadata without creating a
+submission or claim row in PostgreSQL.
+
+This is the quickest way to test a configured gateway:
+
+```powershell
+$body = @{
+  schema_version = "1.0"
+  client = "web"
+  lang = "auto"
+  input = @{ type = "text"; text = "Vitamin C prevents common colds." }
+  consent = @{ privacy_notice_version = "2026-09-01"; accepted = $true }
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod -Method Post `
+  -Uri "http://localhost:8000/v1/analyses/claim-preview" `
+  -ContentType "application/json" `
+  -Body $body | ConvertTo-Json -Depth 8
+```
+
+The response is ephemeral. It does not expose the gateway's raw response or
+unredacted source text.
+
 ## `POST /v1/analyses`
 
 Creates a completed Phase 2 extraction. The `Idempotency-Key` header remains
@@ -72,16 +100,21 @@ Successful extraction returns HTTP `201`:
 }
 ```
 
-Extraction requires an approved configured structured-output adapter. When it
-is disabled or unavailable, the endpoint returns `503` with
-`claim_extractor_unavailable`; it never substitutes fake claims. URL input is
-reserved for Phase 3 and returns `501`.
+Extraction requires a configured adapter. The `miri` adapter calls the
+gateway's ChatGPT Auto chat completion and validates its JSON reply and source
+offsets locally. When disabled or unavailable, the endpoint returns `503` with
+`claim_extractor_unavailable`; malformed replies return `502` with
+`claim_extractor_invalid_response`. URL input is reserved for Phase 3 and
+returns `501`.
 
 ## `GET /v1/analyses/{analysis_id}`
 
 Returns redacted atomic claims and safe OCR metadata. `raw_text` and its
 offsets refer to the redacted source representation, preserving positions while
 not exposing structured identifiers. There is no verdict field.
+Each claim also includes nullable `population`, `intervention_or_exposure`,
+`comparator`, `outcome`, and `timeframe` fields for PICO framing. Null means the
+source did not supply that detail; these model-produced fields are not evidence.
 
 ## `GET /v1/analyses/{analysis_id}/events`
 

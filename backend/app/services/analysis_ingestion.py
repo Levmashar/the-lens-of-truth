@@ -3,6 +3,7 @@
 import hashlib
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import Literal
 from uuid import UUID, uuid4
 
 from sqlalchemy import select
@@ -49,6 +50,38 @@ class OcrPreview:
     redacted_text: str
     pii_redaction_count: int
     lines: tuple[OcrPreviewLine, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ClaimPreviewItem:
+    """One transient, redacted claim-extraction result."""
+
+    ordinal: int
+    span_start: int
+    span_end: int
+    raw_text: str
+    normalized_text: str | None
+    claim_type: str | None
+    population: str | None
+    intervention_or_exposure: str | None
+    comparator: str | None
+    outcome: str | None
+    timeframe: str | None
+    risk_class: str
+    verifiability: float | None
+    coreference_uncertain: bool
+
+
+@dataclass(frozen=True, slots=True)
+class ClaimExtractionPreview:
+    """Ephemeral extraction output for development diagnostics."""
+
+    input_type: Literal["text", "screenshot"]
+    extractor_provider: str
+    extractor_model: str | None
+    pii_redaction_count: int
+    claims: tuple[ClaimPreviewItem, ...]
+    screenshot_ocr: tuple[str, float | None] | None
 
 
 class AnalysisIngestionService:
@@ -169,6 +202,57 @@ class AnalysisIngestionService:
             ),
         )
 
+    async def preview_claim_extraction(
+        self, *, session: Session, request: CreateAnalysisRequest
+    ) -> ClaimExtractionPreview:
+        """Extract transient redacted claims without creating a submission record."""
+
+        await self.purge_expired(session=session)
+        if request.input.type == "text":
+            assert request.input.text is not None
+            redaction = self._redactor.redact(request.input.text)
+            payload = await self._extractor.extract(text=redaction.text, language=request.language)
+            return self._claim_preview(
+                input_type="text",
+                payload=payload,
+                redacted_text=redaction.text,
+                pii_redaction_count=len(redaction.matches),
+                screenshot_ocr=None,
+            )
+        if request.input.type == "screenshot":
+            assert request.input.upload_id is not None
+            upload = session.get(ScreenshotUpload, request.input.upload_id)
+            if upload is None or upload.purge_after <= datetime.now(UTC):
+                raise LensError(
+                    status_code=404,
+                    code="screenshot_upload_not_found",
+                    message="Screenshot upload was not found or has expired.",
+                )
+            ocr_result = await self._ocr.recognize(
+                image=await self._storage.get(object_key=upload.object_key),
+                language_hint=request.language,
+            )
+            if not ocr_result.text.strip():
+                raise LensError(
+                    status_code=422,
+                    code="screenshot_text_not_found",
+                    message="No readable text was found in the screenshot.",
+                )
+            redaction = self._redactor.redact(ocr_result.text)
+            payload = await self._extractor.extract(text=redaction.text, language=request.language)
+            return self._claim_preview(
+                input_type="screenshot",
+                payload=payload,
+                redacted_text=redaction.text,
+                pii_redaction_count=len(redaction.matches),
+                screenshot_ocr=(self._ocr.service_name, ocr_result.confidence),
+            )
+        raise LensError(
+            status_code=501,
+            code="input_type_not_implemented",
+            message="URL analysis is not implemented in Phase 2.",
+        )
+
     async def purge_expired(self, *, session: Session) -> int:
         """Delete expired raw assets and their short-lived analysis records."""
 
@@ -277,9 +361,13 @@ class AnalysisIngestionService:
             extraction_prompt_version=CLAIM_EXTRACTION_PROMPT_VERSION,
             purge_after=datetime.now(UTC) + timedelta(hours=self._retention_hours),
         )
+        def safe_pico(value: str | None) -> str | None:
+            return self._redactor.redact(value).text if value else None
+
         for ordinal, candidate in enumerate(verified_candidates, start=1):
             normalized = candidate.normalized_claim
             safe_normalized = self._redactor.redact(normalized).text if normalized else None
+            pico = candidate.pico
             submission.claims.append(
                 Claim(
                     ordinal=ordinal,
@@ -288,6 +376,13 @@ class AnalysisIngestionService:
                     raw_text=redacted_text[candidate.span_start : candidate.span_end],
                     normalized_text=safe_normalized,
                     claim_type=candidate.claim_type,
+                    population=safe_pico(pico.population) if pico else None,
+                    intervention_or_exposure=(
+                        safe_pico(pico.intervention_or_exposure) if pico else None
+                    ),
+                    comparator=safe_pico(pico.comparator) if pico else None,
+                    outcome=safe_pico(pico.outcome) if pico else None,
+                    timeframe=safe_pico(pico.timeframe) if pico else None,
                     risk_class=candidate.risk_class,
                     verifiability=candidate.verifiability,
                     coreference_uncertain=candidate.coreference_uncertain,
@@ -301,6 +396,55 @@ class AnalysisIngestionService:
         session.commit()
         session.refresh(submission)
         return submission
+
+    def _claim_preview(
+        self,
+        *,
+        input_type: Literal["text", "screenshot"],
+        payload: ClaimExtractionPayload,
+        redacted_text: str,
+        pii_redaction_count: int,
+        screenshot_ocr: tuple[str, float | None] | None,
+    ) -> ClaimExtractionPreview:
+        """Build response-safe preview fields from locally verified model output."""
+
+        candidates = validate_claim_candidates(
+            payload=payload,
+            source_text=redacted_text,
+            maximum_claims=self._maximum_claims,
+        )
+
+        def redact(value: str | None) -> str | None:
+            return self._redactor.redact(value).text if value else None
+
+        return ClaimExtractionPreview(
+            input_type=input_type,
+            extractor_provider=self._extractor.service_name,
+            extractor_model=self._extractor.model_id,
+            pii_redaction_count=pii_redaction_count,
+            claims=tuple(
+                ClaimPreviewItem(
+                    ordinal=ordinal,
+                    span_start=candidate.span_start,
+                    span_end=candidate.span_end,
+                    raw_text=redacted_text[candidate.span_start : candidate.span_end],
+                    normalized_text=redact(candidate.normalized_claim),
+                    claim_type=candidate.claim_type,
+                    population=redact(candidate.pico.population) if candidate.pico else None,
+                    intervention_or_exposure=(
+                        redact(candidate.pico.intervention_or_exposure) if candidate.pico else None
+                    ),
+                    comparator=redact(candidate.pico.comparator) if candidate.pico else None,
+                    outcome=redact(candidate.pico.outcome) if candidate.pico else None,
+                    timeframe=redact(candidate.pico.timeframe) if candidate.pico else None,
+                    risk_class=candidate.risk_class,
+                    verifiability=candidate.verifiability,
+                    coreference_uncertain=candidate.coreference_uncertain,
+                )
+                for ordinal, candidate in enumerate(candidates, start=1)
+            ),
+            screenshot_ocr=screenshot_ocr,
+        )
 
 
 def _sha256(value: str) -> str:

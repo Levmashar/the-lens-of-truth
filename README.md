@@ -8,9 +8,9 @@ not a generic chatbot or a binary truth classifier.
 
 The implementation securely ingests text and screenshots, re-encodes accepted
 images before short-lived private storage, runs local OCR, masks structured
-PII, and calls an approved configured adapter for atomic claim extraction.
-Retrieval, entity linking/PICO, model judging, and verdict logic are not
-implemented here.
+PII, and calls a configured adapter for atomic claim and PICO extraction.
+Terminology linking, evidence retrieval, model judging, and verdict logic are
+not implemented here.
 
 ## Quick start
 
@@ -29,17 +29,29 @@ Apply the initial schema after the containers are running:
 docker compose exec backend alembic upgrade head
 ```
 
-Screenshot OCR is included in the backend image. Semantic claim extraction is
-disabled by default so the system cannot fabricate claims. To enable it, set
-the following values in your untracked `.env` for an approved OpenAI-compatible
-provider or self-hosted vLLM endpoint, then rebuild the backend:
+Screenshot OCR is included in the backend image. To use the `miri-api` gateway
+described in `../ai api.md`, set its address in your untracked `.env`, then
+recreate the backend. The URL must include `/v1`; put the gateway token in the
+path or set `CLAIM_EXTRACTOR_API_KEY` for Bearer authentication:
 
 ```dotenv
-CLAIM_EXTRACTOR_PROVIDER=openai_compatible
-CLAIM_EXTRACTOR_BASE_URL=https://approved-provider.example/v1
-CLAIM_EXTRACTOR_MODEL=pinned-model-id
-CLAIM_EXTRACTOR_API_KEY=replace-with-secret
+CLAIM_EXTRACTOR_BASE_URL=http://host.docker.internal:8001/<gateway-token>/v1
 ```
+
+The backend defaults to the `miri` adapter and `chatgpt-auto`, with a 180-second
+timeout. It remains unavailable until you supply the address. You may instead
+set `CLAIM_EXTRACTOR_API_KEY` and use a `/v1` address without a token in its
+path.
+
+In development, `POST /v1/analyses/claim-preview` returns transient redacted
+claim and PICO extraction output without storing an analysis. A ready-to-run
+PowerShell example is in [docs/API_SPEC.md](docs/API_SPEC.md).
+
+`host.docker.internal` is for a gateway running on the Windows host. If it
+runs on another machine, use that machine's reachable address. Miri's model
+picker is best-effort, so the recorded model is the requested `chatgpt-auto`
+mode, not proof of the exact ChatGPT model that answered. Without a reachable
+gateway, extraction returns an availability error.
 
 Raw screenshots and associated Phase 2 records are purged within 24 hours.
 Local filesystem upload storage is suitable only for Docker/local development;

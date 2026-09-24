@@ -46,6 +46,9 @@ class FakeAnalysisIngestionService:
                 raw_text="A public health claim.",
                 normalized_text="A public health claim.",
                 claim_type="association",
+                population="adults",
+                intervention_or_exposure="sunscreen use",
+                outcome="melanoma incidence",
                 risk_class="standard",
                 verifiability=0.8,
                 coreference_uncertain=False,
@@ -139,6 +142,8 @@ def test_get_analysis_returns_redacted_claim_contract(phase_two_client: TestClie
     assert response.status_code == 200
     assert response.json()["analysis_id"] == str(analysis_id)
     assert response.json()["claims"][0]["span_start"] == 0
+    assert response.json()["claims"][0]["population"] == "adults"
+    assert response.json()["claims"][0]["outcome"] == "melanoma incidence"
     assert "is_mock" not in response.json()
 
 

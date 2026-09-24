@@ -15,7 +15,8 @@
 - [x] Secure text/screenshot ingestion and 24-hour retention enforcement
 - [x] OCR adapter with PII redaction and confidence metadata
 - [x] Atomic claim extraction with source offsets and ambiguity handling
-- [ ] UMLS/MeSH linking and PICO normalization
+- [x] Extract nullable PICO framing with atomic claims
+- [ ] Verified UMLS/MeSH linking (requires an authorized vocabulary source)
 
 ## Phase 3: Evidence retrieval
 

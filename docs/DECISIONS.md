@@ -60,3 +60,18 @@ and their short-lived analyses after 24 hours.
 **Reason:** client-declared MIME types and image metadata are not trustworthy.
 Short retention and position-preserving PII masking minimize exposure while
 preserving source offsets required for claim auditing.
+
+## ADR-008 — Use miri-api for ChatGPT Auto claim framing
+
+**Decision:** default to `miri` while requiring a configured gateway address,
+send only redacted content to the gateway's OpenAI-shaped chat completion,
+request `chatgpt-auto`,
+and validate its JSON and source offsets in the backend. Capture nullable PICO
+fields from the same extraction response. The gateway address and optional
+Bearer token remain in the local environment.
+
+**Reason:** the supplied gateway documentation identifies `chatgpt-auto` as
+the ChatGPT Auto picker mode. Its browser-backed responses do not guarantee
+schema-constrained JSON or an exact underlying model version. Fail closed on
+invalid responses, and do not assign UMLS/MeSH IDs without a verified
+vocabulary source.

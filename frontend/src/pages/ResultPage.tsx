@@ -72,6 +72,23 @@ export function ResultPage({ analysisId }: ResultPageProps): React.JSX.Element {
                     <dd>{claim.coreference_uncertain ? "Uncertain" : "Clear"}</dd>
                   </div>
                 </dl>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <p className="text-sm font-semibold text-slate-800">PICO framing for evidence search</p>
+                  <dl className="mt-3 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                    {([
+                      ["Population", claim.population],
+                      ["Intervention or exposure", claim.intervention_or_exposure],
+                      ["Comparator", claim.comparator],
+                      ["Outcome", claim.outcome],
+                      ["Timeframe", claim.timeframe],
+                    ] as const).map(([label, value]) => (
+                      <div key={label}>
+                        <dt className="font-semibold text-slate-800">{label}</dt>
+                        <dd>{value ?? "Not stated"}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
               </article>
             ))
           )}

@@ -19,6 +19,8 @@ from app.schemas.analysis import (
     AnalysisAccepted,
     AnalysisClaim,
     AnalysisDetail,
+    ClaimExtractionPreviewResponse,
+    ClaimPreviewItem,
     CreateAnalysisRequest,
     OcrPreviewLine,
     OcrPreviewResponse,
@@ -89,6 +91,58 @@ async def preview_screenshot_ocr(
             )
             for line in preview.lines
         ],
+    )
+
+
+@router.post("/claim-preview", response_model=ClaimExtractionPreviewResponse)
+async def preview_claim_extraction(
+    request: CreateAnalysisRequest,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> ClaimExtractionPreviewResponse:
+    """Return redacted AI extraction output only in development and test environments."""
+
+    if settings.app_env not in {"development", "test"}:
+        raise LensError(
+            status_code=404,
+            code="claim_preview_not_available",
+            message="Claim extraction preview is not available in this environment.",
+        )
+    preview = await service.preview_claim_extraction(session=session, request=request)
+    screenshot_ocr = None
+    if preview.screenshot_ocr is not None:
+        provider, confidence = preview.screenshot_ocr
+        screenshot_ocr = ScreenshotOcrMetadata(
+            provider=provider,
+            confidence=confidence,
+            pii_redaction_count=preview.pii_redaction_count,
+        )
+    return ClaimExtractionPreviewResponse(
+        input_type=preview.input_type,
+        extractor_provider=preview.extractor_provider,
+        extractor_model=preview.extractor_model,
+        pii_redaction_count=preview.pii_redaction_count,
+        claims=[
+            ClaimPreviewItem(
+                ordinal=claim.ordinal,
+                span_start=claim.span_start,
+                span_end=claim.span_end,
+                raw_text=claim.raw_text,
+                normalized_text=claim.normalized_text,
+                claim_type=claim.claim_type,
+                population=claim.population,
+                intervention_or_exposure=claim.intervention_or_exposure,
+                comparator=claim.comparator,
+                outcome=claim.outcome,
+                timeframe=claim.timeframe,
+                risk_class=claim.risk_class,
+                verifiability=claim.verifiability,
+                coreference_uncertain=claim.coreference_uncertain,
+            )
+            for claim in preview.claims
+        ],
+        screenshot_ocr=screenshot_ocr,
     )
 
 
@@ -189,6 +243,11 @@ def _analysis_detail(submission: Submission) -> AnalysisDetail:
                 raw_text=claim.raw_text,
                 normalized_text=claim.normalized_text,
                 claim_type=claim.claim_type,
+                population=claim.population,
+                intervention_or_exposure=claim.intervention_or_exposure,
+                comparator=claim.comparator,
+                outcome=claim.outcome,
+                timeframe=claim.timeframe,
                 risk_class=claim.risk_class,
                 verifiability=claim.verifiability,
                 coreference_uncertain=claim.coreference_uncertain,

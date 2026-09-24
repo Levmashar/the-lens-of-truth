@@ -7,6 +7,7 @@ from fastapi import Depends
 from app.adapters.claim_extractor import (
     ClaimExtractorAdapter,
     DisabledClaimExtractor,
+    MiriClaimExtractor,
     OpenAICompatibleClaimExtractor,
 )
 from app.adapters.ocr import TesseractOcrAdapter
@@ -43,6 +44,16 @@ def get_claim_extractor(
     if settings.claim_extractor_provider == "disabled":
         return DisabledClaimExtractor()
     api_key = settings.claim_extractor_api_key
+    if settings.claim_extractor_provider == "miri":
+        if not settings.claim_extractor_base_url:
+            return DisabledClaimExtractor()
+        return MiriClaimExtractor(
+            service_name="miri_chatgpt_claim_extractor",
+            timeout_seconds=settings.claim_extractor_timeout_seconds,
+            base_url=settings.claim_extractor_base_url,
+            model=settings.claim_extractor_model or "chatgpt-auto",
+            api_key=api_key.get_secret_value() if api_key else None,
+        )
     if not (
         settings.claim_extractor_base_url
         and settings.claim_extractor_model

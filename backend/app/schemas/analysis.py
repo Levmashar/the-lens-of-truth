@@ -86,6 +86,44 @@ class OcrPreviewResponse(BaseModel):
     lines: list[OcrPreviewLine]
 
 
+class ScreenshotOcrMetadata(BaseModel):
+    """Safe OCR metadata; recognized text itself is not returned here."""
+
+    provider: str
+    confidence: float | None
+    pii_redaction_count: int
+
+
+class ClaimPreviewItem(BaseModel):
+    """One transient redacted extraction result, without a persisted claim ID."""
+
+    ordinal: int
+    span_start: int
+    span_end: int
+    raw_text: str
+    normalized_text: str | None = None
+    claim_type: str | None = None
+    population: str | None = None
+    intervention_or_exposure: str | None = None
+    comparator: str | None = None
+    outcome: str | None = None
+    timeframe: str | None = None
+    risk_class: str
+    verifiability: float | None = None
+    coreference_uncertain: bool
+
+
+class ClaimExtractionPreviewResponse(BaseModel):
+    """Development-only extraction output; it does not create database records."""
+
+    input_type: Literal["text", "screenshot"]
+    extractor_provider: str
+    extractor_model: str | None
+    pii_redaction_count: int
+    claims: list[ClaimPreviewItem]
+    screenshot_ocr: ScreenshotOcrMetadata | None = None
+
+
 class AnalysisAccepted(BaseModel):
     """A completed Phase 2 extraction, not a medical-evidence result."""
 
@@ -104,19 +142,16 @@ class AnalysisClaim(BaseModel):
     raw_text: str
     normalized_text: str | None = None
     claim_type: str | None = None
+    population: str | None = None
+    intervention_or_exposure: str | None = None
+    comparator: str | None = None
+    outcome: str | None = None
+    timeframe: str | None = None
     risk_class: str
     verifiability: float | None = None
     coreference_uncertain: bool
     resolved_from_span_start: int | None = None
     resolved_from_span_end: int | None = None
-
-
-class ScreenshotOcrMetadata(BaseModel):
-    """Safe OCR metadata; recognized text itself is not returned here."""
-
-    provider: str
-    confidence: float | None
-    pii_redaction_count: int
 
 
 class AnalysisDetail(BaseModel):

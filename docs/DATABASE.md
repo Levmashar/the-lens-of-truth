@@ -2,7 +2,8 @@
 
 PostgreSQL is the durable record. Alembic enables the `vector` extension,
 creates the Phase 1 foundation, and adds Phase 2 short-lived upload metadata
-and coreference provenance.
+and coreference provenance. Existing nullable claim PICO columns are now
+populated when the extractor supplies source-grounded fields.
 
 | Model | Responsibility |
 |---|---|
