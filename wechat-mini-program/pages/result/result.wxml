@@ -1,0 +1,4 @@
+<view class="page">
+  <text class="title">No medical verdict yet</text>
+  <text class="body">This Phase 1 placeholder never fabricates a claim, citation, or health conclusion.</text>
+</view>

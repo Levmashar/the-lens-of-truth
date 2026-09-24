@@ -1,0 +1,38 @@
+Metadata-Version: 2.4
+Name: the-lens-of-truth-api
+Version: 0.1.0
+Summary: API foundation for evidence-based medical claim verification.
+Requires-Python: <3.14,>=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: alembic<2,>=1.14
+Requires-Dist: fastapi<1,>=0.115
+Requires-Dist: httpx<1,>=0.28
+Requires-Dist: pgvector<1,>=0.3
+Requires-Dist: psycopg[binary]<4,>=3.2
+Requires-Dist: pydantic-settings<3,>=2.6
+Requires-Dist: sqlalchemy<3,>=2.0.36
+Requires-Dist: uvicorn[standard]<1,>=0.32
+Provides-Extra: dev
+Requires-Dist: mypy<2,>=1.13; extra == "dev"
+Requires-Dist: pytest<9,>=8.3; extra == "dev"
+Requires-Dist: ruff<1,>=0.8; extra == "dev"
+
+# Backend
+
+The FastAPI service currently provides the Phase 1 health check and analysis
+contract. Analysis responses are explicitly mock lifecycle objects; this
+package does not perform OCR, retrieval, AI evaluation, or medical verdicts.
+
+## Local development
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+uvicorn app.main:app --reload --port 8000
+pytest
+```
+
+Use PostgreSQL with pgvector before running migrations. Environment variables
+are documented in the repository-level `.env.example`.

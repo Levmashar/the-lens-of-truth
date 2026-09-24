@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/processing/processing",
+    "pages/result/result"
+  ],
+  "window": {
+    "navigationBarTitleText": "The Lens of Truth",
+    "navigationBarBackgroundColor": "#115e59",
+    "navigationBarTextStyle": "white"
+  }
+}

@@ -1,0 +1,6 @@
+<view class="page">
+  <text class="eyebrow">EVIDENCE-BASED VERIFICATION</text>
+  <text class="title">The Lens of Truth</text>
+  <text class="body">Paste a public health claim or upload a screenshot in a future phase.</text>
+  <button disabled="{{true}}">Start verification — coming soon</button>
+</view>

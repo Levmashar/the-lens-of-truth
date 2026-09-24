@@ -1,0 +1,4 @@
+<view class="page">
+  <text class="title">Analysis progress placeholder</text>
+  <text class="body">Future phases will show OCR, claim extraction, evidence retrieval, and independent evaluation here.</text>
+</view>

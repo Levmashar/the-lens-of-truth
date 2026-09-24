@@ -1,0 +1,16 @@
+.page {
+  padding: 48rpx;
+}
+
+.title {
+  display: block;
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.body {
+  display: block;
+  margin-top: 24rpx;
+  color: #475569;
+  line-height: 1.7;
+}
