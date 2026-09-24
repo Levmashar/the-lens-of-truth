@@ -4,7 +4,8 @@ from datetime import date, datetime
 from uuid import UUID
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import Date, DateTime, ForeignKey, Index, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,7 +19,8 @@ class EvidenceDocument(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __table_args__ = (
         Index("ix_evidence_document_pmid", "pmid"),
         Index("ix_evidence_document_doi", "doi"),
-        Index("ix_evidence_document_canonical_url", "canonical_url", unique=True),
+        Index("ix_evidence_document_canonical_url", "canonical_url"),
+        UniqueConstraint("source_kind", "pmid", "content_sha256"),
     )
 
     source_kind: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -27,6 +29,13 @@ class EvidenceDocument(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     pmid: Mapped[str | None] = mapped_column(String(32))
     doi: Mapped[str | None] = mapped_column(String(512))
     title: Mapped[str] = mapped_column(Text, nullable=False)
+    abstract: Mapped[str | None] = mapped_column(Text)
+    abstract_sections: Mapped[list[dict[str, object]] | None] = mapped_column(JSONB)
+    journal: Mapped[str | None] = mapped_column(Text)
+    authors: Mapped[list[str] | None] = mapped_column(JSONB)
+    publication_types: Mapped[list[str] | None] = mapped_column(JSONB)
+    mesh_terms: Mapped[list[str] | None] = mapped_column(JSONB)
+    language: Mapped[str | None] = mapped_column(String(32))
     published_at: Mapped[date | None] = mapped_column(Date)
     retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     retraction_status: Mapped[str] = mapped_column(String(32), nullable=False, default="unknown")

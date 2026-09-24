@@ -20,6 +20,10 @@ class JsonFormatter(logging.Formatter):
         request_id = getattr(record, "request_id", None)
         if request_id:
             payload["request_id"] = request_id
+        for field in ("failure_type", "attempt_number", "endpoint"):
+            value = getattr(record, field, None)
+            if value is not None:
+                payload[field] = value
         return json.dumps(payload, ensure_ascii=False)
 
 
@@ -39,5 +43,11 @@ def configure_logging(level: str) -> None:
                 }
             },
             "root": {"handlers": ["default"], "level": level.upper()},
+            # HTTPX's INFO request log includes full query strings. NCBI passes
+            # its optional API key in the query, so never emit those URLs.
+            "loggers": {
+                "httpx": {"level": "WARNING"},
+                "httpcore": {"level": "WARNING"},
+            },
         }
     )

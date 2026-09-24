@@ -3,9 +3,9 @@
 ## Implemented boundary
 
 The repository implements the foundation plus secure text/screenshot
-ingestion, bounded local OCR, PII masking, atomic claim extraction, and grounded
-PICO framing and source-grounded normalization completeness auditing. It does
-not retrieve evidence, invoke judges, or make a medical judgment.
+ingestion, bounded local OCR, PII masking, atomic claim extraction, grounded
+PICO framing, normalization completeness auditing, and Phase 4A PubMed-only
+retrieval. It does not invoke judges or make a medical judgment.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -84,6 +84,22 @@ mentions and checks type-specific required slots. Missing concepts become
 `normalized` rows become `partial` until re-audited. The extractor makes at
 most one retry for malformed output or transient provider failures, without
 weakening response validation or passing an invalid answer back to the model.
+
+Phase 4A has a separate `app/retrieval/` pipeline: a deterministic QueryPlan
+produces bounded MeSH, lexical, relation, and optional numeric queries; an
+`app/adapters/pubmed.py` adapter uses official ESearch/EFetch; normalization
+retains PubMed metadata and exact title/abstract sections; deduplication merges
+query provenance; a deterministic lexical ranker assigns relevance-only scores;
+and a frozen Evidence Pack assigns E1/E2/... identifiers and a SHA-256 over
+canonical content excluding retrieval timestamps. The database stores an
+append-only retrieval run, query rows, document-query links, versioned document
+content, ranked passage metadata in the pack snapshot, and the complete frozen
+JSON snapshot. Public PubMed documents may be reused across runs, while each
+pack remains a separate audit object until the associated short-lived claim
+is purged under the existing retention policy. Redis caches ESearch PMID lists for six
+hours by source, query, and implementation version; failures bypass cache.
+No full-text fetching, retraction claim, study-quality score, or verdict is
+produced here.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

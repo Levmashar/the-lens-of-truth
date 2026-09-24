@@ -11,6 +11,7 @@ from app.adapters.claim_extractor import (
     OpenAICompatibleClaimExtractor,
 )
 from app.adapters.ocr import TesseractOcrAdapter
+from app.adapters.pubmed import PubMedAdapter, RedisQueryCache
 from app.adapters.storage import LocalFilesystemUploadStorage
 from app.core.config import Settings, get_settings
 from app.medical.linker import MedicalEntityLinker
@@ -120,4 +121,29 @@ def get_analysis_ingestion_service(
         storage=storage,
         ocr=ocr,
         extractor=extractor,
+    )
+
+
+def get_pubmed_adapter(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> PubMedAdapter:
+    """Build the official NCBI adapter only when a contact email is configured."""
+
+    from app.core.errors import ExternalCapabilityError
+
+    if not settings.ncbi_email:
+        raise ExternalCapabilityError(
+            code="pubmed_not_configured",
+            message="PubMed retrieval requires an NCBI contact email.",
+        )
+    api_key = settings.ncbi_api_key
+    return PubMedAdapter(
+        tool=settings.ncbi_tool, email=settings.ncbi_email,
+        api_key=api_key.get_secret_value() if api_key else None,
+        timeout_seconds=settings.pubmed_timeout_seconds,
+        max_retries=settings.pubmed_max_retries,
+        minimum_interval_seconds=0.36,
+        retmax=settings.pubmed_query_retmax,
+        cache=RedisQueryCache(settings.redis_url),
+        cache_ttl_seconds=settings.pubmed_cache_ttl_seconds,
     )

@@ -8,6 +8,13 @@ Phase 3A added `pico_json`, `linked_entities`, and `normalization_status` to
 `Claim`. Phase 3B stores MeSH source, production year, descriptor ID, match
 type, ambiguity, confidence, candidate suggestions, and optional tree numbers
 inside the existing `linked_entities` JSONB. No new migration is required.
+Phase 4A migration `20260924_0007` adds PubMed metadata fields to
+`EvidenceDocument`, permits multiple content-hash versions of one PMID/URL,
+and creates `RetrievalRun`, `RetrievalQuery`, `RetrievalDocumentQuery`, and
+`EvidencePack` tables. A pack contains a frozen JSONB snapshot and SHA-256;
+reruns append records rather than updating an earlier pack.
+Pack/run rows cascade when the parent short-lived claim is purged; shared
+public PubMed document rows are independent of submission retention.
 
 | Model | Responsibility |
 |---|---|
@@ -16,6 +23,10 @@ inside the existing `linked_entities` JSONB. No new migration is required.
 | `Claim` | Atomic claim, span, normalization, risk, and PICO fields |
 | `EvidenceDocument` | Provenance and publication metadata, not full article storage |
 | `EvidencePassage` | Minimal evidence snippet, offsets, hash, and 1024-d vector slot |
+| `RetrievalRun` | One claim's PubMed query plan, status, diagnostics, and retrieval time |
+| `RetrievalQuery` | Executed query text, family, field provenance, result count, and cache hit |
+| `RetrievalDocumentQuery` | Many-to-many paper/query discovery provenance |
+| `EvidencePack` | Append-only claim/query/document/ranked-passage snapshot and content hash |
 | `ModelEvaluation` | A single provider/model judgment linked to a claim |
 | `FinalVerdict` | One auditable, aggregated outcome per claim |
 
@@ -34,4 +45,6 @@ docker compose exec backend alembic upgrade head
 ```
 
 Do not store wholesale paywalled articles. Keep canonical URLs, identifiers,
-license information, content hashes, and minimal permitted passages.
+license information, content hashes, and minimal permitted passages. Phase 4A
+stores PubMed abstracts only, never scraped full text; review NCBI disclaimer
+and abstract copyright terms before public display or redistribution.

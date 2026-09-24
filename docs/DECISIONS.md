@@ -155,3 +155,19 @@ deadline returns `claim_extractor_deadline_exceeded`, both with HTTP 504.
 reply. Two former 180-second attempts allowed the API to outlast common client
 timeouts. Distinct failure codes and logs make timeout behavior observable
 without disclosing prompts, credentials, or provider responses to users.
+
+## ADR-014 — PubMed-only, content-addressed Evidence Pack foundation
+
+**Decision:** Phase 4A plans small deterministic PubMed query variants from
+source-grounded PICO and confident MeSH concepts. It uses NCBI ESearch/EFetch,
+never HTML scraping. Search PMID lists may be cached briefly in Redis; Redis
+is never the evidence system of record. Documents are keyed by PMID and
+content hash so metadata revisions do not overwrite earlier source versions.
+Each retrieval run stores query provenance and creates a new, append-only JSONB
+Evidence Pack with backend E IDs and canonical SHA-256. Retrieval timestamps
+do not affect the content hash. Ranking is lexical topical relevance only.
+
+**Reason:** later judges must see identical, auditable source bytes and cannot
+invent identifiers. A bounded official adapter and simple relevance ranking
+meet the MVP latency/complexity target without implying medical truth or study
+quality. Subsequent source and retraction checks remain separate work.

@@ -10,16 +10,21 @@ from fastapi.responses import StreamingResponse
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
 
+from app.adapters.pubmed import PubMedAdapter
 from app.core.config import Settings, get_runtime_settings
 from app.core.errors import LensError
 from app.db.session import get_db_session
-from app.dependencies import get_analysis_ingestion_service
+from app.dependencies import get_analysis_ingestion_service, get_pubmed_adapter
 from app.medical.entities import MedicalEntity
+from app.models.claim import Claim
 from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
 from app.pipeline.claim_types import legacy_claim_type
 from app.pipeline.completeness import NormalizationQuality
 from app.pipeline.pico import NormalizationStatus, NormalizedPico
+from app.retrieval.claims import snapshot_claim
+from app.retrieval.persistence import persist_retrieval
+from app.retrieval.service import retrieve_pubmed
 from app.schemas.analysis import (
     AnalysisAccepted,
     AnalysisClaim,
@@ -32,11 +37,34 @@ from app.schemas.analysis import (
     ScreenshotOcrMetadata,
     ScreenshotUploadAccepted,
 )
+from app.schemas.retrieval import EvidencePreviewRequest, EvidencePreviewResponse
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.image_ingestion import ScreenshotSanitizer
 
 router = APIRouter()
 _status_adapter: TypeAdapter[NormalizationStatus] = TypeAdapter(NormalizationStatus)
+
+
+@router.post("/evidence-preview", response_model=EvidencePreviewResponse)
+async def preview_pubmed_evidence(
+    request: EvidencePreviewRequest,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+    adapter: Annotated[PubMedAdapter, Depends(get_pubmed_adapter)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> EvidencePreviewResponse:
+    """Retrieve PubMed evidence for one stored claim; never produce a verdict."""
+
+    if settings.app_env not in {"development", "test"}:
+        raise LensError(404, "evidence_preview_not_available",
+                        "Evidence preview is not available in this environment.")
+    service.get_submission(session=session, analysis_id=request.analysis_id)
+    claim = session.get(Claim, request.claim_id)
+    if claim is None or claim.submission_id != request.analysis_id:
+        raise LensError(404, "claim_not_found", "Claim was not found or has expired.")
+    result = await retrieve_pubmed(snapshot_claim(claim), adapter)
+    persist_retrieval(session, result)
+    return EvidencePreviewResponse(evidence_pack=result.pack, diagnostics=result.diagnostics)
 
 
 @router.post(

@@ -6,6 +6,7 @@ return a medical verdict. Phase 3A additionally returns claim-grounded PICO
 and terminology-linking state; it does not retrieve evidence. Phase 3B can
 resolve MeSH descriptors from an installed official NLM release. Phase 3C
 adds controlled claim types and a source-grounded completeness audit.
+Phase 4A adds developer-only, PubMed-only evidence preview without a verdict.
 
 ## `POST /v1/analyses/uploads/screenshots`
 
@@ -127,6 +128,41 @@ Two exhausted timeouts return HTTP `504` with `claim_extractor_timeout`;
 an overall deadline returns HTTP `504` with
 `claim_extractor_deadline_exceeded`. Public errors include a request ID but
 never provider response bodies, prompts, credentials, or internal trace IDs.
+
+## `POST /v1/analyses/evidence-preview`
+
+Available only in `development` and `test`. Requires an existing stored claim,
+which can be obtained from `POST /v1/analyses` followed by
+`GET /v1/analyses/{analysis_id}`. It does **not** rerun extraction or change
+claim/PICO semantics. Configure a real developer contact with `NCBI_EMAIL`.
+
+```json
+{
+  "analysis_id": "c5eb3f8d-5c9e-45d5-b88d-b5152b2de95a",
+  "claim_id": "9cf824bf-f871-4f22-b5b3-6dd6f0e8fd99"
+}
+```
+
+HTTP 200 returns `evidence_pack` and `diagnostics`. The pack contains a
+`claim_snapshot` (redacted raw/normalized claim, controlled type, PICO, MeSH
+entities), `query_plan` (version, source, query IDs/families/field provenance),
+normalized PubMed `documents`, ranked exact-text `passages` with E1/E2 IDs,
+`retrieved_at`, and `snapshot_hash`. A query's `relation_semantics` preserves
+causal versus association wording. Passage factors and `retrieval_score`
+measure topical relevance only, never evidence quality or medical truth.
+
+`diagnostics.status` is `ok`, `no_results`, or `partial_metadata` (some PMIDs
+were returned but bibliographic metadata was missing). No results produces a
+valid empty pack. Technical failures return typed public errors:
+`pubmed_timeout` (504), or `pubmed_transport`, `pubmed_upstream_http`,
+`pubmed_rate_limited`, `pubmed_malformed_response` (503). They never expose
+the API key, response body, raw prompts, or arbitrary external URLs. An
+unconfigured contact email returns `pubmed_not_configured` (503).
+No verdict or explanation field exists in this response.
+
+The pack is append-only. A repeat preview creates a new retrieval run and
+pack; canonical hashing excludes wall-clock retrieval timestamps but includes
+claim, query, document content, provenance, ranking, and passage text.
 
 ## `GET /v1/analyses/{analysis_id}`
 

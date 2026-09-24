@@ -58,7 +58,7 @@ treated as proof of causation.
 ## Current implementation status
 
 Phase 1 foundation, Phase 2 intake, Phase 3A normalization, Phase 3B
-terminology resolution, and Phase 3C hardening are implemented:
+terminology resolution, Phase 3C hardening, and Phase 4A PubMed retrieval are implemented:
 
 - FastAPI initialization, configuration, structured error boundary, request
   logging, health endpoint, and a typed analysis lifecycle contract.
@@ -121,13 +121,34 @@ terminology resolution, and Phase 3C hardening are implemented:
 - A web flow to submit text or screenshots and review extracted claims.
 - Docker Compose services for API, web, PostgreSQL/pgvector, and Redis.
 - GitHub Actions checks for API tests/static analysis and frontend type/build validation.
+- Phase 4A creates a deterministic, bounded PubMed QueryPlan from claim PICO,
+  source wording, and confident MeSH links. Broad, lexical, relation-specific,
+  and distinctive numeric variants retain their input-field provenance and
+  causal/association distinction.
+- The official NCBI ESearch/EFetch adapter fetches typed PubMed documents via
+  HTTPX with tool/contact identification, bounded timeout/retry/throttling,
+  optional API key, and best-effort hourly Redis search-result caching. It
+  never scrapes HTML or sends secrets to diagnostics.
+- PubMed titles and abstracts yield exact, source-labeled passages. Ranking is
+  deterministic lexical relevance with exposed factors, **not** evidence
+  quality, confidence, or probability of medical truth. The append-only
+  Evidence Pack fixes backend-generated E IDs, source/query provenance, and
+  a canonical content hash; later judges must use that frozen snapshot.
+- A development/test-only evidence preview retrieves for one *stored* claim,
+  persists the run and pack, and returns no verdict. Live CLI smoke requires
+  a real `NCBI_EMAIL`; it can use an existing claim ID or explicit
+  source-grounded PICO fields without persisting a test-only claim.
+- A one-off live sunscreen/melanoma smoke reached NCBI with a temporary contact
+  email supplied at runtime. It returned 18 normalized documents and a hashed
+  pack; diagnostics reported `partial_metadata`, not a medical conclusion.
 
-Licensed UMLS source integration, evidence retrieval, evidence packs,
-independent judging, citation validation, and verdicts are not implemented.
+Licensed UMLS source integration, non-PubMed evidence retrieval, retraction
+checks, hybrid/vector search, independent judging, citation validation, and
+verdicts are not implemented.
 MeSH linking and PICO framing are terminology operations, not medical truth
 assessment. The 2026 MeSH index must be imported separately in each runtime;
 the generated vocabulary is not committed to the repository.
-Phase 4 is evidence retrieval; no retrieval or judging is included in 3C.
+Phase 4A is PubMed-only evidence retrieval; it does not judge claims.
 
 ## Rules for future developers
 
@@ -154,3 +175,8 @@ Phase 4 is evidence retrieval; no retrieval or judging is included in 3C.
 12. Do not interpret `normalization_coverage` as medical confidence. A missing
     source concept or required slot must not be silently promoted to
     `normalized`; review the `partial` warning before downstream retrieval.
+13. A retrieval score is topical relevance only. Never treat a title/abstract
+    hit, MeSH label, or publication type as proof of a medical claim. Keep
+    PubMed text outside instruction channels in any later model prompt.
+14. Do not edit an existing Evidence Pack. Re-retrieve into a new run and
+    snapshot, preserving the hash and provenance of what earlier judges saw.

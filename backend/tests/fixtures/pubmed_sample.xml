@@ -1,0 +1,29 @@
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation>
+      <PMID>12345678</PMID>
+      <Article>
+        <Journal><JournalIssue><PubDate><Year>2024</Year><Month>Sep</Month><Day>12</Day></PubDate></JournalIssue><Title>Journal of Testing</Title></Journal>
+        <ArticleTitle>Sunscreen use and melanoma risk in adults</ArticleTitle>
+        <Abstract>
+          <AbstractText Label="BACKGROUND">Sunscreen use and melanoma incidence were examined.</AbstractText>
+          <AbstractText Label="RESULTS">An association was observed in a cohort.</AbstractText>
+        </Abstract>
+        <AuthorList><Author><ForeName>Alex</ForeName><LastName>Example</LastName></Author></AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList><PublicationType>Journal Article</PublicationType><PublicationType>Observational Study</PublicationType></PublicationTypeList>
+      </Article>
+      <MeshHeadingList>
+        <MeshHeading><DescriptorName>Sunscreening Agents</DescriptorName></MeshHeading>
+        <MeshHeading><DescriptorName>Melanoma</DescriptorName></MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData><ArticleIdList><ArticleId IdType="pubmed">12345678</ArticleId><ArticleId IdType="doi">10.1/example</ArticleId></ArticleIdList></PubmedData>
+  </PubmedArticle>
+  <PubmedArticle>
+    <MedlineCitation>
+      <PMID>87654321</PMID>
+      <Article><Journal><Title>Other Journal</Title></Journal><ArticleTitle>Melanoma case note</ArticleTitle><PublicationTypeList><PublicationType>Case Reports</PublicationType></PublicationTypeList></Article>
+    </MedlineCitation>
+  </PubmedArticle>
+</PubmedArticleSet>

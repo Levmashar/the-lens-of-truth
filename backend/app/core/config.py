@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Literal, cast
 
 from fastapi import Request
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -76,6 +76,35 @@ class Settings(BaseSettings):
     mesh_index_path: Path = Field(
         default=Path("./runtime/mesh/mesh.sqlite3"), validation_alias="MESH_INDEX_PATH"
     )
+    ncbi_tool: str = Field(default="the_lens_of_truth", validation_alias="NCBI_TOOL")
+    ncbi_email: str | None = Field(default=None, validation_alias="NCBI_EMAIL")
+    ncbi_api_key: SecretStr | None = Field(default=None, validation_alias="NCBI_API_KEY")
+    pubmed_timeout_seconds: float = Field(
+        default=12.0, gt=0, le=30, validation_alias="PUBMED_TIMEOUT_SECONDS"
+    )
+    pubmed_max_retries: int = Field(default=1, ge=0, le=2,
+                                    validation_alias="PUBMED_MAX_RETRIES")
+    pubmed_query_retmax: int = Field(default=10, ge=1, le=12,
+                                     validation_alias="PUBMED_QUERY_RETMAX")
+    pubmed_cache_ttl_seconds: int = Field(
+        default=21600, ge=60, le=86400, validation_alias="PUBMED_CACHE_TTL_SECONDS"
+    )
+
+    @field_validator("ncbi_tool")
+    @classmethod
+    def valid_ncbi_tool(cls, value: str) -> str:
+        if not value or any(character.isspace() for character in value):
+            raise ValueError("NCBI_TOOL must be non-empty and contain no spaces")
+        return value
+
+    @field_validator("ncbi_email")
+    @classmethod
+    def valid_ncbi_email(cls, value: str | None) -> str | None:
+        if value is not None and (
+            "@" not in value or any(character.isspace() for character in value)
+        ):
+            raise ValueError("NCBI_EMAIL must be a contact email address")
+        return value
 
     @property
     def cors_origins(self) -> list[str]:

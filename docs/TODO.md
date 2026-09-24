@@ -53,11 +53,23 @@
 - [ ] Operational follow-up: migrate each deployment and re-audit legacy `partial` rows
 - [ ] Evaluate completeness recall on annotated English and Chinese claims before public use
 
-## Phase 4: Evidence retrieval
+## Phase 4A: PubMed evidence retrieval foundation
 
-- [ ] NCBI/PubMed, WHO/CDC, Crossref, and ClinicalTrials adapters
-- [ ] Deterministic query planning, source validation, and retraction checks
-- [ ] Hybrid retrieval, ranking, and immutable Evidence Pack generation
+- [x] Deterministic, provenance-labeled MeSH/lexical/relation/numeric QueryPlan
+- [x] Official NCBI ESearch/EFetch adapter with bounded retries and optional Redis query cache
+- [x] Normalize PubMed metadata and exact title/abstract passages; deduplicate PMIDs
+- [x] Deterministic relevance ranking and content-hashed, append-only Evidence Packs
+- [x] Persist runs, queries, document-query provenance, passages, and frozen snapshots
+- [x] Developer evidence preview, CLI smoke command, offline tests, and schema migration
+- [x] One live sunscreen/melanoma PubMed smoke (18 documents; partial metadata surfaced)
+- [ ] Operational follow-up: set a real `NCBI_EMAIL` for each deployment and run live smoke
+- [ ] Evaluate PubMed retrieval recall and publication-date/metadata edge cases
+
+## Phase 4B: Broader evidence retrieval and validation
+
+- [ ] WHO/CDC, Crossref, and ClinicalTrials adapters
+- [ ] Retraction/version checks and source validation
+- [ ] Hybrid/vector retrieval and reranking, if benchmark results justify them
 
 ## Phase 5: Model ensemble
 

@@ -3,9 +3,9 @@
 The FastAPI service provides the Phase 2 intake path: server-side image
 sanitation, short-lived raw screenshot storage, local Tesseract OCR,
 position-preserving structured-PII masking, and validated atomic claim/PICO
-extraction. It does not retrieve evidence, evaluate claims, or issue a
-medical verdict. Phase 3B can resolve terminology against a locally imported
-official NLM MeSH descriptor release; this is not evidence retrieval.
+extraction. Phase 3B resolves terminology against a locally imported official
+NLM MeSH release. Phase 4A retrieves PubMed title/abstract evidence and stores
+frozen Evidence Packs; it does not evaluate claims or issue a medical verdict.
 
 ## Local development
 
@@ -66,3 +66,45 @@ required. A re-normalization run never overwrites a claim with existing
 entity mappings or PICO JSON. The command defaults to dry-run even without a
 flag. Courtesy of the U.S. National Library of Medicine. NLM does not endorse
 this application; check its data terms before public distribution.
+
+## PubMed retrieval smoke test
+
+Set `NCBI_EMAIL` in the repository `.env` to a real developer/organization
+contact. `NCBI_TOOL` defaults to `the_lens_of_truth`; `NCBI_API_KEY` is
+optional. PubMed ESearch result lists are cached in Redis for six hours by
+default. Configure timeout, retry count, per-query PMID limit, and cache TTL
+with the `PUBMED_*` settings in `.env.example`. Without the contact email,
+retrieval returns a typed 503 rather than making an unidentified request.
+
+Apply the Phase 4A migration and create a text analysis. Get its `claim_id`
+from `GET /v1/analyses/{analysis_id}`. Then run:
+
+```powershell
+docker compose exec backend alembic upgrade head
+docker compose exec backend python -m app.retrieval.smoke "<claim_id>"
+```
+
+Or call the development-only API with `analysis_id` and `claim_id`:
+
+```powershell
+$body = @{ analysis_id = "<analysis_id>"; claim_id = "<claim_id>" } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri "http://localhost:8000/v1/analyses/evidence-preview" `
+  -ContentType "application/json" -Body $body | ConvertTo-Json -Depth 20
+```
+
+The output shows QueryPlan variants, PubMed metadata, exact passages, E IDs,
+relevance factors, and a snapshot hash. A retrieval score is not a truth or
+study-quality probability. `no_results` is valid; timeout, transport, rate
+limit, upstream HTTP, and malformed responses are separate typed failures.
+Each rerun creates a new, append-only pack rather than modifying an old one.
+
+If extraction is unavailable but you want to test PubMed alone, provide
+explicit, source-grounded fields. This mode does **not** create a claim or
+persist a pack, and it does not guess PICO fields:
+
+```powershell
+docker compose exec backend python -m app.retrieval.smoke `
+  "Frequent sunscreen use causes invasive melanoma." `
+  --exposure "Frequent sunscreen use" --outcome "invasive melanoma" `
+  --claim-type causal
+```
