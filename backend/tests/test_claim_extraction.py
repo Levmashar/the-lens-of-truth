@@ -69,6 +69,7 @@ def test_miri_adapter_requests_chatgpt_auto_and_parses_fenced_json(
                     "raw_span": source,
                     "span_start": 0,
                     "span_end": len(source),
+                    "verifiability": "externally_verifiable",
                     "pico": {
                         "population": None,
                         "intervention_or_exposure": "Vitamin C",
@@ -100,6 +101,7 @@ def test_miri_adapter_requests_chatgpt_auto_and_parses_fenced_json(
 
     assert result.claims[0].pico is not None
     assert result.claims[0].pico.outcome == "colds"
+    assert result.claims[0].verifiability is None
     assert str(captured[0].url) == "http://gateway.example/secret/v1/chat/completions"
     sent = json.loads(captured[0].content)
     assert sent["model"] == "chatgpt-auto"

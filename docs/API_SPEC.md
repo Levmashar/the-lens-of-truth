@@ -60,6 +60,10 @@ Invoke-RestMethod -Method Post `
 
 The response is ephemeral. It does not expose the gateway's raw response or
 unredacted source text.
+The `verifiability` field is a numeric estimate of testability, not medical
+truth. If the browser gateway supplies a qualitative label instead of a number,
+the preview returns `null` for that field while retaining locally validated
+claim spans.
 
 ## `POST /v1/analyses`
 

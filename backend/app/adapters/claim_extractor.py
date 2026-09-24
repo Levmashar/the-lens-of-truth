@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, ValidationError
 from app.adapters.http import HttpAdapterBase
 from app.core.errors import ExternalCapabilityError
 
-CLAIM_EXTRACTION_PROMPT_VERSION = "phase2-pico-2026-09-24"
+CLAIM_EXTRACTION_PROMPT_VERSION = "phase2-pico-2026-09-24-r2"
 
 SYSTEM_PROMPT = """You are a health-claim extraction engine.
 
@@ -27,6 +27,9 @@ antecedent is unambiguous; otherwise set coreference_uncertain to true.
 For every claim return raw_span, span_start, span_end, normalized_claim,
 claim_type, risk_class, verifiability, coreference_uncertain, and
 resolved_from_span_start/resolved_from_span_end when an antecedent was used.
+Verifiability is a numeric estimate of whether the claim can be checked against
+external evidence, between 0 and 1, or null when uncertain. Never use a label
+or present it as confidence that the claim is medically true.
 Also return pico with population, intervention_or_exposure, comparator,
 outcome, and timeframe. Use null for information absent from the source.
 Never infer a population, comparator, or outcome that the content does not state.
@@ -41,6 +44,7 @@ MIRI_FORMAT_INSTRUCTION = """Return exactly one JSON object, with no Markdown or
 "comparator":null,"outcome":null,"timeframe":null}}]}
 If no externally verifiable health claims are present, return {"claims":[]}.
 Offsets are zero-based Unicode character positions; span_end is exclusive.
+Verifiability must be a number from 0 to 1 or null, never a text label.
 The example values are structural placeholders, not a claim to output.
 """
 
@@ -235,12 +239,14 @@ class MiriClaimExtractor(HttpAdapterBase):
         try:
             body = response.json()
             content = body["choices"][0]["message"]["content"]
-            return _parse_claim_payload(content)
+            return _parse_claim_payload(content, normalize_miri_labels=True)
         except (IndexError, KeyError, TypeError, json.JSONDecodeError, ValidationError) as exc:
             raise _invalid_structured_response() from exc
 
 
-def _parse_claim_payload(content: object) -> ClaimExtractionPayload:
+def _parse_claim_payload(
+    content: object, *, normalize_miri_labels: bool = False
+) -> ClaimExtractionPayload:
     """Accept a single JSON object, optionally wrapped in one JSON code fence."""
 
     if not isinstance(content, str):
@@ -249,7 +255,20 @@ def _parse_claim_payload(content: object) -> ClaimExtractionPayload:
     match = re.fullmatch(r"```(?:json)?\s*\n([\s\S]*?)\n```", stripped, flags=re.IGNORECASE)
     if match:
         stripped = match.group(1)
-    return ClaimExtractionPayload.model_validate(json.loads(stripped))
+    parsed = json.loads(stripped)
+    if normalize_miri_labels and isinstance(parsed, dict):
+        claims = parsed.get("claims")
+        if isinstance(claims, list):
+            for claim in claims:
+                if isinstance(claim, dict):
+                    value = claim.get("verifiability")
+                    if isinstance(value, str):
+                        try:
+                            float(value)
+                        except ValueError:
+                            # A qualitative label is not a numeric testability score.
+                            claim["verifiability"] = None
+    return ClaimExtractionPayload.model_validate(parsed)
 
 
 def _invalid_structured_response() -> ExternalCapabilityError:
