@@ -10,11 +10,16 @@ from fastapi.responses import StreamingResponse
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
 
+from app.adapters.crossref import CrossrefAdapter
 from app.adapters.pubmed import PubMedAdapter
 from app.core.config import Settings, get_runtime_settings
 from app.core.errors import LensError
 from app.db.session import get_db_session
-from app.dependencies import get_analysis_ingestion_service, get_pubmed_adapter
+from app.dependencies import (
+    get_analysis_ingestion_service,
+    get_crossref_adapter,
+    get_pubmed_adapter,
+)
 from app.medical.entities import MedicalEntity
 from app.models.claim import Claim
 from app.models.screenshot_upload import ScreenshotUpload
@@ -51,6 +56,7 @@ async def preview_pubmed_evidence(
     session: Annotated[Session, Depends(get_db_session)],
     service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
     adapter: Annotated[PubMedAdapter, Depends(get_pubmed_adapter)],
+    crossref: Annotated[CrossrefAdapter | None, Depends(get_crossref_adapter)],
     settings: Annotated[Settings, Depends(get_runtime_settings)],
 ) -> EvidencePreviewResponse:
     """Retrieve PubMed evidence for one stored claim; never produce a verdict."""
@@ -62,7 +68,13 @@ async def preview_pubmed_evidence(
     claim = session.get(Claim, request.claim_id)
     if claim is None or claim.submission_id != request.analysis_id:
         raise LensError(404, "claim_not_found", "Claim was not found or has expired.")
-    result = await retrieve_pubmed(snapshot_claim(claim), adapter)
+    result = await retrieve_pubmed(
+        snapshot_claim(claim), adapter,
+        selected_limit=settings.pubmed_selected_evidence_limit,
+        max_per_document=settings.pubmed_max_passages_per_document,
+        crossref=crossref,
+        crossref_total_timeout_seconds=settings.crossref_total_timeout_seconds,
+    )
     persist_retrieval(session, result)
     return EvidencePreviewResponse(evidence_pack=result.pack, diagnostics=result.diagnostics)
 

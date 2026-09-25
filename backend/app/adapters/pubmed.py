@@ -10,8 +10,8 @@ from typing import Protocol
 import httpx
 
 from app.retrieval.errors import RetrievalError, RetrievalFailureKind
-from app.retrieval.models import PubMedDocument
-from app.retrieval.normalize import parse_pubmed_xml
+from app.retrieval.models import PubMedFetchResult
+from app.retrieval.normalize import parse_pubmed_xml_details
 
 logger = logging.getLogger(__name__)
 _BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
@@ -28,25 +28,26 @@ class QueryCache(Protocol):
 class RedisQueryCache:
     """Best-effort Redis cache; its failure never changes PubMed results."""
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, *, label: str = "PubMed query") -> None:
         from redis.asyncio import Redis
 
         self._client: Redis = Redis.from_url(url, decode_responses=True,
                                               socket_timeout=1, socket_connect_timeout=1)
+        self._label = label
 
     async def get(self, key: str) -> str | None:
         try:
             value = await self._client.get(key)
             return value if isinstance(value, str) else None
         except Exception:
-            logger.warning("PubMed query cache read unavailable")
+            logger.warning("%s cache read unavailable", self._label)
             return None
 
     async def set(self, key: str, value: str, ttl_seconds: int) -> None:
         try:
             await self._client.set(key, value, ex=ttl_seconds)
         except Exception:
-            logger.warning("PubMed query cache write unavailable")
+            logger.warning("%s cache write unavailable", self._label)
 
 
 class PubMedAdapter:
@@ -113,17 +114,17 @@ class PubMedAdapter:
             await self._cache.set(cache_key, json.dumps(ids), self._cache_ttl)
         return tuple(ids), False
 
-    async def fetch(self, pmids: tuple[str, ...]) -> tuple[PubMedDocument, ...]:
+    async def fetch(self, pmids: tuple[str, ...]) -> PubMedFetchResult:
         """Fetch one bounded batch; no results is a valid empty return."""
 
         if not pmids:
-            return ()
+            return PubMedFetchResult(documents=())
         if len(pmids) > 50 or any(not value.isdigit() for value in pmids):
             raise ValueError("EFetch accepts at most 50 numeric PMIDs")
         response = await self._request("efetch.fcgi", {
             "db": "pubmed", "id": ",".join(pmids), "retmode": "xml",
         })
-        return parse_pubmed_xml(response.content)
+        return parse_pubmed_xml_details(response.content)
 
     async def _request(self, endpoint: str, params: dict[str, str]) -> httpx.Response:
         global _LAST_REQUEST

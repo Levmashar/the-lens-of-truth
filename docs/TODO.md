@@ -65,10 +65,44 @@
 - [ ] Operational follow-up: set a real `NCBI_EMAIL` for each deployment and run live smoke
 - [ ] Evaluate PubMed retrieval recall and publication-date/metadata edge cases
 
-## Phase 4B: Broader evidence retrieval and validation
+## Phase 4A.1: Evidence-selection hardening
 
-- [ ] WHO/CDC, Crossref, and ClinicalTrials adapters
-- [ ] Retraction/version checks and source validation
+- [x] Keep every extracted title/abstract passage in version 1.1 Evidence Packs
+- [x] Store a separate, ordered top-evidence selection with one passage per PMID by default
+- [x] Prefer relevant abstracts, expose concept coverage and background/diversity factors
+- [x] Regression-test auditability, ordering, selection diversity, and stable pack hashes
+- [x] Repeat live sunscreen/melanoma smoke (18 documents; 42 passages; no repeated selected PMID)
+- [ ] Benchmark generic-background penalties and top-k recall on varied claims
+
+## Phase 4B: Evidence integrity and study-quality metadata
+
+- [x] Parse structured PubMed integrity types and linked correction/retraction records
+- [x] Add optional, bounded, cached Crossref DOI enrichment and conservative merge
+- [x] Freeze check statuses, references, provenance, study design, quality prior,
+      and applicability flags in version 1.2 Evidence Packs
+- [x] Exclude retracted documents from selected evidence while preserving all passages
+- [x] Distinguish optional metadata omissions from incomplete/missing EFetch records
+- [x] Offline regressions and live sunscreen smoke (18 articles; 16 successful
+      Crossref DOI checks; one unsupported PubMed book record; no verdict)
+- [ ] Evaluate integrity coverage and classifier accuracy against annotated papers
+- [ ] Decide whether an additional integrity source is needed before public use
+
+## Phase 4B.1: Evidence directness and relationship-aware selection
+
+- [x] Add separate document/passage directness scores, factors, and conservative
+      aligned/reverse/incidental/unknown direction with reasons
+- [x] Weight exact concept proximity and structured abstract sections; demote
+      post-outcome, background-only, covariate-only, exposure-excluded, and
+      screening/cessation-only contexts without deleting audit records
+- [x] Select by exposed topical/directness/quality/applicability components,
+      preserving one PMID by default and retraction exclusion in Pack 1.3
+- [x] Offline regressions, full static/test suite, and live four-claim smoke
+- [ ] Later evaluate directness precision/recall on an annotated Phase 7 set,
+      especially multilingual text, complex comparators, and atypical abstracts
+
+## Later evidence-retrieval work (outside Phase 4B.1)
+
+- [ ] WHO/CDC and ClinicalTrials adapters
 - [ ] Hybrid/vector retrieval and reranking, if benchmark results justify them
 
 ## Phase 5: Model ensemble

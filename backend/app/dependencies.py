@@ -10,6 +10,7 @@ from app.adapters.claim_extractor import (
     MiriClaimExtractor,
     OpenAICompatibleClaimExtractor,
 )
+from app.adapters.crossref import CrossrefAdapter
 from app.adapters.ocr import TesseractOcrAdapter
 from app.adapters.pubmed import PubMedAdapter, RedisQueryCache
 from app.adapters.storage import LocalFilesystemUploadStorage
@@ -146,4 +147,20 @@ def get_pubmed_adapter(
         retmax=settings.pubmed_query_retmax,
         cache=RedisQueryCache(settings.redis_url),
         cache_ttl_seconds=settings.pubmed_cache_ttl_seconds,
+    )
+
+
+def get_crossref_adapter(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> CrossrefAdapter | None:
+    """Crossref is optional; absence leaves DOI integrity partially checked."""
+
+    if not settings.crossref_mailto:
+        return None
+    return CrossrefAdapter(
+        mailto=settings.crossref_mailto,
+        timeout_seconds=settings.crossref_timeout_seconds,
+        max_retries=settings.crossref_max_retries,
+        cache=RedisQueryCache(settings.redis_url, label="Crossref DOI"),
+        cache_ttl_seconds=settings.crossref_cache_ttl_seconds,
     )

@@ -89,6 +89,25 @@ class Settings(BaseSettings):
     pubmed_cache_ttl_seconds: int = Field(
         default=21600, ge=60, le=86400, validation_alias="PUBMED_CACHE_TTL_SECONDS"
     )
+    pubmed_selected_evidence_limit: int = Field(
+        default=8, ge=1, le=20, validation_alias="PUBMED_SELECTED_EVIDENCE_LIMIT"
+    )
+    pubmed_max_passages_per_document: int = Field(
+        default=1, ge=1, le=3, validation_alias="PUBMED_MAX_PASSAGES_PER_DOCUMENT"
+    )
+    crossref_mailto: str | None = Field(default=None, validation_alias="CROSSREF_MAILTO")
+    crossref_timeout_seconds: float = Field(
+        default=8.0, gt=0, le=20, validation_alias="CROSSREF_TIMEOUT_SECONDS"
+    )
+    crossref_max_retries: int = Field(
+        default=1, ge=0, le=2, validation_alias="CROSSREF_MAX_RETRIES"
+    )
+    crossref_cache_ttl_seconds: int = Field(
+        default=3600, ge=60, le=86400, validation_alias="CROSSREF_CACHE_TTL_SECONDS"
+    )
+    crossref_total_timeout_seconds: float = Field(
+        default=30.0, gt=0, le=60, validation_alias="CROSSREF_TOTAL_TIMEOUT_SECONDS"
+    )
 
     @field_validator("ncbi_tool")
     @classmethod
@@ -97,13 +116,13 @@ class Settings(BaseSettings):
             raise ValueError("NCBI_TOOL must be non-empty and contain no spaces")
         return value
 
-    @field_validator("ncbi_email")
+    @field_validator("ncbi_email", "crossref_mailto")
     @classmethod
     def valid_ncbi_email(cls, value: str | None) -> str | None:
         if value is not None and (
             "@" not in value or any(character.isspace() for character in value)
         ):
-            raise ValueError("NCBI_EMAIL must be a contact email address")
+            raise ValueError("Contact email must be an email address")
         return value
 
     @property

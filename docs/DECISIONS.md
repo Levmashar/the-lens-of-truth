@@ -171,3 +171,88 @@ do not affect the content hash. Ranking is lexical topical relevance only.
 invent identifiers. A bounded official adapter and simple relevance ranking
 meet the MVP latency/complexity target without implying medical truth or study
 quality. Subsequent source and retraction checks remain separate work.
+
+## ADR-015 — Separate auditable passages from judge-facing evidence selection
+
+**Decision:** Phase 4A.1 Evidence Packs use version 1.1. All extracted PubMed
+title and abstract passages remain ranked and frozen with E IDs. An ordered
+`selected_evidence_ids` subset identifies future judge input, with a default
+maximum of one passage per document. Selection favors directly relevant
+abstracts, while title-only evidence is retained and may be selected when its
+core-concept coverage is unique or no usable abstract exists. Lexical/MeSH
+concept coverage and conservative outcome-only background penalties are
+recorded as relevance factors. The selected IDs and flags enter the pack hash;
+older version 1.0 packs remain readable but are not automatically judge-ready.
+
+**Reason:** multiple passages from one PMID can otherwise dominate a small
+top-k, and a broad outcome review can rank like a paper directly discussing
+both claim concepts. Selection must improve topical diversity without hiding
+source text or implying a truth, causal, or study-quality judgment.
+
+## ADR-016 — Treat publication integrity as checked, versioned metadata
+
+**Decision:** Phase 4B parses PubMed publication types and linked
+`CommentsCorrections` records, then optionally checks DOI-bearing records
+through Crossref's REST API using `CROSSREF_MAILTO`. Crossref is enrichment,
+not a medical search source. Its per-DOI timeout, one retry, bounded 429
+backoff, three-way concurrency cap, 30-second overall enrichment budget, and
+versioned one-hour Redis cache are fail-open for PubMed retrieval. DOI-less
+records mark Crossref `not_applicable`; configured failures/not-found and
+unconfigured DOI checks never imply `valid`. Positive signals from either
+provider win, with severity order retracted, expression of concern, corrected,
+updated. A retraction notice's `update-to` target is recorded but must not
+label the notice itself retracted; `updated-by` can label the original.
+
+**Decision:** Evidence Pack 1.2 freezes per-provider check status/version,
+integrity status/sources/references/warnings, Crossref fields, field provenance,
+study design, methodology `quality_prior` and factors, applicability warnings,
+and selection. PubMed bibliographic values are not overwritten by Crossref.
+Semantic changes alter the hash, while check/retrieval wall-clock timestamps
+do not. The append-only pack JSONB is authoritative; the pre-existing
+`evidence_document.retraction_status` column is legacy bibliographic storage,
+not a current integrity decision, so no schema migration is required.
+
+**Decision:** Study design is classified without an LLM from PubMed publication
+types, then structured MeSH, then conservative title wording; uncertainty is
+`unknown`. `quality_prior` is a transparent methodology heuristic, not truth,
+claim support, or verdict confidence. It is not added to the topical
+`retrieval_score`. Retractions remain auditable but are excluded from selected
+evidence; unknown integrity stays eligible with warnings. `partial_metadata`
+denotes incomplete/missing EFetch records or unsupported PubMed book records,
+while reason counts expose optional field absences and enrichment failures
+separately.
+
+**Reason:** medical claims can be harmed by treating a retracted source, a
+metadata outage, or a prestigious but irrelevant review as decisive evidence.
+Separate typed signals and immutable provenance let later judges evaluate the
+same snapshot without hiding uncertainty or conflating retrieval relevance
+with study quality.
+
+## ADR-017 — Separate relationship directness from relevance and evidence truth
+
+**Decision:** Phase 4B.1 adds deterministic, claim-specific document and
+passage `relationship_directness` with an exposed `[0,1]` score, direction
+(`aligned`, `reverse`, `incidental`, `unknown`), factors, reasons, and warnings.
+Only PICO wording and confident exact/synonym MeSH labels expand concepts.
+Same/adjacent sentence and section occurrence, RESULTS/CONCLUSIONS weighting,
+relation cues, post-outcome framing, background/covariate-only mentions, and
+explicit exposure/population exclusions affect directness. Ambiguous direction
+remains unknown. The signal is a heuristic for addressing the same question,
+not entailment or support/contradiction; a paper finding no effect can be
+highly direct.
+
+**Decision:** Keep `retrieval_score`, `quality_prior`, integrity, and directness
+separate. Version 1.3 records an explained selection priority (30% topical,
+45% passage directness, 20% document directness, 5% study-quality prior, minus
+an applicability penalty). It chooses the strongest direct representative per
+document, preserves the one-PMID default and hard retraction exclusion, and
+retains every nonselected record in the append-only pack. Version 1.3 hashes
+the new metadata and selection. Existing pack JSONB needs no schema migration;
+older packs are not rewritten.
+
+**Reason:** topical overlap selected a zinc review for a Vitamin C prevention
+claim, post-stroke BP management for a hypertension-to-stroke-risk claim, and
+screening/cessation or never-smoker contexts for a smoking-to-lung-cancer-risk
+claim. The bounded lexical rules address these reproducibly without a new
+model, fabricated medical inference, or PMID-specific hardcoding. Their
+precision/recall and multilingual coverage still require Phase 7 evaluation.

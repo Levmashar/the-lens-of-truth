@@ -13,7 +13,7 @@ from app.medical.entities import MedicalEntity
 from app.pipeline.pico import NormalizedPico
 from app.retrieval.errors import RetrievalError
 from app.retrieval.evidence_pack import build_evidence_pack, deduplicate_documents
-from app.retrieval.models import ClaimSnapshot
+from app.retrieval.models import ClaimSnapshot, EvidencePack
 from app.retrieval.normalize import parse_pubmed_xml
 from app.retrieval.passages import extract_passages
 from app.retrieval.query_planner import plan_pubmed_queries
@@ -155,6 +155,108 @@ def test_ranking_and_pack_are_deterministic_and_content_sensitive() -> None:
     changed_rank = ranked[0].model_copy(update={"passage": changed})
     changed_pack = build_evidence_pack(snapshot, plan, documents, (changed_rank, *ranked[1:]))
     assert changed_pack.snapshot_hash != pack.snapshot_hash
+
+
+def test_sunscreen_selection_diversifies_without_losing_audit_passages() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    direct, background = parse_pubmed_xml(XML)
+    another_direct = direct.model_copy(update={
+        "document_id": "pubmed:22222222", "pmid": "22222222",
+        "canonical_url": "https://pubmed.ncbi.nlm.nih.gov/22222222/",
+    })
+    documents = (direct, another_direct, background)
+    passages = tuple(p for document in documents for p in extract_passages(document))
+    ranked = rank_passages(snapshot, documents, passages)
+    plan = plan_pubmed_queries(snapshot)
+    pack = build_evidence_pack(snapshot, plan, documents, ranked)
+    selected_by_id = {item.evidence_id: item for item in pack.passages}
+    selected = [selected_by_id[evidence_id] for evidence_id in pack.selected_evidence_ids]
+
+    assert len(pack.passages) == len(passages)
+    assert {item.passage.passage_id for item in pack.passages} == {
+        item.passage_id for item in passages
+    }
+    assert len(selected) == len(documents)
+    assert len({item.passage.document_id for item in selected}) == len(selected)
+    assert all(item.passage_type == "abstract" for item in selected[:2])
+    assert all(item.selection_reason == "relevant_abstract" for item in selected[:2])
+    assert selected[0].retrieval_score > selected[-1].retrieval_score
+    assert selected[0].factors["both_core_concepts_present"] == 1.0
+    assert selected[-1].factors["exposure_present"] == 0.0
+    assert selected[-1].factors["generic_background_penalty"] > 0
+    assert any(item.passage_type == "title" and not item.selected_for_judging
+               for item in pack.passages)
+    assert all(item.factors["document_diversity_selection"] == float(
+        item.selected_for_judging
+    ) for item in pack.passages)
+    assert pack.snapshot_hash == build_evidence_pack(
+        snapshot, plan, documents, ranked,
+    ).snapshot_hash
+
+
+def test_title_is_selected_only_when_abstract_lacks_unique_core_coverage() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    direct = parse_pubmed_xml(XML)[0]
+    weak_abstract = direct.model_copy(update={
+        "abstract_sections": (direct.abstract_sections[1],),
+    })
+    ranked = rank_passages(snapshot, (weak_abstract,), extract_passages(weak_abstract))
+    pack = build_evidence_pack(snapshot, plan_pubmed_queries(snapshot),
+                               (weak_abstract,), ranked)
+    selected = next(item for item in pack.passages if item.selected_for_judging)
+    assert selected.passage_type == "title"
+    assert selected.selection_reason == "title_unique_relevance"
+
+
+def test_generic_title_is_lower_priority_even_with_incidental_abstract_mention() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    focused = parse_pubmed_xml(XML)[0]
+    broad = focused.model_copy(update={
+        "document_id": "pubmed:22222222", "pmid": "22222222",
+        "title": "Epidemiology of Melanoma",
+        "canonical_url": "https://pubmed.ncbi.nlm.nih.gov/22222222/",
+    })
+    documents = (focused, broad)
+    passages = tuple(p for document in documents for p in extract_passages(document))
+    ranked = rank_passages(snapshot, documents, passages)
+    focused_abstract = next(item for item in ranked if item.passage.document_id ==
+                            focused.document_id and item.passage.section == "BACKGROUND")
+    broad_abstract = next(item for item in ranked if item.passage.document_id ==
+                          broad.document_id and item.passage.section == "BACKGROUND")
+    assert focused_abstract.retrieval_score > broad_abstract.retrieval_score
+    assert broad_abstract.factors["generic_background_penalty"] == 0.08
+
+
+def test_selected_limit_does_not_limit_frozen_source_passages() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    documents = parse_pubmed_xml(XML)
+    passages = tuple(p for document in documents for p in extract_passages(document))
+    ranked = rank_passages(snapshot, documents, passages)
+    plan = plan_pubmed_queries(snapshot)
+    pack = build_evidence_pack(snapshot, plan, documents, ranked, selected_limit=1)
+    assert len(pack.selected_evidence_ids) == 1
+    assert len(pack.passages) == len(passages)
+    assert pack.snapshot_hash != build_evidence_pack(
+        snapshot, plan, documents, ranked, selected_limit=2,
+    ).snapshot_hash
+
+
+def test_historical_version_one_pack_can_still_be_read() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    documents = parse_pubmed_xml(XML)
+    ranked = rank_passages(snapshot, documents,
+                           tuple(p for document in documents for p in extract_passages(document)))
+    pack = build_evidence_pack(snapshot, plan_pubmed_queries(snapshot), documents, ranked)
+    historical = pack.model_dump(mode="json")
+    historical["evidence_pack_version"] = "1.0"
+    historical.pop("selected_evidence_ids")
+    for passage in historical["passages"]:
+        passage.pop("passage_type")
+        passage.pop("selected_for_judging")
+        passage.pop("selection_reason")
+    restored = EvidencePack.model_validate(historical)
+    assert restored.evidence_pack_version == "1.0"
+    assert restored.selected_evidence_ids == ()
 
 
 def _adapter(handler: httpx.MockTransport, *, max_retries: int = 0) -> PubMedAdapter:

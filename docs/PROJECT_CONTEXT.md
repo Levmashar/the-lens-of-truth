@@ -58,7 +58,8 @@ treated as proof of causation.
 ## Current implementation status
 
 Phase 1 foundation, Phase 2 intake, Phase 3A normalization, Phase 3B
-terminology resolution, Phase 3C hardening, and Phase 4A PubMed retrieval are implemented:
+terminology resolution, Phase 3C hardening, and Phase 4A/4B PubMed retrieval
+and evidence-integrity metadata are implemented:
 
 - FastAPI initialization, configuration, structured error boundary, request
   logging, health endpoint, and a typed analysis lifecycle contract.
@@ -131,20 +132,73 @@ terminology resolution, Phase 3C hardening, and Phase 4A PubMed retrieval are im
   never scrapes HTML or sends secrets to diagnostics.
 - PubMed titles and abstracts yield exact, source-labeled passages. Ranking is
   deterministic lexical relevance with exposed factors, **not** evidence
-  quality, confidence, or probability of medical truth. The append-only
-  Evidence Pack fixes backend-generated E IDs, source/query provenance, and
-  a canonical content hash; later judges must use that frozen snapshot.
+  quality, confidence, or probability of medical truth. Phase 4A.1 keeps every
+  ranked passage in the append-only Evidence Pack (version 1.1), but separately
+  records ordered `selected_evidence_ids` for future judges. The default is
+  eight selected passages and at most one per document, configurable through
+  `PUBMED_SELECTED_EVIDENCE_LIMIT` and `PUBMED_MAX_PASSAGES_PER_DOCUMENT`.
+  Relevant abstracts are preferred to title-only passages. Exposure/outcome
+  coverage and a conservative generic-background penalty are visible factors;
+  this is still topical ranking, not a causal or evidence-quality assessment.
+  E IDs, source/query provenance, selection, and the canonical hash are frozen
+  together. Historical version 1.0 packs remain readable, but have no selected
+  set and must not silently be treated as judge-ready.
 - A development/test-only evidence preview retrieves for one *stored* claim,
   persists the run and pack, and returns no verdict. Live CLI smoke requires
   a real `NCBI_EMAIL`; it can use an existing claim ID or explicit
   source-grounded PICO fields without persisting a test-only claim.
-- A one-off live sunscreen/melanoma smoke reached NCBI with a temporary contact
-  email supplied at runtime. It returned 18 normalized documents and a hashed
-  pack; diagnostics reported `partial_metadata`, not a medical conclusion.
+- The Phase 4A.1 live sunscreen/melanoma smoke used a temporary contact email
+  at runtime and returned 18 documents, 42 auditable passages, and five
+  distinct PMIDs in the selected top five. One PMID is a PubMed book record
+  outside the article-only normalizer, so the status remains
+  `partial_metadata`; no medical conclusion was produced.
+- Phase 4B parses PubMed publication types and correction/retraction links,
+  then optionally enriches DOI-bearing documents through the official Crossref
+  REST API under a bounded 30-second total enrichment budget. Every check has
+  its own status and version. `valid` means no
+  integrity signal was found after all applicable checks completed; failed or
+  unavailable checks make an otherwise signal-free record `unknown`.
+  Retractions from either provider take precedence and remain in the audit
+  snapshot but are excluded from selected evidence by default.
+- Evidence Pack version 1.2 freezes integrity references/provenance, Crossref
+  bibliographic enrichment, deterministic study design, quality prior/factors,
+  applicability warnings, and selection. The quality prior is a transparent
+  methodological heuristic, not a truth probability; topical retrieval scores
+  stay separate. Phase 4B.1 adds directness to selection as described below.
+- Diagnostics now count optional DOI/abstract/date gaps separately from missing
+  or incomplete EFetch records, unsupported PubMed book records, and
+  Crossref/check unavailability. Optional
+  omissions alone do not make PubMed retrieval `partial_metadata`.
+- The Phase 4B sunscreen/melanoma live smoke returned 18 normalized articles,
+  16 DOI-bearing records with successful Crossref checks, two DOI-less records,
+  and 42 auditable passages. All 18 had no detected integrity signal after
+  their applicable checks; this is not an assessment of claim truth. The one
+  unnormalized PMID was a `PubmedBookArticle`, not a missing EFetch response.
+- Phase 4B.1 adds deterministic, claim-specific `relationship_directness` to
+  each document and passage in Evidence Pack 1.3. The score measures whether
+  source text addresses the PICO exposure/outcome relationship, **not** whether
+  the paper supports, contradicts, or proves the claim. Direction is `aligned`,
+  `reverse`, `incidental`, or `unknown`, with reasons and numeric factors.
+  Exact source-grounded PICO wording and confident MeSH labels provide bounded
+  aliases; structured RESULTS/CONCLUSIONS carry more weight than BACKGROUND.
+  Post-outcome management, background-only mentions, explicit exposure
+  exclusion, never-smoker populations, screening/cessation-only framing, and
+  adjustment-covariate mentions are conservatively demoted, never deleted.
+  Selection uses an exposed priority of 30% topical retrieval, 45% passage
+  directness, 20% document directness, 5% methodology prior, minus an explicit
+  applicability penalty. Retractions remain ineligible; one passage per PMID
+  remains the default. No medical verdict or model judging is produced.
+- Four live Phase 4B.1 smoke claims found 18 sunscreen, 23 Vitamin C, 23
+  hypertension/stroke, and 29 smoking/lung-cancer articles in the configured
+  backend run. The selected leaders are direct question matches; the observed
+  zinc review, post-stroke BP papers, screening/cessation paper, and
+  never-smoker cohorts are retained but demoted. PubMed results and enrichment
+  status can change over time; these counts are an observed check, not a gate.
 
-Licensed UMLS source integration, non-PubMed evidence retrieval, retraction
-checks, hybrid/vector search, independent judging, citation validation, and
-verdicts are not implemented.
+Licensed UMLS source integration, non-PubMed evidence retrieval, hybrid/vector
+search, independent judging, citation validation, and verdicts are not
+implemented. Integrity checks are not exhaustive: PubMed/Crossref metadata can
+lag or omit events, and `valid` is not medical correctness or evidence quality.
 MeSH linking and PICO framing are terminology operations, not medical truth
 assessment. The 2026 MeSH index must be imported separately in each runtime;
 the generated vocabulary is not committed to the repository.
@@ -180,3 +234,14 @@ Phase 4A is PubMed-only evidence retrieval; it does not judge claims.
     PubMed text outside instruction channels in any later model prompt.
 14. Do not edit an existing Evidence Pack. Re-retrieve into a new run and
     snapshot, preserving the hash and provenance of what earlier judges saw.
+15. Keep integrity check coverage/status separate from publication status.
+    Missing Crossref metadata is not a clean bill of health. Never promote a
+    retracted passage into the judge-facing selection, but keep it auditable.
+16. `quality_prior` is a coarse methodology ranking prior. It does not indicate
+    whether a paper supports the exact claim, and must not override strong
+    topical relevance or the retraction exclusion policy.
+17. `relationship_directness` is a deterministic selection heuristic with
+    known lexical limits. Never use its `aligned` direction as a support vote;
+    a directly contradictory result can still be highly direct. Keep it
+    separate from retrieval relevance, integrity, study quality, and later
+    entailment/claim-verdict checks.

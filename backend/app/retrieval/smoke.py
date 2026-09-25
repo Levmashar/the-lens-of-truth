@@ -7,6 +7,7 @@ import argparse
 import asyncio
 from uuid import UUID, uuid4
 
+from app.adapters.crossref import CrossrefAdapter
 from app.adapters.pubmed import PubMedAdapter, RedisQueryCache
 from app.core.config import get_settings
 from app.db.session import SessionLocal
@@ -67,7 +68,22 @@ async def smoke(
         cache=RedisQueryCache(settings.redis_url),
         cache_ttl_seconds=settings.pubmed_cache_ttl_seconds,
     )
-    result = await retrieve_pubmed(snapshot, adapter)
+    crossref = (
+        CrossrefAdapter(
+            mailto=settings.crossref_mailto,
+            timeout_seconds=settings.crossref_timeout_seconds,
+            max_retries=settings.crossref_max_retries,
+            cache=RedisQueryCache(settings.redis_url, label="Crossref DOI"),
+            cache_ttl_seconds=settings.crossref_cache_ttl_seconds,
+        ) if settings.crossref_mailto else None
+    )
+    result = await retrieve_pubmed(
+        snapshot, adapter,
+        selected_limit=settings.pubmed_selected_evidence_limit,
+        max_per_document=settings.pubmed_max_passages_per_document,
+        crossref=crossref,
+        crossref_total_timeout_seconds=settings.crossref_total_timeout_seconds,
+    )
     if persist:
         with SessionLocal() as session:
             persist_retrieval(session, result)
@@ -78,15 +94,64 @@ async def smoke(
     print(f"\nPUBMED\n{len(result.pack.documents)} unique documents retrieved")
     print(f"Status: {result.diagnostics.status}\n")
     if result.diagnostics.missing_pmids:
-        print(f"Missing metadata for {len(result.diagnostics.missing_pmids)} PMIDs: "
+        print(f"No normalized article for {len(result.diagnostics.missing_pmids)} PMIDs: "
               + ", ".join(result.diagnostics.missing_pmids))
-    print("TOP EVIDENCE")
+    print("SELECTED DIRECT EVIDENCE (selection priority; not a verdict)")
     documents = {document.document_id: document for document in result.pack.documents}
-    for ranked in result.pack.passages[:5]:
+    selected_ids = set(result.pack.selected_evidence_ids)
+    by_evidence_id = {item.evidence_id: item for item in result.pack.passages}
+
+    def print_evidence(ranked_id: str) -> None:
+        ranked = by_evidence_id[ranked_id]
         document = documents[ranked.passage.document_id]
-        print(f"{ranked.evidence_id} | PMID {document.pmid} | score {ranked.retrieval_score}")
+        directness = ranked.relationship_directness
+        print(f"PMID: {document.pmid} | {ranked.evidence_id} | "
+              f"selected: {'yes' if ranked_id in selected_ids else 'no'}")
         print(f"Title: {document.title}")
-        print(f"{ranked.passage.section}: {ranked.passage.text[:350]}\n")
+        print(f"Section: {ranked.passage.section} | retrieval_score: "
+              f"{ranked.retrieval_score} | relationship_directness_score: "
+              f"{directness.score} | relationship_direction: {directness.direction}")
+        print(f"Incidental penalty: "
+              f"{directness.factors.get('incidental_mention_penalty', 0)} | "
+              f"exclusion penalty: "
+              f"{directness.factors.get('exposure_excluded_penalty', 0)} | "
+              f"quality_prior: {document.quality_prior} | "
+              f"integrity_status: {document.integrity.status}")
+        print(f"Selection priority: {ranked.selection_priority_score} | "
+              f"selection factors: {ranked.selection_factors}")
+        print(f"Direction reasons: {directness.reasons} | "
+              f"warnings: {document.relationship_directness.warnings}\n")
+
+    for evidence_id in result.pack.selected_evidence_ids:
+        print_evidence(evidence_id)
+    demoted: list[str] = []
+    seen_documents: set[str] = set()
+    for ranked in result.pack.passages:
+        document = documents[ranked.passage.document_id]
+        if document.document_id in seen_documents:
+            continue
+        seen_documents.add(document.document_id)
+        detail = document.relationship_directness
+        if (detail.direction in {"reverse", "incidental"}
+                or detail.factors.get("exposure_only_background")
+                or detail.factors.get("outcome_only_background")
+                or detail.factors.get("exposure_excluded_population")):
+            if not any(item.passage.document_id == document.document_id
+                       and item.evidence_id in selected_ids for item in result.pack.passages):
+                demoted.append(ranked.evidence_id)
+    if demoted:
+        print("HIGH TOPICAL HITS DEMOTED BY DIRECTNESS")
+        for evidence_id in demoted[:5]:
+            print_evidence(evidence_id)
+    selected_pmids = [documents[item.passage.document_id].pmid
+                      for item in result.pack.passages if item.evidence_id in selected_ids]
+    print(f"Repeated selected PMIDs: {len(selected_pmids) != len(set(selected_pmids))}")
+    print(f"Auditable passages: {len(result.pack.passages)}")
+    print(f"Integrity status counts: {result.diagnostics.integrity_status_counts}")
+    print(f"Crossref status counts: {result.diagnostics.crossref_status_counts}")
+    print(f"DOI coverage: {result.diagnostics.doi_coverage}/{len(result.pack.documents)}")
+    print(f"Partial metadata reason counts: {result.diagnostics.reason_counts}")
+    print(f"Selected evidence IDs: {result.pack.selected_evidence_ids}")
     print(f"EVIDENCE PACK\nsha256: {result.pack.snapshot_hash}")
 
 

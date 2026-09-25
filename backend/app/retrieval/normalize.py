@@ -7,7 +7,8 @@ import xml.etree.ElementTree as ET
 from datetime import UTC, date, datetime
 
 from app.retrieval.errors import RetrievalError
-from app.retrieval.models import AbstractSection, PubMedDocument
+from app.retrieval.integrity import pubmed_integrity, pubmed_reference
+from app.retrieval.models import AbstractSection, PubMedDocument, PubMedFetchResult
 
 
 def _text(element: ET.Element | None) -> str | None:
@@ -49,7 +50,15 @@ def _date(article: ET.Element) -> date | None:
 def parse_pubmed_xml(
     xml: bytes, *, retrieved_at: datetime | None = None
 ) -> tuple[PubMedDocument, ...]:
-    """Parse bounded EFetch output; incomplete records are handled by the caller."""
+    """Read documents for callers that do not need fetch diagnostics."""
+
+    return parse_pubmed_xml_details(xml, retrieved_at=retrieved_at).documents
+
+
+def parse_pubmed_xml_details(
+    xml: bytes, *, retrieved_at: datetime | None = None
+) -> PubMedFetchResult:
+    """Parse bounded EFetch output and distinguish absent from incomplete records."""
 
     # PubMed's official XML includes a DTD declaration. ElementTree does not
     # fetch external DTDs; reject entity definitions to prevent expansion.
@@ -63,12 +72,19 @@ def parse_pubmed_xml(
         raise RetrievalError("malformed_response")
     now = retrieved_at or datetime.now(UTC)
     documents: list[PubMedDocument] = []
+    seen: list[str] = []
+    incomplete: list[str] = []
+    unsupported: list[str] = []
     for record in root.findall("PubmedArticle"):
         citation = record.find("MedlineCitation")
         article = citation.find("Article") if citation is not None else None
         pmid = _text(citation.find("PMID")) if citation is not None else None
         title = _text(article.find("ArticleTitle")) if article is not None else None
+        if pmid and pmid.isdigit():
+            seen.append(pmid)
         if not pmid or not pmid.isdigit() or not title or article is None:
+            if pmid and pmid.isdigit():
+                incomplete.append(pmid)
             continue
         abstract_node = article.find("Abstract")
         sections = tuple(
@@ -91,6 +107,21 @@ def parse_pubmed_xml(
         publication_types = tuple(filter(None, (
             _text(item) for item in article.findall("PublicationTypeList/PublicationType")
         )))
+        correction_nodes = citation.findall("CommentsCorrectionsList/CommentsCorrections") if (
+            citation is not None
+        ) else []
+        references = tuple(
+            reference for node in correction_nodes
+            if (reference := pubmed_reference(node.get("RefType") or "",
+                                               _text(node.find("PMID")) or "")) is not None
+        )
+        integrity = pubmed_integrity(
+            publication_types, references,
+            metadata_present=(article.find("PublicationTypeList") is not None
+                              or (citation is not None and
+                                  citation.find("CommentsCorrectionsList") is not None)),
+            checked_at=now,
+        )
         mesh_terms = tuple(filter(None, (
             _text(item) for item in record.findall("MedlineCitation/MeshHeadingList/"
                                                   "MeshHeading/DescriptorName")
@@ -104,6 +135,8 @@ def parse_pubmed_xml(
             "journal": journal, "date": published.isoformat() if published else None,
             "authors": authors, "doi": doi, "publication_types": publication_types,
             "mesh_terms": mesh_terms, "language": language,
+            "integrity_types": publication_types,
+            "integrity_references": [ref.model_dump(mode="json") for ref in references],
         }
         content_sha256 = hashlib.sha256(
             json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -116,5 +149,18 @@ def parse_pubmed_xml(
             publication_types=publication_types, mesh_terms=mesh_terms,
             language=language, canonical_url=f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             retrieved_at=now, content_sha256=content_sha256,
+            integrity=integrity, metadata_provenance={
+                "title": "pubmed", "doi": "pubmed" if doi else "absent",
+                "publication_date": "pubmed" if published else "absent",
+                "publication_types": "pubmed", "abstract": "pubmed" if abstract else "absent",
+            },
         ))
-    return tuple(documents)
+    for record in root.findall("PubmedBookArticle"):
+        pmid = _text(record.find("BookDocument/PMID"))
+        if pmid and pmid.isdigit():
+            seen.append(pmid)
+            unsupported.append(pmid)
+    return PubMedFetchResult(
+        documents=tuple(documents), seen_pmids=tuple(seen),
+        incomplete_pmids=tuple(incomplete), unsupported_pmids=tuple(unsupported),
+    )

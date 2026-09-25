@@ -82,6 +82,8 @@ def test_retrieval_run_pack_and_query_provenance_rollback(
             record = persist_retrieval(session, result)
             assert isinstance(record, EvidencePackRecord)
             assert record.snapshot_hash == pack.snapshot_hash
+            assert record.version == "1.3"
+            assert record.snapshot_json["documents"][0]["integrity"]["status"] == "unknown"
             assert session.scalar(select(RetrievalRun).where(
                 RetrievalRun.claim_id == claim_id,
             )) is not None

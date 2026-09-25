@@ -7,6 +7,9 @@ and terminology-linking state; it does not retrieve evidence. Phase 3B can
 resolve MeSH descriptors from an installed official NLM release. Phase 3C
 adds controlled claim types and a source-grounded completeness audit.
 Phase 4A adds developer-only, PubMed-only evidence preview without a verdict.
+Phase 4B adds document integrity, Crossref DOI enrichment, and methodology
+metadata. Phase 4B.1 adds transparent relationship-directness and selection
+metadata; neither phase judges claim truth.
 
 ## `POST /v1/analyses/uploads/screenshots`
 
@@ -146,13 +149,64 @@ claim/PICO semantics. Configure a real developer contact with `NCBI_EMAIL`.
 HTTP 200 returns `evidence_pack` and `diagnostics`. The pack contains a
 `claim_snapshot` (redacted raw/normalized claim, controlled type, PICO, MeSH
 entities), `query_plan` (version, source, query IDs/families/field provenance),
-normalized PubMed `documents`, ranked exact-text `passages` with E1/E2 IDs,
-`retrieved_at`, and `snapshot_hash`. A query's `relation_semantics` preserves
-causal versus association wording. Passage factors and `retrieval_score`
-measure topical relevance only, never evidence quality or medical truth.
+  normalized PubMed `documents`, **all** ranked exact-text `passages` with E1/E2
+  IDs, ordered `selected_evidence_ids`, `retrieved_at`, and `snapshot_hash`.
+  Version 1.3 distinguishes the diversified judge-facing selection (eight by
+  default; at most one passage per document) from the complete audit set.
+  Each passage exposes `passage_type`, `selected_for_judging`, `selection_reason`,
+  and numeric coverage/background/diversity factors. A query's
+  `relation_semantics` preserves causal versus association wording. Passage
+  factors and `retrieval_score` measure topical relevance only, never evidence
+  quality or medical truth. Each document additionally carries `integrity`
+  (`status`, `sources`, `checked_at`, `check_version`, `warnings`, structured
+  references, and per-provider checks), optional `crossref` enrichment,
+  `metadata_provenance`, canonical `study_design` and its source,
+  `quality_prior`, `quality_factors`, and `applicability_warnings`. Crossref
+  preserves its own DOI/work type/publisher/published/deposited dates and
+  update/relation references; it never overwrites PubMed's bibliographic fields.
+  DOI checks are individually timed and collectively limited to a configurable
+  30-second enrichment budget; unfinished checks become failed/unknown without
+  discarding PubMed evidence.
+  A retracted document remains in `documents` and `passages`, but its passages
+  have `selection_reason: retracted_excluded` and are absent from
+  `selected_evidence_ids`. An integrity-unknown document may still be selected
+  with warnings. Historical 1.0/1.1/1.2 packs remain readable, but lack one or
+  more current integrity/directness fields and must not be silently treated as
+  current judge-ready selections.
+
+In version 1.3, each document and passage additionally exposes
+`relationship_directness: {score, direction, factors, reasons, warnings}`.
+`direction` is `aligned`, `reverse`, `incidental`, or `unknown`. Factors expose
+core-concept occurrence/proximity, section weighting, incidental/exclusion
+penalties, and post-outcome or contextual framing. Passages also expose
+`selection_priority_score` and `selection_factors` (topical, passage/direct
+document, methodology, applicability components). This priority determines
+the default selected order, subject to one passage per PMID and retraction
+exclusion. A low-directness passage remains in `passages`; it is never deleted.
+`relationship_directness.score` means fit to the structured claim question,
+not quality, support, contradiction, clinical confidence, or a verdict. An
+`aligned` relation can report either a positive or a negative finding.
+
+`integrity.status` is `valid`, `retracted`, `expression_of_concern`,
+`corrected`, `updated`, or `unknown`. `valid` means only that the configured,
+applicable integrity checks finished without a detected issue. A PubMed or
+Crossref failure yields `unknown` unless the other source reports an explicit
+issue. `quality_prior` is a design-methodology heuristic, neither medical
+truth probability nor support for the submitted claim. It is separate from
+`retrieval_score`; selection considers topical relevance alongside separate
+relationship directness and applicability factors.
 
 `diagnostics.status` is `ok`, `no_results`, or `partial_metadata` (some PMIDs
-were returned but bibliographic metadata was missing). No results produces a
+were returned but EFetch records were missing, incomplete, or outside the
+article-only normalizer). `reason_counts`
+distinguishes `missing_efetch_record`, `incomplete_efetch_record`, optional
+`optional_doi_absent`/`optional_abstract_absent`, `incomplete_publication_date`,
+`unsupported_efetch_record_type` (for example, a PubMed book record),
+`crossref_not_applicable`, `crossref_lookup_failed`, `crossref_not_found`, and
+`integrity_source_unavailable`. Optional DOI or abstract absence does not by
+itself make the status `partial_metadata`. The diagnostics also include
+`integrity_status_counts`, `crossref_status_counts`, and `doi_coverage`.
+No results produces a
 valid empty pack. Technical failures return typed public errors:
 `pubmed_timeout` (504), or `pubmed_transport`, `pubmed_upstream_http`,
 `pubmed_rate_limited`, `pubmed_malformed_response` (503). They never expose
@@ -161,8 +215,11 @@ unconfigured contact email returns `pubmed_not_configured` (503).
 No verdict or explanation field exists in this response.
 
 The pack is append-only. A repeat preview creates a new retrieval run and
-pack; canonical hashing excludes wall-clock retrieval timestamps but includes
-claim, query, document content, provenance, ranking, and passage text.
+pack; canonical hashing excludes wall-clock retrieval/check timestamps but
+includes claim, query, source content, integrity/check results, Crossref
+enrichment, methodology/applicability fields, ranking, directness, selection,
+priority factors, and passage
+text. A changed integrity result therefore produces a new hash.
 
 ## `GET /v1/analyses/{analysis_id}`
 
