@@ -345,3 +345,64 @@ records expose those defects without confusing validation of a judge's
 reasoning with medical truth or treating development Miri labels as ground
 truth. Conservative `uncertain` states prevent lexical heuristics from posing
 as clinical entailment.
+
+## ADR-022 — Aggregate only qualified, validated evidence under a versioned policy
+
+**Decision:** Phase 6B uses immutable, explicit-ID `AggregationInput` and a
+pure `verdict-policy-1.0` decision table. The only labels are `supported`,
+`contradicted`, `not_enough_evidence`, and `unable_to_verify_reliably`. First
+rehash the frozen Pack 1.3 and check normalization, retrieval, selection,
+and audit identity. Successful no-results retrieval is evidence insufficiency;
+technical retrieval failure is system inability. Only `validated` judge
+decisions without fatal issues enter decisive counts. Partial, invalid, failed,
+or unavailable judgments are retained as exclusions, never flipped to an
+opposite label. Standard risk requires two same-direction validated judges
+and zero validated opposition; high risk requires three unanimous validated
+judges. Validated conflict or inconclusive evidence abstains as
+`not_enough_evidence`; too few qualified judges abstains as
+`unable_to_verify_reliably`. No raw-label majority, brand weights, numeric
+truth confidence, or LLM final choice is permitted.
+
+**Decision:** production eligibility additionally requires audited underlying
+model snapshot/identity, family verification, verified search isolation with
+no development bypass, and a policy-approved entailment provider. New judge
+audit flags default false; current Miri service cannot self-certify them.
+Policy 1.0 approves no live entailment provider. Offline fixture/evaluation
+mode can demonstrate logic but is always explicitly non-production. Every
+aggregation inserts a new `verdict_run` with input IDs, controlled reasons,
+policy/engine versions, semantic hash, and a PostgreSQL update-blocking
+trigger. The legacy `final_verdict` table remains unused and no public route
+or explanation is introduced.
+
+**Reason:** two matching model labels do not repair a broken pack, an invalid
+citation, uncertain entailment, or an unverified browser-backed provider.
+Explicit provenance makes policy results reproducible and prevents silent
+promotion of the 2/3 development Miri smoke into medical truth. Approval of
+live semantic validation or model identity requires reviewed policy and
+provider changes, not a casual development switch.
+
+## ADR-023 — Build reports only from frozen, validated audit records
+
+**Decision:** Phase 6C uses a versioned, pure report builder over one named
+VerdictRun, its frozen Pack 1.3, and only the judge/validation IDs recorded by
+that run. It never changes or redecides the verdict. Four display labels and
+every verdict reason code have controlled prose. No LLM-generated medical
+explanation, numeric truth confidence, outside-source lookup, or latest-row
+selection is permitted. Source cards show exact bounded frozen passages only
+when selected and cited by qualified, fully validated assessments; metadata
+and citation roles retain their audit provenance. Operational inability does
+not show evidence cards. Material numeric, causal-strength, scope, and
+integrity issues become explicitly separate limitations.
+
+**Decision:** `production_qualified=false` forces an in-contract visible
+development/evaluation notice, so current Miri-like records cannot appear as
+ordinary trusted reports. Every report also carries a separate, concise
+health-information safety notice. The semantic hash excludes only generation
+time; each execution inserts a new append-only `report_run` with an UPDATE
+trigger and claim-retention cascade. The CLI remains development/test-only;
+there is no public HTTP or frontend report contract in this phase.
+
+**Reason:** source excerpts and deterministic qualification metadata can be
+presented reproducibly without granting another model freedom to invent or
+overstate medical conclusions. Immutable report snapshots preserve the exact
+presentation that was emitted even if controlled wording changes later.

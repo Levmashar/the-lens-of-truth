@@ -12,7 +12,41 @@ metadata. Phase 4B.1 adds transparent relationship-directness and selection
 metadata. Phase 5A adds a development-only CLI for independent judgments over
 an existing frozen pack. Phase 6A adds a developer-only per-judge validation
 CLI and audit table. Neither changes public API responses or returns a final
-medical verdict.
+medical verdict. Phase 6B adds an internal deterministic aggregator and
+append-only audit; no public endpoint or frontend response changes.
+Phase 6C adds an internal deterministic report contract and developer CLI;
+it does not add an HTTP report/verdict route or expose development Miri
+results to users.
+
+## Phase 6C internal report contract (no HTTP route)
+
+After `alembic upgrade head`, pass the UUID of one persisted `verdict_run`:
+
+```text
+python -m app.report.smoke <verdict-run-uuid>
+```
+
+The command is limited to `APP_ENV=development|test`. It reads only that
+VerdictRun and the explicit Evidence Pack, judge-run, and validation-run IDs
+already recorded in it; missing or mismatched provenance fails closed. No
+retrieval, model call, latest-row selection, or verdict recomputation occurs.
+Each invocation appends a new `report_run` audit row and prints its UUID and
+semantic hash. Reruns with the same frozen inputs and builder version have
+the same semantic hash despite a new row and generation timestamp.
+
+`LensReport` version `1.0` contains `claim` (exact submitted atomic text and
+type), the unchanged four-way `verdict` and display label, `headline`,
+`short_summary`, controlled `why_this_result` code/text pairs,
+`key_evidence` source cards, `evidence_limitations`, `judge_summary`,
+`verification_status`, `sources`, separate `safety_notice`, mandatory
+`production_qualified`, provenance, and semantic hash. A source card contains
+the frozen E ID, PMID, optional DOI, title, journal/date/design, integrity
+status, citation role(s), exact bounded passage excerpt, passage hash/section,
+stored source URL, validation indicator, and explicit citing audit IDs.
+Source text is never an LLM-generated summary. Only selected passages cited
+by fully validated qualified assessments appear; `unable_to_verify_reliably`
+has no evidence cards. A non-production report always includes an explicit
+development/evaluation notice. The contract has no truth-probability field.
 
 ## Phase 5A developer judging command (no HTTP route)
 
@@ -77,6 +111,40 @@ of a judge's evidence use, not medical verdict labels. No live entailment
 provider is configured in Phase 6A; absent semantic validation remains
 `unable_to_validate` unless a deterministic fatal defect is found.
 Search-bypassed Miri runs remain untrusted development plumbing records.
+
+## Phase 6B developer aggregation command (no HTTP route)
+
+After `alembic upgrade head`, explicitly select a stored Pack 1.3 ID, judge
+run IDs, and corresponding validation run IDs. No "latest" lookup occurs in
+the aggregator:
+
+```text
+python -m app.verdict.smoke --pack <pack-uuid> \
+  --judge-runs <judge-uuid,judge-uuid> \
+  --validation-runs <validation-uuid,validation-uuid> \
+  --mode production
+```
+
+The CLI is restricted to `APP_ENV=development|test`; `production` above is the
+*aggregation policy mode*, not permission to invoke the CLI in production.
+An empty `--judge-runs "" --validation-runs ""` is allowed for a genuinely
+successful no-results pack. The command prints the claim, pack hash, policy,
+qualification/exclusion diagnostics, one of exactly four internal labels,
+reason codes, semantic hash, and new audit UUID. It does not call an LLM or
+network service or generate a patient-facing explanation.
+
+`fixture_or_evaluation` mode exercises offline policy fixtures and always
+records `production_qualified=false`. Production mode requires audited
+model identity/snapshot, verified distinct families and search isolation,
+and a policy-approved one-passage entailment provider. None is approved in
+`verdict-policy-1.0`, so existing Miri runs and synthetic fixtures cannot
+produce a production-qualified decisive verdict with the default policy.
+`not_enough_evidence` means retrieval succeeded but validated evidence does
+not justify a decisive conclusion; `unable_to_verify_reliably` means a
+technical, provenance, normalization, qualification, or validation failure.
+Partial or invalid judge validations never count as decisive labels. No
+numeric truth confidence is returned. The internal `verdict_run` table is
+append-only; no public `GET` or `POST` verdict route is added in Phase 6B.
 
 ## `POST /v1/analyses/uploads/screenshots`
 

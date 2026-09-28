@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import json
 from uuid import UUID
 
 from app.core.config import get_settings
@@ -22,6 +23,8 @@ def _read_judge(row: JudgeRunRecord) -> JudgeRun:
         evidence_pack_id=row.evidence_pack_id, evidence_pack_hash=row.evidence_pack_hash,
         slot=row.slot, provider=row.provider, model=row.model,
         model_family=row.model_family, model_snapshot=row.model_snapshot,
+        model_identity_verified=row.model_identity_verified,
+        model_family_verified=row.model_family_verified,
         search_override_active=row.search_override_active,
         search_guard_bypassed=row.search_guard_bypassed,
         search_isolation_verified=row.search_isolation_verified,
@@ -29,7 +32,7 @@ def _read_judge(row: JudgeRunRecord) -> JudgeRun:
         requested_at=row.requested_at, responded_at=row.responded_at,
         latency_ms=row.latency_ms, attempt_count=row.attempt_count,
         outcome_status=row.outcome_status, response_json=row.response_json,
-        decision=JudgeDecision.model_validate(row.decision_json),
+        decision=JudgeDecision.model_validate_json(json.dumps(row.decision_json)),
         input_tokens=row.input_tokens, output_tokens=row.output_tokens,
         provider_request_id=row.provider_request_id, error_category=row.error_category,
     )

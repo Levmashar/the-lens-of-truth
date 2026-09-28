@@ -31,6 +31,12 @@ class JudgeRunRecord(UUIDPrimaryKeyMixin, Base):
     model: Mapped[str] = mapped_column(String(128), nullable=False)
     model_family: Mapped[str] = mapped_column(String(64), nullable=False)
     model_snapshot: Mapped[str | None] = mapped_column(String(128))
+    model_identity_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false",
+    )
+    model_family_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false",
+    )
     search_override_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false",
     )

@@ -30,9 +30,9 @@ treated as proof of causation.
 
 - The backend is pipeline-first. Models receive one fixed, logged Evidence Pack
   and cannot browse independently while judging a claim.
-- Verdicts are limited to `SUPPORTED`, `CONTRADICTED`,
-  `NOT_ENOUGH_EVIDENCE`, and `UNABLE_TO_VERIFY`.
-- `UNABLE_TO_VERIFY` means the claim or verification process is unreliable;
+- Verdicts are limited to `supported`, `contradicted`,
+  `not_enough_evidence`, and `unable_to_verify_reliably`.
+- `unable_to_verify_reliably` means the claim or verification process is unreliable;
   `NOT_ENOUGH_EVIDENCE` means retrieval worked but cannot justify a conclusion.
 - High-risk medical topics use a stricter abstention policy. Future phases must
   favor `NOT_ENOUGH_EVIDENCE` over a decisive result when thresholds are not met.
@@ -252,9 +252,45 @@ and evidence-integrity metadata are implemented:
   provenance, timing, results, and typed failure category. A database trigger
   rejects updates; claim-retention cascades still apply. No final aggregation,
   verdict, report, or public Phase 6A endpoint is implemented.
+- Phase 6B adds an internal deterministic `verdict-policy-1.0` aggregator over
+  explicit claim, Pack ID/hash, judge-run IDs, and validation-run IDs. It
+  recomputes Pack 1.3's semantic hash, checks normalization/retrieval/selection
+  and every audit linkage, then excludes failed, invalid, partial, or
+  unavailable judge validations from decisive counts. Two fully validated,
+  independent judges can support a standard-risk decisive label only with no
+  validated opposite label; high-risk claims require three unanimous fully
+  validated decisions. Validated disagreement, weaker/indirect evidence, or
+  successful retrieval with no results yields `not_enough_evidence`. Technical
+  failure or too few qualified judges yields `unable_to_verify_reliably`.
+- Production qualification requires verified model identity/snapshot and
+  family, verified search isolation without a bypass, and a policy-approved
+  entailment provider. These audit fields default false and Phase 6B approves
+  no live entailment provider, so current Miri rows and all current live
+  Phase 6A runs cannot become production-qualified decisive verdicts. An
+  offline `fixture_or_evaluation` mode can exercise the decision table but
+  always marks its output non-production. Each execution adds an immutable
+  `verdict_run` with typed reasons, explicit IDs, and a semantic result hash.
+  No model chooses the final label, no numeric truth confidence is emitted,
+  and no public verdict API or frontend display exists yet.
+- Phase 6C converts one explicitly named, persisted VerdictRun into an
+  internal, typed `LensReport`. A pure builder reads only that run's frozen
+  Evidence Pack and named judge/validation audits; it never re-aggregates the
+  verdict, calls a model, fetches new evidence, or selects latest rows.
+  Controlled templates translate reason codes and four display labels.
+  Source cards quote bounded exact selected passages only when qualified,
+  fully validated decisions cited them; PMID, DOI, title, date, design,
+  integrity, URL, citation role, and audit IDs come from frozen provenance.
+  Numeric, causal-strength, material-scope, and integrity failures are
+  surfaced as limitations, not new medical conclusions. Operational inability
+  shows no evidence cards. Every report carries a separate health-information
+  safety notice and an unhideable development/evaluation marker when
+  `production_qualified=false`; current Miri-like runs remain non-production.
+  A semantic hash excludes only report-generation time, and each execution
+  inserts a new PostgreSQL update-protected `report_run`. The CLI is
+  development/test-only; there is no public report API or frontend exposure.
 
 Licensed UMLS source integration, non-PubMed evidence retrieval, hybrid/vector
-search, approved live citation entailment, calibration, and verdicts are
+search, approved live citation entailment, calibration, and public verdicts are
 not implemented. Integrity checks are not exhaustive: PubMed/Crossref metadata can
 lag or omit events, and `valid` is not medical correctness or evidence quality.
 MeSH linking and PICO framing are terminology operations, not medical truth

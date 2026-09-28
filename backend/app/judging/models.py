@@ -104,6 +104,8 @@ class JudgeRun(BaseModel):
     model: str
     model_family: str
     model_snapshot: str | None = None
+    model_identity_verified: bool = False
+    model_family_verified: bool = False
     search_override_active: bool = False
     search_guard_bypassed: bool = False
     search_isolation_verified: bool = False

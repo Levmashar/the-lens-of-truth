@@ -4,7 +4,9 @@
 
 The repository implements intake, normalization, PubMed retrieval with frozen
 Evidence Pack 1.3, independent Phase 5A judging, and Phase 6A per-judge
-evidence-use validation. It makes no final medical judgment.
+evidence-use validation, internal Phase 6B verdict aggregation, and internal
+Phase 6C evidence-cited report construction. No verdict or report is exposed
+through the public API or frontend.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -229,6 +231,66 @@ PostgreSQL update trigger protects this append-only audit; normal retention
 cascades follow the underlying judge/pack. Phase 6A has no public endpoint,
 final aggregation, medical verdict, or report. The legacy `final_verdict`
 table remains unused.
+
+Phase 6B adds a pure `app/verdict/` policy engine. `AggregationInput` names the
+claim, Pack ID/hash, every judge and validation run ID, mode, and policy
+version; no latest-row selection is permitted. The engine rehashes Pack 1.3,
+checks claim normalization, retrieval status, selected evidence, and audit
+identity before assessing any labels. Successful `no_results` produces
+`not_enough_evidence`; retrieval/pack/normalization failure produces
+`unable_to_verify_reliably`. One failed/invalid/partial/unavailable validation
+never becomes a decisive vote or a vote for the opposite label.
+
+`verdict-policy-1.0` requires two distinct, fully validated judges and no
+validated opposite label for standard-risk supported/contradicted. High risk
+requires three unanimous fully validated judges. Mixed validated decisive
+labels, all inconclusive labels, or insufficiently decisive validated evidence
+yield `not_enough_evidence`. Fewer qualified judges than the risk-specific
+minimum is operational inability, not evidence insufficiency. This is a
+decision table after qualification and evidence-use validation, not raw
+majority voting. No numeric truth probability is calculated.
+
+Production additionally requires audited underlying model identity/snapshot,
+actual family verification, search isolation without any bypass, and a
+policy-approved entailment provider. New identity/family audit booleans on
+`judge_run` default false; current judge service never asserts them. No live
+entailment provider is approved in policy 1.0. Thus the development Miri
+smoke fails production qualification, while offline evaluation results carry
+`production_qualified=false`. Each execution inserts a distinct, update-
+protected `verdict_run` with explicit input IDs, policy/engine versions,
+controlled reason codes, deterministic result JSON and semantic hash. The
+legacy one-row `final_verdict` remains unused. Phase 6B does not itself
+generate human-readable report text.
+
+Phase 6C adds a pure `app/report/` builder downstream of the immutable
+`verdict_run`. It loads one explicit VerdictRun ID and only the Pack, JudgeRun,
+and JudgeValidationRun IDs recorded in that run. The persisted verdict label
+and semantic hash are rechecked, not recomputed. The frozen Pack 1.3 hash is
+rechecked before any excerpt is shown. Controlled versioned templates map all
+reason codes to concise prose and preserve the four existing labels; no LLM,
+outside source, truth-confidence score, or new medical interpretation is used.
+
+Evidence cards are sourced only from selected Pack passages actually cited by
+qualified, fully validated assessments. Cards retain exact E ID, source
+identifiers, document metadata, citation roles, validation-run IDs, and a
+deterministic 600-character prefix of the frozen passage; full passages stay
+in the Pack audit. Source excerpts are structurally distinct from Lens prose.
+Retracted or unverified positive citations are never cards. An operational
+`unable_to_verify_reliably` report shows reasons and no evidence cards; a
+successful no-results `not_enough_evidence` report says only that the
+configured search returned none, not that no research exists. Material
+numeric, causal-strength, scope, and integrity validation flags become
+controlled limitations. Excluded assessments and descriptive validated-label
+counts remain visible without model-brand ranking or confidence percentages.
+
+Every report has a separate health-information safety notice and a mandatory
+development/evaluation notice when `production_qualified=false`. Report
+provenance contains the explicit audit IDs, verdict and Pack hashes, versions,
+and generation time. The report semantic hash covers all stable content and
+excludes only generation time; each execution inserts a new append-only
+`report_run` row with an UPDATE-blocking PostgreSQL trigger. Reports follow
+the VerdictRun's claim-retention cascade. Only a development/test CLI can
+emit them; public API and frontend release await a separate reviewed gate.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

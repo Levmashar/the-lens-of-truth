@@ -150,14 +150,36 @@
 
 ## Phase 6B: Disagreement and final verdict aggregation
 
-- [ ] Deterministic risk-aware aggregation of validated independent judgments
-- [ ] Abstention and operational-failure policy; never majority vote raw labels
-- [ ] Production gates for pinned families and verified search isolation
+- [x] Versioned deterministic four-label policy over explicit judge/validation IDs
+- [x] Standard-risk 2-judge and high-risk 3-judge conservative decision tables
+- [x] Distinguish successful no-results retrieval from pipeline/qualification failure
+- [x] Exclude failed, partial, invalid, or unavailable judge validations from
+      decisive label counts; retain typed exclusion/disagreement diagnostics
+- [x] Require verified identity, family, search isolation, and approved entailment
+      source for production; keep development Miri smoke ineligible
+- [x] Persist append-only, semantically hashed verdict runs with PostgreSQL
+      update-blocking trigger and an internal explicit-ID CLI
+- [x] Offline policy fixtures and current-Miri regression; no public result API
+- [ ] Release gate: approve a live entailment provider in a reviewed policy
+      revision, verify pinned independent model families and native search isolation
+- [ ] Phase 8: medically review and benchmark verdict safety and abstention rates
 
 ## Phase 6C: Evidence-cited report and safety UX
 
-- [ ] Human-readable evidence-cited explanation with safety banners
-- [ ] User-facing provenance and uncertainty without truth-probability claims
+- [x] Internal typed `LensReport` from one explicit, persisted VerdictRun and
+      its frozen Evidence Pack, JudgeRun, and JudgeValidationRun IDs
+- [x] Controlled four-label display, reason-code prose, qualification and
+      disagreement summaries; no LLM writing or numeric truth confidence
+- [x] Exact bounded source excerpts from selected, validated citations only;
+      distinguish source text from Lens-generated explanation
+- [x] Surface material numeric, causal-strength, scope, and integrity limits;
+      show standard health-information safety and non-production notices
+- [x] Append-only, semantically hashed `report_run`, internal CLI, offline
+      four-label/Miri regressions, PostgreSQL trigger and schema checks
+- [ ] Phase 7: add a separately reviewed, explicitly gated report endpoint
+      and accessible frontend presentation; no public verdict route in Phase 6C
+- [ ] Release gate: approve live entailment, provider identity and search
+      isolation before any report can be production-qualified
 
 ## Phase 7: Frontend polish
 
