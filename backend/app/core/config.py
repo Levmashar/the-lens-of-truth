@@ -108,6 +108,48 @@ class Settings(BaseSettings):
     crossref_total_timeout_seconds: float = Field(
         default=30.0, gt=0, le=60, validation_alias="CROSSREF_TOTAL_TIMEOUT_SECONDS"
     )
+    judge_1_provider: Literal["miri", "openai_compatible"] | None = Field(
+        default=None, validation_alias="JUDGE_1_PROVIDER"
+    )
+    judge_1_model: str | None = Field(default=None, validation_alias="JUDGE_1_MODEL")
+    judge_1_model_family: str | None = Field(
+        default=None, validation_alias="JUDGE_1_MODEL_FAMILY"
+    )
+    judge_1_base_url: str | None = Field(default=None, validation_alias="JUDGE_1_BASE_URL")
+    judge_1_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_1_API_KEY")
+    judge_2_provider: Literal["miri", "openai_compatible"] | None = Field(
+        default=None, validation_alias="JUDGE_2_PROVIDER"
+    )
+    judge_2_model: str | None = Field(default=None, validation_alias="JUDGE_2_MODEL")
+    judge_2_model_family: str | None = Field(
+        default=None, validation_alias="JUDGE_2_MODEL_FAMILY"
+    )
+    judge_2_base_url: str | None = Field(default=None, validation_alias="JUDGE_2_BASE_URL")
+    judge_2_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_2_API_KEY")
+    judge_3_provider: Literal["miri", "openai_compatible"] | None = Field(
+        default=None, validation_alias="JUDGE_3_PROVIDER"
+    )
+    judge_3_model: str | None = Field(default=None, validation_alias="JUDGE_3_MODEL")
+    judge_3_model_family: str | None = Field(
+        default=None, validation_alias="JUDGE_3_MODEL_FAMILY"
+    )
+    judge_3_base_url: str | None = Field(default=None, validation_alias="JUDGE_3_BASE_URL")
+    judge_3_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_3_API_KEY")
+    judge_attempt_timeout_seconds: float = Field(
+        default=45.0, gt=0, le=60, validation_alias="JUDGE_ATTEMPT_TIMEOUT_SECONDS"
+    )
+    judge_total_timeout_seconds: float = Field(
+        default=80.0, gt=0, le=120, validation_alias="JUDGE_TOTAL_TIMEOUT_SECONDS"
+    )
+    judge_concurrency_limit: int = Field(
+        default=3, ge=1, le=3, validation_alias="JUDGE_CONCURRENCY_LIMIT"
+    )
+    judge_allow_same_family_development: bool = Field(
+        default=False, validation_alias="JUDGE_ALLOW_SAME_FAMILY_DEVELOPMENT"
+    )
+    judge_allow_search_enabled_development: bool = Field(
+        default=False, validation_alias="JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT"
+    )
 
     @field_validator("ncbi_tool")
     @classmethod

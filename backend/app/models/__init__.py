@@ -3,6 +3,8 @@
 from app.models.claim import Claim
 from app.models.evaluation import FinalVerdict, ModelEvaluation
 from app.models.evidence import EvidenceDocument, EvidencePassage
+from app.models.judge_run import JudgeRunRecord
+from app.models.judge_validation_run import JudgeValidationRunRecord
 from app.models.retrieval import (
     EvidencePackRecord,
     RetrievalDocumentQuery,
@@ -22,6 +24,8 @@ __all__ = [
     "RetrievalRun",
     "FinalVerdict",
     "ModelEvaluation",
+    "JudgeRunRecord",
+    "JudgeValidationRunRecord",
     "ScreenshotUpload",
     "Submission",
 ]

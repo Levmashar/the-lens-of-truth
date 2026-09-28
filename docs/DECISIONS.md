@@ -256,3 +256,92 @@ screening/cessation or never-smoker contexts for a smoking-to-lung-cancer-risk
 claim. The bounded lexical rules address these reproducibly without a new
 model, fabricated medical inference, or PMID-specific hardcoding. Their
 precision/recall and multilingual coverage still require Phase 7 evaluation.
+
+## ADR-018 — Freeze one pack before independent judging
+
+**Decision:** Phase 5A accepts only hash-verified Evidence Pack 1.3 snapshots.
+All active judge slots receive the same canonical versioned prompt containing
+the same exact claim and ordered selected E passages; no new retrieval or model
+tools are available during judging. Slots explicitly state provider, requested
+model, and actual model family. Duplicate families are rejected except under a
+development/test-only override. Miri and other OpenAI-shaped gateways use one
+adapter interface; no model IDs are hardcoded.
+
+**Decision:** individual judges have only `supported`, `contradicted`, and
+`not_enough_evidence`. Strict Pydantic validation rejects unsupported labels,
+missing fields, and citations outside the selected E IDs. A 45-second attempt
+limit, 80-second total per-slot deadline, one retry, bounded concurrent calls,
+and process-local circuit breaker isolate failures. An append-only `judge_run`
+record links every success or failure to pack ID/hash, prompt version/hash,
+provider/model/family, attempt/timing diagnostics, and validated canonical
+response when available. Claim/pack retention cascades apply. Descriptive
+agreement statistics are not a vote, confidence score, or final verdict.
+
+**Reason:** independent model opinions are only comparable when they assess
+identical evidence. Existing `model_evaluation` includes an orchestrator-only
+label and lacks failed-run/pack provenance, so a dedicated audit table avoids
+misrepresenting technical degradation as a medical decision. Miri browser
+aliases do not prove model pinning or that native browsing is disabled; these
+controls must be verified before production use.
+
+## ADR-019 — Permit search-enabled Miri modes only for marked development smoke
+
+**Decision:** keep the conservative search-mode name guard on by default and
+unconditionally reject matching modes in staging/production. In development
+or test only, an explicit `JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT=true` permits
+a plumbing smoke. The service independently rechecks the environment and flag.
+All runs in a bypassed ensemble, including failures, store
+`search_override_active=true` and `search_isolation_verified=false`; matching
+slots store `search_guard_bypassed=true`. The CLI warns before calling models.
+The canonical prompt version advances to `judge-1.1-2026-09-26` and explicitly
+forbids search and outside sources. No search/browsing tool is passed.
+
+**Reason:** the available Miri modes can trigger the name guard, preventing a
+live integration smoke. The override tests transport, parsing, persistence,
+and failure isolation without misrepresenting a browser-backed model's native
+search behavior as controlled. It cannot qualify a model or a medical judgment
+for production.
+
+## ADR-020 — Advance to evidence validation without qualifying the live ensemble
+
+**Decision:** the 2026-09-28 development Miri smoke is sufficient to proceed
+with Phase 6 citation and evidence validation against frozen Evidence Pack 1.3
+and strictly validated judge-response fixtures. It is not a release gate for
+live verdicts: two of three configured family labels returned valid responses,
+while Gemini returned malformed JSON twice. The smoke used a development-only
+search guard bypass, so evidence isolation and underlying model-family identity
+remain unverified. Do not interpret descriptive agreement among two successful
+slots as a three-judge consensus or aggregate it into a medical verdict.
+
+**Reason:** the smoke exercises the transport, schema, shared-pack, and audit
+paths enough to develop the next deterministic validation layer. A public
+judgment still requires reliable structured output, verified distinct/pinned
+families, provider-side search controls, and the later citation/entailment and
+risk-aware verdict gates.
+
+## ADR-021 — Validate judge evidence use separately, with fail-closed semantics
+
+**Decision:** Phase 6A validates each successful `JudgeDecision` against its
+exact frozen Evidence Pack 1.3. Recheck selected E IDs, canonical pack and
+passage hashes, document provenance, and frozen integrity before bounded
+numeric, PICO/scope, and relation-strength checks. Fatal deterministic issues
+short-circuit optional per-passage entailment. Association-only evidence
+cannot justify a decisive causal judgment but can explain a legitimate
+`not_enough_evidence` decision. Cited and opposing roles are validated
+independently. Structured entailment stays behind a provider-independent
+interface; no live provider is approved in this phase. An absent or failed
+provider produces `unable_to_validate`, never manufactured validation.
+
+**Decision:** every validation execution creates a new append-only
+`judge_validation_run` with versioned deterministic rules, prompt/provider
+provenance when used, result JSON, timing, and failure type. A PostgreSQL
+update trigger mirrors the existing judge-run protection; normal claim
+retention cascades remain. No public endpoint, final verdict, confidence,
+aggregation, or user-facing report is introduced.
+
+**Reason:** model citations can be real but misused through numeric distortion,
+population shift, or association-to-causation overclaim. Separate typed audit
+records expose those defects without confusing validation of a judge's
+reasoning with medical truth or treating development Miri labels as ground
+truth. Conservative `uncertain` states prevent lexical heuristics from posing
+as clinical entailment.

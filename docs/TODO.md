@@ -105,17 +105,59 @@
 - [ ] WHO/CDC and ClinicalTrials adapters
 - [ ] Hybrid/vector retrieval and reranking, if benchmark results justify them
 
-## Phase 5: Model ensemble
+## Phase 5A: Independent Evidence Judges
 
-- [ ] Independent, pinned model-provider adapters and circuit breakers
-- [ ] Structured judge responses and audit records
+- [x] Require the same validated Evidence Pack 1.3 selection and exact E passages for every judge
+- [x] Configure up to three explicit provider/model/model-family slots; reject duplicate
+      families unless a development-only override is deliberately enabled
+- [x] Add canonical versioned prompt, strict three-label JudgeDecision, selected-E-ID
+      citation validation, and prompt-injection trust boundary
+- [x] Run bounded concurrent calls with one retry, isolated failures, and per-slot breaker
+- [x] Append success/failure audit rows tied to pack ID/hash and prompt hash
+- [x] Expose descriptive agreement counts and developer CLI, without a final verdict
+- [x] Offline judge/adapter tests and migrated-PostgreSQL persistence test
+- [x] Add opt-in development/test-only search-mode guard bypass for Miri plumbing
+      smoke, with explicit warning and per-run unverified-isolation audit flags
+- [x] Run a development Miri smoke with three distinct configured family labels
+      against the frozen sunscreen Evidence Pack 1.3: ChatGPT and Qwen returned
+      valid judge responses; Gemini failed `malformed_json` twice; no verdict
+- [ ] Verify underlying model-family identity and pinning in each runtime;
+      configured labels and the 2/3 development smoke do not prove independence
+- [ ] Validate provider-native browsing/search controls for each approved
+      production provider before a public medical judgment
+- [ ] Resolve Gemini structured-output reliability and repeat a 3/3 live smoke
+      without development search or same-family overrides before release
+
+## Later model-ensemble work (outside Phase 5A)
+
 - [ ] Calibration and adaptive escalation policy
 
-## Phase 6: Verdict engine
+## Phase 6A: Judge citation and evidence validation
 
-- [ ] Citation existence, numeric alignment, entailment, and scope validation
-- [ ] Disagreement analysis and deterministic risk-aware aggregation
-- [ ] Evidence-cited human-readable report with safety banners
+- [x] Recheck every cited/opposing E ID against frozen Pack 1.3 selection,
+      passage hash, document provenance, and recorded judge-pack hash
+- [x] Recheck frozen integrity; exclude retracted citations and warn on unknown
+      integrity or expressions of concern
+- [x] Run conservative numeric, PICO/scope, and relation-strength checks before
+      optional one-passage semantic entailment
+- [x] Add strict provider-independent entailment contract, untrusted-data prompt,
+      offline synthetic fixtures, and development-only CLI
+- [x] Persist repeated validation as new append-only judge_validation_run rows;
+      verify the PostgreSQL trigger and Alembic schema
+- [x] Keep development Miri labels out of acceptance; expose no final verdict
+- [ ] Approve and evaluate a live one-passage entailment provider before public use
+- [ ] Phase 8: measure validator accuracy on medically reviewed, multilingual cases
+
+## Phase 6B: Disagreement and final verdict aggregation
+
+- [ ] Deterministic risk-aware aggregation of validated independent judgments
+- [ ] Abstention and operational-failure policy; never majority vote raw labels
+- [ ] Production gates for pinned families and verified search isolation
+
+## Phase 6C: Evidence-cited report and safety UX
+
+- [ ] Human-readable evidence-cited explanation with safety banners
+- [ ] User-facing provenance and uncertainty without truth-probability claims
 
 ## Phase 7: Frontend polish
 

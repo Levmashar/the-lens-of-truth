@@ -194,15 +194,79 @@ and evidence-integrity metadata are implemented:
   zinc review, post-stroke BP papers, screening/cessation paper, and
   never-smoker cohorts are retained but demoted. PubMed results and enrichment
   status can change over time; these counts are an observed check, not a gate.
+- Phase 5A judges one persisted, hash-verified Evidence Pack 1.3 without
+  retrieval calls. A canonical prompt contains the exact atomic claim,
+  controlled type, PICO/terminology framing, and only ordered
+  `selected_evidence_ids` with their frozen passages and document metadata.
+  The same prompt/hash is sent concurrently to up to three explicitly
+  configured provider/model/model-family slots. Distinct families are required
+  unless a development/test-only override is set; a gateway alias is not
+  evidence of independent underlying families.
+- A judge can return only `supported`, `contradicted`, or
+  `not_enough_evidence`; the typed schema requires short reasoning, cited and
+  opposing selected E IDs, assessed claim strength, sufficiency, and controlled
+  uncertainty reasons. Unsupported labels, malformed JSON, unknown/duplicate
+  citations, and missing fields fail closed. Association alone cannot justify
+  a causal claim in the versioned canonical instructions. This is model
+  judgment, not validated citation entailment or a final Lens verdict.
+- Per-slot requests use 45-second attempt and 80-second total defaults, one
+  retry, bounded parallelism, and a process-local circuit breaker. Failed slots
+  do not suppress successful peers. An append-only `judge_run` row stores the
+  pack ID/hash, prompt version/hash, provider/model/family, timestamps,
+  latency/attempts, canonical validated response, token usage when available,
+  and a typed failure category. Descriptive label counts/agreement never vote
+  or produce a final verdict. The CLI is development/test-only.
+- A search-enabled gateway model mode remains blocked by default and is always
+  blocked in staging/production. `JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT=true`
+  permits a development/test plumbing smoke only. The canonical prompt still
+  forbids browsing/search/outside sources, and the adapter supplies no tools,
+  but provider-native search isolation cannot be verified through Miri.
+  Every run in that ensemble stores `search_override_active=true` and
+  `search_isolation_verified=false`; search-mode slots also store
+  `search_guard_bypassed=true`, including failed runs. The CLI warns before
+  sending requests. These results are not verified same-evidence evaluations.
+- The 2026-09-28 development Miri smoke reused frozen sunscreen Evidence Pack
+  `156f0f74-55e2-40ef-8910-503a1e008c2d` and judge prompt
+  `judge-1.3-2026-09-27`. The configured OpenAI/ChatGPT and Qwen slots each
+  returned one schema-valid judgment; the Google/Gemini slot returned
+  `malformed_json` on both attempts. All three append-only runs were persisted.
+  The two successful slots both labeled the claim `contradicted`, but agreement
+  describes only those two responses, not a three-judge result or medical truth.
+  Search-guard bypass was recorded and isolation remained unverified. This
+  plumbing result is sufficient to begin Phase 6 implementation using frozen
+  packs and offline validated fixtures, not to enable a live final verdict.
+- Phase 6A validates each successful judge decision separately against its
+  exact frozen Pack 1.3. It rechecks pack/passage hashes, selected E IDs,
+  document provenance, frozen integrity, material numbers, explicit PICO/scope,
+  and causal-vs-association strength before optional one-passage entailment.
+  Cited and opposing passages have separate typed records. Association-only
+  evidence is fatal to a decisive causal use but may correctly explain a
+  `not_enough_evidence` decision. A numeric difference that forms the basis
+  of contradiction is not automatically a judge error; a number misstated in
+  the judge's own reasoning is.
+- Entailment has a strict provider-independent, one-passage interface with
+  source text confined to untrusted data. Phase 6A uses offline deterministic
+  fixtures, not an approved live semantic provider. Without one, the CLI
+  reports `unable_to_validate` unless a deterministic fatal defect exists.
+  Each execution inserts a new `judge_validation_run` with version/prompt
+  provenance, timing, results, and typed failure category. A database trigger
+  rejects updates; claim-retention cascades still apply. No final aggregation,
+  verdict, report, or public Phase 6A endpoint is implemented.
 
 Licensed UMLS source integration, non-PubMed evidence retrieval, hybrid/vector
-search, independent judging, citation validation, and verdicts are not
-implemented. Integrity checks are not exhaustive: PubMed/Crossref metadata can
+search, approved live citation entailment, calibration, and verdicts are
+not implemented. Integrity checks are not exhaustive: PubMed/Crossref metadata can
 lag or omit events, and `valid` is not medical correctness or evidence quality.
 MeSH linking and PICO framing are terminology operations, not medical truth
 assessment. The 2026 MeSH index must be imported separately in each runtime;
 the generated vocabulary is not committed to the repository.
 Phase 4A is PubMed-only evidence retrieval; it does not judge claims.
+Miri's browser-backed gateway does not guarantee a pinned underlying model or
+disable all native search behavior. Phase 5A sends no tools and explicitly
+forbids browsing, but production approval must verify provider-side controls.
+A development smoke used three distinct configured family labels, but those
+aliases are not independently verified or pinned and only two responses were
+valid. No production-qualified three-family evaluation has been completed.
 
 ## Rules for future developers
 
@@ -245,3 +309,12 @@ Phase 4A is PubMed-only evidence retrieval; it does not judge claims.
     a directly contradictory result can still be highly direct. Keep it
     separate from retrieval relevance, integrity, study quality, and later
     entailment/claim-verdict checks.
+18. Never use an unselected passage in a judge prompt. Preserve exact pack
+    and prompt hashes on every append-only run, including failures. Distinct
+    requested aliases are not proof of distinct model families. Do not vote
+    judge labels into a medical verdict or treat their explanations as
+    citation-validated until the later validation phase.
+19. Phase 6A validates a judge's evidence use, not medical truth. Deterministic
+    defects cannot be overridden by a semantic provider. Missing or failed
+    entailment remains unvalidated; do not promote development fixture results
+    or search-bypassed judge decisions to public output.

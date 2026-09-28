@@ -2,10 +2,9 @@
 
 ## Implemented boundary
 
-The repository implements the foundation plus secure text/screenshot
-ingestion, bounded local OCR, PII masking, atomic claim extraction, grounded
-PICO framing, normalization completeness auditing, and Phase 4A PubMed-only
-retrieval. It does not invoke judges or make a medical judgment.
+The repository implements intake, normalization, PubMed retrieval with frozen
+Evidence Pack 1.3, independent Phase 5A judging, and Phase 6A per-judge
+evidence-use validation. It makes no final medical judgment.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -158,8 +157,78 @@ rewritten. The existing append-only JSONB pack stores the new fields, so no
 database migration is needed. This stage does **not** infer evidence support,
 contradiction, causation, or a medical verdict.
 
-No full-text fetching, independent model judging, or medical verdict is
-produced here.
+Phase 5A adds `app/judging/` after the frozen pack, without changing retrieval.
+It first validates Evidence Pack 1.3's semantic hash, claim identity, unique
+selection, selected flags, document presence, and retraction exclusion. One
+versioned system instruction plus one canonical JSON data prompt is built from
+the claim snapshot and only selected E passages. Evidence text, titles, and
+metadata stay in the untrusted data message. No provider tool is supplied.
+`JudgeProvider` is a small outbound interface; the HTTPX OpenAI-shaped/Miri
+adapter is one implementation. Explicit slots name provider, model, and actual
+model family. Duplicate families fail configuration except for a deliberate
+development/test override. Miri requested modes are best-effort; production
+must verify underlying model identity and native browsing controls.
+Search-mode names also fail configuration by default and in every staging or
+production run. A separate `JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT` flag can
+permit development/test plumbing calls only. The service rechecks this boundary
+even for caller-constructed slots, and each affected run persists override,
+bypass, and unverified-isolation flags. The versioned prompt explicitly forbids
+browsing and search; no browsing tool is passed to the adapter. This is not a
+guarantee that a browser-backed provider suppresses its own search behavior.
+
+Judges run concurrently with a configurable semaphore, 45-second per-attempt
+and 80-second per-slot total defaults, one retry, independent failure records,
+and a process-local per-slot circuit breaker. The strict `JudgeDecision` has
+only three evidence labels; it rejects unsupported labels, unknown or duplicate
+E citations, and absent fields. The `judge_run` table stores one append-only
+success or failure per invocation, keyed to the stored pack ID/hash and exact
+prompt hash. The canonical validated decision is retained; failed raw model
+text, secrets, and prompts are not logged. A PostgreSQL trigger forbids updates
+to judge rows. Rows follow claim/pack retention
+through foreign-key cascades. Agreement statistics are descriptive only. The
+legacy `model_evaluation` and `final_verdict` tables remain unused by Phase 5A.
+
+Phase 6A adds `app/validation/` after each successful judge run. It rehashes
+the exact Pack 1.3 and each cited passage, checks selected E IDs and frozen
+document provenance/integrity, then compares explicit numbers, PICO scope,
+and relationship strength. Deterministic fatal defects cannot be overridden
+by semantic entailment. Cited and opposing passages have separate records.
+The optional `EvidenceEntailmentValidator` receives only one exact passage,
+the atomic claim, judge label/short reasoning, and frozen metadata. Its
+versioned system prompt treats source text as untrusted, forbids browsing and
+outside knowledge, and requires a strict single-E-ID response. No live
+provider is configured; offline fakes are acceptance fixtures.
+
+Numeric alignment compares only typed comparable quantities: percent changes
+and percentage points, RR/OR/HR, CI/p values, sample counts, safe mass/volume
+doses, and same-unit durations. Unsupported or ambiguous conversions remain
+`uncertain`; absent quantitative assertions are `not_applicable`. A material
+mismatch is fatal for `supported` use or a judge-reasoning numeric assertion.
+A contradiction may correctly cite a differing claim number. Scope checks
+use stated PICO slots and frozen study metadata; explicit adult/child,
+human/animal, prevention/treatment, comparator, outcome, and post-outcome
+mismatches can be fatal to a decisive judge use. Missing scope is not invented.
+For causal claims, association-only observational evidence is
+`weaker_than_claim` and cannot validate a decisive causal label; the same
+limitation can support a properly framed inconclusive judgment. These lexical
+rules are conservative, not medical entailment.
+
+Controlled fatal issue codes cover pack/citation identity, missing provenance,
+retraction, material numeric/scope/relation mismatch, and evidence that
+contradicts its claimed judge use. Unknown integrity, partial scope, uncertain
+numeric/relation/entailment, low quality prior, and provider unavailability are
+warnings. `validated` requires eligible citations and successful one-passage
+entailment; material uncertainty in numbers, scope, or integrity yields
+`partially_validated` even if the semantic provider says the use is entailed.
+The provider's concise evidence claim, scope assessment, and reason are kept
+in the citation audit record. Without an approved provider, the CLI reports
+`unable_to_validate` unless a deterministic fatal issue makes it `invalid`.
+`judge_validation_run` inserts a new row on every execution with versions,
+prompt hash when applicable, timing, result JSON, and failure category. A
+PostgreSQL update trigger protects this append-only audit; normal retention
+cascades follow the underlying judge/pack. Phase 6A has no public endpoint,
+final aggregation, medical verdict, or report. The legacy `final_verdict`
+table remains unused.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

@@ -9,7 +9,74 @@ adds controlled claim types and a source-grounded completeness audit.
 Phase 4A adds developer-only, PubMed-only evidence preview without a verdict.
 Phase 4B adds document integrity, Crossref DOI enrichment, and methodology
 metadata. Phase 4B.1 adds transparent relationship-directness and selection
-metadata; neither phase judges claim truth.
+metadata. Phase 5A adds a development-only CLI for independent judgments over
+an existing frozen pack. Phase 6A adds a developer-only per-judge validation
+CLI and audit table. Neither changes public API responses or returns a final
+medical verdict.
+
+## Phase 5A developer judging command (no HTTP route)
+
+After migrating the database, set one to three verified judge slots in the
+local environment (`JUDGE_N_PROVIDER`, `JUDGE_N_MODEL`,
+`JUDGE_N_MODEL_FAMILY`, optionally `JUDGE_N_BASE_URL`/`JUDGE_N_API_KEY`).
+For Miri, a slot can reuse the existing extraction gateway URL and key. Use
+only non-search model modes and independent actual families. Find a persisted
+pack ID with `SELECT id, claim_id, snapshot_hash FROM evidence_pack ORDER BY
+created_at DESC LIMIT 10;`, then run:
+
+```text
+python -m app.judging.smoke <stored-evidence-pack-uuid>
+```
+
+The command is restricted to `APP_ENV=development|test`. It reads an existing
+Evidence Pack 1.3, verifies its semantic hash, passes only its ordered
+`selected_evidence_ids` and exact frozen passages to each judge, persists one
+append-only `judge_run` per slot, and prints pack hash, family/model, status,
+label, citations, concise reason, latency, and descriptive agreement counts.
+It prints `NO FINAL VERDICT`. A missing pack, no configured slot, duplicate
+families, or an invalid pack fails before any provider call. Provider failures
+are recorded per slot and do not turn into a medical label. The CLI does not
+expose raw provider responses or secrets.
+
+Search-enabled Miri modes are rejected by default. For a development/test
+plumbing smoke only, `JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT=true` allows the
+request but prints `DEVELOPMENT OVERRIDE` before calls. Staging/production
+still reject the mode even with that setting. Every run in a bypassed ensemble
+records `search_override_active=true` and
+`search_isolation_verified=false`; search-mode slots additionally record
+`search_guard_bypassed=true`. Do not interpret those model outputs as a
+verified same-evidence medical evaluation; Miri-native browsing cannot be
+proven disabled by this adapter.
+
+Judge output schema version `1.0` requires: `label` (`supported`,
+`contradicted`, `not_enough_evidence`), `cited_evidence_ids`,
+`opposing_evidence_ids`, `reasoning_summary`, `claim_strength_assessed`,
+`evidence_sufficiency`, and controlled `uncertainty_reasons`.
+`unable_to_verify_reliably` is not a judge label. Citation existence is
+checked against the selected E IDs only. Phase 6A independently revalidates
+citations, numbers, scope, relation strength, and optional entailment; final
+verdict aggregation remains unimplemented.
+
+## Phase 6A developer validation command (no HTTP route)
+
+After `alembic upgrade head`, select a successful stored judge run ID from
+`SELECT id, model, outcome_status FROM judge_run WHERE decision_json IS NOT NULL
+ORDER BY responded_at DESC LIMIT 10;` and run:
+
+```text
+python -m app.validation.smoke <stored-judge-run-uuid>
+```
+
+The command is development/test-only. It reads the run's frozen Pack 1.3,
+performs deterministic checks without retrieval, and persists a new
+append-only `judge_validation_run` row. It prints per-citation existence,
+numeric/scope/relation/entailment statuses, issue codes, the individual judge
+validation status, and `NO FINAL LENS VERDICT`. `validated`,
+`partially_validated`, `invalid`, and `unable_to_validate` describe validation
+of a judge's evidence use, not medical verdict labels. No live entailment
+provider is configured in Phase 6A; absent semantic validation remains
+`unable_to_validate` unless a deterministic fatal defect is found.
+Search-bypassed Miri runs remain untrusted development plumbing records.
 
 ## `POST /v1/analyses/uploads/screenshots`
 
