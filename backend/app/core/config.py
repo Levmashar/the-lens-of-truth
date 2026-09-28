@@ -150,6 +150,15 @@ class Settings(BaseSettings):
     judge_allow_search_enabled_development: bool = Field(
         default=False, validation_alias="JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT"
     )
+    analysis_total_timeout_seconds: float = Field(
+        default=900.0, gt=0, le=1800, validation_alias="ANALYSIS_TOTAL_TIMEOUT_SECONDS"
+    )
+    analysis_claim_timeout_seconds: float = Field(
+        default=300.0, gt=0, le=600, validation_alias="ANALYSIS_CLAIM_TIMEOUT_SECONDS"
+    )
+    analysis_retrieval_timeout_seconds: float = Field(
+        default=180.0, gt=0, le=300, validation_alias="ANALYSIS_RETRIEVAL_TIMEOUT_SECONDS"
+    )
 
     @field_validator("ncbi_tool")
     @classmethod

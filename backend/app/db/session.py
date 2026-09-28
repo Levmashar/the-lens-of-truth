@@ -11,7 +11,10 @@ from app.core.config import get_settings
 def build_engine() -> Engine:
     """Build the PostgreSQL engine used by web requests and worker processes."""
 
-    return create_engine(get_settings().database_url, pool_pre_ping=True)
+    return create_engine(
+        get_settings().database_url, pool_pre_ping=True,
+        connect_args={"connect_timeout": 5},
+    )
 
 
 engine = build_engine()

@@ -160,15 +160,20 @@ class AnalysisIngestionService:
         return upload
 
     async def create_analysis(
-        self, *, session: Session, request: CreateAnalysisRequest
+        self, *, session: Session, request: CreateAnalysisRequest,
+        analysis_id: UUID | None = None,
     ) -> Submission:
         """Extract and persist redacted atomic claims from text or a stored screenshot."""
 
         await self.purge_expired(session=session)
         if request.input.type == "text":
-            return await self._create_text_analysis(session=session, request=request)
+            return await self._create_text_analysis(
+                session=session, request=request, analysis_id=analysis_id,
+            )
         if request.input.type == "screenshot":
-            return await self._create_screenshot_analysis(session=session, request=request)
+            return await self._create_screenshot_analysis(
+                session=session, request=request, analysis_id=analysis_id,
+            )
         raise LensError(
             status_code=501,
             code="input_type_not_implemented",
@@ -179,7 +184,7 @@ class AnalysisIngestionService:
         """Fetch one persisted analysis or return a privacy-safe not-found response."""
 
         submission = session.get(Submission, analysis_id)
-        if submission is None:
+        if submission is None or submission.purge_after <= datetime.now(UTC):
             raise LensError(
                 status_code=404,
                 code="analysis_not_found",
@@ -293,7 +298,8 @@ class AnalysisIngestionService:
         return len(uploads) + len(submissions)
 
     async def _create_text_analysis(
-        self, *, session: Session, request: CreateAnalysisRequest
+        self, *, session: Session, request: CreateAnalysisRequest,
+        analysis_id: UUID | None,
     ) -> Submission:
         assert request.input.text is not None
         raw_text = request.input.text
@@ -305,10 +311,12 @@ class AnalysisIngestionService:
             content_sha256=_sha256(raw_text),
             candidates=payload,
             redacted_text=redaction.text,
+            analysis_id=analysis_id,
         )
 
     async def _create_screenshot_analysis(
-        self, *, session: Session, request: CreateAnalysisRequest
+        self, *, session: Session, request: CreateAnalysisRequest,
+        analysis_id: UUID | None,
     ) -> Submission:
         assert request.input.upload_id is not None
         upload = session.get(ScreenshotUpload, request.input.upload_id)
@@ -344,6 +352,7 @@ class AnalysisIngestionService:
             candidates=payload,
             redacted_text=redaction.text,
             screenshot_upload=upload,
+            analysis_id=analysis_id,
         )
         upload.ocr_provider = self._ocr.service_name
         upload.ocr_confidence = ocr_result.confidence
@@ -362,6 +371,7 @@ class AnalysisIngestionService:
         candidates: ClaimExtractionPayload,
         redacted_text: str,
         screenshot_upload: ScreenshotUpload | None = None,
+        analysis_id: UUID | None = None,
     ) -> Submission:
         verified_candidates = validate_claim_candidates(
             payload=candidates,
@@ -369,7 +379,7 @@ class AnalysisIngestionService:
             maximum_claims=self._maximum_claims,
         )
         submission = Submission(
-            id=uuid4(),
+            id=analysis_id or uuid4(),
             client=request.client,
             language=request.language,
             input_type=InputType(request.input.type),

@@ -14,9 +14,84 @@ an existing frozen pack. Phase 6A adds a developer-only per-judge validation
 CLI and audit table. Neither changes public API responses or returns a final
 medical verdict. Phase 6B adds an internal deterministic aggregator and
 append-only audit; no public endpoint or frontend response changes.
-Phase 6C adds an internal deterministic report contract and developer CLI;
-it does not add an HTTP report/verdict route or expose development Miri
-results to users.
+Phase 6C adds an internal deterministic report contract and developer CLI.
+Phase 7A adds a background analysis run and a claim-scoped, server-gated read
+route for its frozen report. No separate verdict route or new medical report
+model is introduced. The Phase 7A route contracts below supersede earlier
+Phase 2-only lifecycle descriptions.
+
+## Phase 7A asynchronous analysis lifecycle
+
+`POST /v1/analyses` returns 202 before OCR, extraction, or any external
+retrieval/model call. The response contains `analysis_id`, `status: queued`,
+`stage: queued`, `claim_count: 0`, and `completed_claims: 0`. Send an opaque
+8–128-character `Idempotency-Key` to make a network retry return the same
+run; reusing it with different request content returns 409. No key means a
+deliberately new run. URL input still returns 501. Text and screenshot
+requests keep the existing body/consent/upload contracts below.
+Reusing a key whose analysis has expired returns 410; use a new key for an
+intentional new analysis.
+
+`GET /v1/analyses/{analysis_id}` polls the durable run. It returns:
+
+```json
+{
+  "analysis_id": "c5eb3f8d-5c9e-45d5-b88d-b5152b2de95a",
+  "status": "running",
+  "stage": "retrieving",
+  "completed_stages": ["extracting"],
+  "stage_timestamps": {
+    "extracting": {
+      "started_at": "2026-09-28T10:00:00+00:00",
+      "completed_at": "2026-09-28T10:00:20+00:00"
+    }
+  },
+  "claim_count": 2,
+  "completed_claims": 0,
+  "failure_code": null,
+  "language": "auto",
+  "input_type": "text",
+  "claims": [],
+  "screenshot_ocr": null,
+  "updated_at": "2026-09-28T10:00:21+00:00"
+}
+```
+
+`claims` contains existing redacted `AnalysisClaim` objects after extraction;
+before then it is empty and input/OCR metadata may be null. Stages are
+`queued`, `extracting`, `normalizing`, `retrieving`, `judging`, `validating`,
+`aggregating`, and `building_report`. Run status is `queued`, `running`,
+`completed`, `failed`, or `partially_completed`. `failure_code` is a safe
+category, never a raw provider response or prompt. Old Phase 2 submissions
+without an AnalysisRun still use their historical detail response.
+
+`GET /v1/analyses/{analysis_id}/claims` returns one independent
+`ClaimAnalysisSummary` per extracted atomic claim. It includes claim ID and
+ordinal, stage/status/completed stages/timestamps, safe failure code, exact
+`evidence_pack_id`/`evidence_pack_hash`, `judge_run_ids`,
+`judge_validation_run_ids`, `verdict_run_id`, `report_run_id`,
+`production_qualified`, and `result_label`. A failed technical claim has a
+safe `failure_code` and a null `result_label` until a VerdictRun actually
+exists; `not_enough_evidence` only comes from successful retrieval/policy.
+Staging/production hide the label of any non-production-qualified verdict.
+No "latest artifact" fallback is used.
+
+`GET /v1/analyses/{analysis_id}/claims/{claim_id}/report` returns the existing
+`LensReport` JSON from the exact checkpointed `report_run` only after verifying
+its semantic hash, the recomputed frozen Evidence Pack content hash,
+claim/Pack/verdict provenance, audit IDs, and qualification.
+It does not fetch or discover sources. A missing report is 404, corrupt
+provenance is 503, and a non-production-qualified report is 403 in staging or
+production. Development/test can inspect such a report, which retains its
+mandatory development/evaluation notice and `production_qualified: false`.
+Current Miri/entailment gates make live reports non-production. This is not a
+trusted public medical verdict API.
+
+`GET /v1/analyses/{analysis_id}/events` emits one SSE-formatted
+`analysis.progress` snapshot. Poll `GET /{analysis_id}` for updates; there
+is no long-lived event bus in Phase 7A. All analysis responses are
+`Cache-Control: no-store` and `Referrer-Policy: no-referrer`. UUID-only
+anonymous access is a prototype convention, not reviewed public auth.
 
 ## Phase 6C internal report contract (no HTTP route)
 
@@ -211,10 +286,10 @@ truth. If the browser gateway supplies a qualitative label instead of a number,
 the preview returns `null` for that field while retaining locally validated
 claim spans.
 
-## `POST /v1/analyses`
+## `POST /v1/analyses` request body
 
-Creates a completed Phase 2 extraction. The `Idempotency-Key` header remains
-reserved for a later durable orchestrator and is not yet used for deduplication.
+Reserves the asynchronous Phase 7A run described above. The existing consent
+and Phase 2 intake safeguards are unchanged; extraction happens after 202.
 
 Text request:
 
@@ -240,13 +315,15 @@ Screenshot request:
 }
 ```
 
-Successful extraction returns HTTP `201`:
+Successful run reservation returns HTTP `202`:
 
 ```json
 {
   "analysis_id": "c5eb3f8d-5c9e-45d5-b88d-b5152b2de95a",
-  "status": "claims_extracted",
-  "claim_count": 2
+  "status": "queued",
+  "stage": "queued",
+  "claim_count": 0,
+  "completed_claims": 0
 }
 ```
 
@@ -258,14 +335,13 @@ Each attempt is limited to 55 seconds by default, with a 115-second deadline
 for the complete extraction. Both limits are configurable within a 60-second
 attempt maximum and a 120-second total maximum.
 Retrying malformed output never includes the invalid answer in the new prompt.
-When disabled or unavailable, the endpoint returns `503` with
-`claim_extractor_unavailable`; malformed replies return `502` with
-`claim_extractor_invalid_response`. URL input is reserved for a later phase and
-returns `501`.
-Two exhausted timeouts return HTTP `504` with `claim_extractor_timeout`;
-an overall deadline returns HTTP `504` with
-`claim_extractor_deadline_exceeded`. Public errors include a request ID but
-never provider response bodies, prompts, credentials, or internal trace IDs.
+When disabled or unavailable, background processing records a safe failed
+analysis state (the development claim-preview route still returns a typed
+HTTP error directly). URL input remains unsupported and returns `501`.
+Two exhausted extractor timeouts record `claim_extractor_timeout`; an overall
+extraction deadline records `claim_extractor_deadline_exceeded`. The 202 start
+call does not wait to return those errors. Safe progress failure codes and
+public synchronous errors never expose provider bodies, prompts, or keys.
 
 ## `POST /v1/analyses/evidence-preview`
 
@@ -358,7 +434,8 @@ text. A changed integrity result therefore produces a new hash.
 
 ## `GET /v1/analyses/{analysis_id}`
 
-Returns redacted atomic claims and safe OCR metadata. `raw_text` and its
+For Phase 7A runs, returns the polling envelope above plus redacted atomic
+claims and safe OCR metadata once extraction has committed. `raw_text` and its
 offsets refer to the redacted source representation, preserving positions while
 not exposing structured identifiers. There is no verdict field.
 Each claim also includes nullable `population`, `intervention_or_exposure`,
@@ -454,9 +531,9 @@ For example, without an installed terminology index, a claim may contain:
 
 ## `GET /v1/analyses/{analysis_id}/events`
 
-Returns a server-sent snapshot of actual completed Phase 2 stages: `ingested`,
-optional `ocr_complete`, `pii_redaction_complete`, and `claims_extracted`. It
-does not simulate future evidence-retrieval or judging progress.
+For Phase 7A runs, emits one typed `analysis.progress` SSE snapshot. For
+historical Phase 2-only submissions it retains the completed-stage snapshot.
+Neither is a continuous event stream; polling is the current progress path.
 
 ## `GET /healthz`
 

@@ -10,6 +10,7 @@ from app.medical.entities import MedicalEntity
 from app.pipeline.claim_types import ClaimType
 from app.pipeline.completeness import NormalizationQuality
 from app.pipeline.pico import NormalizationStatus, NormalizedPico
+from app.verdict.models import LensVerdict
 
 
 class Consent(BaseModel):
@@ -177,3 +178,54 @@ class AnalysisDetail(BaseModel):
     claims: list[AnalysisClaim]
     screenshot_ocr: ScreenshotOcrMetadata | None = None
     updated_at: datetime
+
+
+class AnalysisStarted(BaseModel):
+    """Durable acknowledgement; processing continues outside the HTTP request."""
+
+    analysis_id: UUID
+    status: Literal["queued", "running", "completed", "failed", "partially_completed"]
+    stage: str
+    claim_count: int
+    completed_claims: int
+
+
+class AnalysisProgress(BaseModel):
+    """Safe polling contract; no raw provider diagnostics or prompts."""
+
+    analysis_id: UUID
+    status: Literal["queued", "running", "completed", "failed", "partially_completed"]
+    stage: str
+    completed_stages: list[str]
+    stage_timestamps: dict[str, dict[str, str]]
+    claim_count: int
+    completed_claims: int
+    failure_code: str | None
+    language: str | None
+    input_type: Literal["text", "screenshot"] | None
+    claims: list[AnalysisClaim]
+    screenshot_ocr: ScreenshotOcrMetadata | None
+    updated_at: datetime
+
+
+class ClaimAnalysisSummary(BaseModel):
+    claim_id: UUID
+    ordinal: int
+    status: str
+    stage: str
+    completed_stages: list[str]
+    stage_timestamps: dict[str, dict[str, str]]
+    failure_code: str | None
+    evidence_pack_id: UUID | None
+    evidence_pack_hash: str | None
+    judge_run_ids: list[UUID]
+    judge_validation_run_ids: list[UUID]
+    verdict_run_id: UUID | None
+    report_run_id: UUID | None
+    production_qualified: bool | None
+    result_label: LensVerdict | None
+
+
+class AnalysisClaimsResponse(BaseModel):
+    analysis_id: UUID
+    claims: list[ClaimAnalysisSummary]

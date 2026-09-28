@@ -21,12 +21,15 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         duration_ms = round((perf_counter() - started_at) * 1000, 2)
         response.headers["X-Request-ID"] = request_id
+        if request.url.path.startswith("/v1/analyses"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
         logger.info(
             "Request completed",
             extra={
                 "request_id": request_id,
                 "method": request.method,
-                "path": request.url.path,
+                "path": getattr(request.scope.get("route"), "path", "unmatched"),
                 "status_code": response.status_code,
                 "duration_ms": duration_ms,
             },

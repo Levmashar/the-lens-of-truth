@@ -288,6 +288,41 @@ and evidence-integrity metadata are implemented:
   A semantic hash excludes only report-generation time, and each execution
   inserts a new PostgreSQL update-protected `report_run`. The CLI is
   development/test-only; there is no public report API or frontend exposure.
+- Phase 7A adds durable `analysis_run` and per-claim `claim_analysis_run`
+  checkpoints. `POST /v1/analyses` now returns HTTP 202 with an opaque run ID
+  before any slow provider call; the existing sanitized screenshot/OCR and
+  redacted extraction service runs in a single-process FastAPI background
+  task. After extraction, each atomic claim gets its own frozen Evidence Pack,
+  JudgeRuns, JudgeValidationRuns, VerdictRun, and ReportRun. The orchestrator
+  calls existing stage services and stores their exact IDs; it performs no
+  medical reasoning and never selects a "latest" audit row.
+- Polling `GET /v1/analyses/{id}` exposes stage, completed stages, per-stage
+  times, claim count, completed claims, and safe failure code. `GET .../claims`
+  gives claim-scoped status and artifact IDs. `GET .../claims/{claim_id}/report`
+  serves the already-persisted LensReport after verifying its hash and
+  explicit provenance; it never retrieves sources. Staging/production return
+  403 for non-production-qualified reports. Development/test inspection retains
+  the mandatory evaluation notice. Current Miri and absent approved live
+  entailment mean live reports remain non-production.
+- `Idempotency-Key` is now supported: a bounded opaque key is hashed and
+  uniquely reserved with a canonical request digest. A repeated identical
+  POST returns the same run without rescheduling work; key reuse for another
+  request returns 409. Without a key, each POST intentionally creates a new
+  run. A restart marks queued/running work failed without replaying model
+  requests. A failed run can be inspected but is not automatically resumed.
+  This intentionally favors duplicate prevention over seamless recovery in
+  the MVP; stage artifacts can be inspected by their frozen IDs.
+- Extraction is limited by its existing deadline; Phase 7A adds configurable
+  retrieval (180s), per-claim (300s), and whole-analysis (900s) ceilings.
+  A failure in one claim leaves completed peers intact; technical failure is
+  never relabeled Not Enough Evidence. A genuine successful empty Evidence
+  Pack follows the existing Not Enough Evidence policy. The SSE route emits
+  a safe one-shot progress snapshot; clients poll for ongoing work. The
+  previous React screen is still Phase 2-oriented and must be revised in 7B.
+- The `APP_ENV=test` developer smoke uses only conspicuously synthetic
+  extraction, evidence, and validation fixtures. It exercises the full
+  persistence chain without PubMed, Crossref, Miri, or invented live medical
+  conclusions. Supported and Unable fixtures are explicitly evaluation-only.
 
 Licensed UMLS source integration, non-PubMed evidence retrieval, hybrid/vector
 search, approved live citation entailment, calibration, and public verdicts are
@@ -303,6 +338,11 @@ forbids browsing, but production approval must verify provider-side controls.
 A development smoke used three distinct configured family labels, but those
 aliases are not independently verified or pinned and only two responses were
 valid. No production-qualified three-family evaluation has been completed.
+Phase 7A does not change those release gates. Its in-process background
+runner assumes a single API worker and is not a durable distributed queue;
+multi-worker deployment, crash-recoverable tasks, access control, and the
+patient-facing frontend require separate review before public release. URL
+fetching remains unsupported.
 
 ## Rules for future developers
 
@@ -354,3 +394,10 @@ valid. No production-qualified three-family evaluation has been completed.
     defects cannot be overridden by a semantic provider. Missing or failed
     entailment remains unvalidated; do not promote development fixture results
     or search-bypassed judge decisions to public output.
+20. Never infer a report from the newest artifact row. The Phase 7A checkpoint
+    is the only authority for exact claim-level Pack/Judge/Validation/Verdict/
+    Report IDs. If a checkpoint is missing after interruption, do not
+    automatically replay an external model request.
+21. An opaque analysis UUID is not user authentication. The current anonymous
+    prototype uses short retention and no-store/no-referrer headers; public
+    deployment needs an access-control and deployment-security review.

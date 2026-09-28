@@ -406,3 +406,44 @@ there is no public HTTP or frontend report contract in this phase.
 presented reproducibly without granting another model freedom to invent or
 overstate medical conclusions. Immutable report snapshots preserve the exact
 presentation that was emitted even if controlled wording changes later.
+
+## ADR-024 — Persist orchestration checkpoints and gate frozen report reads
+
+**Decision:** Phase 7A reserves an `analysis_run` before slow work, returns
+HTTP 202, and executes the existing services in a single-process FastAPI
+background task. Each atomic claim has its own `claim_analysis_run` with
+explicit Pack ID/hash and JudgeRun, JudgeValidationRun, VerdictRun, and
+ReportRun IDs. These two records hold mutable progress/timestamps and safe
+failure categories; the referenced evidence and audit records stay immutable.
+The analysis UUID becomes the Submission UUID when ingestion commits. Client
+`Idempotency-Key` is hashed and unique with a canonical request digest;
+identical retries return the same run, mismatched requests fail 409. Without
+a key, a new request creates new immutable work intentionally. An expired
+key fails 410 rather than returning an analysis that polling cannot read.
+
+**Decision:** there is no automatic stage replay or startup replay of external
+model calls. In the single-worker MVP, startup marks abandoned queued/running
+runs failed. A checkpoint gap can leave an orphaned immutable artifact; the
+system never guesses a latest row to repair that gap. The run has bounded
+retrieval, claim, and total time budgets. Claims fail independently, and
+adapter initialization failure becomes a failed run rather than a stuck queue.
+Technical failure does not become Not Enough Evidence. Polling is the current
+progress contract; the events route is a one-shot SSE snapshot rather than a
+live event bus.
+
+**Decision:** the report route reads only the checkpointed ReportRun and
+verifies its hash, recomputes the frozen Pack content hash, and checks full
+claim/Pack/verdict/audit linkage. A failed claim has no result label until a
+VerdictRun exists. Staging/production suppress unqualified result labels and
+deny a non-production-qualified report server-side. Development/test return
+the unchanged LensReport with its compulsory evaluation notice. URL fetching
+and frontend redesign are outside this phase. Analysis responses are
+non-cacheable with no-referrer headers. The anonymous UUID convention is not
+user authentication; public deployment requires an access-control and
+distributed-worker review.
+
+**Reason:** one request can now traverse the implemented evidence pipeline
+without duplicating medical logic, combining independent claims, or
+accidentally promoting Miri/unapproved entailment outputs. In-process tasks
+and explicit no-replay semantics meet the competition MVP's complexity
+constraint while honestly recording their crash-recovery limitations.

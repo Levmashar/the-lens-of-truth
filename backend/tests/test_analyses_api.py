@@ -1,5 +1,6 @@
 from datetime import UTC, datetime, timedelta
 from io import BytesIO
+from types import SimpleNamespace
 from uuid import UUID, uuid4
 
 import pytest
@@ -7,6 +8,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from app.core.errors import ExternalCapabilityError
+from app.db.session import get_db_session
 from app.dependencies import get_analysis_ingestion_service
 from app.medical.entities import MedicalEntity
 from app.models.claim import Claim
@@ -184,18 +186,32 @@ def _submission_payload() -> dict[str, object]:
 def phase_two_client(client: TestClient) -> TestClient:
     service = FakeAnalysisIngestionService()
     client.app.dependency_overrides[get_analysis_ingestion_service] = lambda: service
+    client.app.dependency_overrides[get_db_session] = lambda: SimpleNamespace(get=lambda *_: None)
     yield client
     client.app.dependency_overrides.clear()
 
 
-def test_create_analysis_returns_real_phase_two_state(phase_two_client: TestClient) -> None:
+def test_create_analysis_returns_queued_run(
+    phase_two_client: TestClient, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.api.routes import analyses
+
+    run = SimpleNamespace(
+        id=uuid4(), status="queued", stage="queued", claim_count=0, completed_claims=0,
+    )
+    monkeypatch.setattr(analyses, "start_analysis", lambda *_, **__: (run, True))
+
+    async def background(*_: object) -> None:
+        return None
+
+    monkeypatch.setattr(analyses, "run_background", background)
     response = phase_two_client.post("/v1/analyses", json=_submission_payload())
 
-    assert response.status_code == 201
+    assert response.status_code == 202
     body = response.json()
-    assert UUID(body["analysis_id"])
-    assert body["status"] == "claims_extracted"
-    assert body["claim_count"] == 1
+    assert UUID(body["analysis_id"]) == run.id
+    assert body["status"] == "queued"
+    assert body["claim_count"] == 0
 
 
 def test_get_analysis_returns_redacted_claim_contract(phase_two_client: TestClient) -> None:

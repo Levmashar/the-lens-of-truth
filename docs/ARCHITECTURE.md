@@ -3,10 +3,11 @@
 ## Implemented boundary
 
 The repository implements intake, normalization, PubMed retrieval with frozen
-Evidence Pack 1.3, independent Phase 5A judging, and Phase 6A per-judge
-evidence-use validation, internal Phase 6B verdict aggregation, and internal
-Phase 6C evidence-cited report construction. No verdict or report is exposed
-through the public API or frontend.
+Evidence Pack 1.3, independent judging, per-judge evidence-use validation,
+deterministic verdict aggregation, and evidence-cited report construction.
+Phase 7A now sequences them and adds a claim-scoped, server-gated report read
+API. The frontend still presents Phase 2 extraction only; no live
+production-qualified report exists yet.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
 server-set byte/pixel limits, rejects animation, and stores a metadata-stripped
@@ -289,8 +290,68 @@ provenance contains the explicit audit IDs, verdict and Pack hashes, versions,
 and generation time. The report semantic hash covers all stable content and
 excludes only generation time; each execution inserts a new append-only
 `report_run` row with an UPDATE-blocking PostgreSQL trigger. Reports follow
-the VerdictRun's claim-retention cascade. Only a development/test CLI can
-emit them; public API and frontend release await a separate reviewed gate.
+the VerdictRun's claim-retention cascade. The Phase 6C CLI creates a report
+from one explicit VerdictRun; Phase 7A can also create one during an analysis.
+
+## Phase 7A orchestration boundary
+
+`analysis_run` is a mutable orchestration record, not a medical artifact. It
+stores an opaque ID, hashed Idempotency-Key and canonical request digest,
+queued/running/completed/failed/partially_completed state, current stage,
+completed stages, per-stage timestamps, short retention deadline, counts,
+and a safe failure code. `claim_analysis_run` stores claim-scoped state and
+the explicit Pack ID/hash, JudgeRun IDs, JudgeValidationRun IDs, VerdictRun
+ID, and ReportRun ID. Only these checkpoints are mutable; frozen Evidence
+Packs and later audit rows remain insert-only. The analysis UUID is also the
+eventual Submission UUID, preserving the existing API link.
+
+The HTTP start request reserves the run and returns 202. A FastAPI background
+task uses a fresh database session and the existing Phase 2 ingestion service,
+then iterates atomic claims independently:
+
+```text
+extracting (existing OCR / redaction / claim extraction / normalization)
+  -> for each claim: normalization eligibility -> PubMed retrieval
+  -> frozen Pack -> configured judges -> per-success validation
+  -> verdict-policy-1.0 -> deterministic LensReport
+```
+
+The orchestrator contains sequencing and timeouts, not medical logic. A
+non-`normalized` claim stops before retrieval; no Pack or report is invented.
+Successful empty retrieval produces a frozen empty Pack and follows Not
+Enough Evidence policy. Judge/provider/validation qualification failures can
+produce an audited Unable to Verify Reliably report. Unrecoverable retrieval,
+pack, or persistence failure leaves that claim failed with no fabricated
+downstream artifact; peers may complete and the parent becomes
+`partially_completed`.
+
+A repeated identical Idempotency-Key returns the same run and never schedules
+another worker; no-key requests intentionally create new runs. No automatic
+stage retry or startup replay exists. On startup in the current **single API
+worker** deployment, queued/running rows are marked `worker_interrupted`;
+their checkpointed artifact IDs remain available. A crash in the narrow gap
+between an immutable artifact insert and its checkpoint may leave an orphaned
+immutable run. It is not guessed via latest-row lookup or automatically
+replayed; explicit operator recovery/transactional checkpointing belongs to
+a later queue-backed design. Raw text remains only in task memory during
+processing, not persisted for crash replay.
+
+`GET /v1/analyses/{id}` is the polling source of truth. The existing events
+route emits one SSE-format progress snapshot, not a long-lived event bus.
+`GET .../claims` exposes per-claim artifact IDs; the report route loads only
+its checkpointed ReportRun, verifies semantic hash, Pack/claim/verdict IDs,
+qualification, and explicit audit IDs, and never retrieves new sources.
+Staging/production return 403 for an unqualified report; development/test
+inspection returns the frozen LensReport with its mandatory evaluation marker.
+URL input still returns 501; screenshot input uses the sanitized upload/OCR/
+PII path. Analysis responses carry no-store and no-referrer headers, but
+anonymous UUID access is not authentication and needs review before release.
+
+Configurable ceilings are 180 seconds per retrieval, 300 seconds per claim,
+and 900 seconds per analysis, alongside existing extractor/judge limits. This
+in-process runner is deliberately small for the competition MVP. It does not
+offer multi-worker coordination, durable queue delivery, automatic model-call
+replay, or a public resume endpoint.
 
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence

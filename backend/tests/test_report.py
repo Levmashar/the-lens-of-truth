@@ -318,6 +318,7 @@ def test_same_inputs_same_hash_timestamp_excluded_and_input_changes_detected() -
     assert first.verdict == verdict.verdict == changed.verdict
 
 
-def test_no_public_report_route_added() -> None:
-    paths = {getattr(route, "path", "") for route in create_app().routes}
-    assert not any("report" in path or "verdict" in path for path in paths)
+def test_report_route_is_claim_scoped_and_gated() -> None:
+    paths = set(create_app().openapi()["paths"])
+    assert "/v1/analyses/{analysis_id}/claims/{claim_id}/report" in paths
+    assert not any("verdict" in path for path in paths)

@@ -1,11 +1,12 @@
 """Analysis routes for intake, atomic claims, and medical normalization."""
 
+import hashlib
 import json
 from collections.abc import AsyncIterator
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Header, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Header, UploadFile, status
 from fastapi.responses import StreamingResponse
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
@@ -21,19 +22,32 @@ from app.dependencies import (
     get_pubmed_adapter,
 )
 from app.medical.entities import MedicalEntity
+from app.models.analysis_run import AnalysisRunRecord
 from app.models.claim import Claim
+from app.models.report_run import ReportRunRecord
+from app.models.retrieval import EvidencePackRecord
 from app.models.screenshot_upload import ScreenshotUpload
 from app.models.submission import Submission
+from app.models.verdict_run import VerdictRunRecord
+from app.orchestration.state import claim_runs, get_run, start_analysis
+from app.orchestration.worker import run_background
 from app.pipeline.claim_types import legacy_claim_type
 from app.pipeline.completeness import NormalizationQuality
 from app.pipeline.pico import NormalizationStatus, NormalizedPico
+from app.report.builder import semantic_report_hash
+from app.report.models import LensReport
 from app.retrieval.claims import snapshot_claim
+from app.retrieval.evidence_pack import canonical_pack_bytes
+from app.retrieval.models import EvidencePack
 from app.retrieval.persistence import persist_retrieval
 from app.retrieval.service import retrieve_pubmed
 from app.schemas.analysis import (
-    AnalysisAccepted,
     AnalysisClaim,
+    AnalysisClaimsResponse,
     AnalysisDetail,
+    AnalysisProgress,
+    AnalysisStarted,
+    ClaimAnalysisSummary,
     ClaimExtractionPreviewResponse,
     ClaimPreviewItem,
     CreateAnalysisRequest,
@@ -45,6 +59,7 @@ from app.schemas.analysis import (
 from app.schemas.retrieval import EvidencePreviewRequest, EvidencePreviewResponse
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.image_ingestion import ScreenshotSanitizer
+from app.verdict.models import LensVerdict
 
 router = APIRouter()
 _status_adapter: TypeAdapter[NormalizationStatus] = TypeAdapter(NormalizationStatus)
@@ -196,32 +211,60 @@ async def preview_claim_extraction(
     )
 
 
-@router.post("", response_model=AnalysisAccepted, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=AnalysisStarted, status_code=status.HTTP_202_ACCEPTED)
 async def create_analysis(
     request: CreateAnalysisRequest,
+    background_tasks: BackgroundTasks,
     session: Annotated[Session, Depends(get_db_session)],
-    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
-    _idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
-) -> AnalysisAccepted:
-    """Run only ingestion, OCR when needed, redaction, and claim extraction."""
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+) -> AnalysisStarted:
+    """Reserve a durable run and return before extraction or external calls."""
 
-    submission = await service.create_analysis(session=session, request=request)
-    return AnalysisAccepted(
-        analysis_id=submission.id,
-        status="claims_extracted",
-        claim_count=len(submission.claims),
+    run, created = start_analysis(
+        session, request, idempotency_key=idempotency_key,
+        retention_hours=settings.upload_retention_hours,
+    )
+    if created:
+        background_tasks.add_task(run_background, run.id, request, settings)
+    return AnalysisStarted(
+        analysis_id=run.id, status=cast(Literal[
+            "queued", "running", "completed", "failed", "partially_completed",
+        ], run.status), stage=run.stage,
+        claim_count=run.claim_count, completed_claims=run.completed_claims,
     )
 
 
-@router.get("/{analysis_id}", response_model=AnalysisDetail)
+@router.get("/{analysis_id}", response_model=AnalysisProgress | AnalysisDetail)
 async def get_analysis(
     analysis_id: UUID,
     session: Annotated[Session, Depends(get_db_session)],
     service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
-) -> AnalysisDetail:
-    """Return persisted redacted claims and safe OCR metadata for one analysis."""
+) -> AnalysisProgress | AnalysisDetail:
+    """Return durable progress and any persisted redacted claims."""
 
-    return _analysis_detail(service.get_submission(session=session, analysis_id=analysis_id))
+    run = session.get(AnalysisRunRecord, analysis_id)
+    if run is None:
+        return _analysis_detail(service.get_submission(session=session, analysis_id=analysis_id))
+    get_run(session, analysis_id)
+    claims = []
+    detail: AnalysisDetail | None = None
+    if run.submission_id is not None:
+        submission = service.get_submission(session=session, analysis_id=run.submission_id)
+        detail = _analysis_detail(submission)
+        claims = detail.claims
+    return AnalysisProgress(
+        analysis_id=run.id, status=cast(Literal[
+            "queued", "running", "completed", "failed", "partially_completed",
+        ], run.status), stage=run.stage,
+        completed_stages=run.completed_stages, claim_count=run.claim_count,
+        stage_timestamps=run.stage_timestamps,
+        completed_claims=run.completed_claims, failure_code=run.failure_code,
+        language=detail.language if detail else None,
+        input_type=detail.input_type if detail else None,
+        claims=claims, screenshot_ocr=detail.screenshot_ocr if detail else None,
+        updated_at=run.updated_at,
+    )
 
 
 async def _analysis_events(submission: Submission) -> AsyncIterator[str]:
@@ -249,10 +292,115 @@ async def get_analysis_events(
     session: Annotated[Session, Depends(get_db_session)],
     service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
 ) -> StreamingResponse:
-    """Expose a server-sent snapshot of the completed Phase 2 stages."""
+    """Emit one safe progress snapshot; clients poll GET for ongoing work."""
 
-    submission = service.get_submission(session=session, analysis_id=analysis_id)
-    return StreamingResponse(_analysis_events(submission), media_type="text/event-stream")
+    run = session.get(AnalysisRunRecord, analysis_id)
+    if run is None:
+        submission = service.get_submission(session=session, analysis_id=analysis_id)
+        return StreamingResponse(_analysis_events(submission), media_type="text/event-stream")
+    get_run(session, analysis_id)
+    payload = {
+        "analysis_id": str(run.id), "status": run.status, "stage": run.stage,
+        "completed_stages": run.completed_stages, "claim_count": run.claim_count,
+        "completed_claims": run.completed_claims,
+    }
+
+    async def snapshot() -> AsyncIterator[str]:
+        yield f"event: analysis.progress\ndata: {json.dumps(payload)}\n\n"
+
+    return StreamingResponse(snapshot(), media_type="text/event-stream")
+
+
+@router.get("/{analysis_id}/claims", response_model=AnalysisClaimsResponse)
+async def get_analysis_claims(
+    analysis_id: UUID, session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> AnalysisClaimsResponse:
+    """Return claim-scoped checkpoint IDs, not a blended medical result."""
+
+    get_run(session, analysis_id)
+    summaries = []
+    for row in claim_runs(session, analysis_id):
+        verdict = session.get(VerdictRunRecord, row.verdict_run_id) if row.verdict_run_id else None
+        summaries.append(ClaimAnalysisSummary(
+            claim_id=row.claim_id, ordinal=row.ordinal, status=row.status,
+            stage=row.stage, completed_stages=row.completed_stages,
+            stage_timestamps=row.stage_timestamps,
+            failure_code=row.failure_code,
+            evidence_pack_id=row.evidence_pack_id, evidence_pack_hash=row.evidence_pack_hash,
+            judge_run_ids=[UUID(item) for item in row.judge_run_ids],
+            judge_validation_run_ids=[UUID(item) for item in row.validation_run_ids],
+            verdict_run_id=row.verdict_run_id, report_run_id=row.report_run_id,
+            production_qualified=verdict.production_qualified if verdict else None,
+            result_label=(LensVerdict(verdict.verdict) if verdict and (
+                settings.app_env not in {"staging", "production"}
+                or verdict.production_qualified
+            ) else None),
+        ))
+    return AnalysisClaimsResponse(analysis_id=analysis_id, claims=summaries)
+
+
+@router.get("/{analysis_id}/claims/{claim_id}/report", response_model=LensReport)
+async def get_claim_report(
+    analysis_id: UUID, claim_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> LensReport:
+    """Serve only the named frozen report; never rebuild or fetch on read."""
+
+    get_run(session, analysis_id)
+    row = next((item for item in claim_runs(session, analysis_id)
+                if item.claim_id == claim_id), None)
+    if row is None or row.report_run_id is None:
+        raise LensError(404, "report_not_found", "Report is not available.")
+    record = session.get(ReportRunRecord, row.report_run_id)
+    if record is None:
+        raise LensError(404, "report_not_found", "Report is not available.")
+    try:
+        report = LensReport.model_validate(record.result_json)
+        pack = session.get(EvidencePackRecord, row.evidence_pack_id)
+        verdict = session.get(VerdictRunRecord, row.verdict_run_id)
+        frozen_pack = EvidencePack.model_validate(pack.snapshot_json) if pack else None
+        actual_pack_hash = (hashlib.sha256(canonical_pack_bytes(
+            frozen_pack.claim_snapshot, frozen_pack.query_plan,
+            frozen_pack.documents, frozen_pack.passages,
+            frozen_pack.selected_evidence_ids,
+        )).hexdigest() if frozen_pack else None)
+        valid = (
+            pack is not None and pack.claim_id == claim_id
+            and frozen_pack is not None and frozen_pack.claim_id == claim_id
+            and frozen_pack.claim_snapshot.claim_id == claim_id
+            and pack.version == frozen_pack.evidence_pack_version
+            and frozen_pack.snapshot_hash == actual_pack_hash
+            and pack.snapshot_hash == actual_pack_hash
+            and pack.snapshot_hash == row.evidence_pack_hash
+            and verdict is not None and verdict.claim_id == claim_id
+            and verdict.evidence_pack_id == pack.id
+            and verdict.semantic_hash == report.provenance.verdict_semantic_hash
+            and verdict.production_qualified == report.production_qualified
+            and record.id == row.report_run_id
+            and record.verdict_run_id == row.verdict_run_id == report.verdict_run_id
+            and record.semantic_hash == report.semantic_hash == semantic_report_hash(report)
+            and record.report_version == report.report_version
+            and record.report_builder_version == report.provenance.report_builder_version
+            and record.production_qualified == report.production_qualified
+            and report.provenance.evidence_pack_id == row.evidence_pack_id
+            and report.provenance.evidence_pack_hash == row.evidence_pack_hash
+            and set(report.provenance.judge_run_ids) == set(map(UUID, row.judge_run_ids))
+            and len(report.provenance.judge_run_ids) == len(row.judge_run_ids)
+            and set(report.provenance.judge_validation_run_ids) == set(
+                map(UUID, row.validation_run_ids)
+            )
+            and len(report.provenance.judge_validation_run_ids) == len(row.validation_run_ids)
+        )
+    except (ValueError, TypeError):
+        valid = False
+    if not valid:
+        raise LensError(503, "report_provenance_invalid", "Report provenance is unavailable.")
+    if settings.app_env in {"staging", "production"} and not report.production_qualified:
+        raise LensError(403, "report_not_qualified",
+                        "This report is not qualified for public release.")
+    return report
 
 
 def _upload_response(upload: ScreenshotUpload) -> ScreenshotUploadAccepted:

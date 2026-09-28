@@ -176,16 +176,43 @@
       show standard health-information safety and non-production notices
 - [x] Append-only, semantically hashed `report_run`, internal CLI, offline
       four-label/Miri regressions, PostgreSQL trigger and schema checks
-- [ ] Phase 7: add a separately reviewed, explicitly gated report endpoint
-      and accessible frontend presentation; no public verdict route in Phase 6C
+- [x] Phase 7A: add an explicitly gated, claim-scoped frozen-report endpoint
+      and durable orchestration; the accessible frontend is Phase 7B
 - [ ] Release gate: approve live entailment, provider identity and search
       isolation before any report can be production-qualified
 
-## Phase 7: Frontend polish
+## Phase 7A: End-to-end orchestration and gated report API
 
-- [ ] Real upload and URL experiences, progressive SSE status, source cards
-- [ ] Accessibility review to WCAG 2.2 AA and Chinese localization
-- [ ] Native WeChat screens and consent/retention UX
+- [x] Persist analysis and claim-level orchestration checkpoints, timestamps,
+      safe failure categories, and exact artifact IDs; preserve immutable runs
+- [x] Return an analysis ID before OCR/extraction/retrieval/judging; apply
+      extraction, per-claim, retrieval, judge, and analysis-level time budgets
+- [x] Process atomic claims independently and preserve partial completion
+- [x] Keep Phase 6 production gates: no unqualified report in staging/production;
+      show the mandatory evaluation notice for development/test reports
+- [x] Add polling progress, claim summaries, claim-scoped frozen LensReport GET,
+      and one-shot SSE compatibility snapshot (no streaming worker bus yet)
+- [x] Hash client Idempotency-Key and canonical request; never auto-replay
+      external providers after restart or repeat POST
+- [x] Offline synthetic full-chain and failure fixtures, developer CLI,
+      PostgreSQL persistence tests, and schema checks
+- [ ] Before public deployment, replace the single-process background runner
+      with a durable queue/lease and add an access-control/privacy review
+- [ ] Before public deployment, approve live entailment and verify pinned
+      independent model identity/families plus native search isolation
+
+## Phase 7B: Production-quality web UX and progressive presentation
+
+- [ ] Replace the Phase 2-only React copy and stale API types with real polling,
+      per-claim status, explicit development qualification, and source cards
+- [ ] Consider resumable SSE after a durable event store exists; one-shot
+      snapshot remains compatibility-only in Phase 7A
+- [ ] Complete accessible upload and consent/retention UX; WCAG 2.2 AA review
+- [ ] Implement safe URL ingestion only after reviewed SSRF/fetch controls
+
+## Phase 7C: Chinese localization and WeChat
+
+- [ ] Chinese UI/medical terminology review and native WeChat screens
 
 ## Phase 8: Evaluation benchmark
 

@@ -72,7 +72,10 @@ def test_evidence_preview_returns_pack_without_verdict(monkeypatch: pytest.Monke
     assert "verdict" not in response.text.casefold()
 
 
-def test_evidence_preview_is_not_available_in_production() -> None:
+def test_evidence_preview_is_not_available_in_production(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("app.main.mark_interrupted", lambda _session: 0)
     app = create_app(Settings(app_env="production"))
     app.dependency_overrides[get_pubmed_adapter] = lambda: object()
     app.dependency_overrides[get_analysis_ingestion_service] = lambda: object()

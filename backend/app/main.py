@@ -24,6 +24,7 @@ from app.core.logging import configure_logging
 from app.core.request_context import RequestContextMiddleware
 from app.db.session import SessionLocal
 from app.maintenance import purge_expired_uploads
+from app.orchestration.state import mark_interrupted, purge_expired_runs
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,15 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     if settings.app_env == "test":
         yield
         return
+
+    # Phase 7A uses a single API worker. Never replay browser/model requests
+    # after a process restart; leave explicit immutable artifact IDs intact.
+    try:
+        interrupted = await asyncio.to_thread(_mark_interrupted)
+        if interrupted:
+            logger.warning("Interrupted analysis runs marked failed", extra={"count": interrupted})
+    except Exception:
+        logger.error("Analysis restart reconciliation failed")
 
     stop_event = asyncio.Event()
     task = asyncio.create_task(_retention_cleanup_loop(stop_event, settings))
@@ -55,8 +65,7 @@ async def _retention_cleanup_loop(stop_event: asyncio.Event, settings: Settings)
 
     while not stop_event.is_set():
         try:
-            with SessionLocal() as session:
-                removed = await purge_expired_uploads(session=session, settings=settings)
+            removed = await asyncio.to_thread(_purge_expired, settings)
             if removed:
                 logger.info("Expired upload records purged", extra={"count": removed})
         except Exception:
@@ -67,6 +76,17 @@ async def _retention_cleanup_loop(stop_event: asyncio.Event, settings: Settings)
             )
         except TimeoutError:
             continue
+
+
+def _mark_interrupted() -> int:
+    with SessionLocal() as session:
+        return mark_interrupted(session)
+
+
+def _purge_expired(settings: Settings) -> int:
+    with SessionLocal() as session:
+        removed = asyncio.run(purge_expired_uploads(session=session, settings=settings))
+        return removed + purge_expired_runs(session)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
