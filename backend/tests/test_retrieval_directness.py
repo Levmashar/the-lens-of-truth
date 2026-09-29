@@ -111,6 +111,44 @@ def test_hypertension_risk_outranks_post_stroke_management() -> None:
                                     for doc in (direct, reverse, post_procedure))
 
 
+def test_management_of_existing_disease_does_not_outrank_incidence_study() -> None:
+    claim = _claim("High blood pressure causes stroke.", "High blood pressure", "stroke",
+                   "causal")
+    risk = _doc("2011", "High blood pressure and incident stroke in adults",
+                ("RESULTS", "High blood pressure predicted incident stroke."))
+    treatment = _doc(
+        "2012", "Intensive blood-pressure reduction in hyperacute stroke",
+        ("METHODS", "Patients with acute stroke received blood-pressure reduction."),
+        quality=0.8,
+    )
+    pack = _pack(claim, treatment, risk)
+    by_pmid = {document.pmid: document for document in pack.documents}
+    assert by_pmid["2012"].relationship_directness.direction == "reverse"
+    assert _selected_pmids(pack)[0] == "2011"
+    assert all(item.selection_priority_score <= 1 for item in pack.passages)
+
+
+def test_risk_of_disease_demotes_progression_and_mortality_only_endpoints() -> None:
+    claim = _claim("Smoking increases the risk of lung cancer.", "Smoking", "lung cancer",
+                   "causal")
+    direct = _doc("3011", "Smoking and lung cancer incidence in a cohort",
+                  ("RESULTS", "Smoking predicted incident lung cancer cases."))
+    progression = _doc("3012", "Smoking and lung cancer progression",
+                       ("RESULTS", "Smoking influenced lung cancer cell progression."))
+    mortality = _doc("3013", "Predicting lung cancer deaths from smoking prevalence",
+                     ("RESULTS", "Smoking prevalence predicted lung cancer deaths."))
+    pack = _pack(claim, mortality, progression, direct)
+    by_pmid = {document.pmid: document for document in pack.documents}
+    assert _selected_pmids(pack)[0] == "3011"
+    assert by_pmid["3011"].endpoint_directness.score > (
+        by_pmid["3012"].endpoint_directness.score
+    )
+    assert by_pmid["3011"].endpoint_directness.score > (
+        by_pmid["3013"].endpoint_directness.score
+    )
+    assert "post_disease_endpoint" in by_pmid["3012"].endpoint_directness.warnings
+
+
 def test_post_outcome_rule_uses_pico_outcome_not_disease_name() -> None:
     claim = _claim("Aspirin increases heart attack risk.", "Aspirin", "heart attack",
                    "causal")

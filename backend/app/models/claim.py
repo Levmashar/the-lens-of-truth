@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.pipeline.standalone import StandaloneStatus
 
 if TYPE_CHECKING:
     from app.models.evaluation import FinalVerdict, ModelEvaluation
@@ -29,6 +30,7 @@ class Claim(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     span_end: Mapped[int | None] = mapped_column(Integer)
     raw_text: Mapped[str] = mapped_column(Text, nullable=False)
     normalized_text: Mapped[str | None] = mapped_column(Text)
+    standalone_status: Mapped[StandaloneStatus | None] = mapped_column(String(24))
     claim_type: Mapped[str | None] = mapped_column(String(64))
     population: Mapped[str | None] = mapped_column(Text)
     intervention_or_exposure: Mapped[str | None] = mapped_column(Text)

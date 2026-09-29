@@ -313,6 +313,12 @@ with lexical `normalization_coverage`, `missing_explicit_concepts`,
 `required_slots_missing`, `ambiguous_concepts`, and `normalization_warnings`.
 It does not expose the gateway's raw response or
 unredacted source text.
+`raw_text` and offsets are the exact redacted source span. `normalized_text`
+is the independently readable claim; a coordinated clause may repeat a
+source-verified subject without changing `raw_text`. `standalone_status` is
+`complete`, `reconstructed`, `uncertain`, or `incomplete`. The optional
+`resolved_from_span_start/end` offsets trace inherited words in the redacted
+source. Uncertain/incomplete fragments are not retrieval-ready.
 The `verifiability` field is a numeric estimate of testability, not medical
 truth. If the browser gateway supplies a qualitative label instead of a number,
 the preview returns `null` for that field while retaining locally validated
@@ -430,6 +436,23 @@ exclusion. A low-directness passage remains in `passages`; it is never deleted.
 not quality, support, contradiction, clinical confidence, or a verdict. An
 `aligned` relation can report either a positive or a negative finding.
 
+New Pack 1.4 additionally includes independent `endpoint_directness` on each
+document and passage (`score`, numeric `factors`, `reasons`, `warnings`).
+It measures whether the asserted outcome is studied or measured, not whether
+the study supports the claim. QueryPlan 1.1 may add bounded `endpoint` query
+families alongside broad recall queries; explicit population terms are added
+only to a separate precision variant. Selection factors now separate topical,
+relationship, endpoint, methodology, and applicability contributions, plus
+an endpoint-focused title bonus and indirect-endpoint penalty. All
+demoted passages remain in the frozen pack. Historic Pack 1.3 hashes use their
+original serialization and are never rewritten.
+The selection score is normalized by 1.16 to preserve ordering above the
+pre-bonus ceiling; reverse/incidental relationship and post-disease endpoint
+warnings are auditable separately from support or contradiction.
+When at least three direct quantitative-endpoint documents are available,
+documents below 0.35 endpoint directness are retained in the pack but not
+used to fill the selected-evidence quota.
+
 `integrity.status` is `valid`, `retracted`, `expression_of_concern`,
 `corrected`, `updated`, or `unknown`. `valid` means only that the configured,
 applicable integrity checks finished without a detected issue. A PubMed or
@@ -473,6 +496,11 @@ not exposing structured identifiers. There is no verdict field.
 Each claim also includes nullable `population`, `intervention_or_exposure`,
 `comparator`, `outcome`, and `timeframe` fields for PICO framing. Null means the
 source did not supply that detail; these model-produced fields are not evidence.
+`standalone_status` and inherited offsets have the same meaning as in claim
+preview. For new claims, `normalized_text` is the standalone proposition,
+while `raw_text` stays the exact source slice. Existing legacy rows may have
+null standalone status. An uncertain/incomplete new claim is `partial` and
+cannot enter normal evidence retrieval.
 Phase 3A adds `pico` (including `original_claim` and `claim_type`), `entities`,
 and `normalization_status` to each claim. Existing flat PICO fields remain for
 compatibility. `entities` includes source-grounded mentions; `umls_cui` and

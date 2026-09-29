@@ -396,6 +396,10 @@ def test_exact_soy_sentence_persists_two_retrievable_partially_linked_claims() -
     ]
     assert submission.claims[1].intervention_or_exposure == "Regular usage of soy"
     assert submission.claims[1].raw_text == "lowers muscle gain"
-    assert submission.claims[1].coreference_uncertain is True
+    assert submission.claims[1].coreference_uncertain is False
+    assert submission.claims[1].standalone_status == "reconstructed"
+    assert submission.claims[1].normalized_text == (
+        "Regular usage of soy lowers muscle gain."
+    )
     assert submission.claims[0].linked_entities[0]["mesh_id"] is None
     assert submission.claims[1].linked_entities[0]["mesh_id"] is None

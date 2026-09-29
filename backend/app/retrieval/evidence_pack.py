@@ -5,6 +5,7 @@ import json
 from datetime import UTC, datetime
 
 from app.retrieval.directness import annotate_directness
+from app.retrieval.endpoints import annotate_endpoints
 from app.retrieval.models import (
     ClaimSnapshot,
     EvidencePack,
@@ -13,6 +14,8 @@ from app.retrieval.models import (
     RankedPassage,
 )
 from app.retrieval.ranking import select_top_evidence
+
+JUDGE_READY_PACK_VERSIONS = frozenset({"1.3", "1.4"})
 
 
 def deduplicate_documents(
@@ -46,12 +49,15 @@ def deduplicate_documents(
 def canonical_pack_bytes(
     claim: ClaimSnapshot, plan: QueryPlan, documents: tuple[PubMedDocument, ...],
     passages: tuple[RankedPassage, ...], selected_evidence_ids: tuple[str, ...],
+    *, pack_version: str = "1.4",
 ) -> bytes:
     """Hash only semantic snapshot fields, excluding retrieval wall-clock timestamps."""
 
     document_data = []
     for document in documents:
         data = document.model_dump(mode="json", exclude={"retrieved_at"})
+        if pack_version != "1.4":
+            data.pop("endpoint_directness", None)
         integrity = data["integrity"]
         integrity.pop("checked_at", None)
         for check in integrity["checks"]:
@@ -60,11 +66,13 @@ def canonical_pack_bytes(
             data["crossref"]["check"].pop("checked_at", None)
         document_data.append(data)
     payload = {
-        "evidence_pack_version": "1.3",
+        "evidence_pack_version": pack_version,
         "claim_snapshot": claim.model_dump(mode="json"),
         "query_plan": plan.model_dump(mode="json"),
         "documents": document_data,
-        "passages": [passage.model_dump(mode="json") for passage in passages],
+        "passages": [passage.model_dump(
+            mode="json", exclude={"endpoint_directness"} if pack_version != "1.4" else None
+        ) for passage in passages],
         "selected_evidence_ids": selected_evidence_ids,
     }
     return json.dumps(payload, sort_keys=True, ensure_ascii=False,
@@ -80,6 +88,7 @@ def build_evidence_pack(
 
     ordered_documents = tuple(sorted(documents, key=lambda document: document.document_id))
     ordered_documents, passages = annotate_directness(claim, ordered_documents, passages)
+    ordered_documents, passages = annotate_endpoints(claim, ordered_documents, passages)
     audited_passages, selected_ids = select_top_evidence(
         passages, limit=selected_limit, max_per_document=max_per_document,
         documents=ordered_documents, claim=claim,

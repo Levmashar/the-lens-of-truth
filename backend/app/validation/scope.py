@@ -62,7 +62,7 @@ def compare_scope(
     source = ranked.passage.text
     passage_text = source
     population = claim.pico.population if claim.pico else None
-    claim_text = claim.raw_text
+    claim_text = claim.standalone_text
     if population:
         if _ADULT.search(population) and (
             (_CHILD.search(source) and not _ADULT.search(source))

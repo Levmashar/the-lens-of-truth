@@ -12,6 +12,10 @@ _STOPWORDS = frozenset({
     "increase", "decrease", "rate", "rates", "level", "levels",
 })
 _NUMERIC = re.compile(r"(?<!\w)(?:\d+(?:\.\d+)?\s*%|\d{1,3}(?:,\d{3})+)(?!\w)")
+_MEASURED_OUTCOME = re.compile(
+    r"\b(?:levels?|concentrations?|serum|plasma|blood|mass|gain|growth|"
+    r"severity|duration|pressure|glucose|cholesterol)\b", re.I,
+)
 _SAFE_TOKEN = re.compile(r"[^\W_]+(?:[-'][^\W_]+)*", re.UNICODE)
 _RELATION_TERMS: dict[str, tuple[str, ...]] = {
     "causal": ("risk", "incidence", "causation", "cohort"),
@@ -61,7 +65,8 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
     outcome_entity = _slot_entity(claim.entities, "outcome", outcome)
     # Use a source-grounded linked mention when it is the asserted concept;
     # otherwise fall back to the full PICO slot rather than a generic modifier.
-    exposure_term = exposure_entity.surface_text if exposure_entity else exposure
+    exposure_head = re.split(r"\b(?:in|among)\b", exposure or "", maxsplit=1, flags=re.I)[0]
+    exposure_term = exposure_entity.surface_text if exposure_entity else exposure_head
     outcome_term = outcome_entity.surface_text if outcome_entity else outcome
     queries: list[RetrievalQuery] = []
     warnings: list[str] = []
@@ -104,6 +109,27 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                     source_fields=(*lexical_sources, "claim_type"),
                     relation_semantics=claim.claim_type,
                 ))
+            if outcome and _MEASURED_OUTCOME.search(outcome):
+                precision = (
+                    f"({left}) AND ({right}) AND "
+                    '("levels"[Title/Abstract] OR "concentration"[Title/Abstract] OR '
+                    '"serum"[Title/Abstract] OR "plasma"[Title/Abstract] OR '
+                    '"change"[Title/Abstract] OR "measured"[Title/Abstract] OR '
+                    '"growth"[Title/Abstract] OR "gain"[Title/Abstract] OR '
+                    '"mass"[Title/Abstract])'
+                )
+                queries.append(RetrievalQuery(
+                    query_id=f"Q{len(queries) + 1}", family="endpoint", query=precision,
+                    source_fields=(*lexical_sources, "pico.outcome"),
+                    relation_semantics=claim.claim_type,
+                ))
+                if pico and pico.population and _tokens(pico.population):
+                    queries.append(RetrievalQuery(
+                        query_id=f"Q{len(queries) + 1}", family="endpoint",
+                        query=f"{precision} AND ({_lexical_terms(pico.population)})",
+                        source_fields=(*lexical_sources, "pico.outcome", "pico.population"),
+                        relation_semantics=claim.claim_type,
+                    ))
             if outcome_entity and outcome and not exposure_entity and (
                 set(_tokens(outcome)) - set(_tokens(outcome_entity.surface_text))
             ):

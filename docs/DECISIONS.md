@@ -607,3 +607,41 @@ as a fully native schema-valid answer.
 Invalid citation IDs or unlisted E mentions may use the existing single
 retry, but the first response remains rejected and citations are never
 silently removed from a model decision.
+
+## ADR-032 — Require standalone atomic claims and measure endpoint fit separately
+
+**Decision:** the exact redacted `raw_text`/offsets remain immutable source
+provenance. For new claims, a deterministic validator constructs independently
+readable `normalized_text` only from the clause itself or an adjacent,
+unambiguous English shared subject. The persisted `standalone_status` and
+verified antecedent offsets distinguish reconstructed text from a literal
+source span. Uncertain/incomplete fragments are `partial` and stop before
+normal retrieval. A source-grounded population can be carried to PICO; no
+unstated qualifier or causal strength is inferred.
+
+**Decision:** preserve broad PubMed recall and add bounded endpoint-focused
+precision queries for explicit measured outcomes. Score title/abstract
+outcome-as-endpoint signals separately from topical `retrieval_score`,
+relationship directness, study quality, integrity, and applicability. Favor
+measured outcomes in selection; mechanistic/background/unrelated endpoint
+hits remain auditable. Contrary findings can be highly endpoint-direct.
+Normalize selection priority by the maximum title-bonus weight so ties at
+1.0 do not erase ordering; demote reverse/incidental relationships and
+post-disease endpoints for disease-risk claims without treating those
+signals as a medical verdict. If an extractor inflects only the leading
+relation verb in a proposed outcome, retain the exact remainder only when
+it occurs verbatim in the atomic source span.
+When three strong quantitative-endpoint documents are present, do not fill
+selection with documents scoring below 0.35 on endpoint directness; preserve
+all such documents in the auditable pack. Keep broader directly measured
+studies eligible even when their titles use less specific hormone wording.
+Evidence Pack 1.4 freezes endpoint factors and the changed selection order;
+historic Pack 1.3 retains its exact canonical hash path. A nullable claim
+status column requires migration `20260929_0016`; old rows remain nullable
+rather than being falsely certified as reconstructed.
+
+**Reason:** coordinated soy claims lost the shared subject even though PICO
+could recover it, while estrogen-related meningioma/bone-health papers could
+rank as topical matches without measuring the asserted hormone endpoint.
+These are extraction and retrieval-selection defects, not grounds to change
+judge labels, citation validation, verdict thresholds, or report templates.

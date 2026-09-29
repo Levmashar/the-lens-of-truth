@@ -110,13 +110,17 @@ async def smoke(
         print(f"Title: {document.title}")
         print(f"Section: {ranked.passage.section} | retrieval_score: "
               f"{ranked.retrieval_score} | relationship_directness_score: "
-              f"{directness.score} | relationship_direction: {directness.direction}")
+              f"{directness.score} | endpoint_directness_score: "
+              f"{ranked.endpoint_directness.score} | relationship_direction: "
+              f"{directness.direction}")
         print(f"Incidental penalty: "
               f"{directness.factors.get('incidental_mention_penalty', 0)} | "
               f"exclusion penalty: "
               f"{directness.factors.get('exposure_excluded_penalty', 0)} | "
               f"quality_prior: {document.quality_prior} | "
-              f"integrity_status: {document.integrity.status}")
+              f"integrity_status: {document.integrity.status} | "
+              f"population/applicability: {document.applicability_warnings} | "
+              f"study_design: {document.study_design}")
         print(f"Selection priority: {ranked.selection_priority_score} | "
               f"selection factors: {ranked.selection_factors}")
         print(f"Direction reasons: {directness.reasons} | "

@@ -37,7 +37,7 @@ def _pack_failure(
     pack = context.pack
     if pack is None or context.stored_pack_hash is None:
         return ReasonCode.PACK_UNAVAILABLE
-    if pack.evidence_pack_version != policy.pack_version:
+    if pack.evidence_pack_version not in {policy.pack_version, "1.4"}:
         return ReasonCode.PACK_VERSION_UNSUPPORTED
     if (context.stored_pack_version is not None
             and context.stored_pack_version != pack.evidence_pack_version):
@@ -47,7 +47,7 @@ def _pack_failure(
         return ReasonCode.AUDIT_RECORD_MISMATCH
     actual_hash = hashlib.sha256(canonical_pack_bytes(
         pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
-        pack.selected_evidence_ids,
+        pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
     )).hexdigest()
     if (pack.snapshot_hash != actual_hash or context.stored_pack_hash != actual_hash
             or request.evidence_pack_hash != actual_hash):

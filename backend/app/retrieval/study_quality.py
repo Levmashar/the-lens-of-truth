@@ -90,19 +90,39 @@ def applicability_flags(claim: ClaimSnapshot, document: PubMedDocument) -> tuple
     title = document.title.casefold()
     flags: list[str] = []
     human_claim = bool(re.search(
-        r"\b(humans?|people|patients?|adults?|children|pediatric|pregnan\w*)\b",
+        r"\b(humans?|people|patients?|adults?|children|pediatric|pregnan\w*|"
+        r"men|women|males?|females?)\b",
         population,
     ))
     if human_claim and document.study_design == "animal_study":
         flags.append("animal_to_human")
     if human_claim and document.study_design == "in_vitro":
         flags.append("in_vitro_to_clinical")
-    adult_claim = bool(re.search(r"\badults?\b", population))
+    adult_claim = bool(re.search(r"\b(?:adults?|men|women|males?|females?)\b", population))
     child_claim = bool(re.search(r"\b(children|child|pediatric|infants?)\b", population))
-    if adult_claim and "child" in terms and "adult" not in terms:
+    pediatric_terms = bool({"child", "infant", "adolescent"} & terms)
+    pediatric_title = bool(re.search(r"\b(?:infants?|children|pediatric)\b", title))
+    adult_terms = bool({"adult", "middle aged", "aged"} & terms)
+    if adult_claim and (pediatric_terms or pediatric_title) and not adult_terms:
         flags.append("pediatric_vs_adult")
     if child_claim and "adult" in terms and "child" not in terms:
         flags.append("pediatric_vs_adult")
+    male_claim = bool(re.search(r"\b(?:men|males?|boys?)\b", population))
+    female_claim = bool(re.search(r"\b(?:women|females?|girls?)\b", population))
+    female_only = ("female" in terms or "women" in terms or bool(re.search(
+        r"\b(?:women|female|postmenopausal)\b", title
+    ))) and not ("male" in terms or "men" in terms or bool(re.search(
+        r"\b(?:men|male)\b", title
+    )))
+    male_only = ("male" in terms or "men" in terms or bool(re.search(
+        r"\b(?:men|male)\b", title
+    ))) and not ("female" in terms or "women" in terms or bool(re.search(
+        r"\b(?:women|female)\b", title
+    )))
+    if male_claim and female_only:
+        flags.append("female_only_vs_male_claim")
+    if female_claim and male_only:
+        flags.append("male_only_vs_female_claim")
     if "non-pregnant" in population and "pregnancy" in terms:
         flags.append("pregnancy_population_mismatch")
     if claim.claim_type == "prevention" and re.search(r"\btreatment of\b", title):

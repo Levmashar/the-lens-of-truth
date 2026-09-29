@@ -176,7 +176,7 @@ def test_population_qualifier_cannot_become_soy_exposure_query_anchor() -> None:
     assert "mesh" not in [query.family for query in plan.queries]
     lexical = next(query for query in plan.queries if query.family == "lexical")
     assert '"soy"[Title/Abstract]' in lexical.query
-    assert '"male"[Title/Abstract]' in lexical.query
+    assert '"male"[Title/Abstract]' not in lexical.query
     assert '"muscle"[Title/Abstract]' in lexical.query
     assert '"body"[Title/Abstract]' not in lexical.query
     assert any('"growth"[Title/Abstract]' in query.query

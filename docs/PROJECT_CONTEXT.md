@@ -461,6 +461,36 @@ The local ignored `.env` currently selects AIMLAPI's
 but inactive. These provider choices remain development-only until real
 source-span and same-evidence acceptance tests pass.
 
+Phase 7B.1 hardens atomic self-containment and endpoint-direct retrieval.
+`raw_text` and offsets still point to the exact redacted source clause.
+`normalized_text` is independently readable; a deterministic adjacent
+English coordination check may repeat only the verbatim shared subject.
+`standalone_status` records `complete`, `reconstructed`, `uncertain`, or
+`incomplete`, and inherited offsets trace source words. Uncertain/incomplete
+fragments cannot enter normal retrieval. Source-grounded population and
+outcome wording remain in PICO; no unstated scope or causal strength is added.
+
+Evidence Pack 1.4 adds separate document/passage `endpoint_directness`,
+endpoint-focused PubMed queries alongside broad recall, and an exposed
+selection priority favoring studied outcomes over mere concept mentions.
+Direct negative results remain direct; this is not a support score. Sex-only
+population mismatch uses existing applicability warnings. All retrieved
+evidence remains auditable. Old 1.3 packs keep their version-specific hash.
+The judge, citation, verdict, and report decision rules are unchanged; new
+packs gain version compatibility only and remain development-only here.
+
+The 2026-09-29 development acceptance run for “Regular soy consumption in men
+increases estrogen levels and lowers muscle gain.” completed both claim-scoped
+reports (analysis `6d74acd7-666f-4a8f-8fdd-e627657fd23a`). The second raw
+span remained `lowers muscle gain` while its standalone form inherited the
+source subject at offsets 0–30. The frozen estrogen Pack 1.4 selected seven
+passages, leading with male serum-hormone studies ahead of women-only studies;
+retrieved osteoporosis, autoimmune, skin, and receptor-mechanism papers were
+unselected. No
+meningioma paper was retrieved in this run. Both development verdicts remained
+`Unable to Verify Reliably` because judge-validation qualification is separate
+from this extraction/retrieval acceptance and is not changed here.
+
 The 2026-09-29 live text smoke extracted and normalized "High blood pressure
 causes stroke." and completed the full one-claim workflow. A separate report
 failure revealed that the new `insufficient_claim_focus` and
@@ -528,3 +558,9 @@ that provider-latency issue remains open.
 21. An opaque analysis UUID is not user authentication. The current anonymous
     prototype uses short retention and no-store/no-referrer headers; public
     deployment needs an access-control and deployment-security review.
+22. Every normalized atomic claim sent to retrieval must stand alone. Never
+    rewrite its raw source span to include inherited words; keep verified
+    antecedent offsets and mark uncertain reconstruction incomplete.
+23. Endpoint directness asks whether the claimed outcome was studied, not
+    whether the result favors the claim. Keep it separate from topical score,
+    relationship directness, quality, integrity, and citation entailment.

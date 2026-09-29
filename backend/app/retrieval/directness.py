@@ -49,7 +49,8 @@ _REVERSE_CONTEXT = re.compile(
     r"secondary prevention of)\b", re.I,
 )
 _MANAGEMENT = re.compile(
-    r"\b(?:management|control|lowering|treatment|target|therapy|trajectories)\b", re.I,
+    r"\b(?:management|control|lowering|reduction|treatment|target|therapy|trajectories)\b",
+    re.I,
 )
 _QUALIFIERS = frozenset({"frequent", "regular", "daily", "higher", "high", "invasive"})
 _USAGE = frozenset({"consumption", "usage", "use", "users", "of", "the"})
@@ -158,6 +159,16 @@ def _direction(
     if (_matches(title, exposure) and _matches(title, outcome)
             and _post_outcome_frame(title, outcome)):
         return "reverse", ("post_outcome_exposure_measurement",)
+    if (_matches(title, outcome)
+            and _MANAGEMENT.search(title) and not _RISK_FOCUS.search(title)
+            and any(re.search(
+                r"\b(?:in|among|with)\b.{0,45}(?<!\w)" + re.escape(alias) + r"(?!\w)",
+                title, re.I,
+            ) for alias in outcome)):
+        return "reverse", ("exposure_management_in_outcome_population",)
+    if (_matches(title, outcome) and not _matches(title, exposure)
+            and _SCREENING_CESSATION.search(title)):
+        return "incidental", ("outcome_screening_not_exposure_risk",)
     if _matches(title, outcome) and _matches(title, exposure):
         if _REVERSE_CONTEXT.search(title) and _MANAGEMENT.search(title):
             return "reverse", ("post_outcome_management_title",)

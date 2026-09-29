@@ -21,9 +21,14 @@ _UNSAFE_SCAN_WARNINGS = frozenset({
 def ready_for_evidence(
     status: str, *, pico_json: Mapping[str, object] | None,
     quality_json: Mapping[str, object] | None,
+    standalone_status: str | None = None, standalone_text: str | None = None,
 ) -> bool:
     """Let complete partial terminology links proceed, never incomplete framing."""
 
+    if standalone_status in {"uncertain", "incomplete"}:
+        return False
+    if standalone_status == "reconstructed" and not standalone_text:
+        return False
     if status == "normalized":
         return True
     if status != "partially_linked" or pico_json is None or quality_json is None:

@@ -23,17 +23,23 @@ class ClaimSnapshot(FrozenModel):
     pico: NormalizedPico | None = None
     entities: tuple[MedicalEntity, ...] = ()
 
+    @property
+    def standalone_text(self) -> str:
+        """The independently readable proposition; raw_text remains the source span."""
+
+        return self.normalized_text or self.raw_text
+
 
 class RetrievalQuery(FrozenModel):
     query_id: str
-    family: Literal["mesh", "lexical", "relation", "distinctive"]
+    family: Literal["mesh", "lexical", "relation", "distinctive", "endpoint"]
     query: str
     source_fields: tuple[str, ...]
     relation_semantics: ClaimType | None = None
 
 
 class QueryPlan(FrozenModel):
-    version: Literal["1.0"] = "1.0"
+    version: Literal["1.0", "1.1"] = "1.1"
     source: Literal["pubmed"] = "pubmed"
     claim_type: ClaimType | None = None
     queries: tuple[RetrievalQuery, ...]
@@ -62,6 +68,15 @@ class RelationshipDirectness(FrozenModel):
 
     score: float = Field(default=0.0, ge=0, le=1)
     direction: RelationshipDirection = "unknown"
+    factors: dict[str, float] = Field(default_factory=dict)
+    reasons: tuple[str, ...] = ()
+    warnings: tuple[str, ...] = ()
+
+
+class EndpointDirectness(FrozenModel):
+    """Whether the claimed outcome is studied, independent of result direction."""
+
+    score: float = Field(default=0.0, ge=0, le=1)
     factors: dict[str, float] = Field(default_factory=dict)
     reasons: tuple[str, ...] = ()
     warnings: tuple[str, ...] = ()
@@ -132,6 +147,7 @@ class PubMedDocument(FrozenModel):
     relationship_directness: RelationshipDirectness = Field(
         default_factory=RelationshipDirectness
     )
+    endpoint_directness: EndpointDirectness = Field(default_factory=EndpointDirectness)
 
 
 class PubMedFetchResult(FrozenModel):
@@ -161,12 +177,14 @@ class RankedPassage(FrozenModel):
     relationship_directness: RelationshipDirectness = Field(
         default_factory=RelationshipDirectness
     )
+    endpoint_directness: EndpointDirectness = Field(default_factory=EndpointDirectness)
     selection_priority_score: float = Field(default=0.0, ge=0, le=1)
     selection_factors: dict[str, float] = Field(default_factory=dict)
     selected_for_judging: bool = False
     selection_reason: Literal[
         "relevant_abstract", "title_only", "title_unique_relevance", "background_fallback",
         "retracted_excluded", "nonhuman_evidence_excluded", "insufficient_claim_focus",
+        "endpoint_indirect_when_direct_alternatives_exist",
     ] | None = None
 
 
@@ -191,7 +209,7 @@ class QueryExecution(FrozenModel):
 
 
 class EvidencePack(FrozenModel):
-    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3"] = "1.3"
+    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4"] = "1.4"
     claim_id: UUID
     claim_snapshot: ClaimSnapshot
     query_plan: QueryPlan

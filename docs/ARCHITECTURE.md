@@ -67,6 +67,13 @@ call. An explicit relation with a missing PICO slot may use that same retry;
 it remains partial if still omitted. A second atomic clause may inherit only
 the verbatim shared subject of an adjacent, offset-verified `, and` clause;
 other PICO values stay grounded in their own raw source span.
+Phase 7B.1 makes the downstream invariant explicit: each new atomic
+`normalized_text` must stand alone. A deterministic validator accepts a full
+clause or reconstructs only a nearby, source-verified English `and`/`but` or
+simple pronoun antecedent. Inherited offsets identify the exact source
+subject; `raw_text` and clause offsets are never changed. Uncertain fragments
+are marked `partial` and fail normal retrieval. The same source-checked
+subject may populate PICO exposure and an explicitly named population.
 The current model-produced PICO slots may be null and must be treated as query
 framing candidates until entity and evidence validation are implemented. The
 gateway's ChatGPT model picker is best-effort, so its requested mode is logged
@@ -170,6 +177,28 @@ priority, and selection alongside prior metadata; older snapshots are not
 rewritten. The existing append-only JSONB pack stores the new fields, so no
 database migration is needed. This stage does **not** infer evidence support,
 contradiction, causation, or a medical verdict.
+
+Phase 7B.1 adds a separate endpoint role test after relationship directness.
+Document and passage `endpoint_directness` records score, factors, reasons,
+and warnings. Explicit outcome/measurement wording in title, METHODS, and
+RESULTS/CONCLUSIONS outweighs BACKGROUND or mechanistic mentions. Direct
+negative findings score highly too. QueryPlan 1.1 adds bounded endpoint
+precision variants for measured outcomes and optional explicit population,
+while keeping broad lexical/MeSH queries for recall. Selection considers
+topical relevance (22%), passage/document relationship fit (28%/12%),
+passage/document endpoint fit (22%/11%), and quality prior (5%), with a
+bounded endpoint-focused title bonus and explicit applicability/indirect-
+endpoint/relationship-reversal penalties. The sum is divided by 1.16 so the
+bonus cannot saturate multiple priorities at 1.0 and erase ordering. Generic
+post-disease treatment, screening, progression, or mortality endpoints are
+demoted for disease-risk claims, not deleted. It is not a truth score. A
+sex-only mismatch is penalized through existing applicability metadata, not
+discarded. If at least three quantitative-endpoint documents score at least
+0.5, selected evidence omits documents below 0.35 endpoint directness; those
+documents remain frozen and auditable. Pack 1.4
+freezes these factors and selected IDs. Pack 1.3 retains its original hash
+serialization and remains auditable; version compatibility changes no
+judge, citation, verdict, or report decision rule.
 
 Phase 5A adds `app/judging/` after the frozen pack, without changing retrieval.
 It first validates Evidence Pack 1.3's semantic hash, claim identity, unique

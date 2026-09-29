@@ -10,6 +10,7 @@ from app.medical.entities import MedicalEntity
 from app.pipeline.claim_types import ClaimType
 from app.pipeline.completeness import NormalizationQuality
 from app.pipeline.pico import NormalizationStatus, NormalizedPico
+from app.pipeline.standalone import StandaloneStatus
 from app.verdict.models import LensVerdict
 
 
@@ -108,6 +109,9 @@ class ClaimPreviewItem(BaseModel):
     span_end: int
     raw_text: str
     normalized_text: str | None = None
+    standalone_status: StandaloneStatus | None = None
+    resolved_from_span_start: int | None = None
+    resolved_from_span_end: int | None = None
     claim_type: ClaimType | None = None
     population: str | None = None
     intervention_or_exposure: str | None = None
@@ -151,6 +155,7 @@ class AnalysisClaim(BaseModel):
     span_end: int | None
     raw_text: str
     normalized_text: str | None = None
+    standalone_status: StandaloneStatus | None = None
     claim_type: ClaimType | None = None
     population: str | None = None
     intervention_or_exposure: str | None = None

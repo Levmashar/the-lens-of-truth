@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from uuid import UUID
 
-from app.retrieval.evidence_pack import canonical_pack_bytes
+from app.retrieval.evidence_pack import JUDGE_READY_PACK_VERSIONS, canonical_pack_bytes
 from app.retrieval.models import EvidencePack
 
 PROMPT_VERSION = "judge-1.6-2026-09-29"
@@ -82,11 +82,11 @@ class PreparedJudgeInput:
 def prepare_judge_input(pack_id: UUID, pack: EvidencePack) -> PreparedJudgeInput:
     """Reject malformed/changed packs before contacting any model."""
 
-    if pack.evidence_pack_version != "1.3":
-        raise ValueError("Only Evidence Pack 1.3 is judge-ready")
+    if pack.evidence_pack_version not in JUDGE_READY_PACK_VERSIONS:
+        raise ValueError("Unsupported Evidence Pack version for judging")
     actual_hash = hashlib.sha256(canonical_pack_bytes(
         pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
-        pack.selected_evidence_ids,
+        pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
     )).hexdigest()
     if pack.snapshot_hash != actual_hash or pack.claim_id != pack.claim_snapshot.claim_id:
         raise ValueError("Evidence Pack identity or semantic hash is invalid")
@@ -130,7 +130,8 @@ def prepare_judge_input(pack_id: UUID, pack: EvidencePack) -> PreparedJudgeInput
         "selected_evidence_ids": selected_ids,
         "claim": {
             "claim_id": str(claim.claim_id),
-            "exact_atomic_claim": claim.raw_text,
+            "exact_atomic_claim": claim.standalone_text,
+            "raw_source_span": claim.raw_text,
             "normalized_text": claim.normalized_text,
             "controlled_claim_type": claim.claim_type,
             "pico": claim.pico.model_dump(mode="json") if claim.pico else None,

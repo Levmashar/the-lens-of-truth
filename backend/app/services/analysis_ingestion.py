@@ -35,6 +35,7 @@ from app.pipeline.pico import (
     normalization_status,
     normalize_pico,
 )
+from app.pipeline.standalone import StandaloneStatus
 from app.schemas.analysis import CreateAnalysisRequest
 from app.services.image_ingestion import SanitizedImage
 from app.services.redaction import PiiRedactor
@@ -74,6 +75,9 @@ class ClaimPreviewItem:
     span_end: int
     raw_text: str
     normalized_text: str | None
+    standalone_status: StandaloneStatus
+    resolved_from_span_start: int | None
+    resolved_from_span_end: int | None
     claim_type: ClaimType | None
     population: str | None
     intervention_or_exposure: str | None
@@ -408,6 +412,7 @@ class AnalysisIngestionService:
                     span_end=candidate.span_end,
                     raw_text=redacted_text[candidate.span_start : candidate.span_end],
                     normalized_text=safe_normalized,
+                    standalone_status=candidate.standalone_status,
                     claim_type=candidate.claim_type,
                     population=pico.population,
                     intervention_or_exposure=pico.intervention_or_exposure,
@@ -417,10 +422,12 @@ class AnalysisIngestionService:
                     pico_json=pico.model_dump(mode="json"),
                     linked_entities=[entity.model_dump(mode="json") for entity in entities],
                     normalization_quality=quality.model_dump(mode="json"),
-                    normalization_status=normalization_status(
+                    normalization_status=("partial" if candidate.standalone_status in {
+                        "uncertain", "incomplete"
+                    } else normalization_status(
                         pico, linked_count=linked_count, mention_count=len(entities),
                         quality=quality,
-                    ),
+                    )),
                     risk_class=candidate.risk_class,
                     verifiability=candidate.verifiability,
                     coreference_uncertain=candidate.coreference_uncertain,
@@ -468,6 +475,9 @@ class AnalysisIngestionService:
                 span_end=candidate.span_end,
                 raw_text=redacted_text[candidate.span_start : candidate.span_end],
                 normalized_text=redact(candidate.normalized_claim),
+                standalone_status=candidate.standalone_status,
+                resolved_from_span_start=candidate.resolved_from_span_start,
+                resolved_from_span_end=candidate.resolved_from_span_end,
                 claim_type=candidate.claim_type,
                 population=pico.population,
                 intervention_or_exposure=pico.intervention_or_exposure,
@@ -479,10 +489,12 @@ class AnalysisIngestionService:
                 coreference_uncertain=candidate.coreference_uncertain,
                 entities=entities,
                 pico=pico,
-                normalization_status=normalization_status(
+                normalization_status=("partial" if candidate.standalone_status in {
+                    "uncertain", "incomplete"
+                } else normalization_status(
                     pico, linked_count=linked_count, mention_count=len(entities),
                     quality=quality,
-                ),
+                )),
                 normalization_quality=quality,
             )
 

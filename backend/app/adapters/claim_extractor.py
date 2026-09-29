@@ -17,8 +17,9 @@ from app.adapters.http import HttpAdapterBase
 from app.core.debug_trace import record_model_event
 from app.core.errors import ExternalCapabilityError
 from app.pipeline.claim_types import ClaimType, explicit_relation, legacy_claim_type
+from app.pipeline.standalone import StandaloneStatus, validate_standalone
 
-CLAIM_EXTRACTION_PROMPT_VERSION = "phase7-json-source-spans-2026-09-29"
+CLAIM_EXTRACTION_PROMPT_VERSION = "phase7-standalone-source-spans-2026-09-29"
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are a health-claim extraction engine.
@@ -34,7 +35,14 @@ antecedent is unambiguous; otherwise set coreference_uncertain to true.
 For coordinated clauses such as "X increases Y and lowers Z", extract each
 proposition separately. Keep each raw_span exact; identify the shared subject
 with resolved_from_span_start/resolved_from_span_end and repeat its exact source
-wording in each PICO exposure. Include an explicit outcome for each clause.
+wording in each PICO exposure. Every normalized atomic claim must be independently
+understandable. When a later coordinated clause omits a subject explicit in the
+source, repeat that exact source-grounded subject in normalized_claim, while
+keeping raw_span and source offsets faithful to the original clause. Preserve
+causal/association wording, numbers, negation, modality, population, exposure,
+and outcome; do not rewrite stylistically. If the antecedent is uncertain,
+mark coreference_uncertain and do not invent a subject. Include an explicit
+outcome for each clause.
 
 For every claim return raw_span, span_start, span_end, normalized_claim,
 claim_type, risk_class, verifiability, coreference_uncertain, and
@@ -103,6 +111,7 @@ class ExtractedClaimCandidate(BaseModel):
     risk_class: str = Field(default="standard", pattern="^(standard|high)$")
     verifiability: float | None = Field(default=None, ge=0, le=1)
     coreference_uncertain: bool = False
+    standalone_status: StandaloneStatus = "complete"
     resolved_from_span_start: int | None = Field(default=None, ge=0)
     resolved_from_span_end: int | None = Field(default=None, ge=0)
     pico: PicoCandidate | None = None
@@ -347,10 +356,11 @@ async def _extract_with_retry(
                                 and _RELATION_WITH_OBJECT.search(source_text)):
                             raise _ResponseFailure("empty_claims_with_explicit_relation")
                         try:
-                            validate_claim_candidates(
+                            verified = validate_claim_candidates(
                                 payload=payload, source_text=source_text,
                                 maximum_claims=adapter.maximum_claims,
                             )
+                            payload = payload.model_copy(update={"claims": list(verified)})
                         except ExternalCapabilityError as exc:
                             raise _ResponseFailure("source_span_validation_failure") from exc
                         if attempt == 1 and _needs_pico_repair(payload):
@@ -657,7 +667,21 @@ def validate_claim_candidates(
         ):
             raise _invalid_claim_response()
         unique_spans.add((candidate.span_start, candidate.span_end))
-        verified.append(candidate)
+        standalone = validate_standalone(source_text, candidate.span_start, candidate.span_end)
+        inherited_start = (candidate.resolved_from_span_start if standalone.status == "complete"
+                           else standalone.inherited_start)
+        inherited_end = (candidate.resolved_from_span_end if standalone.status == "complete"
+                         else standalone.inherited_end)
+        verified.append(candidate.model_copy(update={
+            "normalized_claim": standalone.text,
+            "standalone_status": standalone.status,
+            "coreference_uncertain": (
+                candidate.coreference_uncertain if standalone.status == "complete"
+                else standalone.status == "uncertain"
+            ),
+            "resolved_from_span_start": inherited_start,
+            "resolved_from_span_end": inherited_end,
+        }))
     return tuple(verified)
 
 

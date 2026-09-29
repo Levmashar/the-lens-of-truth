@@ -197,6 +197,9 @@ async def preview_claim_extraction(
                 span_end=claim.span_end,
                 raw_text=claim.raw_text,
                 normalized_text=claim.normalized_text,
+                standalone_status=claim.standalone_status,
+                resolved_from_span_start=claim.resolved_from_span_start,
+                resolved_from_span_end=claim.resolved_from_span_end,
                 claim_type=claim.claim_type,
                 population=claim.population,
                 intervention_or_exposure=claim.intervention_or_exposure,
@@ -434,6 +437,7 @@ async def get_claim_report(
             frozen_pack.claim_snapshot, frozen_pack.query_plan,
             frozen_pack.documents, frozen_pack.passages,
             frozen_pack.selected_evidence_ids,
+            pack_version=frozen_pack.evidence_pack_version,
         )).hexdigest() if frozen_pack else None)
         valid = (
             pack is not None and pack.claim_id == claim_id
@@ -509,6 +513,7 @@ def _analysis_detail(submission: Submission) -> AnalysisDetail:
                 span_end=claim.span_end,
                 raw_text=claim.raw_text,
                 normalized_text=claim.normalized_text,
+                standalone_status=claim.standalone_status,
                 claim_type=legacy_claim_type(claim.claim_type),
                 population=claim.population,
                 intervention_or_exposure=claim.intervention_or_exposure,

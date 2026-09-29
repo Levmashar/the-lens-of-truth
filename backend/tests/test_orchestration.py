@@ -96,7 +96,7 @@ async def run_fixture(
         artifacts["packs"][pack.claim_id] = pack
         row = EvidencePackRecord(
             id=uuid4(), claim_id=pack.claim_id, run_id=uuid4(),
-            version="1.3", snapshot_hash=pack.snapshot_hash,
+            version=pack.evidence_pack_version, snapshot_hash=pack.snapshot_hash,
             snapshot_json=pack.model_dump(mode="json"), created_at=datetime.now(UTC),
         )
         session.add(row)

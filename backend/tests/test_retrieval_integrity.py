@@ -337,7 +337,7 @@ def test_retracted_remains_auditable_but_not_selected_and_hash_changes() -> None
     }
     assert all(item.selection_reason == "retracted_excluded" for item in pack.passages
                if item.passage.document_id == retracted.document_id)
-    assert pack.evidence_pack_version == "1.3"
+    assert pack.evidence_pack_version == "1.4"
     assert pack.snapshot_hash == build_evidence_pack(claim, plan, documents, ranked).snapshot_hash
     changed = retracted.model_copy(update={"integrity": direct.integrity})
     revised = build_evidence_pack(claim, plan, (direct, changed), ranked)

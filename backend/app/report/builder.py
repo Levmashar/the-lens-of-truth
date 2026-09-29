@@ -304,9 +304,10 @@ def build_report(
         raise ValueError("Verdict semantic hash mismatch")
     actual_pack_hash = hashlib.sha256(canonical_pack_bytes(
         pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
-        pack.selected_evidence_ids,
+        pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
     )).hexdigest()
-    if (pack.evidence_pack_version != "1.3" or pack.snapshot_hash != actual_pack_hash
+    if (pack.evidence_pack_version not in {"1.3", "1.4"}
+            or pack.snapshot_hash != actual_pack_hash
             or verdict.evidence_pack_hash != actual_pack_hash
             or verdict.claim_id != pack.claim_id
             or verdict.claim_id != pack.claim_snapshot.claim_id):
@@ -354,7 +355,7 @@ def build_report(
     )
     result = LensReport(
         report_version=REPORT_VERSION, verdict_run_id=verdict_run_id,
-        claim=ReportClaim(text=pack.claim_snapshot.raw_text,
+        claim=ReportClaim(text=pack.claim_snapshot.standalone_text,
                           claim_type=pack.claim_snapshot.claim_type),
         verdict=verdict.verdict, verdict_display=DISPLAY_LABELS[verdict.verdict],
         headline=DISPLAY_LABELS[verdict.verdict],

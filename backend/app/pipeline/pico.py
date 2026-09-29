@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.adapters.claim_extractor import ExtractedClaimCandidate
 from app.pipeline.claim_types import ClaimType, legacy_claim_type
+from app.pipeline.standalone import validate_standalone
 
 if TYPE_CHECKING:
     from app.pipeline.completeness import NormalizationQuality
@@ -14,13 +15,6 @@ if TYPE_CHECKING:
 NormalizationStatus = Literal[
     "pending", "unresolved", "pico_only", "partially_linked", "partial", "normalized"
 ]
-
-_COORDINATED_VERB = (
-    r"(?:causes?|caused|increases?|increased|raises?|raised|elevates?|elevated|"
-    r"reduces?|reduced|decreases?|decreased|lowers?|lowered|prevents?|prevented|"
-    r"improves?|improved|worsens?|worsened|results?\s+in)"
-)
-
 
 class NormalizedPico(BaseModel):
     """Claim framing, never evidence or a medical-truth assessment."""
@@ -58,11 +52,23 @@ def normalize_pico(
     values: dict[str, str | None] = {}
     for field in ("population", "intervention_or_exposure", "comparator", "outcome", "timeframe"):
         value = getattr(proposed, field) if proposed is not None else None
-        values[field] = _grounded_value(value, candidate.raw_span)
+        values[field] = (
+            _grounded_outcome(value, candidate.raw_span) if field == "outcome"
+            else _grounded_value(value, candidate.raw_span)
+        )
     if shared_clause is not None:
         # The first clause supplies the exact exposure for a subject-ellipsis
         # second clause; neither a model paraphrase nor an unrelated antecedent does.
         values["intervention_or_exposure"] = shared_clause[0]
+        if proposed is not None and proposed.population is not None:
+            values["population"] = _grounded_value(proposed.population, shared_clause[0])
+        if values["population"] is None:
+            stated_population = re.search(
+                r"\b(?:men|women|adults?|children|males?|females?)\b",
+                shared_clause[0], re.I,
+            )
+            if stated_population is not None:
+                values["population"] = stated_population.group()
         if values["outcome"] is None:
             # The second clause itself explicitly supplies the outcome. This
             # recovery is deliberately limited to verified coordination.
@@ -79,47 +85,14 @@ def normalize_pico(
 def _coordinated_clause(
     candidate: ExtractedClaimCandidate, source_text: str | None,
 ) -> tuple[str, str] | None:
-    if source_text is None or candidate.resolved_from_span_start is None or (
-        candidate.resolved_from_span_end is None
-    ):
-        return None
-    start = candidate.resolved_from_span_start
-    end = candidate.resolved_from_span_end
-    if not 0 <= start < end <= candidate.span_start < candidate.span_end <= len(source_text):
+    if source_text is None:
         return None
     if source_text[candidate.span_start:candidate.span_end] != candidate.raw_span:
         return None
-    separator = re.search(r"\s*,?\s*and\s+$", source_text[start:candidate.span_start], re.I)
-    if separator is None:
-        return None
-    second = re.fullmatch(
-        rf"\s*{_COORDINATED_VERB}\s+(?P<outcome>[^.;:!?]+?)[.!?]?",
-        candidate.raw_span, re.I,
-    )
-    if second is None:
-        return None
-    antecedent_end = start + separator.start()
-    antecedent = source_text[start:antecedent_end]
-    match = re.fullmatch(
-        rf"(?P<subject>[^,.;:!?]{{1,120}}?)\s+{_COORDINATED_VERB}\s+[^,.;:!?]+",
-        antecedent, re.I,
-    )
-    if match is None:
-        return None
-    subject = match.group("subject").strip()
-    subject_end = start + match.end("subject")
-    # Extractors may point at the full prior clause or a word-aligned prefix
-    # of the shared subject. Neither pointer licenses an unrelated clause.
-    pointer_is_subject_prefix = (
-        end <= subject_end
-        and (end == subject_end or source_text[end].isspace())
-    )
-    if not (pointer_is_subject_prefix or end == antecedent_end):
-        return None
-    if not subject or re.search(r"\b(?:and|or)\b", subject, re.I):
-        return None
-    outcome = second.group("outcome").strip()
-    return (subject, outcome) if outcome else None
+    result = validate_standalone(source_text, candidate.span_start, candidate.span_end)
+    return (result.subject, result.outcome) if (
+        result.status == "reconstructed" and result.subject and result.outcome
+    ) else None
 
 
 def normalize_stored_pico(
@@ -177,3 +150,19 @@ def _grounded_value(value: str | None, source: str) -> str | None:
     pattern = r"\s+".join(re.escape(part) for part in parts)
     match = re.search(pattern, source, flags=re.IGNORECASE)
     return match.group() if match else None
+
+
+def _grounded_outcome(value: str | None, source: str) -> str | None:
+    """Keep exact endpoint words when a model inflects only a relation verb."""
+
+    exact = _grounded_value(value, source)
+    if exact is not None or value is None:
+        return exact
+    remainder = re.sub(
+        r"^(?:increased|decreased|raised|lowered|reduced|caused|prevented|"
+        r"improved|worsened|higher|lower|more|less)\s+",
+        "", value.strip(), count=1, flags=re.I,
+    )
+    if remainder == value.strip():
+        return None
+    return _grounded_value(remainder, source)

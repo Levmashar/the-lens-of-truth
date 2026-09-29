@@ -78,6 +78,8 @@ def load_aggregation_context(
         normalization_reviewed=ready_for_evidence(
             claim.normalization_status, pico_json=claim.pico_json,
             quality_json=claim.normalization_quality,
+            standalone_status=claim.standalone_status,
+            standalone_text=claim.normalized_text,
         ),
     ) if claim is not None else None)
     pack_row = session.get(EvidencePackRecord, request.evidence_pack_id)

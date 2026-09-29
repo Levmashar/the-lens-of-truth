@@ -170,6 +170,9 @@ def _claim_focused(document: PubMedDocument) -> bool:
         or (same_section and exposure_title)
         or (same_section and outcome_title and detail.score >= 0.6)
         or (same_section and detail.score >= 0.75)
+        or (document.endpoint_directness.score >= 0.35
+            and factors.get("exposure_in_document") == 1.0
+            and factors.get("outcome_in_document") == 1.0)
     )
 
 
@@ -187,20 +190,48 @@ def select_top_evidence(
     for passage in passages:
         document = documents_by_id.get(passage.passage.document_id)
         doc_directness = document.relationship_directness.score if document else 0.0
+        doc_endpoint = document.endpoint_directness.score if document else 0.0
+        passage_endpoint = passage.endpoint_directness.score
         quality = document.quality_prior if document else 0.4
-        applicability_penalty = 0.06 if document and document.applicability_warnings else 0.0
+        population_mismatch = bool(document and any(
+            warning.endswith("_only_vs_male_claim") or warning.endswith("_only_vs_female_claim")
+            for warning in document.applicability_warnings
+        ))
+        applicability_penalty = (0.22 if population_mismatch else
+                                 0.06 if document and document.applicability_warnings else 0.0)
+        endpoint_indirect_penalty = 0.16 if (
+            document and document.endpoint_directness.factors.get("quantitative_outcome") == 1.0
+            and doc_endpoint < 0.35
+        ) else 0.0
+        endpoint_title_focus_bonus = 0.16 if (
+            document and not population_mismatch
+            and document.relationship_directness.direction not in {"reverse", "incidental"}
+            and document.endpoint_directness.factors.get("endpoint_in_title") == 1.0
+            and document.relationship_directness.factors.get("exposure_in_document") == 1.0
+        ) else 0.0
+        relationship_mismatch_penalty = 0.22 if (
+            document and document.relationship_directness.direction in {"reverse", "incidental"}
+        ) else 0.0
         factors = {
-            "retrieval_component": round(0.30 * passage.retrieval_score, 4),
+            "retrieval_component": round(0.22 * passage.retrieval_score, 4),
             "passage_directness_component": round(
-                0.45 * passage.relationship_directness.score, 4
+                0.28 * passage.relationship_directness.score, 4
             ),
-            "document_directness_component": round(0.20 * doc_directness, 4),
+            "document_directness_component": round(0.12 * doc_directness, 4),
+            "passage_endpoint_component": round(0.22 * passage_endpoint, 4),
+            "document_endpoint_component": round(0.11 * doc_endpoint, 4),
+            "endpoint_title_focus_bonus": endpoint_title_focus_bonus,
             "quality_prior_component": round(0.05 * quality, 4),
             "applicability_penalty": applicability_penalty,
+            "endpoint_indirect_penalty": endpoint_indirect_penalty,
+            "relationship_mismatch_penalty": relationship_mismatch_penalty,
+            "priority_normalizer": 1.16,
         }
         priority = round(max(0.0, min(1.0,
-            sum(value for key, value in factors.items() if key != "applicability_penalty")
-            - applicability_penalty,
+            (sum(value for key, value in factors.items()
+                 if key.endswith("_component") or key.endswith("_bonus"))
+             - applicability_penalty - endpoint_indirect_penalty
+             - relationship_mismatch_penalty) / factors["priority_normalizer"],
         )), 4)
         scored.append(passage.model_copy(update={
             "selection_priority_score": priority, "selection_factors": factors,
@@ -233,11 +264,23 @@ def select_top_evidence(
     unfocused = {
         document.document_id for document in documents if not _claim_focused(document)
     }
+    direct_quantitative = {
+        document.document_id for document in documents
+        if document.endpoint_directness.factors.get("quantitative_outcome") == 1.0
+        and document.endpoint_directness.score >= 0.5
+    }
+    weak_endpoint = {
+        document.document_id for document in documents
+        if len(direct_quantitative) >= 3
+        and document.endpoint_directness.factors.get("quantitative_outcome") == 1.0
+        and document.endpoint_directness.score < 0.35
+    }
     counts: dict[str, int] = defaultdict(int)
     selected: list[RankedPassage] = []
     for passage in representatives:
         document_id = passage.passage.document_id
-        if document_id in retracted or document_id in nonhuman or document_id in unfocused:
+        if (document_id in retracted or document_id in nonhuman
+                or document_id in unfocused or document_id in weak_endpoint):
             continue
         if counts[document_id] >= max_per_document:
             continue
@@ -266,6 +309,8 @@ def select_top_evidence(
             reason = "nonhuman_evidence_excluded"
         elif passage.passage.document_id in unfocused:
             reason = "insufficient_claim_focus"
+        elif passage.passage.document_id in weak_endpoint:
+            reason = "endpoint_indirect_when_direct_alternatives_exist"
         annotated.append(passage.model_copy(update={
             "selected_for_judging": is_selected, "selection_reason": reason,
             "factors": {**passage.factors, "document_diversity_selection": float(is_selected)},

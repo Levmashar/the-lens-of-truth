@@ -9,7 +9,7 @@ from typing import Literal
 from uuid import uuid4
 
 from app.judging.models import JudgeLabel, JudgeRun
-from app.retrieval.evidence_pack import canonical_pack_bytes
+from app.retrieval.evidence_pack import JUDGE_READY_PACK_VERSIONS, canonical_pack_bytes
 from app.retrieval.models import EvidencePack
 from app.validation.entailment import (
     PROMPT_VERSION,
@@ -52,10 +52,10 @@ class ValidationService:
         started_at, start = datetime.now(UTC), monotonic()
         actual_hash = hashlib.sha256(canonical_pack_bytes(
             pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
-            pack.selected_evidence_ids,
+            pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
         )).hexdigest()
         pack_valid = (
-            pack.evidence_pack_version == "1.3"
+            pack.evidence_pack_version in JUDGE_READY_PACK_VERSIONS
             and judge.evidence_pack_hash == pack.snapshot_hash == actual_hash
             and judge.claim_id == pack.claim_id == pack.claim_snapshot.claim_id
             and len({item.evidence_id for item in pack.passages}) == len(pack.passages)
@@ -115,7 +115,7 @@ class ValidationService:
                     warnings.append(IssueCode.QUALITY_PRIOR_LOW)
                 if not issues:
                     numeric = compare_numbers(
-                        pack.claim_snapshot.raw_text, decision.reasoning_summary,
+                        pack.claim_snapshot.standalone_text, decision.reasoning_summary,
                         ranked.passage.text,
                     )
                     reasoning_numeric = compare_numbers(
@@ -151,7 +151,7 @@ class ValidationService:
                         else:
                             facts = EntailmentInput(
                                 evidence_id=evidence_id, role=role,
-                                exact_claim=pack.claim_snapshot.raw_text,
+                                exact_claim=pack.claim_snapshot.standalone_text,
                                 judge_label=decision.label,
                                 reasoning_summary=decision.reasoning_summary,
                                 passage=ranked.passage.text,

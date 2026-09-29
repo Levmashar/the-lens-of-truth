@@ -234,7 +234,25 @@
       snapshot remains compatibility-only in Phase 7A
 - [ ] Implement safe URL ingestion only after reviewed SSRF/fetch controls
 
-## Phase 7B.1: Coordinated-claim intake hardening
+## Phase 7B.1: Claim self-containment and endpoint-direct retrieval hardening
+
+- [x] Validate every new atomic claim as standalone; reconstruct only verified
+      adjacent coordinated/pronoun subjects in `normalized_text`, never raw spans
+- [x] Persist standalone status and inherited source offsets; block uncertain
+      or incomplete fragments before normal retrieval
+- [x] Add broad plus endpoint-focused PubMed queries for explicit measured
+      outcomes and population, without adding a new source
+- [x] Score endpoint directness separately from topical/relationship relevance
+      and result direction; demote mechanism/background and wrong-population hits
+- [x] Freeze new selection factors in Evidence Pack 1.4, preserving the
+      version-specific 1.3 hash path and all auditable passages
+- [x] Add offline coordination, soy endpoint, population, negative-result,
+      JSONB hash, and existing-claim regression tests
+- [x] Complete and inspect the live combined-soy acceptance run: both claims
+      completed with a source-grounded standalone second clause; male hormone
+      studies led the estrogen selection, while the retrieved osteoporosis and
+      mechanism-only papers remained unselected. No meningioma paper appeared
+      in this live retrieval. Judge qualification remains a separate issue.
 
 - [x] Retry invalid source offsets within the existing one-retry extraction limit
 - [x] Give an explicit but omitted PICO relation one bounded repair attempt;

@@ -208,6 +208,8 @@ class AnalysisOrchestrator:
         if not ready_for_evidence(
             claim.normalization_status, pico_json=claim.pico_json,
             quality_json=claim.normalization_quality,
+            standalone_status=claim.standalone_status,
+            standalone_text=claim.normalized_text,
         ):
             raise LensError(
                 422, "normalization_incomplete",
