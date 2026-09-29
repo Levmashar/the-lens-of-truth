@@ -82,7 +82,7 @@ def build_evidence_pack(
     ordered_documents, passages = annotate_directness(claim, ordered_documents, passages)
     audited_passages, selected_ids = select_top_evidence(
         passages, limit=selected_limit, max_per_document=max_per_document,
-        documents=ordered_documents,
+        documents=ordered_documents, claim=claim,
     )
     digest = hashlib.sha256(canonical_pack_bytes(
         claim, plan, ordered_documents, audited_passages, selected_ids,

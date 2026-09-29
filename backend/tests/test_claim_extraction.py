@@ -16,6 +16,9 @@ from app.adapters.claim_extractor import (
 from app.core.config import Settings
 from app.core.errors import ExternalCapabilityError
 from app.dependencies import get_claim_extractor
+from app.medical.linker import MedicalEntityLinker
+from app.medical.mesh import LocalMeshProvider
+from app.medical.umls import UnconfiguredUmlsProvider
 from app.schemas.analysis import CreateAnalysisRequest
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.redaction import PiiRedactor
@@ -53,6 +56,126 @@ def test_claims_with_provider_invented_offsets_are_rejected() -> None:
 
     with pytest.raises(ExternalCapabilityError, match="spans"):
         validate_claim_candidates(payload=payload, source_text="Source text", maximum_claims=20)
+
+
+def test_adapter_retries_invalid_source_offsets_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = "Regular soy consumption lowers muscle gain."
+    requests: list[httpx.Request] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        claim = {
+            "raw_span": source,
+            "span_start": 1 if len(requests) == 1 else 0,
+            "span_end": len(source),
+            "claim_type": "causal",
+            "pico": {
+                "intervention_or_exposure": "Regular soy consumption",
+                "outcome": "muscle gain",
+            },
+        }
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": json.dumps({"claims": [claim]})}}]},
+        )
+
+    transport = httpx.MockTransport(respond)
+    monkeypatch.setattr(
+        MiriClaimExtractor, "build_client", lambda self: httpx.AsyncClient(transport=transport)
+    )
+    adapter = MiriClaimExtractor(service_name="fixture", base_url="http://gateway.example/v1")
+
+    result = asyncio.run(adapter.extract(text=source, language="en"))
+
+    assert len(requests) == 2
+    assert result.claims[0].span_start == 0
+    assert result.claims[0].raw_span == source
+
+
+def test_exhausted_source_offset_repair_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = "Vitamin C prevents colds."
+    response = httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({
+        "claims": [{"raw_span": source, "span_start": 1, "span_end": len(source)}]
+    })}}]})
+    transport = httpx.MockTransport(lambda request: response)
+    monkeypatch.setattr(
+        MiriClaimExtractor, "build_client", lambda self: httpx.AsyncClient(transport=transport)
+    )
+    adapter = MiriClaimExtractor(service_name="fixture", base_url="http://gateway.example/v1")
+
+    with pytest.raises(ExternalCapabilityError) as error:
+        asyncio.run(adapter.extract(text=source, language="en"))
+
+    assert error.value.code == "claim_extractor_invalid_response"
+
+
+def test_explicit_outcome_omission_gets_one_repair_then_remains_partial(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = "Regular usage of soy increases estrogen levels in body."
+    requests: list[httpx.Request] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        claim = {
+            "raw_span": source,
+            "span_start": 0,
+            "span_end": len(source),
+            "claim_type": "causal",
+            "pico": {
+                "intervention_or_exposure": "Regular usage of soy",
+                "outcome": "estrogen levels in body" if len(requests) == 2 else None,
+            },
+        }
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": json.dumps({"claims": [claim]})}}]},
+        )
+
+    transport = httpx.MockTransport(respond)
+    monkeypatch.setattr(
+        MiriClaimExtractor, "build_client", lambda self: httpx.AsyncClient(transport=transport)
+    )
+    adapter = MiriClaimExtractor(service_name="fixture", base_url="http://gateway.example/v1")
+
+    result = asyncio.run(adapter.extract(text=source, language="en"))
+
+    assert len(requests) == 2
+    assert result.claims[0].pico is not None
+    assert result.claims[0].pico.outcome == "estrogen levels in body"
+
+
+def test_unrepaired_explicit_outcome_is_not_fabricated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = "Vitamin C prevents the common cold."
+    calls = 0
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        claim = {
+            "raw_span": source, "span_start": 0, "span_end": len(source),
+            "claim_type": "prevention",
+            "pico": {"intervention_or_exposure": "Vitamin C", "outcome": None},
+        }
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": json.dumps({"claims": [claim]})}}]},
+        )
+
+    transport = httpx.MockTransport(respond)
+    monkeypatch.setattr(
+        MiriClaimExtractor, "build_client", lambda self: httpx.AsyncClient(transport=transport)
+    )
+    adapter = MiriClaimExtractor(service_name="fixture", base_url="http://gateway.example/v1")
+
+    result = asyncio.run(adapter.extract(text=source, language="en"))
+
+    assert calls == 2
+    assert result.claims[0].pico is not None
+    assert result.claims[0].pico.outcome is None
 
 
 def test_miri_adapter_requests_chatgpt_auto_and_parses_fenced_json(
@@ -223,3 +346,56 @@ def test_unstated_pico_fields_are_not_persisted() -> None:
     assert submission.claims[0].normalization_status == "pico_only"
     assert submission.claims[0].pico_json["original_claim"] == "Vitamin C prevents colds."
     assert submission.claims[0].linked_entities[0]["umls_cui"] is None
+
+
+def test_exact_soy_sentence_persists_two_retrievable_partially_linked_claims() -> None:
+    source = "Regular usage of soy increases estrogen levels in body, and lowers muscle gain"
+    service = AnalysisIngestionService(
+        storage=Mock(), ocr=Mock(), extractor=Mock(service_name="fixture", model_id="fixture"),
+        redactor=PiiRedactor(), retention_hours=24, maximum_claims=20,
+        upload_max_bytes=100, upload_max_pixels=100,
+        entity_linker=MedicalEntityLinker(
+            umls=UnconfiguredUmlsProvider(),
+            mesh=LocalMeshProvider({
+                "estrogen": ("D004967", "Estrogens", 0.95),
+                "muscle": ("D009132", "Muscles", 0.95),
+            }),
+        ),
+    )
+    request = CreateAnalysisRequest.model_validate({
+        "input": {"type": "text", "text": source},
+        "consent": {"privacy_notice_version": "2026-09-01", "accepted": True},
+    })
+    payload = ClaimExtractionPayload(claims=[
+        ExtractedClaimCandidate(
+            raw_span=source[:54], span_start=0, span_end=54, claim_type="causal",
+            pico=PicoCandidate(
+                intervention_or_exposure="Regular usage of soy",
+                outcome="estrogen levels in body",
+            ),
+        ),
+        ExtractedClaimCandidate(
+            raw_span=source[60:], span_start=60, span_end=len(source),
+            claim_type="causal", coreference_uncertain=True,
+            resolved_from_span_start=0, resolved_from_span_end=54,
+            pico=PicoCandidate(outcome="muscle gain"),
+        ),
+    ])
+
+    submission = service._persist_submission(
+        session=Mock(spec=Session), request=request, content_sha256="a" * 64,
+        candidates=payload, redacted_text=source,
+    )
+
+    assert len(submission.claims) == 2
+    assert [claim.normalization_status for claim in submission.claims] == [
+        "partially_linked", "partially_linked",
+    ]
+    assert [claim.outcome for claim in submission.claims] == [
+        "estrogen levels in body", "muscle gain",
+    ]
+    assert submission.claims[1].intervention_or_exposure == "Regular usage of soy"
+    assert submission.claims[1].raw_text == "lowers muscle gain"
+    assert submission.claims[1].coreference_uncertain is True
+    assert submission.claims[0].linked_entities[0]["mesh_id"] is None
+    assert submission.claims[1].linked_entities[0]["mesh_id"] is None

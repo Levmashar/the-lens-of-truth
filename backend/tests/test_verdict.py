@@ -163,11 +163,52 @@ def test_only_one_qualified_is_system_inability() -> None:
     assert result.validated_label_counts[S] == 1
 
 
+def test_inferred_protocol_version_never_qualifies_in_production() -> None:
+    request, context = case((S, S), mode=AggregationMode.PRODUCTION)
+    first = context.judges[0].model_copy(update={"schema_version_inferred": True})
+    context = context.model_copy(update={"judges": (first, context.judges[1])})
+    result = VerdictService().aggregate(request, context)
+    assert any(
+        item.judge_run_id == first.judge_run_id
+        and ReasonCode.AUDIT_RECORD_INVALID in item.exclusion_reasons
+        for item in result.judge_qualifications
+    )
+
+
 def test_required_validation_unavailable_is_system_inability() -> None:
     request, context = case((S, S), unvalidated=frozenset({2}))
     result = VerdictService().aggregate(request, context)
     assert result.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
     assert ReasonCode.VALIDATION_UNAVAILABLE in result.reason_codes
+
+
+def test_partial_scope_can_validate_only_an_evaluation_inconclusive_use() -> None:
+    request, context = case((N, N), partial=frozenset({1, 2}))
+    validations = tuple(item.model_copy(update={
+        "result": item.result.model_copy(update={
+            "warnings": (IssueCode.PARTIAL_SCOPE_MATCH,),
+            "citation_validations": tuple(citation.model_copy(update={
+                "scope_alignment": ScopeAlignment.PARTIAL,
+                "warnings": (IssueCode.PARTIAL_SCOPE_MATCH,),
+            }) for citation in item.result.citation_validations),
+        }),
+    }) for item in context.validations)
+    context = context.model_copy(update={"validations": validations})
+    evaluation = VerdictService().aggregate(request, context)
+    assert evaluation.verdict == LensVerdict.NOT_ENOUGH_EVIDENCE
+    assert evaluation.qualified_judges == 2
+    assert not evaluation.production_qualified
+
+    production = VerdictService().aggregate(
+        request.model_copy(update={"mode": AggregationMode.PRODUCTION}), context,
+    )
+    assert production.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
+    assert all(ReasonCode.VALIDATION_PARTIAL in item.exclusion_reasons
+               for item in production.judge_qualifications)
+
+    decisive_request, decisive_context = case((S, S), partial=frozenset({1, 2}))
+    decisive = VerdictService().aggregate(decisive_request, decisive_context)
+    assert decisive.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
 
 
 def test_no_results_is_evidence_insufficiency_not_technical_failure() -> None:
@@ -338,6 +379,35 @@ def test_incomplete_normalization_is_not_evidence_insufficiency() -> None:
         "claim": context.claim.model_copy(update={"normalization_status": "partial"}),
     })
     result = VerdictService().aggregate(request, context)
+    assert result.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
+    assert ReasonCode.NORMALIZATION_INCOMPLETE in result.reason_codes
+
+
+def test_complete_pico_with_partial_terminology_can_be_evaluated() -> None:
+    request, context = case((S, S, S))
+    assert context.claim is not None
+    context = context.model_copy(update={
+        "claim": context.claim.model_copy(update={
+            "normalization_status": "partially_linked", "normalization_reviewed": True,
+        }),
+    })
+
+    result = VerdictService().aggregate(request, context)
+
+    assert ReasonCode.NORMALIZATION_INCOMPLETE not in result.reason_codes
+
+
+def test_unaudited_partial_terminology_fails_verdict_closed() -> None:
+    request, context = case((S, S, S))
+    assert context.claim is not None
+    context = context.model_copy(update={
+        "claim": context.claim.model_copy(update={
+            "normalization_status": "partially_linked", "normalization_reviewed": False,
+        }),
+    })
+
+    result = VerdictService().aggregate(request, context)
+
     assert result.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
     assert ReasonCode.NORMALIZATION_INCOMPLETE in result.reason_codes
 

@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: lens
       POSTGRES_PASSWORD: lens
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -17,8 +17,9 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -32,12 +33,12 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql+psycopg://lens:lens@postgres:5432/lens
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: "redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@redis:6379/0"
       CORS_ORIGINS: http://localhost:5173
       UPLOAD_STORAGE_PATH: /app/runtime/uploads
       MESH_INDEX_PATH: /app/runtime/mesh/mesh.sqlite3
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,7 +56,7 @@ services:
     environment:
       VITE_API_BASE_URL: http://localhost:8000
     ports:
-      - "5173:80"
+      - "127.0.0.1:5173:80"
     depends_on:
       backend:
         condition: service_started

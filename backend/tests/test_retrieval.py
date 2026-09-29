@@ -11,6 +11,7 @@ import pytest
 from app.adapters.pubmed import PubMedAdapter, RedisQueryCache
 from app.medical.entities import MedicalEntity
 from app.pipeline.pico import NormalizedPico
+from app.retrieval.directness import _aliases as directness_aliases
 from app.retrieval.errors import RetrievalError
 from app.retrieval.evidence_pack import build_evidence_pack, deduplicate_documents
 from app.retrieval.models import ClaimSnapshot, EvidencePack
@@ -19,6 +20,7 @@ from app.retrieval.passages import extract_passages
 from app.retrieval.query_planner import plan_pubmed_queries
 from app.retrieval.ranking import rank_passages
 from app.retrieval.service import retrieve_pubmed
+from app.retrieval.study_quality import annotate_study_quality
 
 XML = (Path(__file__).parent / "fixtures" / "pubmed_sample.xml").read_bytes()
 CLAIM_ID = UUID("11111111-1111-4111-8111-111111111111")
@@ -84,6 +86,103 @@ def test_unresolved_entity_has_lexical_fallback() -> None:
                                      linked=False))
     assert "mesh" not in [query.family for query in plan.queries]
     assert "lexical" in [query.family for query in plan.queries]
+
+
+def test_unresolved_soy_uses_source_lexical_term_without_usage_filler() -> None:
+    text = "Regular usage of soy increases estrogen levels in body"
+    snapshot = ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal",
+            intervention_or_exposure="Regular usage of soy",
+            outcome="estrogen levels in body",
+        ),
+        entities=(
+            MedicalEntity(surface_text="Regular usage of soy",
+                          entity_type="intervention_or_exposure"),
+            MedicalEntity(surface_text="estrogen", entity_type="outcome",
+                          mesh_id="D004967", preferred_name="Estrogens",
+                          match_type="synonym", confidence=0.95),
+        ),
+    )
+
+    plan = plan_pubmed_queries(snapshot)
+    lexical = next(query for query in plan.queries if query.family == "lexical")
+
+    assert '"soy"[Title/Abstract]' in lexical.query
+    assert '"estrogen"[Title/Abstract]' in lexical.query
+    assert '"usage"[Title/Abstract]' not in lexical.query
+    assert '"regular"[Title/Abstract]' not in lexical.query
+
+
+def test_generic_linked_alias_cannot_suppress_source_grounded_soy_query() -> None:
+    text = "Soy consumption in male body results in increased estrogen rates"
+    snapshot = ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal",
+            intervention_or_exposure="Soy consumption", outcome="estrogen rates",
+        ),
+        entities=(
+            MedicalEntity(
+                surface_text="consumption", entity_type="intervention_or_exposure",
+                mesh_id="D004467", preferred_name="Economics",
+                match_type="synonym", confidence=0.95,
+            ),
+            MedicalEntity(
+                surface_text="estrogen", entity_type="outcome",
+                mesh_id="D004967", preferred_name="Estrogens",
+                match_type="synonym", confidence=0.95,
+            ),
+        ),
+    )
+
+    plan = plan_pubmed_queries(snapshot)
+
+    assert "mesh" not in [query.family for query in plan.queries]
+    lexical = next(query for query in plan.queries if query.family == "lexical")
+    assert '"soy"[Title/Abstract]' in lexical.query
+    assert '"estrogen"[Title/Abstract]' in lexical.query
+    assert "Economics" not in " ".join(query.query for query in plan.queries)
+    assert lexical.source_fields[0] == "pico.intervention_or_exposure"
+    assert "soy" in directness_aliases(snapshot, "intervention_or_exposure")
+    assert "economics" not in directness_aliases(snapshot, "intervention_or_exposure")
+
+
+def test_population_qualifier_cannot_become_soy_exposure_query_anchor() -> None:
+    text = "reduces muscle growth"
+    snapshot = ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal",
+            intervention_or_exposure="Soy consumption in male body", outcome="muscle growth",
+        ),
+        entities=(
+            MedicalEntity(
+                surface_text="male", entity_type="intervention_or_exposure",
+                mesh_id="D008297", preferred_name="Male",
+                match_type="exact", confidence=1.0,
+            ),
+            MedicalEntity(
+                surface_text="muscle", entity_type="outcome",
+                mesh_id="D009132", preferred_name="Muscles",
+                match_type="synonym", confidence=0.95,
+            ),
+        ),
+    )
+
+    plan = plan_pubmed_queries(snapshot)
+
+    assert "mesh" not in [query.family for query in plan.queries]
+    lexical = next(query for query in plan.queries if query.family == "lexical")
+    assert '"soy"[Title/Abstract]' in lexical.query
+    assert '"male"[Title/Abstract]' in lexical.query
+    assert '"muscle"[Title/Abstract]' in lexical.query
+    assert '"body"[Title/Abstract]' not in lexical.query
+    assert any('"growth"[Title/Abstract]' in query.query
+               for query in plan.queries if query.family == "lexical")
+    assert "soy" in directness_aliases(snapshot, "intervention_or_exposure")
+    assert "male" not in directness_aliases(snapshot, "intervention_or_exposure")
 
 
 def test_pubmed_parsing_preserves_metadata_and_missing_fields() -> None:
@@ -176,14 +275,19 @@ def test_sunscreen_selection_diversifies_without_losing_audit_passages() -> None
     assert {item.passage.passage_id for item in pack.passages} == {
         item.passage_id for item in passages
     }
-    assert len(selected) == len(documents)
+    assert len(selected) == 2
     assert len({item.passage.document_id for item in selected}) == len(selected)
     assert all(item.passage_type == "abstract" for item in selected[:2])
     assert all(item.selection_reason == "relevant_abstract" for item in selected[:2])
-    assert selected[0].retrieval_score > selected[-1].retrieval_score
+    assert selected[0].retrieval_score >= selected[-1].retrieval_score
     assert selected[0].factors["both_core_concepts_present"] == 1.0
-    assert selected[-1].factors["exposure_present"] == 0.0
-    assert selected[-1].factors["generic_background_penalty"] > 0
+    assert all(item.factors["exposure_present"] == 1.0 for item in selected)
+    assert all(
+        item.selection_reason == "insufficient_claim_focus"
+        for item in pack.passages if item.passage.document_id == background.document_id
+    )
+    restored = EvidencePack.model_validate_json(pack.model_dump_json())
+    assert restored.snapshot_hash == pack.snapshot_hash
     assert any(item.passage_type == "title" and not item.selected_for_judging
                for item in pack.passages)
     assert all(item.factors["document_diversity_selection"] == float(
@@ -192,6 +296,36 @@ def test_sunscreen_selection_diversifies_without_losing_audit_passages() -> None
     assert pack.snapshot_hash == build_evidence_pack(
         snapshot, plan, documents, ranked,
     ).snapshot_hash
+
+
+def test_explicit_animal_paper_remains_auditable_but_not_selected() -> None:
+    snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
+    human = parse_pubmed_xml(XML)[0]
+    animal = human.model_copy(update={
+        "document_id": "pubmed:22222222", "pmid": "22222222",
+        "title": "Sunscreen and melanoma in Pekin ducks: a controlled trial.",
+        "mesh_terms": (), "publication_types": ("Journal Article",),
+    })
+    documents = tuple(annotate_study_quality(snapshot, item) for item in (human, animal))
+    assert documents[1].study_design == "animal_study"
+    assert documents[1].study_design_source == "title_explicit_animal_subject"
+    passages = tuple(p for document in documents for p in extract_passages(document))
+    ranked = rank_passages(snapshot, documents, passages)
+
+    pack = build_evidence_pack(snapshot, plan_pubmed_queries(snapshot), documents, ranked)
+
+    assert {document.pmid for document in pack.documents} == {"12345678", "22222222"}
+    assert all(
+        item.passage.document_id != animal.document_id
+        for item in pack.passages if item.selected_for_judging
+    )
+    assert any(
+        item.passage.document_id == animal.document_id
+        and item.selection_reason == "nonhuman_evidence_excluded"
+        for item in pack.passages
+    )
+    restored = EvidencePack.model_validate_json(pack.model_dump_json())
+    assert restored.snapshot_hash == pack.snapshot_hash
 
 
 def test_title_is_selected_only_when_abstract_lacks_unique_core_coverage() -> None:
@@ -229,7 +363,11 @@ def test_generic_title_is_lower_priority_even_with_incidental_abstract_mention()
 
 def test_selected_limit_does_not_limit_frozen_source_passages() -> None:
     snapshot = claim("Frequent sunscreen use causes invasive melanoma.")
-    documents = parse_pubmed_xml(XML)
+    direct = parse_pubmed_xml(XML)[0]
+    second = direct.model_copy(update={
+        "document_id": "pubmed:22222222", "pmid": "22222222",
+    })
+    documents = (direct, second)
     passages = tuple(p for document in documents for p in extract_passages(document))
     ranked = rank_passages(snapshot, documents, passages)
     plan = plan_pubmed_queries(snapshot)

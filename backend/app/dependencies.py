@@ -59,6 +59,7 @@ def get_claim_extractor(
             base_url=settings.claim_extractor_base_url,
             model=settings.claim_extractor_model or "chatgpt-auto",
             api_key=api_key.get_secret_value() if api_key else None,
+            maximum_claims=settings.claim_extractor_max_claims,
         )
     if not (
         settings.claim_extractor_base_url
@@ -74,6 +75,7 @@ def get_claim_extractor(
         base_url=settings.claim_extractor_base_url,
         model=settings.claim_extractor_model,
         api_key=api_key.get_secret_value(),
+        maximum_claims=settings.claim_extractor_max_claims,
     )
 
 

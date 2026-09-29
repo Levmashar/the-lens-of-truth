@@ -1,6 +1,7 @@
 """Optional migrated-PostgreSQL check for append-only judge audit rows."""
 
 import asyncio
+import json
 import os
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
@@ -19,7 +20,7 @@ from app.models.enums import InputType
 from app.models.judge_run import JudgeRunRecord
 from app.models.retrieval import EvidencePackRecord, RetrievalRun
 from app.models.submission import Submission
-from tests.test_judging import FakeProvider, pack_for, slot
+from tests.test_judging import FakeProvider, decision_json, pack_for, slot
 
 pytestmark = pytest.mark.skipif(os.getenv("RUN_DB_TESTS") != "1",
                                 reason="Set RUN_DB_TESTS=1 with migrated PostgreSQL")
@@ -82,18 +83,28 @@ def test_judge_runs_append_and_keep_pack_provenance(
                 {"fake": FailingProvider()},
             ).run(pack_id, pack, (search_slot,), app_env="test",
                   allow_search_enabled_development=True))
+            protocol_payload = json.loads(decision_json())
+            del protocol_payload["schema_version"]
+            inferred, _ = asyncio.run(JudgeService({
+                "fake": FakeProvider(json.dumps(protocol_payload)),
+            }).run(pack_id, pack, (slot(1),)))
             persist_judge_runs(session, first)
             persist_judge_runs(session, second)
             persist_judge_runs(session, failed)
             persist_judge_runs(session, bypassed)
             persist_judge_runs(session, bypassed_failure)
+            persist_judge_runs(session, inferred)
             rows = list(session.scalars(select(JudgeRunRecord).where(
                 JudgeRunRecord.evidence_pack_id == pack_id,
             )))
-            assert len(rows) == 5
+            assert len(rows) == 6
             assert rows[0].id != rows[1].id
             assert {row.evidence_pack_hash for row in rows} == {pack.snapshot_hash}
-            assert sum(row.decision_json is not None for row in rows) == 3
+            assert sum(row.decision_json is not None for row in rows) == 4
+            assert sum(row.schema_version_inferred for row in rows) == 1
+            assert next(
+                row for row in rows if row.schema_version_inferred
+            ).id == inferred[0].judge_run_id
             assert sum(row.error_category == "provider_error" for row in rows) == 2
             assert all(row.prompt_version == first[0].prompt_version for row in rows)
             bypassed_rows = [row for row in rows if row.search_guard_bypassed]

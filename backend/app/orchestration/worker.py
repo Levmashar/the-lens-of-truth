@@ -4,10 +4,12 @@ import logging
 from datetime import UTC, datetime
 from uuid import UUID
 
+from app.adapters.entailment import OpenAICompatibleEntailmentValidator
 from app.adapters.judge import OpenAICompatibleJudgeProvider
 from app.adapters.ocr import TesseractOcrAdapter
 from app.adapters.storage import LocalFilesystemUploadStorage
 from app.core.config import Settings
+from app.core.debug_trace import trace_analysis
 from app.db.session import SessionLocal
 from app.dependencies import (
     build_analysis_ingestion_service,
@@ -15,7 +17,7 @@ from app.dependencies import (
     get_crossref_adapter,
     get_pubmed_adapter,
 )
-from app.judging.config import configured_slots
+from app.judging.config import configured_slots, is_search_enabled_model
 from app.judging.models import JudgeRun
 from app.judging.service import JudgeService
 from app.models.analysis_run import AnalysisRunRecord
@@ -25,8 +27,34 @@ from app.retrieval.service import retrieve_pubmed
 from app.schemas.analysis import CreateAnalysisRequest
 from app.validation.models import JudgeValidationRun
 from app.validation.service import ValidationService
+from app.verdict.models import AggregationMode
 
 logger = logging.getLogger(__name__)
+
+
+def development_entailment_validator(
+    settings: Settings, judge: JudgeRun,
+) -> OpenAICompatibleEntailmentValidator | None:
+    """Cross-check with another configured family only in evaluation runs.
+
+    This is a live *unapproved* semantic check, not production certification.
+    Search-enabled gateway modes are not used as validators.
+    """
+
+    if settings.app_env not in {"development", "test"}:
+        return None
+    try:
+        candidates = configured_slots(settings)
+    except ValueError:
+        return None
+    for slot in reversed(candidates):
+        if (slot.model_family.casefold() != judge.model_family.casefold()
+                and not is_search_enabled_model(slot.model)):
+            return OpenAICompatibleEntailmentValidator(
+                provider=slot.provider, model=slot.model,
+                base_url=slot.base_url, api_key=slot.api_key,
+            )
+    return None
 
 
 def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
@@ -75,15 +103,18 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
         return runs
 
     async def validation(judge: JudgeRun, pack: EvidencePack) -> JudgeValidationRun:
-        # Phase 6A has no approved live entailment provider. Its typed result is
-        # unable_to_validate, which Phase 6B excludes from decisive judgments.
-        return await ValidationService().run(judge, pack)
+        return await ValidationService(
+            entailment_validator=development_entailment_validator(settings, judge),
+        ).run(judge, pack)
 
     return AnalysisOrchestrator(
         ingestion=ingestion, retrieve=retrieval, judge=judging, validate=validation,
         total_timeout_seconds=settings.analysis_total_timeout_seconds,
         claim_timeout_seconds=settings.analysis_claim_timeout_seconds,
         retrieval_timeout_seconds=settings.analysis_retrieval_timeout_seconds,
+        mode=(AggregationMode.FIXTURE_OR_EVALUATION
+              if settings.app_env in {"development", "test"}
+              else AggregationMode.PRODUCTION),
     )
 
 
@@ -91,6 +122,15 @@ async def run_background(
     analysis_id: UUID, request: CreateAnalysisRequest, settings: Settings,
 ) -> None:
     """Use a fresh session after the HTTP dependency scope has closed."""
+
+    with trace_analysis(analysis_id, enabled=settings.debug_enabled):
+        await _run_background_traced(analysis_id, request, settings)
+
+
+async def _run_background_traced(
+    analysis_id: UUID, request: CreateAnalysisRequest, settings: Settings,
+) -> None:
+    """Execute all provider calls within the optional trace context."""
 
     with SessionLocal() as session:
         try:

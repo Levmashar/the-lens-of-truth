@@ -104,6 +104,7 @@ class JudgeRun(BaseModel):
     model: str
     model_family: str
     model_snapshot: str | None = None
+    schema_version_inferred: bool = False
     model_identity_verified: bool = False
     model_family_verified: bool = False
     search_override_active: bool = False
@@ -129,6 +130,8 @@ class JudgeRun(BaseModel):
             not self.search_override_active or self.search_isolation_verified
         ):
             raise ValueError("bypassed search guard cannot claim verified isolation")
+        if self.schema_version_inferred and self.decision is None:
+            raise ValueError("schema version inference requires a valid decision")
         return self
 
 

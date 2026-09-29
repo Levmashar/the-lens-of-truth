@@ -3,13 +3,23 @@
 import asyncio
 import os
 from datetime import UTC, datetime, timedelta
+from unittest.mock import Mock
 from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
+from app.adapters.claim_extractor import (
+    ClaimExtractionPayload,
+    ExtractedClaimCandidate,
+    PicoCandidate,
+)
 from app.core.errors import LensError
 from app.db.session import SessionLocal
+from app.medical.linker import MedicalEntityLinker
+from app.medical.mesh import LocalMeshProvider
+from app.medical.umls import UnconfiguredUmlsProvider
 from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.evidence import EvidenceDocument
 from app.models.report_run import ReportRunRecord
@@ -25,10 +35,44 @@ from app.orchestration.smoke import (
 from app.orchestration.state import claim_runs, start_analysis
 from app.report.models import LensReport
 from app.schemas.analysis import AnalysisInput, Consent, CreateAnalysisRequest
+from app.services.analysis_ingestion import AnalysisIngestionService
+from app.services.redaction import PiiRedactor
 from app.verdict.models import AggregationMode, LensVerdict
 
 pytestmark = pytest.mark.skipif(os.getenv("RUN_DB_TESTS") != "1",
                                 reason="Set RUN_DB_TESTS=1 with migrated PostgreSQL")
+
+SOY_SOURCE = "Regular usage of soy increases estrogen levels in body, and lowers muscle gain"
+
+
+class SoyFixtureExtractor:
+    service_name = "offline_soy_fixture"
+    model_id = "offline_fixture"
+
+    async def extract(self, *, text: str, language: str) -> ClaimExtractionPayload:
+        assert text == SOY_SOURCE
+        del language
+        return ClaimExtractionPayload(claims=[
+            ExtractedClaimCandidate(
+                raw_span=text[:54], span_start=0, span_end=54, claim_type="causal",
+                pico=PicoCandidate(
+                    intervention_or_exposure="Regular usage of soy",
+                    outcome="estrogen levels in body",
+                ),
+            ),
+            ExtractedClaimCandidate(
+                raw_span=text[60:], span_start=60, span_end=len(text),
+                claim_type="causal", coreference_uncertain=True,
+                resolved_from_span_start=0, resolved_from_span_end=54,
+                pico=PicoCandidate(outcome="muscle gain"),
+            ),
+        ])
+
+
+class SoyFixtureIngestion(AnalysisIngestionService):
+    async def purge_expired(self, *, session: Session) -> int:
+        del session
+        return 0
 
 
 def _request(text: str) -> CreateAnalysisRequest:
@@ -103,6 +147,48 @@ def test_postgres_full_chain_and_idempotent_start() -> None:
             with pytest.raises(ValueError, match="queued"):
                 asyncio.run(orchestrator.run(session, run.id, request))
             assert session.get(ClaimAnalysisRunRecord, row.id) is not None
+        finally:
+            session.rollback()
+            _cleanup(session, run.id, pmids)
+
+
+def test_exact_soy_sentence_completes_two_claims_with_synthetic_evidence() -> None:
+    request = _request(SOY_SOURCE)
+    pmids: set[str] = set()
+    with SessionLocal() as session:
+        run, _ = start_analysis(session, request, idempotency_key=None, retention_hours=1)
+        try:
+            ingestion = SoyFixtureIngestion(
+                storage=Mock(), ocr=Mock(), extractor=SoyFixtureExtractor(),
+                redactor=PiiRedactor(), retention_hours=1, maximum_claims=20,
+                upload_max_bytes=100, upload_max_pixels=100,
+                entity_linker=MedicalEntityLinker(
+                    umls=UnconfiguredUmlsProvider(),
+                    mesh=LocalMeshProvider({
+                        "estrogen": ("D004967", "Estrogens", 0.95),
+                        "muscle": ("D009132", "Muscles", 0.95),
+                    }),
+                ),
+            )
+            orchestrator = AnalysisOrchestrator(
+                ingestion=ingestion, retrieve=fixture_retrieval,
+                judge=fixture_judges, validate=fixture_validation,
+                mode=AggregationMode.FIXTURE_OR_EVALUATION,
+            )
+
+            asyncio.run(orchestrator.run(session, run.id, request))
+            session.refresh(run)
+            rows = claim_runs(session, run.id)
+            assert run.status == "completed"
+            assert run.claim_count == run.completed_claims == 2
+            assert all(row.report_run_id is not None for row in rows)
+            submission = session.get(Submission, run.submission_id)
+            assert submission is not None
+            assert [claim.normalization_status for claim in submission.claims] == [
+                "partially_linked", "partially_linked",
+            ]
+            assert submission.claims[1].intervention_or_exposure == "Regular usage of soy"
+            pmids.update(str(90_000_000 + row.claim_id.int % 9_000_000) for row in rows)
         finally:
             session.rollback()
             _cleanup(session, run.id, pmids)

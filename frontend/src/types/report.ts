@@ -14,9 +14,12 @@ export interface SourceCard {
   evidence_roles: ("supporting" | "opposing" | "relevant_but_insufficient")[];
   exact_excerpt: string;
   excerpt_truncated: boolean;
+  passage_sha256: string;
   passage_section: string;
   source_url: string;
   citation_validated: boolean;
+  cited_by_judge_run_ids: string[];
+  cited_by_validation_run_ids: string[];
   limitations: string[];
 }
 
@@ -49,9 +52,12 @@ export interface LensReport {
   production_qualified: boolean;
   provenance: {
     report_version: string;
+    verdict_run_id: string;
     verdict_policy_version: string;
+    verdict_semantic_hash: string;
     evidence_pack_version: string;
     evidence_pack_id: string;
+    evidence_pack_hash: string;
     judge_run_ids: string[];
     judge_validation_run_ids: string[];
     report_builder_version: string;

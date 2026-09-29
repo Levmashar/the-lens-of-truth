@@ -1517,7 +1517,7 @@ Do not optimize merely for “user trust.” A bad system can increase trust wit
 | ML | PyTorch, Transformers, FlagEmbedding |
 | OCR | PaddleOCR / PP-OCRv5 |
 | Local LLM serving | vLLM |
-| Web | React + TypeScript + Vite |
+| Web | Vanilla HTML/CSS/TypeScript + Vite (Phase 7B implementation decision; the earlier React shell was removed) |
 | Mini Program | Native WXML/WXSS/TypeScript |
 | Object storage | S3/GCS/OSS-compatible |
 | Reverse proxy | managed API Gateway/WAF |

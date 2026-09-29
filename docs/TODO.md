@@ -5,7 +5,8 @@
 - [x] Monorepo layout and developer documentation
 - [x] FastAPI configuration, logging, errors, health, and typed API contract
 - [x] SQLAlchemy models and Alembic base migration
-- [x] React/Vite/Tailwind navigation shell and health connectivity
+- [x] Initial React/Vite/Tailwind navigation shell and health connectivity
+      (intentionally replaced by vanilla TypeScript in Phase 7B)
 - [x] Docker Compose with PostgreSQL/pgvector and Redis
 - [x] Focused backend tests
 - [x] Pull-request CI for static checks, tests, and frontend build
@@ -121,6 +122,14 @@
 - [x] Run a development Miri smoke with three distinct configured family labels
       against the frozen sunscreen Evidence Pack 1.3: ChatGPT and Qwen returned
       valid judge responses; Gemini failed `malformed_json` twice; no verdict
+- [x] Version judge citation-selection instructions and audit narrow inference
+      of an omitted fixed schema version; production still excludes such runs
+- [x] Reassess the frozen smoking/lung-cancer pack with prompt 1.6 and
+      independently validate every citation: 2 of 3 judges qualified in
+      evaluation mode; the original run remains unchanged
+- [x] Repeat the smoking claim through the normal API: one completed claim,
+      2 qualified assessments, 1 partial exclusion, evaluation-only report
+- [ ] Measure over-citation and judge JSON reliability on varied Phase 7 cases
 - [ ] Verify underlying model-family identity and pinning in each runtime;
       configured labels and the 2/3 development smoke do not prove independence
 - [ ] Validate provider-native browsing/search controls for each approved
@@ -145,6 +154,8 @@
 - [x] Persist repeated validation as new append-only judge_validation_run rows;
       verify the PostgreSQL trigger and Alembic schema
 - [x] Keep development Miri labels out of acceptance; expose no final verdict
+- [x] Add a development/test-only live one-passage adapter using another
+      configured judge family; record strict E-ID and prompt provenance
 - [ ] Approve and evaluate a live one-passage entailment provider before public use
 - [ ] Phase 8: measure validator accuracy on medically reviewed, multilingual cases
 
@@ -154,7 +165,8 @@
 - [x] Standard-risk 2-judge and high-risk 3-judge conservative decision tables
 - [x] Distinguish successful no-results retrieval from pipeline/qualification failure
 - [x] Exclude failed, partial, invalid, or unavailable judge validations from
-      decisive label counts; retain typed exclusion/disagreement diagnostics
+      decisive label counts; retain typed exclusion/disagreement diagnostics.
+      Evaluation-only inconclusive use may qualify with validated partial scope
 - [x] Require verified identity, family, search isolation, and approved entailment
       source for production; keep development Miri smoke ineligible
 - [x] Persist append-only, semantically hashed verdict runs with PostgreSQL
@@ -177,7 +189,7 @@
 - [x] Append-only, semantically hashed `report_run`, internal CLI, offline
       four-label/Miri regressions, PostgreSQL trigger and schema checks
 - [x] Phase 7A: add an explicitly gated, claim-scoped frozen-report endpoint
-      and durable orchestration; the accessible frontend is Phase 7B
+      and durable orchestration; the web consumer is Phase 7B
 - [ ] Release gate: approve live entailment, provider identity and search
       isolation before any report can be production-qualified
 
@@ -201,16 +213,88 @@
 - [ ] Before public deployment, approve live entailment and verify pinned
       independent model identity/families plus native search isolation
 
-## Phase 7B: Production-quality web UX and progressive presentation
+## Phase 7B: Vanilla TypeScript/Vite competition-ready web UX
 
-- [ ] Replace the Phase 2-only React copy and stale API types with real polling,
-      per-claim status, explicit development qualification, and source cards
+- [x] Remove the Phase 2 React/Tailwind shell; use modular vanilla
+      HTML/CSS/TypeScript + Vite with typed API contracts
+- [x] Text and sanitized screenshot submission, actual consent version,
+      upload preview, accessible controls, and duplicate-submit protection
+- [x] Per-attempt idempotency with same-key network retry and same-tab
+      digest/key/upload-reference recovery; no raw medical text in storage
+- [x] `/analysis/{uuid}` refresh/resume, bounded serial polling, claim-scoped
+      progress, partial completion, and one-time frozen-report reads
+- [x] Four report labels, exact source excerpts, limitations, safety text,
+      and visible development qualification without frontend medical reasoning
+- [x] Safe operational errors, no-claim/OCR/expired states, responsive CSS,
+      basic keyboard/accessibility semantics, frontend DOM tests and build
+- [ ] Manually visually review desktop/mobile screenshots at 375/430/768px
+      and desktop when a browser-capable environment is available
+- [ ] Complete an independent WCAG 2.2 AA audit before public release
 - [ ] Consider resumable SSE after a durable event store exists; one-shot
       snapshot remains compatibility-only in Phase 7A
-- [ ] Complete accessible upload and consent/retention UX; WCAG 2.2 AA review
 - [ ] Implement safe URL ingestion only after reviewed SSRF/fetch controls
 
-## Phase 7C: Chinese localization and WeChat
+## Phase 7B.1: Coordinated-claim intake hardening
+
+- [x] Retry invalid source offsets within the existing one-retry extraction limit
+- [x] Give an explicit but omitted PICO relation one bounded repair attempt;
+      preserve `partial` if it remains omitted
+- [x] Ground a shared subject from verified adjacent `, and` source syntax,
+      without inventing terminology IDs or rewriting the atomic source span
+- [x] Permit audited, complete `partially_linked` PICO through lexical retrieval
+      and verdict checks; block unaudited rows and incomplete `partial` claims
+- [x] Remove non-discriminating exposure words from PubMed lexical terms
+- [x] Reject the contextless `consumption` -> `Economics` MeSH alias; keep
+      unresolved soy exposure and fall back to source-grounded lexical queries
+- [x] Do not label `Male` inside `soy consumption in male body` as an
+      intervention; an unresolved exposure remains auditable and retrievable
+- [x] Recover the second clause's explicit `muscle growth` outcome and shared
+      subject from the exact soy source when model PICO/pointer are incomplete
+- [x] Keep explicit nonhuman and low-focus PubMed hits auditable but unselected;
+      live soy retrieval now selects human soy/muscle studies instead of animal
+      or generic background articles
+- [x] Add offline soy, offset, omission, retrieval, and orchestration regressions
+- [x] Give an incomplete claim a typed `normalization_incomplete` failure and
+      actionable frontend copy, without presenting it as a medical verdict
+- [ ] Repeat the exact soy input through the live configured extractor when
+      `chatgpt-auto` responds within the bounded attempt timeout; inspect both
+      claim reports and top retrieved passages
+- [x] Distinguish Miri HTTP 429 from generic extraction failure, log only the
+      safe HTTP status, honor bounded `Retry-After`, and show provider-specific
+      user-facing failure copy
+- [ ] Restore a usable Miri ChatGPT account/quota and repeat the live frontend
+      acceptance run; `/models` availability does not prove chat capacity
+- [ ] Evaluate coordinated-clause and PICO-repair recall on annotated English
+      and Chinese claims before public use
+- [x] Add a development-only `DEBUG_MODE` analysis panel for stage checkpoints,
+      safe failure codes, judge/validation audit outcomes, and bounded visible
+      model-response excerpts with actual call/reachability states
+- [x] Harden AIMLAPI extraction against ignored JSON-schema instructions,
+      uniquely correct arithmetic source offsets, and retry explicit-relation
+      empty outputs once without fabricating claims
+- [x] Remove repeated non-debug frontend copy while keeping development and
+      safety notices visible
+- [x] Include focus/nonhuman exclusion reasons in frozen Evidence Pack schema;
+      verify pack JSON round trips and a live single-claim report completes
+- [ ] Retest the existing long sunscreen screenshot when Ling responds within
+      the configured 55-second attempt deadline; OCR works, but the 2026-09-29
+      live extraction smoke timed out twice and returned typed HTTP 504
+- [x] Complete one live text-claim report with the current AIMLAPI models;
+      source span validation passed, but the report remains development-only
+- [x] Diagnose hypertension/cancer Unable: relevant sources existed, but the
+      dev run lacked live entailment, one Ling judge failed schema, and
+      aggregation incorrectly applied production mode
+- [x] Add cross-family development validation, clarify inconclusive citation
+      use, and retain safe limited-scope source cards in evaluation reports
+- [x] Re-evaluate the same frozen Pack: two cited inconclusive judges and
+      live citation checks yielded append-only Not Enough Evidence, evaluation only
+- [ ] Resolve Ling HTTP 500 availability; two later full-run extraction attempts
+      and the frozen-Pack judge 1 failed. Do not silently substitute a model
+- [ ] Benchmark live entailment accuracy before public medical use
+- [ ] Repeat live screenshot and multi-claim acceptance with the current
+      provider; the long screenshot timed out during Ling extraction
+
+## Phase 7C: Chinese localization and native WeChat follow-up, if justified
 
 - [ ] Chinese UI/medical terminology review and native WeChat screens
 

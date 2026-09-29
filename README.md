@@ -1,61 +1,84 @@
 # The Lens of Truth
 
-Evidence-Based Medical Information Verification System.
+Evidence-Based Medical Information Verification System. The product separates
+checkable medical claims, retrieves and freezes their evidence, independently
+assesses that same evidence, validates citations, and builds a conservative
+claim-scoped report. It is neither a generic chatbot nor a binary truth score.
 
-This monorepo contains the Phase 1 foundation and scoped Phase 2 intake path for a pipeline-first product that
-verifies atomic health claims against traceable evidence. It is intentionally
-not a generic chatbot or a binary truth classifier.
+The Phase 7B web app uses **vanilla HTML, CSS, TypeScript, and Vite**. React
+was intentionally removed: its early screen only covered claim extraction and
+the competition MVP does not require a frontend framework. The backend uses
+FastAPI, PostgreSQL/pgvector, Redis, local Tesseract OCR, official MeSH data,
+and configured external providers. URL ingestion and native WeChat are not
+implemented.
 
-The implementation securely ingests text and screenshots, re-encodes accepted
-images before short-lived private storage, runs local OCR, masks structured
-PII, and calls a configured adapter for atomic claim and PICO extraction.
-Terminology linking, evidence retrieval, model judging, and verdict logic are
-not implemented here.
+## Run locally with Docker
 
-## Quick start
-
-```powershell
-Copy-Item .env.example .env
-docker compose up --build
-```
-
-- Web UI: `http://localhost:5173`
-- API docs: `http://localhost:8000/docs`
-- Health endpoint: `http://localhost:8000/healthz`
-
-Apply the initial schema after the containers are running:
+From `the-lens-of-truth/` in PowerShell:
 
 ```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+# Fill in the required provider settings in .env without committing it.
+docker compose up --build -d
 docker compose exec backend alembic upgrade head
+docker compose exec --user 10001:10001 backend python -m app.medical.mesh_import --release 2026 --index /app/runtime/mesh/mesh.sqlite3 --download
 ```
 
-Screenshot OCR is included in the backend image. To use the `miri-api` gateway
-described in `../ai api.md`, set its address in your untracked `.env`, then
-recreate the backend. The URL must include `/v1`; put the gateway token in the
-path or set `CLAIM_EXTRACTOR_API_KEY` for Bearer authentication:
+Open `http://localhost:5173/`. API docs are at `http://localhost:8000/docs`.
+The web app calls the API at `http://localhost:8000` in the Compose build.
+Install the official NLM MeSH release in each runtime as described in
+[`backend/README.md`](backend/README.md); without it, claim
+normalization can remain incomplete and retrieval will not proceed. A real
+NCBI contact email, approved model gateway settings, and any optional
+Crossref contact belong in the untracked `.env`.
 
-```dotenv
-CLAIM_EXTRACTOR_BASE_URL=http://host.docker.internal:8001/<gateway-token>/v1
+```powershell
+docker compose down
 ```
 
-The backend defaults to the `miri` adapter and `chatgpt-auto`, with a 180-second
-timeout. It remains unavailable until you supply the address. You may instead
-set `CLAIM_EXTRACTOR_API_KEY` and use a `/v1` address without a token in its
-path.
+To develop the frontend outside Docker:
 
-In development, `POST /v1/analyses/claim-preview` returns transient redacted
-claim and PICO extraction output without storing an analysis. A ready-to-run
-PowerShell example is in [docs/API_SPEC.md](docs/API_SPEC.md).
+```powershell
+cd frontend
+npm ci
+$env:VITE_API_BASE_URL = "http://localhost:8000"
+npm run dev
+```
 
-`host.docker.internal` is for a gateway running on the Windows host. If it
-runs on another machine, use that machine's reachable address. Miri's model
-picker is best-effort, so the recorded model is the requested `chatgpt-auto`
-mode, not proof of the exact ChatGPT model that answered. Without a reachable
-gateway, extraction returns an availability error.
+The backend must be running separately for live analysis; the landing page
+still renders while it is unavailable. `frontend/nginx.conf` falls back to
+`index.html` for direct `/analysis/{uuid}` refreshes, and Vite does the same
+in development.
 
-Raw screenshots and associated Phase 2 records are purged within 24 hours.
-Local filesystem upload storage is suitable only for Docker/local development;
-implement an approved isolated object-storage adapter before public deployment.
+## Frontend checks
 
-See [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md) for boundaries and
-[docs/TODO.md](docs/TODO.md) for the implementation roadmap.
+```powershell
+cd frontend
+npm run check
+npm test
+npm run build
+```
+
+`src/api/` centralizes network calls and safe error mapping. `src/pages/`
+owns the home form and claim-scoped analysis state. `src/components/` renders
+progress, upload, reports, and frozen evidence; `src/types/` mirrors the
+backend contract. `src/utils/` handles routing, serial polling, and
+idempotency; `src/styles/` contains design tokens and responsive CSS.
+
+The home route is `/`. After a 202 start acknowledgement, the browser goes to
+`/analysis/{analysis_id}`, polls the Phase 7A status/claims routes, and loads
+each completed claim's frozen report once. A refresh resumes the existing run.
+A failed network POST can reuse its key; changing input starts a new attempt.
+Session storage may hold only an opaque key, SHA-256 content digest, and upload
+ID for a same-tab retry—not raw health text, screenshots, or reports.
+
+Development reports visibly show the backend's qualification notice.
+Staging/production 403 report gating is never converted into a medical label.
+No frontend code generates medical reasoning or hides unqualified status.
+The browser renders source excerpts exactly as text, never as trusted HTML.
+
+This remains an anonymous, short-retention prototype with an in-process
+background worker. Public deployment still needs approved live entailment,
+verified model identity/search isolation, durable work delivery, access
+control, and a full accessibility/security review. See
+[`docs/TODO.md`](docs/TODO.md) and [`docs/API_SPEC.md`](docs/API_SPEC.md).

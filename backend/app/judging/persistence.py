@@ -24,6 +24,7 @@ def persist_judge_runs(session: Session, runs: tuple[JudgeRun, ...]) -> None:
                 evidence_pack_hash=run.evidence_pack_hash, slot=run.slot,
                 provider=run.provider, model=run.model, model_family=run.model_family,
                 model_snapshot=run.model_snapshot, prompt_version=run.prompt_version,
+                schema_version_inferred=run.schema_version_inferred,
                 model_identity_verified=run.model_identity_verified,
                 model_family_verified=run.model_family_verified,
                 search_override_active=run.search_override_active,

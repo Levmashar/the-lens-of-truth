@@ -395,7 +395,7 @@ class AnalysisIngestionService:
         for ordinal, candidate in enumerate(verified_candidates, start=1):
             normalized = candidate.normalized_claim
             safe_normalized = self._redactor.redact(normalized).text if normalized else None
-            pico = normalize_pico(candidate)
+            pico = normalize_pico(candidate, source_text=redacted_text)
             entities = self._entity_linker.link(pico)
             quality = assess_completeness(pico, entities, self._entity_linker.mesh)
             linked_count = sum(
@@ -456,7 +456,7 @@ class AnalysisIngestionService:
             return self._redactor.redact(value).text if value else None
 
         def item(ordinal: int, candidate: ExtractedClaimCandidate) -> ClaimPreviewItem:
-            pico = normalize_pico(candidate)
+            pico = normalize_pico(candidate, source_text=redacted_text)
             entities = self._entity_linker.link(pico)
             quality = assess_completeness(pico, entities, self._entity_linker.mesh)
             linked_count = sum(

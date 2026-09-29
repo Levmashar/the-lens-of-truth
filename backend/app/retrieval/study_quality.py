@@ -50,16 +50,31 @@ _TITLE_RULES: tuple[tuple[str, StudyDesign], ...] = (
     (r"\b(?:editorial|commentary)\b", "editorial_or_commentary"),
     (r"\bin vitro\b", "in_vitro"),
 )
+_EXPLICIT_ANIMAL = re.compile(
+    r"\b(?:mice|mouse|rats?|pigs?|swine|porcine|ducks?|broilers?|"
+    r"chickens?|crabs?|rodents?|rabbits?)\b", re.I,
+)
+_EXPLICIT_HUMAN = re.compile(
+    r"\b(?:humans?|people|patients?|adults?|children|men|women|boys|girls)\b", re.I,
+)
+
+
+def explicit_animal_subject(text: str) -> bool:
+    """Recognize only clearly named nonhuman subjects, never infer species."""
+
+    return bool(_EXPLICIT_ANIMAL.search(text))
 
 
 def classify_study_design(document: PubMedDocument) -> tuple[StudyDesign, str]:
     types = {value.casefold() for value in document.publication_types}
-    for label, design in _PUBTYPE_RULES:
-        if label in types:
-            return design, f"pubmed_publication_type:{label}"
     terms = {value.casefold() for value in document.mesh_terms}
     if "animals" in terms and "humans" not in terms:
         return "animal_study", "pubmed_mesh:animals_without_humans"
+    if explicit_animal_subject(document.title) and not _EXPLICIT_HUMAN.search(document.title):
+        return "animal_study", "title_explicit_animal_subject"
+    for label, design in _PUBTYPE_RULES:
+        if label in types:
+            return design, f"pubmed_publication_type:{label}"
     for label, design in _MESH_RULES:
         if label in terms:
             return design, f"pubmed_mesh:{label}"

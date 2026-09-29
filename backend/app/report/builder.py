@@ -29,11 +29,11 @@ from app.validation.models import (
     RelationAlignment,
     ValidationStatus,
 )
-from app.verdict.models import LensVerdict, ReasonCode, VerdictResult
+from app.verdict.models import AggregationMode, LensVerdict, ReasonCode, VerdictResult
 from app.verdict.service import semantic_result_hash
 
 REPORT_VERSION = "1.0"
-BUILDER_VERSION = "report-builder-1.0"
+BUILDER_VERSION = "report-builder-1.1"
 MAX_EXCERPT_CHARS = 600
 DEVELOPMENT_NOTICE = (
     "Development/evaluation result — production evidence-isolation or model "
@@ -161,7 +161,7 @@ def _assessment_description(counts: dict[JudgeLabel, int]) -> str:
         JudgeLabel.CONTRADICTED: "contradicted the claim",
         JudgeLabel.NOT_ENOUGH_EVIDENCE: "found the evidence insufficient",
     }
-    parts = [f"{counts[label]} validated assessment(s) {names[label]}"
+    parts = [f"{counts[label]} qualified assessment(s) {names[label]}"
              for label in JudgeLabel if counts.get(label, 0)]
     return "; ".join(parts) + "." if parts else "No qualified assessments were available."
 
@@ -232,8 +232,16 @@ def _cards(
             continue
         judge = by_judge[qualification.judge_run_id]
         validation = by_validation.get(judge.judge_run_id)
-        if (judge.decision is None or validation is None
-                or validation.status != ValidationStatus.VALIDATED):
+        if judge.decision is None or validation is None:
+            continue
+        limited_inconclusive = (
+            verdict.mode == AggregationMode.FIXTURE_OR_EVALUATION
+            and verdict.verdict == LensVerdict.NOT_ENOUGH_EVIDENCE
+            and judge.decision.label == JudgeLabel.NOT_ENOUGH_EVIDENCE
+            and validation.status == ValidationStatus.PARTIALLY_VALIDATED
+            and IssueCode.PARTIAL_SCOPE_MATCH in validation.result.warnings
+        )
+        if validation.status != ValidationStatus.VALIDATED and not limited_inconclusive:
             continue
         for citation in (*validation.result.citation_validations,
                          *validation.result.opposing_citation_validations):

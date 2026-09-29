@@ -23,6 +23,7 @@ def _read_judge(row: JudgeRunRecord) -> JudgeRun:
         evidence_pack_id=row.evidence_pack_id, evidence_pack_hash=row.evidence_pack_hash,
         slot=row.slot, provider=row.provider, model=row.model,
         model_family=row.model_family, model_snapshot=row.model_snapshot,
+        schema_version_inferred=row.schema_version_inferred,
         model_identity_verified=row.model_identity_verified,
         model_family_verified=row.model_family_verified,
         search_override_active=row.search_override_active,

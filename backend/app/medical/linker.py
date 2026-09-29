@@ -1,5 +1,6 @@
 """Combine independently supplied UMLS/MeSH candidates without inventing IDs."""
 
+import re
 from dataclasses import dataclass
 
 from app.medical.entities import EntityType, MedicalEntity, MedicalEntityCandidate
@@ -27,11 +28,23 @@ class MedicalEntityLinker:
         return tuple(entities)
 
     def _link_phrase(self, phrase: str, entity_type: EntityType) -> list[MedicalEntity]:
+        # A source-grounded demographic suffix describes who is exposed, not
+        # the exposure itself. Keep the full phrase when unresolved, but never
+        # label its demographic mention as an intervention.
+        demographic = re.search(
+            r"\s+(?:in|among)\s+(?:(?:male|female)\s+body|"
+            r"men|women|adults|children|patients)\b",
+            phrase, re.I,
+        ) if entity_type == "intervention_or_exposure" else None
+        eligible_end = demographic.start() if demographic else len(phrase)
         umls_matches = [
-            match for match in self.umls.find_mentions(phrase) if _valid_match(phrase, match)
+            match for match in self.umls.find_mentions(phrase)
+            if match.end <= eligible_end and _valid_match(phrase, match)
         ]
         mesh_matches = [
-            match for match in self.mesh.find_mentions(phrase) if _valid_match(phrase, match)
+            match for match in self.mesh.find_mentions(phrase)
+            if match.end <= eligible_end and _valid_match(phrase, match)
+            and not _unsafe_contextless_alias(match)
         ]
         spans = sorted(
             {(match.start, match.end) for match in umls_matches}
@@ -126,6 +139,13 @@ def _valid_match(phrase: str, match: UmlsMatch | MeshMatch) -> bool:
         and bool((match.cui if isinstance(match, UmlsMatch) else match.mesh_id).strip())
         and 0 <= match.confidence <= 1
     )
+
+
+def _unsafe_contextless_alias(match: MeshMatch) -> bool:
+    # The official entry term "consumption" also names Economics. In a
+    # multiword exposure such as "soy consumption", that isolated generic
+    # word is not evidence that the medical concept is Economics.
+    return match.match_type == "synonym" and match.surface_text.casefold() == "consumption"
 
 
 def _best_umls(matches: list[UmlsMatch], start: int, end: int) -> UmlsMatch | None:

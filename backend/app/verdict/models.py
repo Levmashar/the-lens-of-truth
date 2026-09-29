@@ -88,6 +88,7 @@ class ClaimFacts(FrozenModel):
     claim_id: UUID
     normalization_status: str
     risk_class: str
+    normalization_reviewed: bool = False
 
 
 class AggregationContext(FrozenModel):

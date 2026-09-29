@@ -15,6 +15,12 @@ NormalizationStatus = Literal[
     "pending", "unresolved", "pico_only", "partially_linked", "partial", "normalized"
 ]
 
+_COORDINATED_VERB = (
+    r"(?:causes?|caused|increases?|increased|raises?|raised|elevates?|elevated|"
+    r"reduces?|reduced|decreases?|decreased|lowers?|lowered|prevents?|prevented|"
+    r"improves?|improved|worsens?|worsened|results?\s+in)"
+)
+
 
 class NormalizedPico(BaseModel):
     """Claim framing, never evidence or a medical-truth assessment."""
@@ -37,19 +43,30 @@ class NormalizedPico(BaseModel):
         return value
 
 
-def normalize_pico(candidate: ExtractedClaimCandidate) -> NormalizedPico:
-    """Use only PICO strings visibly present in the atomic source span.
+def normalize_pico(
+    candidate: ExtractedClaimCandidate, *, source_text: str | None = None,
+) -> NormalizedPico:
+    """Ground PICO in the atomic span or an unambiguous coordinated antecedent.
 
     The existing model adapter produces structured PICO alongside claim extraction.
-    Here we reject cross-claim leakage or invented details rather than making a
-    second model request or guessing missing clinical facts.
+    Only a narrow, source-verified shared subject may be carried from an adjacent
+    clause. Other cross-claim leakage and invented details remain rejected.
     """
 
     proposed = candidate.pico
+    shared_clause = _coordinated_clause(candidate, source_text)
     values: dict[str, str | None] = {}
     for field in ("population", "intervention_or_exposure", "comparator", "outcome", "timeframe"):
         value = getattr(proposed, field) if proposed is not None else None
         values[field] = _grounded_value(value, candidate.raw_span)
+    if shared_clause is not None:
+        # The first clause supplies the exact exposure for a subject-ellipsis
+        # second clause; neither a model paraphrase nor an unrelated antecedent does.
+        values["intervention_or_exposure"] = shared_clause[0]
+        if values["outcome"] is None:
+            # The second clause itself explicitly supplies the outcome. This
+            # recovery is deliberately limited to verified coordination.
+            values["outcome"] = shared_clause[1]
     return NormalizedPico.model_validate(
         {
             "original_claim": candidate.raw_span,
@@ -57,6 +74,52 @@ def normalize_pico(candidate: ExtractedClaimCandidate) -> NormalizedPico:
             "claim_type": candidate.claim_type,
         }
     )
+
+
+def _coordinated_clause(
+    candidate: ExtractedClaimCandidate, source_text: str | None,
+) -> tuple[str, str] | None:
+    if source_text is None or candidate.resolved_from_span_start is None or (
+        candidate.resolved_from_span_end is None
+    ):
+        return None
+    start = candidate.resolved_from_span_start
+    end = candidate.resolved_from_span_end
+    if not 0 <= start < end <= candidate.span_start < candidate.span_end <= len(source_text):
+        return None
+    if source_text[candidate.span_start:candidate.span_end] != candidate.raw_span:
+        return None
+    separator = re.search(r"\s*,?\s*and\s+$", source_text[start:candidate.span_start], re.I)
+    if separator is None:
+        return None
+    second = re.fullmatch(
+        rf"\s*{_COORDINATED_VERB}\s+(?P<outcome>[^.;:!?]+?)[.!?]?",
+        candidate.raw_span, re.I,
+    )
+    if second is None:
+        return None
+    antecedent_end = start + separator.start()
+    antecedent = source_text[start:antecedent_end]
+    match = re.fullmatch(
+        rf"(?P<subject>[^,.;:!?]{{1,120}}?)\s+{_COORDINATED_VERB}\s+[^,.;:!?]+",
+        antecedent, re.I,
+    )
+    if match is None:
+        return None
+    subject = match.group("subject").strip()
+    subject_end = start + match.end("subject")
+    # Extractors may point at the full prior clause or a word-aligned prefix
+    # of the shared subject. Neither pointer licenses an unrelated clause.
+    pointer_is_subject_prefix = (
+        end <= subject_end
+        and (end == subject_end or source_text[end].isspace())
+    )
+    if not (pointer_is_subject_prefix or end == antecedent_end):
+        return None
+    if not subject or re.search(r"\b(?:and|or)\b", subject, re.I):
+        return None
+    outcome = second.group("outcome").strip()
+    return (subject, outcome) if outcome else None
 
 
 def normalize_stored_pico(

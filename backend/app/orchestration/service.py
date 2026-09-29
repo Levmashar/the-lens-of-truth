@@ -16,6 +16,7 @@ from app.judging.persistence import persist_judge_runs
 from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.claim import Claim
 from app.models.submission import Submission
+from app.pipeline.readiness import ready_for_evidence
 from app.report.persistence import build_report_for_verdict, persist_report_run
 from app.retrieval.claims import snapshot_claim
 from app.retrieval.models import ClaimSnapshot, EvidencePack, RetrievalResult
@@ -204,8 +205,14 @@ class AnalysisOrchestrator:
     ) -> None:
         _checkpoint(session, row, "normalizing")
         _checkpoint(session, analysis, "normalizing")
-        if claim.normalization_status != "normalized":
-            raise ValueError("Claim normalization is incomplete")
+        if not ready_for_evidence(
+            claim.normalization_status, pico_json=claim.pico_json,
+            quality_json=claim.normalization_quality,
+        ):
+            raise LensError(
+                422, "normalization_incomplete",
+                "The claim lacks a source-grounded exposure or outcome.",
+            )
         _finish_stage(session, row, "normalizing")
 
         _checkpoint(session, row, "retrieving")

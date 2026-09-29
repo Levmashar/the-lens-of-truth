@@ -79,7 +79,7 @@ def _pack_failure(
 
 def _validation_failure(
     judge: JudgeRun, validation: JudgeValidationRun | None,
-    policy: VerdictPolicyV1,
+    policy: VerdictPolicyV1, *, evaluation_mode: bool,
 ) -> ReasonCode | None:
     if validation is None:
         return ReasonCode.VALIDATION_UNAVAILABLE
@@ -131,18 +131,40 @@ def _validation_failure(
     if validation.status == ValidationStatus.UNABLE_TO_VALIDATE:
         return ReasonCode.VALIDATION_UNAVAILABLE
     if validation.status == ValidationStatus.PARTIALLY_VALIDATED:
-        return ReasonCode.VALIDATION_PARTIAL
-    if validation.status != policy.decisive_validation_status:
+        # A narrower study can be precisely why an inconclusive judge is
+        # correct. Permit only that one partiality, only when each cited use
+        # was semantically checked. This never qualifies a decisive label.
+        if not (
+            evaluation_mode
+            and decision.label == JudgeLabel.NOT_ENOUGH_EVIDENCE
+            and IssueCode.PARTIAL_SCOPE_MATCH in result.warnings
+            and set(result.warnings) <= {IssueCode.PARTIAL_SCOPE_MATCH,
+                                         IssueCode.RELATION_UNCERTAIN}
+            and citations
+            and all(item.entailment_status == EntailmentStatus.ENTAILS_JUDGE_USE
+                    for item in citations)
+        ):
+            return ReasonCode.VALIDATION_PARTIAL
+    allowed_partial_scope = (
+        evaluation_mode
+        and decision.label == JudgeLabel.NOT_ENOUGH_EVIDENCE
+        and validation.status == ValidationStatus.PARTIALLY_VALIDATED
+    )
+    if validation.status != policy.decisive_validation_status and not allowed_partial_scope:
         return ReasonCode.VALIDATION_UNAVAILABLE
     material_warnings = {
         IssueCode.NUMERIC_UNCERTAIN, IssueCode.PARTIAL_SCOPE_MATCH,
         IssueCode.INTEGRITY_UNKNOWN, IssueCode.EXPRESSION_OF_CONCERN,
     }
+    if allowed_partial_scope:
+        material_warnings.remove(IssueCode.PARTIAL_SCOPE_MATCH)
     if (set(result.warnings) & material_warnings or any(
         set(item.warnings) & material_warnings for item in citations
     )):
         return ReasonCode.VALIDATION_PARTIAL
-    if (not validation.entailment_provider or not validation.prompt_hash
+    if (validation.status not in {ValidationStatus.VALIDATED,
+                                   ValidationStatus.PARTIALLY_VALIDATED}
+            or not validation.entailment_provider or not validation.prompt_hash
             or validation.attempt_count < 1
             or any(item.entailment_status != EntailmentStatus.ENTAILS_JUDGE_USE
                    for item in citations)):
@@ -166,10 +188,15 @@ def _judge_qualification(
     if judge.outcome_status != "succeeded" or judge.decision is None:
         reasons.append(ReasonCode.JUDGE_FAILED)
     else:
+        if request.mode == AggregationMode.PRODUCTION and judge.schema_version_inferred:
+            reasons.append(ReasonCode.AUDIT_RECORD_INVALID)
         if (request.mode == AggregationMode.PRODUCTION and
                 judge.response_json != judge.decision.model_dump(mode="json")):
             reasons.append(ReasonCode.AUDIT_RECORD_INVALID)
-        validation_failure = _validation_failure(judge, validation, policy)
+        validation_failure = _validation_failure(
+            judge, validation, policy,
+            evaluation_mode=request.mode == AggregationMode.FIXTURE_OR_EVALUATION,
+        )
         if validation_failure is not None:
             reasons.append(validation_failure)
     if request.mode == AggregationMode.PRODUCTION:
@@ -281,7 +308,9 @@ class VerdictService:
         failure: ReasonCode | None = None
         if claim is None or claim.claim_id != request.claim_id:
             failure = ReasonCode.CLAIM_UNAVAILABLE
-        elif claim.normalization_status != "normalized":
+        elif claim.normalization_status != "normalized" and not (
+            claim.normalization_status == "partially_linked" and claim.normalization_reviewed
+        ):
             failure = ReasonCode.NORMALIZATION_INCOMPLETE
         elif risk not in {"standard", "high"}:
             failure = ReasonCode.RISK_CLASS_INVALID

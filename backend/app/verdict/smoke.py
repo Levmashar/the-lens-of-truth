@@ -26,6 +26,7 @@ def smoke(
         pack_row = session.get(EvidencePackRecord, pack_id)
         if pack_row is None:
             raise SystemExit("Evidence Pack not found.")
+        pack_hash = pack_row.snapshot_hash
         request = AggregationInput(
             claim_id=pack_row.claim_id, evidence_pack_id=pack_row.id,
             evidence_pack_hash=pack_row.snapshot_hash,
@@ -36,8 +37,9 @@ def smoke(
         context = load_aggregation_context(session, request)
         result = VerdictService().aggregate(request, context)
         record = persist_verdict_run(session, result)
+        audit_id = record.id
     print(f"CLAIM\n{context.pack.claim_snapshot.raw_text if context.pack else '(unavailable)'}")
-    print(f"\nPACK\nid: {pack_id}\nhash: {pack_row.snapshot_hash}")
+    print(f"\nPACK\nid: {pack_id}\nhash: {pack_hash}")
     print(f"\nPOLICY\n{result.policy_version}\nmode: {mode.value}")
     for item in result.judge_qualifications:
         print(f"\nJUDGE slot {item.slot}: {item.judge_run_id}")
@@ -49,7 +51,7 @@ def smoke(
     print(f"\nAGGREGATION\nqualified judges: {result.qualified_judges}")
     print(f"excluded judges: {result.excluded_judges}\nvalidated labels: {counts}")
     print(f"reason codes: {[code.value for code in result.reason_codes]}")
-    print(f"semantic hash: {result.semantic_hash}\naudit id: {record.id}")
+    print(f"semantic hash: {result.semantic_hash}\naudit id: {audit_id}")
     print(f"\nVERDICT: {result.verdict.value.replace('_', ' ').title()}")
     print(f"PRODUCTION QUALIFIED: {str(result.production_qualified).lower()}")
     if mode == AggregationMode.FIXTURE_OR_EVALUATION:

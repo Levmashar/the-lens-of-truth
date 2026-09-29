@@ -11,6 +11,7 @@ from app.models.judge_run import JudgeRunRecord
 from app.models.judge_validation_run import JudgeValidationRunRecord
 from app.models.retrieval import EvidencePackRecord, RetrievalRun
 from app.models.verdict_run import VerdictRunRecord
+from app.pipeline.readiness import ready_for_evidence
 from app.retrieval.models import EvidencePack
 from app.validation.models import JudgeValidationResult, JudgeValidationRun, ValidationStatus
 from app.verdict.models import (
@@ -23,7 +24,7 @@ from app.verdict.models import (
 )
 from app.verdict.service import semantic_result_hash
 
-ENGINE_VERSION = "verdict-engine-1.0"
+ENGINE_VERSION = "verdict-engine-1.1"
 
 
 def _judge(row: JudgeRunRecord) -> JudgeRun:
@@ -32,6 +33,7 @@ def _judge(row: JudgeRunRecord) -> JudgeRun:
         evidence_pack_id=row.evidence_pack_id, evidence_pack_hash=row.evidence_pack_hash,
         slot=row.slot, provider=row.provider, model=row.model,
         model_family=row.model_family, model_snapshot=row.model_snapshot,
+        schema_version_inferred=row.schema_version_inferred,
         model_identity_verified=row.model_identity_verified,
         model_family_verified=row.model_family_verified,
         search_override_active=row.search_override_active,
@@ -73,6 +75,10 @@ def load_aggregation_context(
     claim_facts = (ClaimFacts(
         claim_id=claim.id, normalization_status=claim.normalization_status,
         risk_class=claim.risk_class,
+        normalization_reviewed=ready_for_evidence(
+            claim.normalization_status, pico_json=claim.pico_json,
+            quality_json=claim.normalization_quality,
+        ),
     ) if claim is not None else None)
     pack_row = session.get(EvidencePackRecord, request.evidence_pack_id)
     pack: EvidencePack | None = None

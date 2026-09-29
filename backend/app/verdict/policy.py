@@ -9,7 +9,7 @@ from app.verdict.models import LensVerdict, ReasonCode
 
 @dataclass(frozen=True)
 class VerdictPolicyV1:
-    version: str = "verdict-policy-1.0"
+    version: str = "verdict-policy-1.1"
     pack_version: str = "1.3"
     validation_version: str = "judge-validation-1.0"
     minimum_standard_judges: int = 2

@@ -52,7 +52,7 @@ _MANAGEMENT = re.compile(
     r"\b(?:management|control|lowering|treatment|target|therapy|trajectories)\b", re.I,
 )
 _QUALIFIERS = frozenset({"frequent", "regular", "daily", "higher", "high", "invasive"})
-_USAGE = frozenset({"use", "users", "of", "the"})
+_USAGE = frozenset({"consumption", "usage", "use", "users", "of", "the"})
 
 
 def _section_kind(label: str) -> str:
@@ -74,15 +74,18 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
         return ()
     source = getattr(claim.pico, role)
     values = [source] if source else []
+    head = re.split(r"\b(?:in|among)\b", source, maxsplit=1, flags=re.I)[0] if source else ""
     for entity in claim.entities:
         if (entity.entity_type == role and entity.mesh_id and not entity.ambiguous
-                and entity.match_type in {"exact", "synonym"}):
+                and entity.match_type in {"exact", "synonym"}
+                and entity.surface_text.casefold() not in _USAGE
+                and re.search(rf"(?<!\w){re.escape(entity.surface_text)}(?!\w)", head, re.I)):
             values.extend((entity.surface_text, entity.preferred_name))
     # Bounded reduction of non-concept qualifiers in PICO, not vocabulary expansion.
-    if source:
-        tokens = source.casefold().split()
+    if head:
+        tokens = head.casefold().split()
         reduced = [token for token in tokens if token not in _QUALIFIERS | _USAGE]
-        if reduced and len(reduced) < len(tokens):
+        if reduced and (len(reduced) < len(tokens) or head != source):
             values.append(" ".join(reduced))
     return tuple(sorted({value.strip().casefold() for value in values if value and
                          len(value.strip()) >= 3}, key=lambda value: (-len(value), value)))

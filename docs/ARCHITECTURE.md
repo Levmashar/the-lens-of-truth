@@ -6,7 +6,7 @@ The repository implements intake, normalization, PubMed retrieval with frozen
 Evidence Pack 1.3, independent judging, per-judge evidence-use validation,
 deterministic verdict aggregation, and evidence-cited report construction.
 Phase 7A now sequences them and adds a claim-scoped, server-gated report read
-API. The frontend still presents Phase 2 extraction only; no live
+API. Phase 7B consumes that API in a framework-free web client. No live
 production-qualified report exists yet.
 
 For screenshot input, the API accepts only decoded PNG/JPEG/WebP images under
@@ -35,7 +35,7 @@ flowchart LR
 
 ```text
 backend/                 FastAPI application, schema, tests, migrations
-frontend/                React + TypeScript + Vite + Tailwind application
+frontend/                Vanilla HTML/CSS/TypeScript + Vite application
 wechat-mini-program/     Native Mini Program screen placeholders
 evaluation/               Benchmark fixtures and experiment records
 infrastructure/           Deployment-oriented configuration and notes
@@ -61,6 +61,12 @@ and the backend validates every source span locally.
 The extractor receives redacted text between untrusted-data delimiters. Its
 candidate spans are checked locally against the exact redacted source before
 persistence. When no approved extractor is configured, the API fails closed.
+Source-offset checking now occurs inside the adapter's one-retry deadline so a
+first invalid offset can be repaired without permitting an unbounded third
+call. An explicit relation with a missing PICO slot may use that same retry;
+it remains partial if still omitted. A second atomic clause may inherit only
+the verbatim shared subject of an adjacent, offset-verified `, and` clause;
+other PICO values stay grounded in their own raw source span.
 The current model-produced PICO slots may be null and must be treated as query
 framing candidates until entity and evidence validation are implemented. The
 gateway's ChatGPT model picker is best-effort, so its requested mode is logged
@@ -77,6 +83,11 @@ Stored entity JSONB carries the terminology provenance; no schema migration is
 needed. A batch command re-normalizes untouched pending claims only, with a
 dry-run default. Future retrieval must distinguish coded concepts from
 unresolved suggestions and never treat terminology matches as evidence.
+Audited, source-complete `partially_linked` claims now follow the lexical PubMed
+path without forcing a terminology match. Missing PICO or source concepts,
+unsafe scan warnings, and legacy unaudited rows still fail the orchestration
+and verdict gates. Verdict qualification still requires independent approved
+judges, validated citations, and all other existing safety checks.
 
 Phase 3C restricts new claim types to a controlled taxonomy and locks explicit
 English causal/association wording to its source meaning. A deterministic
@@ -241,8 +252,12 @@ identity before assessing any labels. Successful `no_results` produces
 `not_enough_evidence`; retrieval/pack/normalization failure produces
 `unable_to_verify_reliably`. One failed/invalid/partial/unavailable validation
 never becomes a decisive vote or a vote for the opposite label.
+In `fixture_or_evaluation` mode only, an inconclusive assessment with a
+partial-scope warning may qualify when every cited use is semantically
+validated, the only material limitation is that partial scope, and all frozen
+provenance/integrity checks pass. It still cannot make a decisive claim.
 
-`verdict-policy-1.0` requires two distinct, fully validated judges and no
+`verdict-policy-1.1` requires two distinct, fully validated judges and no
 validated opposite label for standard-risk supported/contradicted. High risk
 requires three unanimous fully validated judges. Mixed validated decisive
 labels, all inconclusive labels, or insufficiently decisive validated evidence
@@ -272,7 +287,8 @@ reason codes to concise prose and preserve the four existing labels; no LLM,
 outside source, truth-confidence score, or new medical interpretation is used.
 
 Evidence cards are sourced only from selected Pack passages actually cited by
-qualified, fully validated assessments. Cards retain exact E ID, source
+qualified, validated assessments; evaluation-only partial-scope inconclusive
+uses can produce cards marked `relevant_but_insufficient`. Cards retain exact E ID, source
 identifiers, document metadata, citation roles, validation-run IDs, and a
 deterministic 600-character prefix of the frozen passage; full passages stay
 in the Pack audit. Source excerpts are structurally distinct from Lens prose.
@@ -313,7 +329,7 @@ then iterates atomic claims independently:
 extracting (existing OCR / redaction / claim extraction / normalization)
   -> for each claim: normalization eligibility -> PubMed retrieval
   -> frozen Pack -> configured judges -> per-success validation
-  -> verdict-policy-1.0 -> deterministic LensReport
+  -> verdict-policy-1.1 -> deterministic LensReport
 ```
 
 The orchestrator contains sequencing and timeouts, not medical logic. A
@@ -356,6 +372,37 @@ replay, or a public resume endpoint.
 PostgreSQL is the system of record. Redis is transient cache/rate-limit state
 and must not be the sole copy of evidence or an analysis result. Evidence
 passage vectors use pgvector, avoiding a separate vector database in the MVP.
+
+## Phase 7B web boundary
+
+The web app uses vanilla HTML/CSS/TypeScript with Vite. React and Tailwind
+were intentionally removed: the old frontend was only an extraction shell,
+and a small page-level state model is sufficient for the competition MVP.
+`src/api/` is the sole fetch boundary; `src/types/` mirrors the Phase 7A
+status, claim, and LensReport contracts; `src/pages/` owns home/analysis page
+state; `src/components/` builds safe DOM fragments; `src/utils/` owns routing,
+polling, and idempotency; `src/styles/` holds design tokens and responsive CSS.
+
+`/` holds the text/screenshot submission. `/analysis/{uuid}` can be loaded
+directly or refreshed; the server's SPA fallback serves `index.html` for the
+deep link. The analysis page polls `GET /v1/analyses/{id}` and `/claims` about
+every 1.5 seconds, serially, with bounded network backoff and abort on page
+cleanup. Terminal states stop polling. Reports are fetched only for completed
+claim checkpoints and never recomputed in the browser. The one-shot SSE route
+is not used as a live stream. A retry of an uncertain POST reuses its
+Idempotency-Key; a deliberate input change creates a new key. A same-tab
+session record can retain only a SHA-256 digest, opaque key, and upload ID,
+not medical text or image bytes.
+
+Each report displays backend-provided reasons, exact frozen source excerpts,
+limitations, safety text, and a prominent backend development notice when
+`production_qualified=false`. The frontend does not infer source roles or a
+medical verdict. It maps four controlled verdict labels and safe operational
+error categories to UI copy. A 403 report gate is not a fifth medical result.
+Text nodes are created with `textContent`, and external source URLs are used
+only when the backend-provided URL is HTTP(S). No credentials enter the web
+bundle. URL submission, WeChat, localization, and public access controls
+remain later work.
 
 ## Safety and trust boundary
 

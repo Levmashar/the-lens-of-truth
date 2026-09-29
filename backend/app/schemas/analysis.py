@@ -191,7 +191,7 @@ class AnalysisStarted(BaseModel):
 
 
 class AnalysisProgress(BaseModel):
-    """Safe polling contract; no raw provider diagnostics or prompts."""
+    """Safe polling contract with optional development-only model response excerpts."""
 
     analysis_id: UUID
     status: Literal["queued", "running", "completed", "failed", "partially_completed"]
@@ -206,6 +206,44 @@ class AnalysisProgress(BaseModel):
     claims: list[AnalysisClaim]
     screenshot_ocr: ScreenshotOcrMetadata | None
     updated_at: datetime
+    debug_enabled: bool = False
+    debug_models: list["DebugModelStatus"] | None = None
+    debug_events: list["DebugModelEvent"] | None = None
+
+
+class DebugModelEvent(BaseModel):
+    role: str
+    provider: str
+    model: str
+    attempt: int
+    status: str
+    failure_type: str | None
+    http_status: int | None
+    elapsed_ms: int
+    response_excerpt: str | None
+
+
+class DebugModelStatus(BaseModel):
+    role: str
+    provider: str
+    model: str
+    status: str
+    failure_type: str | None
+
+
+class DebugJudgeRun(BaseModel):
+    """Non-sensitive audit summary available only in development debug mode."""
+
+    slot: int
+    provider: str
+    model: str
+    model_family: str
+    outcome_status: str
+    error_category: str | None
+    attempt_count: int
+    latency_ms: int
+    validation_status: str | None
+    validation_error_category: str | None
 
 
 class ClaimAnalysisSummary(BaseModel):
@@ -224,6 +262,7 @@ class ClaimAnalysisSummary(BaseModel):
     report_run_id: UUID | None
     production_qualified: bool | None
     result_label: LensVerdict | None
+    debug_judge_runs: list[DebugJudgeRun] | None = None
 
 
 class AnalysisClaimsResponse(BaseModel):

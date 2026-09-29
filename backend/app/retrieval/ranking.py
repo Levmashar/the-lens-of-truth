@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 
 from app.retrieval.models import ClaimSnapshot, EvidencePassage, PubMedDocument, RankedPassage
+from app.retrieval.study_quality import explicit_animal_subject
 
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
 _RELATION_WORDS: dict[str, frozenset[str]] = {
@@ -14,7 +15,10 @@ _RELATION_WORDS: dict[str, frozenset[str]] = {
     "diagnostic": frozenset({"diagnosis", "diagnostic", "sensitivity"}),
     "safety": frozenset({"safety", "adverse", "harm"}),
 }
-_STOP = frozenset({"a", "and", "frequent", "higher", "in", "of", "the", "use", "users"})
+_STOP = frozenset({
+    "a", "and", "body", "consumption", "frequent", "higher", "in", "of",
+    "regular", "the", "usage", "use", "users",
+})
 
 
 def _words(value: str | None) -> set[str]:
@@ -35,9 +39,15 @@ def _concept_coverage(
 
 
 def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
+    slot = getattr(claim.pico, role) if claim.pico else None
+    if slot is None:
+        return ()
+    head = re.split(r"\b(?:in|among)\b", slot, maxsplit=1, flags=re.I)[0]
     return tuple(
         label for entity in claim.entities
         if entity.entity_type == role and entity.mesh_id and not entity.ambiguous
+        and _words(entity.surface_text)
+        and re.search(rf"(?<!\w){re.escape(entity.surface_text)}(?!\w)", head, flags=re.I)
         for label in (entity.surface_text, entity.preferred_name)
         if label
     )
@@ -145,9 +155,28 @@ def _representative(passages: list[RankedPassage]) -> RankedPassage:
     return best
 
 
+def _claim_focused(document: PubMedDocument) -> bool:
+    detail = document.relationship_directness
+    factors = detail.factors
+    if "exposure_in_title" not in factors or "outcome_in_title" not in factors:
+        # No source-grounded two-concept focus assessment was possible. Leave
+        # existing eligibility untouched; do not infer irrelevance from it.
+        return True
+    exposure_title = factors.get("exposure_in_title", 0) == 1.0
+    outcome_title = factors.get("outcome_in_title", 0) == 1.0
+    same_section = factors.get("both_in_same_abstract_section", 0) == 1.0
+    return (
+        (exposure_title and outcome_title)
+        or (same_section and exposure_title)
+        or (same_section and outcome_title and detail.score >= 0.6)
+        or (same_section and detail.score >= 0.75)
+    )
+
+
 def select_top_evidence(
     passages: tuple[RankedPassage, ...], *, limit: int = 8,
     max_per_document: int = 1, documents: tuple[PubMedDocument, ...] = (),
+    claim: ClaimSnapshot | None = None,
 ) -> tuple[tuple[RankedPassage, ...], tuple[str, ...]]:
     """Annotate the full audit set and return ordered, document-diverse E IDs."""
 
@@ -193,11 +222,22 @@ def select_top_evidence(
     ))
     retracted = {document.document_id for document in documents
                  if document.integrity.status == "retracted"}
+    claim_targets_animals = bool(claim and explicit_animal_subject(
+        " ".join((claim.raw_text, claim.pico.intervention_or_exposure or ""
+                  if claim.pico else "")),
+    ))
+    nonhuman = {
+        document.document_id for document in documents
+        if document.study_design in {"animal_study", "in_vitro"} and not claim_targets_animals
+    }
+    unfocused = {
+        document.document_id for document in documents if not _claim_focused(document)
+    }
     counts: dict[str, int] = defaultdict(int)
     selected: list[RankedPassage] = []
     for passage in representatives:
         document_id = passage.passage.document_id
-        if document_id in retracted:
+        if document_id in retracted or document_id in nonhuman or document_id in unfocused:
             continue
         if counts[document_id] >= max_per_document:
             continue
@@ -222,6 +262,10 @@ def select_top_evidence(
                 reason = "title_unique_relevance"
         elif passage.passage.document_id in retracted:
             reason = "retracted_excluded"
+        elif passage.passage.document_id in nonhuman:
+            reason = "nonhuman_evidence_excluded"
+        elif passage.passage.document_id in unfocused:
+            reason = "insufficient_claim_focus"
         annotated.append(passage.model_copy(update={
             "selected_for_judging": is_selected, "selection_reason": reason,
             "factors": {**passage.factors, "document_diversity_selection": float(is_selected)},

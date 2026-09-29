@@ -19,7 +19,7 @@ from app.report.builder import (
 from app.report.models import EvidenceRole, EvidenceState, LensReport
 from app.report.smoke import format_report
 from app.retrieval.evidence_pack import build_evidence_pack
-from app.validation.models import IssueCode, RelationAlignment
+from app.validation.models import IssueCode, RelationAlignment, ScopeAlignment
 from app.verdict.models import AggregationContext, AggregationInput, LensVerdict, ReasonCode
 from app.verdict.service import VerdictService, semantic_result_hash
 from tests.test_verdict import NOW, C, N, S, case
@@ -132,6 +132,29 @@ def test_disagreement_and_insufficient_evidence_are_distinct() -> None:
     assert "disagreed" not in insufficient.short_summary
     assert all(EvidenceRole.RELEVANT_BUT_INSUFFICIENT in item.evidence_roles
                for item in insufficient.key_evidence)
+
+
+def test_evaluation_inconclusive_shows_validated_limited_source() -> None:
+    request, context = case((N, N), partial=frozenset({1, 2}))
+    assert context.pack is not None
+    validations = tuple(item.model_copy(update={
+        "result": item.result.model_copy(update={
+            "warnings": (IssueCode.PARTIAL_SCOPE_MATCH,),
+            "citation_validations": tuple(citation.model_copy(update={
+                "scope_alignment": ScopeAlignment.PARTIAL,
+                "warnings": (IssueCode.PARTIAL_SCOPE_MATCH,),
+            }) for citation in item.result.citation_validations),
+        }),
+    }) for item in context.validations)
+    context = context.model_copy(update={"validations": validations})
+    verdict = VerdictService().aggregate(request, context)
+    report = build_report(uuid4(), verdict, context.pack, context.judges,
+                          context.validations, generated_at=NOW)
+    assert report.verdict == LensVerdict.NOT_ENOUGH_EVIDENCE
+    assert not report.production_qualified
+    assert report.key_evidence
+    assert all(EvidenceRole.RELEVANT_BUT_INSUFFICIENT in card.evidence_roles
+               for card in report.key_evidence)
 
 
 def test_excluded_judge_is_visible_without_brand_rankings() -> None:

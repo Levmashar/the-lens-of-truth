@@ -11,7 +11,7 @@ export function getHealth(signal?: AbortSignal): Promise<HealthResponse> {
 export function uploadScreenshot(file: File, signal?: AbortSignal): Promise<ScreenshotUpload> {
   const body = new FormData();
   body.append("screenshot", file);
-  return apiRequest<ScreenshotUpload>("/v1/analyses/uploads/screenshots", { method: "POST", body, signal });
+  return apiRequest<ScreenshotUpload>("/v1/analyses/uploads/screenshots", { method: "POST", body, signal }, 201);
 }
 
 export function startAnalysis(input: AnalysisInput, key: string, signal?: AbortSignal): Promise<AnalysisStarted> {
@@ -22,7 +22,7 @@ export function startAnalysis(input: AnalysisInput, key: string, signal?: AbortS
       schema_version: "1.0", client: "web", lang: "auto", input,
       consent: { privacy_notice_version: PRIVACY_NOTICE_VERSION, accepted: true },
     }),
-  });
+  }, 202);
 }
 
 export function getAnalysis(id: string, signal?: AbortSignal): Promise<AnalysisProgress> {

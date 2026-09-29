@@ -20,7 +20,13 @@ from app.judging.models import (
     UncertaintyReason,
 )
 from app.judging.prompt import PROMPT_VERSION, prepare_judge_input
-from app.judging.service import CircuitBreaker, DecisionFailure, JudgeService, parse_decision
+from app.judging.service import (
+    CircuitBreaker,
+    DecisionFailure,
+    JudgeService,
+    parse_decision,
+    parse_provider_decision,
+)
 from app.judging.smoke import print_search_override_warning
 from app.pipeline.pico import NormalizedPico
 from app.retrieval.evidence_pack import build_evidence_pack
@@ -189,6 +195,26 @@ def test_invalid_label_unknown_and_duplicate_citations() -> None:
         assert exc.value.category == category
 
 
+def test_invalid_citation_retries_once_without_accepting_the_bad_response() -> None:
+    class BadThenGood(FakeProvider):
+        calls = 0
+
+        async def evaluate(self, judge_slot: JudgeSlot, prepared: object) -> ProviderResponse:
+            self.calls += 1
+            content = decision_json("supported", "E999") if self.calls == 1 else (
+                decision_json("supported", "E1")
+            )
+            return ProviderResponse(content=content)
+
+    fake = BadThenGood()
+    run = asyncio.run(JudgeService({"fake": fake}).run(
+        uuid4(), pack_for(), (slot(1),),
+    ))[0][0]
+    assert fake.calls == 2 and run.attempt_count == 2
+    assert run.outcome_status == "succeeded"
+    assert run.decision is not None and run.decision.cited_evidence_ids == ("E1",)
+
+
 def test_missing_required_fields_and_unknown_free_text_citation() -> None:
     payload = json.loads(decision_json())
     del payload["claim_strength_assessed"]
@@ -200,6 +226,37 @@ def test_missing_required_fields_and_unknown_free_text_citation() -> None:
         parse_decision(json.dumps(payload), ("E1",))
 
 
+def test_only_missing_protocol_version_can_be_inferred() -> None:
+    payload = json.loads(decision_json("supported"))
+    del payload["schema_version"]
+    with pytest.raises(DecisionFailure, match="schema_violation"):
+        parse_decision(json.dumps(payload), ("E1",))
+    parsed, inferred = parse_provider_decision(json.dumps(payload), ("E1",))
+    assert parsed.schema_version == "1.0" and inferred is True
+    assert parsed.cited_evidence_ids == ("E1",)
+    for mutation in (
+        {"claim_strength_assessed": None},
+        {"cited_evidence_ids": ["E999"]},
+        {"label": "unknown"},
+    ):
+        with pytest.raises(DecisionFailure):
+            parse_provider_decision(json.dumps({**payload, **mutation}), ("E1",))
+    with pytest.raises(DecisionFailure, match="schema_violation"):
+        parse_provider_decision(json.dumps({**payload, "schema_version": "2.0"}), ("E1",))
+
+
+def test_service_audits_protocol_inference_without_changing_citations() -> None:
+    payload = json.loads(decision_json("supported"))
+    del payload["schema_version"]
+    run = asyncio.run(JudgeService({"fake": FakeProvider(json.dumps(payload))}).run(
+        uuid4(), pack_for(), (slot(1),),
+    ))[0][0]
+    assert run.outcome_status == "succeeded" and run.attempt_count == 1
+    assert run.schema_version_inferred is True
+    assert run.decision is not None and run.decision.cited_evidence_ids == ("E1",)
+    assert run.response_json == run.decision.model_dump(mode="json")
+
+
 def test_prompt_lists_all_uncertainty_reasons_and_rejects_invented_reason() -> None:
     prepared = prepare_judge_input(uuid4(), pack_for())
     for reason in UncertaintyReason:
@@ -207,6 +264,10 @@ def test_prompt_lists_all_uncertainty_reasons_and_rejects_invented_reason() -> N
     assert "never invent a different reason string" in prepared.system_prompt
     assert "Every E ID mentioned in reasoning_summary" in prepared.system_prompt
     assert "Do not put raw PMIDs or DOIs" in prepared.system_prompt
+    assert "smallest set that directly justifies" in prepared.system_prompt
+    assert "do not cite every relevant-looking hit" in prepared.system_prompt
+    assert "return EXACTLY ONE ID in cited_evidence_ids" in prepared.system_prompt
+    assert "schema_version key is mandatory" in prepared.system_prompt
     payload = json.loads(decision_json())
     payload["uncertainty_reasons"] = ["causal_uncertainty"]
     with pytest.raises(DecisionFailure, match="schema_violation"):

@@ -119,6 +119,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "status": "ok",
                 "service": "the-lens-of-truth-api",
                 "environment": runtime_settings.app_env,
+                "debug_enabled": runtime_settings.debug_enabled,
                 "request_id": str(request.state.request_id),
             }
         )

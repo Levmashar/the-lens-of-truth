@@ -166,7 +166,7 @@ class RankedPassage(FrozenModel):
     selected_for_judging: bool = False
     selection_reason: Literal[
         "relevant_abstract", "title_only", "title_unique_relevance", "background_fallback",
-        "retracted_excluded",
+        "retracted_excluded", "nonhuman_evidence_excluded", "insufficient_claim_focus",
     ] | None = None
 
 

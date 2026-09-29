@@ -105,6 +105,7 @@ class JudgeService:
         started = monotonic()
         attempts = 0
         decision: JudgeDecision | None = None
+        schema_version_inferred = False
         response_json: dict[str, object] | None = None
         error: str | None = None
         failure_request_id: str | None = None
@@ -123,7 +124,7 @@ class JudgeService:
                         try:
                             async with asyncio.timeout(self.attempt_timeout_seconds):
                                 provider_response = await provider.evaluate(slot, prepared)
-                                decision = parse_decision(
+                                decision, schema_version_inferred = parse_provider_decision(
                                     provider_response.content, prepared.selected_ids,
                                 )
                             response_json = decision.model_dump(mode="json")
@@ -160,16 +161,18 @@ class JudgeService:
         responded_at = datetime.now(UTC)
         logger.info(
             "judge_run slot=%d provider=%s model=%s family=%s status=%s "
-            "attempts=%d latency_ms=%d pack_hash=%s",
+            "attempts=%d latency_ms=%d pack_hash=%s schema_version_inferred=%s",
             slot.slot, slot.provider, slot.model, slot.model_family,
             "succeeded" if decision is not None else "failed", attempts,
             round((monotonic() - started) * 1000), prepared.pack_hash,
+            schema_version_inferred,
         )
         return JudgeRun(
             judge_run_id=uuid4(), claim_id=pack.claim_id, evidence_pack_id=prepared.pack_id,
             evidence_pack_hash=prepared.pack_hash, slot=slot.slot,
             provider=slot.provider, model=slot.model, model_family=slot.model_family,
             model_snapshot=provider_response.model_snapshot if provider_response else None,
+            schema_version_inferred=schema_version_inferred,
             search_override_active=slot.search_override_active,
             search_guard_bypassed=slot.search_guard_bypassed,
             search_isolation_verified=False,
@@ -191,6 +194,31 @@ class DecisionFailure(Exception):
         self.category = category
         self.retryable = retryable
         super().__init__(category)
+
+
+def parse_provider_decision(
+    content: str, selected_ids: tuple[str, ...],
+) -> tuple[JudgeDecision, bool]:
+    """Infer only the fixed protocol version; never repair a medical judgment.
+
+    The raw model completion is retained in the development trace. The inferred
+    version is audited in the append-only judge row and is ineligible for
+    production qualification.
+    """
+
+    try:
+        return parse_decision(content, selected_ids), False
+    except DecisionFailure as exc:
+        if exc.category != "schema_violation":
+            raise
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            raise exc from None
+        if not isinstance(data, dict) or "schema_version" in data:
+            raise exc
+        repaired = {**data, "schema_version": "1.0"}
+        return parse_decision(json.dumps(repaired), selected_ids), True
 
 
 def parse_decision(content: str, selected_ids: tuple[str, ...]) -> JudgeDecision:
@@ -218,7 +246,7 @@ def parse_decision(content: str, selected_ids: tuple[str, ...]) -> JudgeDecision
     cited = set(decision.cited_evidence_ids) | set(decision.opposing_evidence_ids)
     mentioned = set(re.findall(r"\bE\d+\b", decision.reasoning_summary))
     if not cited <= allowed or not mentioned <= cited:
-        raise DecisionFailure("invalid_evidence_citation")
+        raise DecisionFailure("invalid_evidence_citation", retryable=True)
     if re.search(r"\b(?:PMID|DOI)\s*[:#]?\s*\S+", decision.reasoning_summary, re.I):
-        raise DecisionFailure("invalid_evidence_citation")
+        raise DecisionFailure("invalid_evidence_citation", retryable=True)
     return decision

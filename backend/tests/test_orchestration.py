@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy.orm import Session
 
 from app.api.routes.analyses import get_analysis_claims, get_claim_report
 from app.core.config import Settings
@@ -27,6 +28,7 @@ from app.orchestration.smoke import (
 )
 from app.orchestration.state import get_run, mark_interrupted
 from app.orchestration.worker import run_background
+from app.pipeline.readiness import ready_for_evidence
 from app.report.builder import build_report
 from app.report.models import LensReport
 from app.schemas.analysis import AnalysisInput, Consent, CreateAnalysisRequest
@@ -70,6 +72,7 @@ async def run_fixture(
     no_results: bool = False, contradicted: bool = False,
     one_failed_judge: bool = False, unvalidated: bool = False,
     corrupt_pack: bool = False, extraction_failure: bool = False,
+    normalization_status: str = "normalized",
 ) -> tuple[MemorySession, AnalysisRunRecord, dict[str, object]]:
     session = MemorySession()
     text = " ".join(claims)
@@ -111,7 +114,11 @@ async def run_fixture(
         claim = session.get(Claim, aggregation.claim_id)
         return AggregationContext(
             claim=ClaimFacts(claim_id=claim.id, normalization_status=claim.normalization_status,
-                             risk_class=claim.risk_class),
+                             risk_class=claim.risk_class,
+                             normalization_reviewed=ready_for_evidence(
+                                 claim.normalization_status, pico_json=claim.pico_json,
+                                 quality_json=claim.normalization_quality,
+                             )),
             pack=pack, stored_pack_hash=pack.snapshot_hash,
             retrieval_status="ok",
             judges=tuple(artifacts["judges"][item] for item in aggregation.judge_run_ids),
@@ -204,8 +211,25 @@ async def run_fixture(
         async def create_analysis(self, **_: object) -> object:
             raise RuntimeError("sensitive-extractor-body")
 
+    class StatusIngestion(FixtureIngestion):
+        async def create_analysis(
+            self, *, session: Session, request: CreateAnalysisRequest,
+            analysis_id: UUID | None = None,
+        ) -> Submission:
+            submission = await super().create_analysis(
+                session=session, request=request, analysis_id=analysis_id,
+            )
+            for claim in submission.claims:
+                claim.normalization_status = normalization_status
+                if normalization_status == "partially_linked":
+                    claim.normalization_quality = {
+                        "required_slots_missing": [], "missing_explicit_concepts": [],
+                        "normalization_warnings": [], "normalization_coverage": 1.0,
+                    }
+            return submission
+
     orchestrator = AnalysisOrchestrator(
-        ingestion=FailingIngestion(claims) if extraction_failure else FixtureIngestion(claims),
+        ingestion=FailingIngestion(claims) if extraction_failure else StatusIngestion(claims),
         retrieve=retrieve, judge=judges, validate=validation,
         mode=AggregationMode.FIXTURE_OR_EVALUATION,
     )
@@ -249,6 +273,23 @@ def test_unavailable_judges_become_unable_not_not_enough_evidence(
     assert row.judge_run_ids == row.validation_run_ids == []
     assert report.verdict == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
     assert not report.key_evidence
+
+
+def test_partially_linked_claim_continues_but_missing_pico_stops(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _, linked_run, _ = asyncio.run(run_fixture(
+        monkeypatch, (FIXTURE_TEXT,), normalization_status="partially_linked",
+    ))
+    incomplete_session, incomplete_run, _ = asyncio.run(run_fixture(
+        monkeypatch, (FIXTURE_TEXT,), normalization_status="partial",
+    ))
+
+    assert linked_run.status == "completed" and linked_run.completed_claims == 1
+    assert incomplete_run.status == "failed" and incomplete_run.completed_claims == 0
+    failed_row = next(row for (kind, _), row in incomplete_session.rows.items()
+                      if kind is ClaimAnalysisRunRecord)
+    assert failed_row.failure_code == "normalization_incomplete"
 
 
 def test_multiclaim_isolation_and_partial_completion(

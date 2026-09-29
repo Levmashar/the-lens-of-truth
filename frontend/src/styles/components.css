@@ -1,0 +1,42 @@
+.report-card { margin-top: var(--space-8); padding-top: var(--space-8); border-top: 1px solid var(--border); }
+.report-card > .eyebrow { margin-bottom: var(--space-2); }
+.report-claim { font-size: 1.05rem; font-weight: 600; line-height: 1.45; margin-bottom: var(--space-6); }
+.qualification-notice { border-left: 4px solid var(--warning); background: var(--warning-soft); color: #603f1b; padding: var(--space-5); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: var(--space-6); }
+.notice-title { font-size: .96rem; margin-bottom: var(--space-2); }
+.qualification-notice p { font-size: .87rem; line-height: 1.6; }
+.verdict-card { background: var(--surface-muted); padding: var(--space-6); border-radius: var(--radius-md); border-top: 3px solid var(--accent); }
+.verdict-card[data-verdict="contradicted"] { border-top-color: var(--danger); }
+.verdict-card[data-verdict="not_enough_evidence"] { border-top-color: var(--warning); }
+.verdict-card[data-verdict="unable_to_verify_reliably"] { border-top-color: var(--text-muted); }
+.verdict-card .eyebrow { margin-bottom: .4rem; }
+.verdict-label { margin-bottom: var(--space-3); font-size: clamp(1.35rem, 3vw, 1.9rem); font-weight: 750; line-height: 1.2; }
+.verdict-headline { font-weight: 650; margin-bottom: .5rem; }
+.verdict-summary { color: var(--text-muted); }
+.report-section { margin-top: var(--space-8); }
+.reason-list { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--space-3); }
+.reason-list li { padding-left: .2rem; }
+.evidence-grid { display: grid; gap: var(--space-4); }
+.evidence-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-6); min-width: 0; background: #fff; }
+.evidence-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font-size: .71rem; font-weight: 750; margin-bottom: var(--space-3); }
+.evidence-title { font-size: 1.1rem; margin-bottom: var(--space-3); overflow-wrap: anywhere; }
+.evidence-meta { color: var(--text-muted); font-size: .81rem; }
+.evidence-role { font-size: .78rem; font-weight: 700; color: var(--accent); }
+.excerpt-label { color: var(--text-muted); font-size: .77rem; margin-bottom: .4rem; }
+.evidence-quote { margin: 0; padding: var(--space-5); border-left: 2px solid #a8c3b6; background: var(--surface-muted); font-family: Georgia, serif; font-size: .95rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.evidence-footer { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.2rem; margin-top: var(--space-5); font-size: .76rem; }
+.source-id { color: var(--text-muted); overflow-wrap: anywhere; }
+.source-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 650; overflow-wrap: anywhere; }
+.integrity-note, .source-limitation { color: var(--warning); font-size: .78rem; margin: var(--space-4) 0 0; }
+.integrity-note[data-status="valid"] { color: var(--text-muted); }
+.limitations-card { background: var(--warning-soft); border: 1px solid #e9d8b9; border-radius: var(--radius-md); padding: var(--space-6); margin-top: var(--space-8); }
+.assessment-details, .technical-details { border-top: 1px solid var(--border); margin-top: var(--space-8); padding-top: var(--space-5); }
+.technical-details { margin-top: var(--space-5); }
+.details-summary { font-weight: 700; color: var(--accent); cursor: pointer; min-height: 44px; display: list-item; padding-block: .55rem; }
+.details-body { padding-top: var(--space-3); color: var(--text-muted); }
+.meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-4) 0 0; }
+.meta-item { min-width: 0; overflow-wrap: anywhere; }
+.meta-label { color: var(--text-muted); font-size: .74rem; }
+.meta-value { margin: .1rem 0 0; font-size: .85rem; font-weight: 650; }
+.source-list { display: grid; gap: .5rem; }
+.safety-notice { margin-top: var(--space-8); padding: var(--space-6); border-radius: var(--radius-md); background: var(--accent-soft); }
+.safety-notice p { font-size: .88rem; line-height: 1.65; }

@@ -16,12 +16,24 @@ const messages: Record<string, string> = {
   report_not_found: "The report is not available yet.",
   report_not_qualified: "This analysis completed, but the report does not meet the current release qualification requirements.",
   screenshot_too_large: "The screenshot is too large. Choose a smaller image.",
+  sanitized_screenshot_too_large: "The screenshot is too large after processing. Choose a smaller image.",
   upload_too_large: "The screenshot is too large. Choose a smaller image.",
+  unsupported_screenshot_format: "Choose a PNG, JPEG, or WebP screenshot.",
+  invalid_screenshot: "We couldn't read this image. Choose a different screenshot.",
+  animated_screenshot_not_allowed: "Animated images are not supported. Choose a still screenshot.",
+  screenshot_dimensions_not_allowed: "This image's dimensions are too large. Choose a smaller screenshot.",
+  screenshot_upload_not_found: "The uploaded screenshot is no longer available. Upload it again.",
+  screenshot_upload_already_used: "This screenshot was already submitted. Choose it again to start a new verification.",
+  screenshot_text_not_found: "We couldn't read enough text from this screenshot.",
+  ocr_failed: "We couldn't read enough text from this screenshot.",
+  ocr_timeout: "Reading this screenshot took too long. Try another image or paste the text.",
   unsupported_image: "Choose a PNG, JPEG, or WebP screenshot.",
   ocr_no_text: "We couldn't read enough text from this screenshot.",
   ocr_empty: "We couldn't read enough text from this screenshot.",
   no_claims_extracted: "No checkable medical claims were identified in this content.",
   worker_interrupted: "The analysis was interrupted. Start a new verification.",
+  claim_extractor_rate_limited: "The claim extraction service is rate-limited. Wait before trying again.",
+  claim_extractor_unavailable: "The claim extraction service is temporarily unavailable. Try again later.",
 };
 
 export function errorMessage(error: unknown): string {
@@ -39,7 +51,6 @@ export function errorMessage(error: unknown): string {
 
 export function parseApiError(status: number, payload: ApiErrorPayload): ApiError {
   // Backend messages are intentionally not shown verbatim; codes are mapped to safe copy.
-  return new ApiError(status, payload.error?.code ?? "unknown_error", errorMessage(
-    new ApiError(status, payload.error?.code ?? "unknown_error", ""),
-  ));
+  const code = payload.error?.code ?? "unknown_error";
+  return new ApiError(status, code, errorMessage(new ApiError(status, code, "")));
 }

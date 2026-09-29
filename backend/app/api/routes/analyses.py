@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.adapters.crossref import CrossrefAdapter
 from app.adapters.pubmed import PubMedAdapter
 from app.core.config import Settings, get_runtime_settings
+from app.core.debug_trace import model_events
 from app.core.errors import LensError
 from app.db.session import get_db_session
 from app.dependencies import (
@@ -22,8 +23,10 @@ from app.dependencies import (
     get_pubmed_adapter,
 )
 from app.medical.entities import MedicalEntity
-from app.models.analysis_run import AnalysisRunRecord
+from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.claim import Claim
+from app.models.judge_run import JudgeRunRecord
+from app.models.judge_validation_run import JudgeValidationRunRecord
 from app.models.report_run import ReportRunRecord
 from app.models.retrieval import EvidencePackRecord
 from app.models.screenshot_upload import ScreenshotUpload
@@ -51,6 +54,9 @@ from app.schemas.analysis import (
     ClaimExtractionPreviewResponse,
     ClaimPreviewItem,
     CreateAnalysisRequest,
+    DebugJudgeRun,
+    DebugModelEvent,
+    DebugModelStatus,
     OcrPreviewLine,
     OcrPreviewResponse,
     ScreenshotOcrMetadata,
@@ -240,6 +246,7 @@ async def get_analysis(
     analysis_id: UUID,
     session: Annotated[Session, Depends(get_db_session)],
     service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
 ) -> AnalysisProgress | AnalysisDetail:
     """Return durable progress and any persisted redacted claims."""
 
@@ -253,6 +260,10 @@ async def get_analysis(
         submission = service.get_submission(session=session, analysis_id=run.submission_id)
         detail = _analysis_detail(submission)
         claims = detail.claims
+    debug_events = (
+        [DebugModelEvent.model_validate(item) for item in model_events(run.id)]
+        if settings.debug_enabled else None
+    )
     return AnalysisProgress(
         analysis_id=run.id, status=cast(Literal[
             "queued", "running", "completed", "failed", "partially_completed",
@@ -263,8 +274,36 @@ async def get_analysis(
         language=detail.language if detail else None,
         input_type=detail.input_type if detail else None,
         claims=claims, screenshot_ocr=detail.screenshot_ocr if detail else None,
-        updated_at=run.updated_at,
+        updated_at=run.updated_at, debug_enabled=settings.debug_enabled,
+        debug_events=debug_events,
+        debug_models=_debug_model_statuses(settings, debug_events)
+        if debug_events is not None else None,
     )
+
+
+def _debug_model_statuses(
+    settings: Settings, events: list[DebugModelEvent],
+) -> list[DebugModelStatus]:
+    configured = [
+        ("extraction", settings.claim_extractor_provider, settings.claim_extractor_model),
+        ("judge_1", settings.judge_1_provider, settings.judge_1_model),
+        ("judge_2", settings.judge_2_provider, settings.judge_2_model),
+        ("judge_3", settings.judge_3_provider, settings.judge_3_model),
+    ]
+    statuses: list[DebugModelStatus] = []
+    for role, provider, model in configured:
+        if not model:
+            continue
+        last = next(
+            (event for event in reversed(events)
+             if event.role == role and event.model == model), None,
+        )
+        statuses.append(DebugModelStatus(
+            role=role, provider=provider or "unconfigured", model=model,
+            status=last.status if last else "not_called",
+            failure_type=last.failure_type if last else None,
+        ))
+    return statuses
 
 
 async def _analysis_events(submission: Submission) -> AsyncIterator[str]:
@@ -336,8 +375,38 @@ async def get_analysis_claims(
                 settings.app_env not in {"staging", "production"}
                 or verdict.production_qualified
             ) else None),
+            debug_judge_runs=(
+                _debug_judge_runs(session, row) if settings.debug_enabled else None
+            ),
         ))
     return AnalysisClaimsResponse(analysis_id=analysis_id, claims=summaries)
+
+
+def _debug_judge_runs(
+    session: Session, row: ClaimAnalysisRunRecord,
+) -> list[DebugJudgeRun]:
+    """Read only allowlisted audit metadata; never expose prompts or responses."""
+
+    validations: dict[UUID, JudgeValidationRunRecord] = {}
+    for raw_id in row.validation_run_ids:
+        validation = session.get(JudgeValidationRunRecord, UUID(raw_id))
+        if validation is not None:
+            validations[validation.judge_run_id] = validation
+    summaries: list[DebugJudgeRun] = []
+    for raw_id in row.judge_run_ids:
+        judge = session.get(JudgeRunRecord, UUID(raw_id))
+        if judge is None or judge.claim_id != row.claim_id:
+            continue
+        validation = validations.get(judge.id)
+        summaries.append(DebugJudgeRun(
+            slot=judge.slot, provider=judge.provider, model=judge.model,
+            model_family=judge.model_family, outcome_status=judge.outcome_status,
+            error_category=judge.error_category, attempt_count=judge.attempt_count,
+            latency_ms=judge.latency_ms,
+            validation_status=validation.status if validation else None,
+            validation_error_category=validation.error_category if validation else None,
+        ))
+    return summaries
 
 
 @router.get("/{analysis_id}/claims/{claim_id}/report", response_model=LensReport)

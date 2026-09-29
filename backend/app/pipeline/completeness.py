@@ -18,6 +18,7 @@ _GENERIC_TERMS = frozenset({
     "risk", "study", "studies", "people", "person", "use", "users", "rate",
     "rates", "health", "illness", "disease", "effect", "effects", "result",
     "results", "higher", "lower", "frequent", "exposure", "invasive",
+    "consumption",
 })
 _REQUIRED_PAIR = frozenset({
     ClaimType.CAUSAL, ClaimType.ASSOCIATION, ClaimType.PREVENTION,

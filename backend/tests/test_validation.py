@@ -332,8 +332,15 @@ def test_numeric_overclaim_and_population_mismatch_are_fatal() -> None:
         ("In mice, Treatment X prevented Y.",), claim_type=ClaimType.PREVENTION,
         designs=("animal_study",),
     )
-    audit = run_validation(animals)
-    assert IssueCode.MATERIAL_SCOPE_MISMATCH in audit.result.fatal_issue_codes
+    # The retrieval layer now keeps explicitly nonhuman papers auditable but
+    # unselected; validation must still identify their scope mismatch if cited.
+    audit = run_validation(animals, judge_for(
+        animals, citations=(animals.passages[0].evidence_id,),
+    ))
+    assert IssueCode.CITATION_NOT_SELECTED in audit.result.fatal_issue_codes
+    assert compare_scope(
+        animals.claim_snapshot, animals.documents[0], animals.passages[0],
+    ) == ScopeAlignment.MISMATCH
 
 
 def test_valid_contradiction() -> None:

@@ -5,6 +5,8 @@ import json
 import logging
 import re
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from time import monotonic
 from typing import Protocol
 
@@ -12,10 +14,11 @@ import httpx
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from app.adapters.http import HttpAdapterBase
+from app.core.debug_trace import record_model_event
 from app.core.errors import ExternalCapabilityError
 from app.pipeline.claim_types import ClaimType, explicit_relation, legacy_claim_type
 
-CLAIM_EXTRACTION_PROMPT_VERSION = "phase3c-canonical-2026-09-24"
+CLAIM_EXTRACTION_PROMPT_VERSION = "phase7-json-source-spans-2026-09-29"
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are a health-claim extraction engine.
@@ -28,6 +31,10 @@ give medical advice, infer missing facts, or invent citations. One result must
 represent one independently verifiable proposition. Preserve exact Unicode
 character offsets into the supplied content. Resolve a pronoun only if its
 antecedent is unambiguous; otherwise set coreference_uncertain to true.
+For coordinated clauses such as "X increases Y and lowers Z", extract each
+proposition separately. Keep each raw_span exact; identify the shared subject
+with resolved_from_span_start/resolved_from_span_end and repeat its exact source
+wording in each PICO exposure. Include an explicit outcome for each clause.
 
 For every claim return raw_span, span_start, span_end, normalized_claim,
 claim_type, risk_class, verifiability, coreference_uncertain, and
@@ -47,10 +54,21 @@ association/correlation wording; never change the source's epistemic strength.
 REPAIR_INSTRUCTION = (
     "Your previous response could not be parsed or validated. Return only one "
     "complete JSON object conforming to the requested schema. Preserve source "
-    "offsets and exact wording. Do not add commentary or invent missing facts."
+    "offsets and exact wording. Include every explicitly stated PICO exposure "
+    "and outcome, including an unambiguous shared subject in coordinated "
+    "clauses. Recheck any explicit health relation before returning an empty "
+    "claims array. Do not add commentary or invent missing facts."
 )
 
-MIRI_FORMAT_INSTRUCTION = """Return exactly one JSON object, with no Markdown or explanation:
+_RELATION_WITH_OBJECT = re.compile(
+    r"\b(?:causes?|caused|increases?|increased|raises?|raised|elevates?|elevated|"
+    r"reduces?|reduced|decreases?|decreased|lowers?|lowered|prevents?|prevented|"
+    r"improves?|improved|worsens?|worsened|associated|correlates?|correlated|"
+    r"linked)\b",
+    re.IGNORECASE,
+)
+
+JSON_FORMAT_INSTRUCTION = """Return exactly one JSON object, with no Markdown or explanation:
 {"claims":[{"raw_span":"exact source substring","span_start":0,"span_end":1,
 "normalized_claim":null,"claim_type":null,"risk_class":"standard",
 "verifiability":null,"coreference_uncertain":false,
@@ -178,6 +196,7 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
     base_url: str = ""
     model: str = ""
     api_key: str = ""
+    maximum_claims: int = 20
 
     @property
     def model_id(self) -> str:
@@ -192,7 +211,7 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
             "model": self.model,
             "temperature": 0,
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": SYSTEM_PROMPT + "\n" + JSON_FORMAT_INSTRUCTION},
                 {
                     "role": "user",
                     "content": (
@@ -213,7 +232,9 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
             },
         }
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        return await _extract_with_retry(self, request_body, headers)
+        return await _extract_with_retry(
+            self, request_body, headers, source_text=text, reconcile_offsets=True,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -225,6 +246,7 @@ class MiriClaimExtractor(HttpAdapterBase):
     base_url: str = ""
     model: str = "chatgpt-auto"
     api_key: str | None = None
+    maximum_claims: int = 20
 
     @property
     def model_id(self) -> str:
@@ -238,7 +260,7 @@ class MiriClaimExtractor(HttpAdapterBase):
         request_body: dict[str, object] = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT + "\n" + MIRI_FORMAT_INSTRUCTION},
+                {"role": "system", "content": SYSTEM_PROMPT + "\n" + JSON_FORMAT_INSTRUCTION},
                 {
                     "role": "user",
                     "content": (
@@ -252,7 +274,7 @@ class MiriClaimExtractor(HttpAdapterBase):
         }
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         return await _extract_with_retry(
-            self, request_body, headers, normalize_miri_labels=True
+            self, request_body, headers, source_text=text, normalize_miri_labels=True
         )
 
 
@@ -267,7 +289,9 @@ async def _extract_with_retry(
     request_body: dict[str, object],
     headers: dict[str, str],
     *,
+    source_text: str,
     normalize_miri_labels: bool = False,
+    reconcile_offsets: bool = False,
 ) -> ClaimExtractionPayload:
     """Enforce per-attempt and total deadlines with at most one safe retry."""
 
@@ -281,7 +305,14 @@ async def _extract_with_retry(
         async with asyncio.timeout(adapter.total_timeout_seconds):
             for attempt in (1, 2):
                 attempt_started = monotonic()
+                record_model_event(
+                    role="extraction", provider=adapter.service_name,
+                    model=adapter.model_id, attempt=attempt, status="calling",
+                    failure_type=None, http_status=None, elapsed_ms=0,
+                )
                 trace_id = None
+                response_content: str | None = None
+                http_status: int | None = None
                 if attempt == 2 and repair_needed:
                     messages = request_body["messages"]
                     assert isinstance(messages, list)
@@ -303,14 +334,38 @@ async def _extract_with_retry(
                             response = await client.post(
                                 endpoint, headers=headers, json=request_body
                             )
+                            http_status = response.status_code
                             trace_id = _safe_trace_id(response.headers.get("x-request-id"))
                             response.raise_for_status()
+                        response_content = _completion_content(response)
                         payload = _parse_response(
                             response, normalize_miri_labels=normalize_miri_labels
                         )
+                        if reconcile_offsets:
+                            payload = _reconcile_unique_offsets(payload, source_text)
+                        if (reconcile_offsets and not payload.claims
+                                and _RELATION_WITH_OBJECT.search(source_text)):
+                            raise _ResponseFailure("empty_claims_with_explicit_relation")
+                        try:
+                            validate_claim_candidates(
+                                payload=payload, source_text=source_text,
+                                maximum_claims=adapter.maximum_claims,
+                            )
+                        except ExternalCapabilityError as exc:
+                            raise _ResponseFailure("source_span_validation_failure") from exc
+                        if attempt == 1 and _needs_pico_repair(payload):
+                            raise _ResponseFailure("incomplete_pico")
                     _log_extraction_attempt(
                         adapter, attempt=attempt, failure_type="none", started=started,
                         attempt_started=attempt_started, trace_id=trace_id,
+                        http_status=http_status,
+                    )
+                    record_model_event(
+                        role="extraction", provider=adapter.service_name,
+                        model=adapter.model_id, attempt=attempt, status="responded",
+                        failure_type=None, http_status=http_status,
+                        elapsed_ms=round((monotonic() - attempt_started) * 1000),
+                        response_content=response_content,
                     )
                     return payload
                 except (TimeoutError, httpx.TimeoutException) as exc:
@@ -332,8 +387,27 @@ async def _extract_with_retry(
                 _log_extraction_attempt(
                     adapter, attempt=attempt, failure_type=failure_type, started=started,
                     attempt_started=attempt_started, trace_id=trace_id,
+                    http_status=http_status,
+                )
+                record_model_event(
+                    role="extraction", provider=adapter.service_name,
+                    model=adapter.model_id, attempt=attempt,
+                    status=("responded" if http_status == 200 else "unavailable"),
+                    failure_type=failure_type, http_status=http_status,
+                    elapsed_ms=round((monotonic() - attempt_started) * 1000),
+                    response_content=response_content,
                 )
                 repair_needed = isinstance(cause, _ResponseFailure)
+                retry_delay = 0.0
+                if (
+                    attempt == 1 and isinstance(cause, httpx.HTTPStatusError)
+                    and cause.response.status_code == 429
+                ):
+                    retry_delay = _retry_after_seconds(
+                        cause.response.headers.get("retry-after")
+                    )
+                    if monotonic() - started + retry_delay >= adapter.total_timeout_seconds:
+                        retryable = False
                 if attempt == 2 or not retryable:
                     if isinstance(cause, _ResponseFailure):
                         raise _invalid_structured_response() from cause
@@ -343,14 +417,30 @@ async def _extract_with_retry(
                             message="Claim extraction timed out.",
                             status_code=504,
                         ) from cause
+                    if (
+                        isinstance(cause, httpx.HTTPStatusError)
+                        and cause.response.status_code == 429
+                    ):
+                        raise ExternalCapabilityError(
+                            code="claim_extractor_rate_limited",
+                            message="Claim extraction is temporarily rate limited.",
+                            status_code=429,
+                        ) from cause
                     raise ExternalCapabilityError(
                         code="claim_extractor_unavailable",
                         message="Claim extraction is temporarily unavailable.",
                     ) from cause
+                if retry_delay:
+                    await asyncio.sleep(retry_delay)
     except TimeoutError as exc:
         _log_extraction_attempt(
             adapter, attempt=attempt, failure_type="total_deadline_exceeded",
             started=started, attempt_started=attempt_started, trace_id=trace_id,
+        )
+        record_model_event(
+            role="extraction", provider=adapter.service_name, model=adapter.model_id,
+            attempt=attempt, status="unavailable", failure_type="total_deadline_exceeded",
+            http_status=None, elapsed_ms=round((monotonic() - attempt_started) * 1000),
         )
         raise ExternalCapabilityError(
             code="claim_extractor_deadline_exceeded",
@@ -358,6 +448,28 @@ async def _extract_with_retry(
             status_code=504,
         ) from exc
     raise AssertionError("Unreachable retry state")
+
+
+def _needs_pico_repair(payload: ClaimExtractionPayload) -> bool:
+    """Give a source-explicit, incomplete relation one bounded repair attempt."""
+
+    for candidate in payload.claims:
+        if candidate.claim_type not in {
+            ClaimType.CAUSAL, ClaimType.ASSOCIATION, ClaimType.PREVENTION,
+            ClaimType.TREATMENT, ClaimType.DIAGNOSTIC, ClaimType.SAFETY,
+        }:
+            continue
+        relation = _RELATION_WITH_OBJECT.search(candidate.raw_span)
+        if relation is None:
+            continue
+        if not candidate.raw_span[:relation.start()].strip() or not (
+            candidate.raw_span[relation.end():].strip()
+        ):
+            continue
+        pico = candidate.pico
+        if pico is None or not pico.intervention_or_exposure or not pico.outcome:
+            return True
+    return False
 
 
 def _log_extraction_attempt(
@@ -368,24 +480,77 @@ def _log_extraction_attempt(
     started: float,
     attempt_started: float,
     trace_id: str | None,
+    http_status: int | None = None,
 ) -> None:
     """Log timing and failure category without source text, URL, or credentials."""
 
     logger.log(
         logging.INFO if failure_type == "none" else logging.WARNING,
         "claim_extraction provider=%s model=%s attempt_number=%d attempt_count=%d "
-        "failure_type=%s elapsed_ms=%d attempt_elapsed_ms=%d retry_occurred=%s trace_id=%s",
+        "failure_type=%s http_status=%s elapsed_ms=%d attempt_elapsed_ms=%d "
+        "retry_occurred=%s trace_id=%s",
         adapter.service_name, adapter.model_id, attempt, attempt, failure_type,
+        http_status,
         round((monotonic() - started) * 1000),
         round((monotonic() - attempt_started) * 1000),
         attempt > 1, trace_id,
     )
 
 
+def _retry_after_seconds(value: str | None) -> float:
+    """Honor a bounded server delay; never extend the extraction deadline."""
+
+    if value is None:
+        return 2.0
+    if value.isdigit():
+        try:
+            return float(value)
+        except (ValueError, OverflowError):
+            return 2.0
+    try:
+        retry_at = parsedate_to_datetime(value)
+        if retry_at.tzinfo is None:
+            return 2.0
+        return max(0.0, (retry_at - datetime.now(UTC)).total_seconds())
+    except (TypeError, ValueError, OverflowError):
+        return 2.0
+
+
 def _safe_trace_id(value: str | None) -> str | None:
     if value and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value):
         return value
     return None
+
+
+def _completion_content(response: httpx.Response) -> str | None:
+    """Read only the model's visible content, never reasoning or provider errors."""
+
+    try:
+        body = response.json()
+        content = body["choices"][0]["message"]["content"]
+    except (ValueError, KeyError, IndexError, TypeError):
+        return None
+    return content if isinstance(content, str) else None
+
+
+def _reconcile_unique_offsets(
+    payload: ClaimExtractionPayload, source_text: str,
+) -> ClaimExtractionPayload:
+    """Correct arithmetic offsets only when the exact span occurs once in source."""
+
+    claims: list[ExtractedClaimCandidate] = []
+    for claim in payload.claims:
+        if source_text[claim.span_start : claim.span_end] == claim.raw_span:
+            claims.append(claim)
+            continue
+        start = source_text.find(claim.raw_span)
+        if start < 0 or source_text.find(claim.raw_span, start + 1) >= 0:
+            claims.append(claim)  # Existing validator rejects non-unique or invented spans.
+            continue
+        claims.append(claim.model_copy(update={
+            "span_start": start, "span_end": start + len(claim.raw_span),
+        }))
+    return payload.model_copy(update={"claims": claims})
 
 
 def _parse_response(

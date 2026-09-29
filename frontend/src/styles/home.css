@@ -1,0 +1,41 @@
+.hero { padding-top: clamp(3.5rem, 8vw, 6.5rem); padding-bottom: var(--space-10); max-width: 900px; text-align: center; }
+.hero .eyebrow { margin-bottom: var(--space-5); }
+.hero-title { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: clamp(2.55rem, 5.6vw, 4.7rem); letter-spacing: -.047em; line-height: 1.06; max-width: 840px; margin-inline: auto; margin-bottom: var(--space-6); }
+.hero-copy { color: var(--text-muted); font-size: clamp(1rem, 2vw, 1.16rem); max-width: 680px; margin: auto; }
+.verification-card { width: min(calc(100% - 3rem), 790px); margin: 0 auto; padding: clamp(1.4rem, 3vw, 2.5rem); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.form-intro { margin-bottom: var(--space-6); }
+.form-intro .eyebrow { margin-bottom: var(--space-3); }
+.mode-switch { display: flex; gap: var(--space-2); border-bottom: 1px solid var(--border); margin-bottom: var(--space-6); }
+.mode-tab { min-height: 48px; padding: .6rem 1rem; margin-bottom: -1px; color: var(--text-muted); background: none; border: 0; border-bottom: 2px solid transparent; font-weight: 650; }
+.mode-tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.field-label { display: block; margin-bottom: .6rem; font-weight: 650; }
+.claim-textarea { width: 100%; min-height: 205px; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); resize: vertical; color: var(--text); line-height: 1.6; }
+.claim-textarea::placeholder { color: #71817b; }
+.field-hint { font-size: .78rem; margin-top: .45rem; margin-bottom: 0; }
+.upload-zone { border: 1.5px dashed #9fb8ac; border-radius: var(--radius-md); padding: var(--space-8); background: var(--surface-muted); text-align: center; transition: border-color var(--transition-fast), background var(--transition-fast); }
+.upload-zone.is-dragging { border-color: var(--accent); background: var(--accent-soft); }
+.upload-prompt { font-weight: 650; margin-bottom: 0; }
+.file-input { display: block; margin: var(--space-5) auto 0; max-width: 100%; font-size: .85rem; }
+.file-input::file-selector-button { padding: .55rem .8rem; margin-right: .7rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: white; color: var(--accent); font-weight: 650; }
+.upload-preview { margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--border); }
+.upload-preview[hidden], .field-error[hidden], .form-error[hidden] { display: none; }
+.upload-image { display: block; max-height: 260px; max-width: 100%; object-fit: contain; margin-inline: auto; border-radius: var(--radius-sm); }
+.upload-detail { overflow-wrap: anywhere; font-size: .85rem; margin: .8rem 0; }
+.upload-actions { display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; }
+.field-error, .form-error { color: var(--danger); background: var(--danger-soft); padding: var(--space-3); border-radius: var(--radius-sm); font-size: .9rem; }
+.form-helper { margin: var(--space-5) 0 var(--space-6); color: var(--text-muted); font-size: .86rem; }
+.consent-row { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-5); background: var(--surface-muted); border-radius: var(--radius-sm); font-size: .87rem; color: var(--text-muted); cursor: pointer; }
+.consent-row input { width: 18px; height: 18px; flex: 0 0 auto; margin: .1rem 0 0; accent-color: var(--accent); }
+.consent-copy { display: block; }
+.consent-version { display: block; margin-top: .35rem; color: var(--text-muted); }
+.form-error { margin-top: var(--space-5); }
+.form-actions { margin-top: var(--space-6); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.privacy-note { color: var(--text-muted); font-size: .78rem; }
+.how-section { padding-block: clamp(4rem, 8vw, 7rem); }
+.how-section .eyebrow { margin-bottom: var(--space-2); }
+.method-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-8); }
+.method-step { border-top: 1px solid var(--border); padding-top: var(--space-5); }
+.method-number { color: var(--accent); font-size: .78rem; font-weight: 750; }
+.method-title { margin: var(--space-3) 0 var(--space-2); font-size: 1rem; }
+.method-copy { color: var(--text-muted); font-size: .84rem; }
+.method-attribution { color: var(--text-muted); font-size: .77rem; margin-top: var(--space-8); }

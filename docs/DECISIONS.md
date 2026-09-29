@@ -447,3 +447,163 @@ without duplicating medical logic, combining independent claims, or
 accidentally promoting Miri/unapproved entailment outputs. In-process tasks
 and explicit no-replay semantics meet the competition MVP's complexity
 constraint while honestly recording their crash-recovery limitations.
+
+## ADR-025 — Use framework-free TypeScript for the competition web client
+
+**Decision:** replace the early Phase 2 React/Tailwind shell with vanilla
+HTML, CSS, TypeScript, and Vite. Keep small typed API, page, component, and
+utility modules instead of a custom reactive framework. Poll the Phase 7A
+status and claim checkpoints; the SSE endpoint is a one-shot snapshot, not a
+live stream. Use History API routes `/` and `/analysis/{uuid}` and the existing
+Vite/Nginx SPA fallback. Submit an opaque idempotency key per deliberate
+attempt, retaining it for uncertain retries. A same-tab session record may
+store only a content digest, key, and upload UUID, never raw medical text or
+image bytes.
+
+**Decision:** render backend LensReports without browser-side medical
+reasoning. Preserve four controlled verdict labels, exact frozen excerpts,
+the separate safety notice, and a visually prominent backend development
+notice whenever `production_qualified=false`. A 403 report gate is displayed
+as release ineligibility, not as a medical verdict. Untrusted claim/source
+text enters the DOM only as text; source links require backend-provided
+HTTP(S) URLs. Avoid demo fixtures in the running product and do not bypass
+the backend qualification gate.
+
+**Reason:** the original framework was only a placeholder. A small modular
+client keeps the competition MVP understandable while making the complete
+claim-scoped pipeline usable and preserving medical and security boundaries.
+
+## ADR-026 — Ground coordinated subjects and retain lexical retrieval for partial terminology
+
+**Decision:** exact extraction span validation happens within the existing
+one-retry, 115-second total deadline. If the first structurally valid response
+omits an exposure or outcome in an explicit relation, that same single retry
+may request repair; a still-missing slot remains `partial`. For subject ellipsis
+in an adjacent coordinated `and` clause (with optional comma), normalization
+may carry only the exact preceding
+subject when the extractor's antecedent offsets, both source slices, and a
+small explicit English verb pattern all agree. The later soy regression also
+permits the second clause's *explicit* verb object to fill a model-omitted
+outcome when the shared-subject syntax is independently verified. It does not
+fill an outcome for a standalone claim, change the original span, or assign an
+unverified MeSH ID.
+
+**Decision:** `partially_linked` means source PICO is complete but some
+terminology mentions lack a safe ID. Only an audited row with complete
+source-grounded PICO, explicit completeness fields, and no missing concepts or
+unsafe source-scan warnings may use lexical PubMed queries and continue to the
+existing verdict policy. The standalone verdict loader rechecks this eligibility;
+legacy unaudited rows fail closed. `partial` (missing required slots or source
+concepts), `pico_only`, and `unresolved` remain blocked. No judge,
+citation, search-isolation, or production-release guard changes. Nondiagnostic
+exposure words such as `regular` and `usage` are omitted from lexical query
+terms, while the exact qualified exposure stays in frozen PICO and audits.
+
+**Reason:** a colloquial but explicit exposure such as "regular usage of soy"
+must not silently become a fabricated vocabulary match or be rejected solely
+because MeSH lacks an exact synonym. The original two-clause sentence exposed
+both an omitted model outcome and discarded shared subject. The bounded repair
+and source-checked coordination preserve that meaning without treating an
+unresolved terminology code as missing medical evidence.
+
+## ADR-027 — Treat extractor rate limits as operational failures
+
+**Decision:** keep the configured ChatGPT extraction model and the existing
+one-retry/total-deadline boundary. A provider HTTP 429 is logged with only its
+status code, optionally waits for a numeric or date `Retry-After` within the
+remaining deadline, and becomes `claim_extractor_rate_limited` if retry is
+exhausted or cannot fit the deadline. The web client presents extraction
+outages and rate limits as operational failures, never medical verdicts. No
+silent fallback to another model or fabrication of claims is permitted.
+
+**Reason:** the live Miri catalog listed `chatgpt-auto`, but a chat probe
+returned 429 and the user's analysis stopped before extracting any claim.
+Immediate retries and a generic verification-failure screen obscured the
+actual operational condition.
+
+## ADR-028 — Keep generic aliases and unrelated studies out of selected evidence
+
+**Decision:** an isolated generic MeSH entry term such as `consumption` must
+not resolve a multiword exposure to `Economics`. Query planning falls back to
+the source-grounded PICO slot when an entity is only a generic alias or a
+population modifier. The linker likewise leaves an exposure unresolved rather
+than recording `Male` as its intervention when it occurs only in an explicit
+demographic suffix. Query planning retains an outcome qualifier in a bounded
+lexical variant. Explicit nonhuman study subjects in a title take precedence
+over ambiguous mixed species metadata. Nonhuman studies for claims without an
+explicit animal subject, and documents without a sufficiently direct two-core-
+concept focus, remain in the immutable, auditable Evidence Pack but are not
+selected for judge prompts. If no paper qualifies, selection may be empty;
+retrieval never manufactures a substitute. These are relevance and
+applicability heuristics, not medical support or contradiction judgments.
+
+**Reason:** the live soy run linked `consumption` to `Economics`, queried only
+that MeSH concept for the estrogen claim, and omitted soy from the muscle
+query. A later retrieval included papers explicitly about ducks, crabs, pigs,
+and broilers despite the human-health context; one pig paper even had both
+`Humans` and `Animals` MeSH tags. The source-grounded queries and conservative
+selection keep such hits auditable without presenting them as direct medical
+evidence. Judge qualification and verdict gates are unchanged.
+
+## ADR-029 — Bound development model diagnostics and distrust provider JSON mode
+
+**Decision:** In development/test only, a single-process, expiring trace records
+actual extraction/judge call states, typed failures, and at most 3000 characters
+of visible completion content per event. It never records requests, provider
+reasoning fields, or credentials; production/staging ignore `DEBUG_MODE`.
+This diagnostic trace is not a durable audit or a provider-wide heartbeat.
+OpenAI-compatible extraction repeats a JSON-only instruction in the system
+message because a live provider ignored `response_format`. Exact unique
+source spans may have arithmetic offsets corrected locally; non-unique or
+invented spans still fail validation. An empty claim array for source text
+containing an explicit health-relation cue gets the existing single retry and
+then a typed failure, not a fabricated claim.
+
+**Reason:** live Ling output was sometimes YAML-like or contained correct
+source text with incorrect offsets, producing no claims. Other long requests
+still timed out at the configured deadline. Developers need to distinguish
+calling, responding, invalid content, and provider unavailability without
+loosening medical evidence or public-release gates.
+
+## ADR-030 — Cross-check inconclusive evidence use in development only
+
+**Decision:** development/test orchestration uses `fixture_or_evaluation`
+aggregation and may send each cited frozen passage to a different configured,
+non-search judge-family model through a no-tools entailment adapter. Strict
+E-ID JSON results, provider/model, and prompt hashes remain in append-only
+validation audits. The adapter is not approved for production. A partially
+scoped source may qualify an *inconclusive* evaluation assessment only when
+every cited use is semantically validated and no other material warning is
+present; decisive and production gates remain unchanged. Such citations may
+appear as `relevant_but_insufficient` cards with the evaluation notice. Old
+reports are never rewritten.
+
+**Reason:** the hypertension/cancer run had relevant observational passages
+and two inconclusive judges but no live citation validator. A first live
+validator confused "supports the explanation of insufficiency" with "proves
+the causal claim"; the versioned prompt now distinguishes them. Ling HTTP 500
+outages remain separate operational failures with no silent model fallback.
+The changed abstention qualification is versioned as `verdict-policy-1.1`
+and `verdict-engine-1.1`; report rendering is `report-builder-1.1`.
+
+## ADR-031 — Bound judge citation selection and audit protocol-only repair
+
+**Decision:** judge prompt `judge-1.6-2026-09-29` requires the smallest set
+of passages that directly supports each cited use. It warns against adding
+generic background, indirect estimates, or title-only topical matches to a
+decisive judgment. The independent citation validator and verdict thresholds
+are unchanged. If a provider omits only the constant `schema_version`, local
+parsing can insert `1.0` and revalidate the entire decision. The append-only
+judge row marks `schema_version_inferred`; production qualification rejects
+that row. No medical content, citation, or label is silently repaired, and an
+old judge or verdict run is never rewritten.
+
+**Reason:** a live smoking/lung-cancer run had direct frozen passages, but two
+decisive judgments also cited weaker passages and failed citation validation.
+The third provider returned otherwise structured JSON without the mandatory
+protocol version. Topical over-citation should be reduced at generation;
+protocol-only omission should be visible in the audit rather than disguised
+as a fully native schema-valid answer.
+Invalid citation IDs or unlisted E mentions may use the existing single
+retry, but the first response remains rejected and citations are never
+silently removed from a model decision.

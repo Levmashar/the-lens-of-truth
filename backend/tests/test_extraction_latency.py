@@ -24,6 +24,9 @@ def _valid_reply() -> httpx.Response:
         "claims": [{
             "raw_span": SOURCE, "span_start": 0, "span_end": len(SOURCE),
             "claim_type": "prevention",
+            "pico": {
+                "intervention_or_exposure": "Vitamin C", "outcome": "the common cold",
+            },
         }]
     }))
 
@@ -171,3 +174,54 @@ def test_normal_response_uses_one_attempt(
     assert "attempt_number=1" in caplog.text
     assert "retry_occurred=False" in caplog.text
     assert "failure_type=none" in caplog.text
+
+
+def test_rate_limit_recovers_on_one_retry(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+) -> None:
+    attempts = 0
+
+    async def respond(_request: httpx.Request) -> httpx.Response:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            return httpx.Response(429, headers={"Retry-After": "0"})
+        return _valid_reply()
+
+    adapter, requests = _adapter(monkeypatch, respond)
+    with caplog.at_level(logging.INFO):
+        result = asyncio.run(adapter.extract(text=SOURCE, language="en"))
+
+    assert result.claims[0].raw_span == SOURCE
+    assert len(requests) == 2
+    assert "http_status=429" in caplog.text
+    assert "retry_occurred=True" in caplog.text
+
+
+def test_exhausted_rate_limit_has_typed_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def respond(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429, headers={"Retry-After": "0"})
+
+    adapter, requests = _adapter(monkeypatch, respond)
+    with pytest.raises(ExternalCapabilityError) as error:
+        asyncio.run(adapter.extract(text=SOURCE, language="en"))
+
+    assert len(requests) == 2
+    assert error.value.code == "claim_extractor_rate_limited"
+    assert error.value.status_code == 429
+
+
+def test_long_retry_after_fails_early_instead_of_exceeding_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def respond(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429, headers={"Retry-After": "300"})
+
+    adapter, requests = _adapter(monkeypatch, respond)
+    with pytest.raises(ExternalCapabilityError) as error:
+        asyncio.run(adapter.extract(text=SOURCE, language="en"))
+
+    assert len(requests) == 1
+    assert error.value.code == "claim_extractor_rate_limited"

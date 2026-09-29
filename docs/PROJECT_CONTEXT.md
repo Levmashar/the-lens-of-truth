@@ -51,7 +51,7 @@ treated as proof of causation.
 | Backend | Python 3.13, FastAPI, Pydantic v2, HTTPX |
 | Persistence | SQLAlchemy 2, Alembic, PostgreSQL, pgvector |
 | Cache | Redis |
-| Frontend | React, TypeScript, Vite, Tailwind CSS |
+| Frontend | Vanilla HTML, CSS, TypeScript, Vite |
 | Testing | Pytest |
 | Local runtime | Docker Compose |
 
@@ -119,9 +119,35 @@ and evidence-integrity metadata are implemented:
   Diagnostics record provider/model, attempt number, failure class, elapsed
   time, whether a retry occurred, and a sanitized upstream request ID when
   supplied. Logs do not contain source text or credentials.
-- A web flow to submit text or screenshots and review extracted claims.
+- The extraction adapter now validates exact source offsets inside that same
+  one-retry budget. A first valid response with an omitted exposure/outcome in
+  an explicit relation receives one source-grounded repair request; an omission
+  still present afterward remains `partial`, never a fabricated slot. A narrow
+  coordinated-clause rule can carry the verbatim shared subject into the next
+  atomic PICO only when source offsets and adjacent `, and` syntax verify it.
+  The original atomic span and coreference flag remain auditable.
+- Complete PICO with only partial MeSH linking can proceed through lexical
+  retrieval and judging as `partially_linked`; missing PICO/source concepts
+  (`partial`) still stop. Unresolved terms keep null MeSH/UMLS identifiers.
+  This does not relax judge, citation, or production qualification gates.
+  On 2026-09-28 the exact soy sentence passed a PostgreSQL-backed offline
+  full-chain regression with synthetic evidence (two completed claims). Two
+  configured live `chatgpt-auto` previews returned typed attempt-timeout 504s;
+  live provider acceptance remains open and is not represented as passed.
+- A later frontend run failed before extraction with two immediate Miri HTTP
+  provider errors. A direct, minimal configured chat probe returned HTTP 429
+  even though `/models` listed `chatgpt-auto`. The adapter now records the safe
+  HTTP status, respects a bounded `Retry-After`, and returns a distinct
+  `claim_extractor_rate_limited` failure if a 429 exhausts the budget. The web
+  page distinguishes provider unavailability/rate limiting from a medical
+  verification result. No automatic model substitution is performed.
+- A Phase 7B web flow for text or screenshot submission, polling, independent
+  claim progress, and frozen LensReport display. It uses plain TypeScript DOM
+  modules and Vite; React was removed because its original screen was only a
+  Phase 2 shell and no framework is needed for this bounded MVP.
 - Docker Compose services for API, web, PostgreSQL/pgvector, and Redis.
-- GitHub Actions checks for API tests/static analysis and frontend type/build validation.
+- GitHub Actions checks for API tests/static analysis and frontend typecheck,
+  DOM tests, and production build.
 - Phase 4A creates a deterministic, bounded PubMed QueryPlan from claim PICO,
   source wording, and confident MeSH links. Broad, lexical, relation-specific,
   and distinctive numeric variants retain their input-field provenance and
@@ -216,6 +242,35 @@ and evidence-integrity metadata are implemented:
   latency/attempts, canonical validated response, token usage when available,
   and a typed failure category. Descriptive label counts/agreement never vote
   or produce a final verdict. The CLI is development/test-only.
+- Judge prompt `judge-1.6-2026-09-29` asks for the smallest set of passages
+  that directly justifies each cited use; generic background, indirect
+  estimates, and title-only overlap are not cited merely for topicality.
+  Citation validation remains unchanged: an unsupported extra citation still
+  excludes a decisive assessment. If a provider omits only the fixed
+  `schema_version` key, the adapter may supply `1.0` after strict validation
+  of every other field and citation. The append-only judge row explicitly
+  records `schema_version_inferred=true`. Such a run is evaluation-only and
+  cannot qualify for a production verdict. Missing medical fields, invalid
+  labels, and unknown citations are never repaired.
+  An invalid E-ID or unlisted E mention may trigger the existing one retry;
+  only a fully valid new response can succeed.
+  For a single exposure-outcome relationship, the prompt asks for one directly
+  sufficient passage when available, not auxiliary mechanism/progression or
+  risk-context citations. This affects citation selection, not what source
+  material the judge may consider or the validation policy.
+  A fresh development replay on the original smoking/lung-cancer Pack 1.3
+  produced three structured judgments. Independent one-passage validation
+  qualified Ling (E18/E4) and GPT Luna (E4), but marked Gemini's extra E7
+  citation insufficient, leaving that judge partially validated. The new
+  evaluation-only aggregation therefore had 2 qualified judges and returned
+  `supported` with `production_qualified=false`. Ling's fixed protocol key
+  was inferred and explicitly audited. This is a plumbing/regression result,
+  not a trusted medical report or a change to the original analysis.
+  A separate full API run (`5c131a68-3bb7-4db8-b018-a29b391ef281`)
+  completed extraction through report generation and returned the same
+  evaluation-only result: two qualified assessments, one excluded for partial
+  citation validation, and two frozen evidence excerpts. Its development
+  notice remains visible; production qualification is false.
 - A search-enabled gateway model mode remains blocked by default and is always
   blocked in staging/production. `JUDGE_ALLOW_SEARCH_ENABLED_DEVELOPMENT=true`
   permits a development/test plumbing smoke only. The canonical prompt still
@@ -248,15 +303,22 @@ and evidence-integrity metadata are implemented:
   source text confined to untrusted data. Phase 6A uses offline deterministic
   fixtures, not an approved live semantic provider. Without one, the CLI
   reports `unable_to_validate` unless a deterministic fatal defect exists.
+  Later development/test orchestration can cross-check a cited passage with a
+  different configured model family through a no-tools entailment adapter.
+  This is an unapproved evaluation aid, not production certification.
   Each execution inserts a new `judge_validation_run` with version/prompt
   provenance, timing, results, and typed failure category. A database trigger
   rejects updates; claim-retention cascades still apply. No final aggregation,
   verdict, report, or public Phase 6A endpoint is implemented.
-- Phase 6B adds an internal deterministic `verdict-policy-1.0` aggregator over
+- Phase 6B adds an internal deterministic `verdict-policy-1.1` aggregator over
   explicit claim, Pack ID/hash, judge-run IDs, and validation-run IDs. It
   recomputes Pack 1.3's semantic hash, checks normalization/retrieval/selection
   and every audit linkage, then excludes failed, invalid, partial, or
-  unavailable judge validations from decisive counts. Two fully validated,
+  unavailable judge validations from decisive counts. In evaluation mode
+  only, an inconclusive assessment may qualify with partial scope if every
+  cited use is semantically entailed and no other material warning is present.
+  Partial validation never qualifies a decisive label or production result.
+  Two fully validated,
   independent judges can support a standard-risk decisive label only with no
   validated opposite label; high-risk claims require three unanimous fully
   validated decisions. Validated disagreement, weaker/indirect evidence, or
@@ -278,7 +340,8 @@ and evidence-integrity metadata are implemented:
   verdict, calls a model, fetches new evidence, or selects latest rows.
   Controlled templates translate reason codes and four display labels.
   Source cards quote bounded exact selected passages only when qualified,
-  fully validated decisions cited them; PMID, DOI, title, date, design,
+  validated decisions cited them (including evaluation-only, checked
+  partial-scope inconclusive use); PMID, DOI, title, date, design,
   integrity, URL, citation role, and audit IDs come from frozen provenance.
   Numeric, causal-strength, material-scope, and integrity failures are
   surfaced as limitations, not new medical conclusions. Operational inability
@@ -302,8 +365,9 @@ and evidence-integrity metadata are implemented:
   serves the already-persisted LensReport after verifying its hash and
   explicit provenance; it never retrieves sources. Staging/production return
   403 for non-production-qualified reports. Development/test inspection retains
-  the mandatory evaluation notice. Current Miri and absent approved live
-  entailment mean live reports remain non-production.
+  the mandatory evaluation notice and now uses `fixture_or_evaluation` mode
+  rather than falsely applying production-only identity gates. Current gateways
+  and absent approved live entailment mean reports remain non-production.
 - `Idempotency-Key` is now supported: a bounded opaque key is hashed and
   uniquely reserved with a canonical request digest. A repeated identical
   POST returns the same run without rescheduling work; key reuse for another
@@ -318,7 +382,16 @@ and evidence-integrity metadata are implemented:
   never relabeled Not Enough Evidence. A genuine successful empty Evidence
   Pack follows the existing Not Enough Evidence policy. The SSE route emits
   a safe one-shot progress snapshot; clients poll for ongoing work. The
-  previous React screen is still Phase 2-oriented and must be revised in 7B.
+  Phase 7B replaces the earlier React-only extraction screen with a real
+  claim-scoped web client. It polls the Phase 7A endpoints rather than treating
+  the one-shot SSE snapshot as a stream. Browser refresh resumes a known
+  analysis ID without creating a new run. Every completed claim fetches its
+  checkpointed report once; failed claims remain separate. Development
+  reports visibly retain the backend's evaluation notice, while a 403 release
+  gate is displayed as an access/qualification issue, never as a medical label.
+  The UI creates no medical conclusions and uses text-only DOM insertion for
+  submitted claims and evidence excerpts. Anonymous access and the in-process
+  backend worker still require public-deployment review.
 - The `APP_ENV=test` developer smoke uses only conspicuously synthetic
   extraction, evidence, and validation fixtures. It exercises the full
   persistence chain without PubMed, Crossref, Miri, or invented live medical
@@ -338,11 +411,65 @@ forbids browsing, but production approval must verify provider-side controls.
 A development smoke used three distinct configured family labels, but those
 aliases are not independently verified or pinned and only two responses were
 valid. No production-qualified three-family evaluation has been completed.
+The subsequent soy regression hardened non-judge stages: adjacent coordinated
+clauses can recover an explicitly written shared subject and omitted outcome;
+generic `consumption` no longer links to MeSH `Economics`; retrieval falls back
+to soy-based lexical terms and keeps explicit outcome qualifiers. Demographic
+mentions inside an exposure phrase are not assigned the intervention role.
+Clearly nonhuman or insufficiently focused papers remain auditable but are not selected
+for judging. Two live soy PubMed smokes produced source-grounded selected
+papers, but those retrieval heuristics are not medical verdicts. The exact
+frontend input still needs a fresh end-to-end run when claim extraction is
+available; earlier frozen runs are not rewritten.
+On 2026-09-29, "High blood pressure causes cancer" retrieved relevant passages
+and two judges returned `not_enough_evidence`. The original report still showed
+`unable_to_verify_reliably`: no live entailment validator was configured, one
+Ling response failed JSON/schema checks, and development used production
+aggregation mode. New cross-family development validation, a clearer prompt
+for inconclusive use, and evaluation-only partial-scope qualification yielded
+an append-only Not Enough Evidence verdict on that frozen Pack, with two
+qualified evaluation assessments and `production_qualified=false`. It did not
+rewrite the original report. Two later full-run starts failed before retrieval
+because Ling returned HTTP 500 twice on extraction; end-to-end acceptance
+remains blocked by provider availability.
 Phase 7A does not change those release gates. Its in-process background
 runner assumes a single API worker and is not a durable distributed queue;
 multi-worker deployment, crash-recoverable tasks, access control, and the
 patient-facing frontend require separate review before public release. URL
 fetching remains unsupported.
+
+For local troubleshooting, `DEBUG_MODE=true` exposes a development/test-only
+analysis panel with persisted stage outcomes, typed failure codes, and
+allowlisted judge/validation audit summaries, configured model call states,
+and bounded excerpts of visible model responses. The default is false and
+staging/production ignore the flag. Prompts, provider reasoning fields, API
+credentials, and raw screenshot bytes are not intentionally displayed. Model
+content may echo submitted text, so development runs must not contain secrets.
+These call traces are process-local, expire after one hour, and disappear on
+backend restart; they are not an audit substitute. OpenAI-compatible claim
+extraction now gives an explicit JSON-only instruction because the configured
+provider ignored JSON schema mode in a live test. It reconciles arithmetic
+offsets only for an exact, unique source substring and retries a suspicious
+empty claim array once for text with an explicit health relation. Persistent
+empty/invalid output still fails closed without inventing a claim.
+The web page removes repeated claim/result copy while preserving the visible
+development-qualification and health-safety notices.
+The local ignored `.env` currently selects AIMLAPI's
+`inclusionai/ling-3.0-flash` for extraction and judge 1,
+`openai/gpt-6-luna` for judge 2, and
+`google/gemini-2.5-flash-lite` for judge 3. Miri credentials are retained
+but inactive. These provider choices remain development-only until real
+source-span and same-evidence acceptance tests pass.
+
+The 2026-09-29 live text smoke extracted and normalized "High blood pressure
+causes stroke." and completed the full one-claim workflow. A separate report
+failure revealed that the new `insufficient_claim_focus` and
+`nonhuman_evidence_excluded` passage annotations were missing from the frozen
+Evidence Pack schema; the schema and serialization regressions are now fixed.
+Judge responses remain development-only, and the completed report was not
+production qualified. The previous long sunscreen screenshot passed OCR but
+its Ling extraction request timed out twice at the bounded 55-second attempts;
+that provider-latency issue remains open.
 
 ## Rules for future developers
 

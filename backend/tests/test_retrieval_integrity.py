@@ -293,6 +293,16 @@ def test_study_design_priority(
     assert classify_study_design(document)[0] == expected
 
 
+def test_explicit_pig_title_outweighs_mixed_pubmed_species_tags() -> None:
+    document = parse_pubmed_xml(_xml(
+        title="Transcriptome profile of skeletal muscle in male pigs.",
+    ))[0].model_copy(update={"mesh_terms": ("Humans", "Animals", "Swine")})
+
+    assert classify_study_design(document) == (
+        "animal_study", "title_explicit_animal_subject",
+    )
+
+
 def test_quality_prior_and_applicability_are_separate_from_topical_score() -> None:
     claim = _claim(population="adults")
     animal = parse_pubmed_xml(_xml())[0].model_copy(update={"mesh_terms": ("Animals",)})
@@ -351,7 +361,9 @@ def test_irrelevant_review_does_not_beat_direct_paper() -> None:
     first_selected = next(p for p in pack.passages
                           if p.evidence_id == pack.selected_evidence_ids[0])
     assert first_selected.passage.document_id == direct.document_id
-    assert len({p.passage.document_id for p in pack.passages if p.selected_for_judging}) == 2
+    assert len({p.passage.document_id for p in pack.passages if p.selected_for_judging}) == 1
+    assert all(p.selection_reason == "insufficient_claim_focus"
+               for p in pack.passages if p.passage.document_id == review.document_id)
 
 
 def test_optional_metadata_and_efetch_gaps_are_distinguished() -> None:

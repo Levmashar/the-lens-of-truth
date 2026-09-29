@@ -22,6 +22,18 @@ Phase 2-only lifecycle descriptions.
 
 ## Phase 7A asynchronous analysis lifecycle
 
+The Phase 7B browser app consumes this contract directly. It first uploads a
+screenshot when selected, then sends the upload UUID in the ordinary 202 start
+request. It sends the versioned consent acknowledgement and a per-attempt
+`Idempotency-Key`; uncertain network retries reuse the key. The browser then
+navigates to `/analysis/{analysis_id}` and polls the two GET endpoints below.
+Refresh of that route reads the existing run; it does not POST again. Each
+completed claim with `report_run_id` is read once from the gated report route.
+The browser does not use the one-shot SSE snapshot as a stream. Neither the
+browser nor the API exposes a production-unqualified report in
+staging/production; development/test can inspect one with the mandatory
+evaluation notice. The app does not support URL input yet.
+
 `POST /v1/analyses` returns 202 before OCR, extraction, or any external
 retrieval/model call. The response contains `analysis_id`, `status: queued`,
 `stage: queued`, `claim_count: 0`, and `completed_claims: 0`. Send an opaque
@@ -53,6 +65,7 @@ intentional new analysis.
   "input_type": "text",
   "claims": [],
   "screenshot_ocr": null,
+  "debug_enabled": false,
   "updated_at": "2026-09-28T10:00:21+00:00"
 }
 ```
@@ -75,6 +88,23 @@ safe `failure_code` and a null `result_label` until a VerdictRun actually
 exists; `not_enough_evidence` only comes from successful retrieval/policy.
 Staging/production hide the label of any non-production-qualified verdict.
 No "latest artifact" fallback is used.
+
+When `DEBUG_MODE=true` and `APP_ENV=development|test`, the polling response
+sets `debug_enabled=true` and claim summaries additionally contain
+`debug_judge_runs`: slot, provider/model/family, success/failure category,
+attempt count, latency, and optional citation-validation status/error code.
+The browser uses existing stage timestamps and safe failure codes to show a
+development diagnostic panel. The analysis response also includes
+`debug_models` (role, provider, model, and last actual call state) and
+`debug_events` (attempt, HTTP status, duration, typed failure, and up to 3000
+characters of the model's visible response content). `calling` means a request
+is still in flight; `not_called` is not a provider health check. These
+process-local traces expire after one hour and are not persisted. They may
+echo submitted text, so do not use development debug with secrets. Prompts,
+provider reasoning fields, credentials, and exception traces are not returned
+as diagnostic fields. With the flag off, or in staging/production,
+`debug_enabled=false` and debug fields are null. `GET /healthz` also
+reports the effective `debug_enabled` state.
 
 `GET /v1/analyses/{analysis_id}/claims/{claim_id}/report` returns the existing
 `LensReport` JSON from the exact checkpointed `report_run` only after verifying
@@ -212,12 +242,14 @@ network service or generate a patient-facing explanation.
 records `production_qualified=false`. Production mode requires audited
 model identity/snapshot, verified distinct families and search isolation,
 and a policy-approved one-passage entailment provider. None is approved in
-`verdict-policy-1.0`, so existing Miri runs and synthetic fixtures cannot
+`verdict-policy-1.1`, so existing Miri runs and synthetic fixtures cannot
 produce a production-qualified decisive verdict with the default policy.
 `not_enough_evidence` means retrieval succeeded but validated evidence does
 not justify a decisive conclusion; `unable_to_verify_reliably` means a
 technical, provenance, normalization, qualification, or validation failure.
-Partial or invalid judge validations never count as decisive labels. No
+Partial or invalid judge validations never count as decisive labels. In
+development/test evaluation only, a partial-scope inconclusive citation use
+may qualify after independent live semantic checking; it remains non-production. No
 numeric truth confidence is returned. The internal `verdict_run` table is
 append-only; no public `GET` or `POST` verdict route is added in Phase 6B.
 
@@ -455,6 +487,11 @@ coverage pass and all identified mentions are linked. A `normalized` label
 does not imply medical truth. Prior `normalized` rows are migrated to
 `partial` with `legacy_not_audited` until separately checked.
 None of these statuses is a medical verdict.
+The orchestration path accepts source-complete `partially_linked` claims for
+lexical retrieval without creating a MeSH ID; `partial`, `pico_only`, and
+`unresolved` still do not pass the normalization gate. Such a claim-scoped
+failure has the safe `normalization_incomplete` code; it has no report or
+medical verdict.
 
 `claim_type` is one of `causal`, `association`, `prevention`, `treatment`,
 `diagnostic`, `safety`, `recommendation`, `statistical_or_study_result`,

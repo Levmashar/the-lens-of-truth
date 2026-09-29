@@ -18,7 +18,8 @@ from app.medical.linker import MedicalEntityLinker
 from app.medical.mesh import LocalMeshProvider
 from app.medical.umls import UnconfiguredUmlsProvider
 from app.pipeline.completeness import assess_completeness
-from app.pipeline.pico import normalization_status, normalize_pico
+from app.pipeline.pico import NormalizedPico, normalization_status, normalize_pico
+from app.pipeline.readiness import ready_for_evidence
 
 
 def _linker() -> MedicalEntityLinker:
@@ -32,6 +33,9 @@ def _linker() -> MedicalEntityLinker:
             "cold": ("D003080", "Cold Temperature", 0.95),
             "melanoma": ("D008545", "Melanoma", 1.0),
             "sunscreen": ("D013473", "Sunscreening Agents", 0.95),
+            "soy": ("D000001", "Fixture soy concept", 0.95),
+            "estrogen": ("D000002", "Fixture estrogen concept", 0.95),
+            "muscle": ("D000003", "Fixture muscle concept", 0.95),
         }),
     )
 
@@ -104,6 +108,164 @@ def test_vitamin_c_outcome_and_missing_outcome_regression() -> None:
     assert quality.missing_explicit_concepts == ("common cold",)
     assert quality.required_slots_missing == ("outcome",)
     assert quality.normalization_coverage == 0.5
+
+
+def test_soy_coordinated_subject_is_source_grounded_for_both_claims() -> None:
+    source = "Regular usage of soy increases estrogen levels in body, and lowers muscle gain"
+    first_span = source[:54]
+    second_span = source[60:]
+    first = ExtractedClaimCandidate(
+        raw_span=first_span, span_start=0, span_end=54, claim_type="causal",
+        pico=PicoCandidate(
+            intervention_or_exposure="Regular usage of soy",
+            outcome="estrogen levels in body",
+        ),
+    )
+    second = ExtractedClaimCandidate(
+        raw_span=second_span, span_start=60, span_end=len(source),
+        claim_type="causal", coreference_uncertain=True,
+        resolved_from_span_start=0, resolved_from_span_end=54,
+        pico=PicoCandidate(outcome="muscle gain"),
+    )
+
+    first_pico = normalize_pico(first, source_text=source)
+    second_pico = normalize_pico(second, source_text=source)
+    linker = _linker()
+    first_entities = linker.link(first_pico)
+    second_entities = linker.link(second_pico)
+    first_quality = assess_completeness(first_pico, first_entities, linker.mesh)
+    second_quality = assess_completeness(second_pico, second_entities, linker.mesh)
+
+    assert first_pico.outcome == "estrogen levels in body"
+    assert second_pico.original_claim == "lowers muscle gain"
+    assert second_pico.intervention_or_exposure == "Regular usage of soy"
+    assert second_pico.outcome == "muscle gain"
+    assert first_quality.required_slots_missing == ()
+    assert second_quality.required_slots_missing == ()
+    assert normalization_status(
+        second_pico, linked_count=len(second_entities),
+        mention_count=len(second_entities), quality=second_quality,
+    ) == "normalized"
+
+
+def test_reported_soy_claim_recovers_only_explicit_shared_subject_and_outcome() -> None:
+    source = (
+        "Soy consumption in male body results in increased estrogen rates "
+        "and reduces muscle growth"
+    )
+    second = ExtractedClaimCandidate(
+        raw_span="reduces muscle growth", span_start=69, span_end=len(source),
+        claim_type="causal", resolved_from_span_start=0, resolved_from_span_end=23,
+        pico=PicoCandidate(),
+    )
+
+    pico = normalize_pico(second, source_text=source)
+
+    assert pico.original_claim == "reduces muscle growth"
+    assert pico.intervention_or_exposure == "Soy consumption in male body"
+    assert pico.outcome == "muscle growth"
+    assert pico.claim_type == "causal"
+
+
+@pytest.mark.parametrize("source", [
+    "Soy consumption in male body results in increased estrogen rates. "
+    "Alcohol reduces muscle growth",
+    "Soy consumption and alcohol increase estrogen and reduces muscle growth",
+])
+def test_coordinated_recovery_rejects_nonshared_or_ambiguous_subject(source: str) -> None:
+    start = source.index("reduces muscle growth")
+    candidate = ExtractedClaimCandidate(
+        raw_span="reduces muscle growth", span_start=start, span_end=len(source),
+        claim_type="causal", resolved_from_span_start=0, resolved_from_span_end=23,
+        pico=PicoCandidate(),
+    )
+
+    pico = normalize_pico(candidate, source_text=source)
+
+    assert pico.intervention_or_exposure is None
+    assert pico.outcome is None
+
+
+def test_generic_consumption_alias_does_not_become_economics() -> None:
+    source = "Soy consumption increases estrogen rates."
+    candidate = _candidate(source, "causal", "Soy consumption", "estrogen rates")
+    mesh = LocalMeshProvider({
+        "consumption": ("D004467", "Economics", 0.95),
+        "estrogen": ("D004967", "Estrogens", 0.95),
+    })
+    linker = MedicalEntityLinker(UnconfiguredUmlsProvider(), mesh)
+    pico = normalize_pico(candidate)
+    entities = linker.link(pico)
+    quality = assess_completeness(pico, entities, mesh)
+
+    assert entities[0].surface_text == "Soy consumption"
+    assert entities[0].mesh_id is None
+    assert {entity.mesh_id for entity in entities if entity.mesh_id} == {"D004967"}
+    assert quality.missing_explicit_concepts == ()
+    assert normalization_status(
+        pico, linked_count=1, mention_count=len(entities), quality=quality,
+    ) == "partially_linked"
+    assert ready_for_evidence(
+        "partially_linked", pico_json=pico.model_dump(), quality_json=quality.model_dump(),
+    )
+
+
+def test_demographic_modifier_is_not_linked_as_exposure() -> None:
+    linker = MedicalEntityLinker(
+        UnconfiguredUmlsProvider(), LocalMeshProvider({
+            "consumption": ("D004467", "Economics", 0.95),
+            "male": ("D008297", "Male", 1.0),
+            "muscle": ("D009132", "Muscles", 0.95),
+        }),
+    )
+    pico = NormalizedPico(
+        original_claim="reduces muscle growth", claim_type="causal",
+        intervention_or_exposure="Soy consumption in male body",
+        outcome="muscle growth",
+    )
+
+    entities = linker.link(pico)
+
+    assert entities[0].surface_text == "Soy consumption in male body"
+    assert entities[0].mesh_id is None
+    assert all(entity.surface_text != "male" for entity in entities)
+    assert any(entity.surface_text == "muscle" for entity in entities)
+
+
+def test_shared_subject_is_not_taken_from_unrelated_clause() -> None:
+    source = "Soy increases estrogen. Alcohol lowers muscle gain."
+    second = ExtractedClaimCandidate(
+        raw_span="lowers muscle gain", span_start=32, span_end=50,
+        resolved_from_span_start=0, resolved_from_span_end=22,
+        pico=PicoCandidate(outcome="muscle gain"),
+    )
+
+    pico = normalize_pico(second, source_text=source)
+
+    assert pico.intervention_or_exposure is None
+
+
+def test_partial_link_requires_audited_complete_pico() -> None:
+    pico = {
+        "original_claim": "Soy increases estrogen.",
+        "intervention_or_exposure": "Soy", "outcome": "estrogen",
+        "claim_type": "causal",
+    }
+    quality = {
+        "required_slots_missing": [], "missing_explicit_concepts": [],
+        "normalization_warnings": [], "normalization_coverage": 1.0,
+    }
+
+    assert ready_for_evidence("partially_linked", pico_json=pico, quality_json=quality)
+    assert not ready_for_evidence("partially_linked", pico_json=pico, quality_json=None)
+    assert not ready_for_evidence("partially_linked", pico_json=pico, quality_json={})
+    assert not ready_for_evidence(
+        "partially_linked", pico_json={**pico, "outcome": None}, quality_json=quality,
+    )
+    assert not ready_for_evidence(
+        "partially_linked", pico_json=pico,
+        quality_json={**quality, "missing_explicit_concepts": ["estrogen"]},
+    )
 
 
 def test_hypertension_synonym_and_risk_outcome_remain_grounded() -> None:

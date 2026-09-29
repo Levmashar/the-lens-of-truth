@@ -28,6 +28,7 @@ class Settings(BaseSettings):
         default="development", validation_alias="APP_ENV"
     )
     log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
+    debug_mode: bool = Field(default=False, validation_alias="DEBUG_MODE")
     api_v1_prefix: str = Field(default="/v1", validation_alias="API_V1_PREFIX")
     database_url: str = Field(
         default="postgresql+psycopg://lens:lens@localhost:5432/lens",
@@ -181,6 +182,12 @@ class Settings(BaseSettings):
         """Return normalized origins from the comma-separated environment value."""
 
         return [origin.strip() for origin in self.cors_origins_raw.split(",") if origin.strip()]
+
+    @property
+    def debug_enabled(self) -> bool:
+        """Never expose development diagnostics in staging or production."""
+
+        return self.debug_mode and self.app_env in {"development", "test"}
 
 
 @lru_cache
