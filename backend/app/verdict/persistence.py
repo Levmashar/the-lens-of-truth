@@ -1,11 +1,10 @@
 """Read explicit audit IDs and append a new immutable verdict run."""
 
-import json
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.judging.models import JudgeDecision, JudgeRun
+from app.judging.models import JudgeRun, parse_stored_decision
 from app.models.claim import Claim
 from app.models.judge_run import JudgeRunRecord
 from app.models.judge_validation_run import JudgeValidationRunRecord
@@ -43,8 +42,13 @@ def _judge(row: JudgeRunRecord) -> JudgeRun:
         requested_at=row.requested_at, responded_at=row.responded_at,
         latency_ms=row.latency_ms, attempt_count=row.attempt_count,
         outcome_status=row.outcome_status, response_json=row.response_json,
-        decision=(JudgeDecision.model_validate_json(json.dumps(row.decision_json))
+        decision=(parse_stored_decision(row.decision_json)
                   if row.decision_json is not None else None),
+        input_snapshot_version=row.input_snapshot_version,
+        input_snapshot_hash=row.input_snapshot_hash,
+        input_snapshot_json=row.input_snapshot_json,
+        revision_of_judge_run_id=row.revision_of_judge_run_id,
+        semantic_revision_number=row.semantic_revision_number,
         input_tokens=row.input_tokens, output_tokens=row.output_tokens,
         provider_request_id=row.provider_request_id, error_category=row.error_category,
     )

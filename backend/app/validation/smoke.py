@@ -2,12 +2,11 @@
 
 import argparse
 import asyncio
-import json
 from uuid import UUID
 
 from app.core.config import get_settings
 from app.db.session import SessionLocal
-from app.judging.models import JudgeDecision, JudgeRun
+from app.judging.models import JudgeRun, parse_stored_decision
 from app.models.judge_run import JudgeRunRecord
 from app.models.retrieval import EvidencePackRecord
 from app.retrieval.models import EvidencePack
@@ -33,7 +32,12 @@ def _read_judge(row: JudgeRunRecord) -> JudgeRun:
         requested_at=row.requested_at, responded_at=row.responded_at,
         latency_ms=row.latency_ms, attempt_count=row.attempt_count,
         outcome_status=row.outcome_status, response_json=row.response_json,
-        decision=JudgeDecision.model_validate_json(json.dumps(row.decision_json)),
+        decision=parse_stored_decision(row.decision_json),
+        input_snapshot_version=row.input_snapshot_version,
+        input_snapshot_hash=row.input_snapshot_hash,
+        input_snapshot_json=row.input_snapshot_json,
+        revision_of_judge_run_id=row.revision_of_judge_run_id,
+        semantic_revision_number=row.semantic_revision_number,
         input_tokens=row.input_tokens, output_tokens=row.output_tokens,
         provider_request_id=row.provider_request_id, error_category=row.error_category,
     )
@@ -75,6 +79,14 @@ async def smoke(judge_run_id: UUID) -> None:
         print(f"entailment: {item.entailment_status.value}")
         print(f"issues: {[code.value for code in item.issue_codes]}")
         print(f"warnings: {[code.value for code in item.warnings]}")
+    for attribution in audit.result.statement_attributions:
+        print(f"\nSTATEMENT {attribution.statement_id} refs={list(attribution.evidence_ids)} "
+              f"attribution={attribution.status.value} scope={attribution.scope_match.value}")
+        print(f"issues: {[issue.issue_code.value for issue in attribution.issues]}")
+    if audit.result.conclusion_justification:
+        conclusion = audit.result.conclusion_justification
+        print(f"\nCONCLUSION status={conclusion.status.value} "
+              f"statements={list(conclusion.based_on_statement_ids)}")
     print(f"\nJUDGE VALIDATION\naudit id: {audit.id}")
     print(f"status: {audit.status.value}")
     print(f"fatal issues: {[code.value for code in audit.result.fatal_issue_codes]}")

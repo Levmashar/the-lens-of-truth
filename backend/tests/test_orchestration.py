@@ -6,11 +6,13 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.routes.analyses import get_analysis_claims, get_claim_report
 from app.core.config import Settings
 from app.core.errors import LensError
+from app.db.session import get_db_session
 from app.judging.models import JudgeLabel
 from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.claim import Claim
@@ -386,7 +388,7 @@ def test_worker_composition_failure_does_not_leave_queued_run(
 
 
 def test_zero_results_is_not_enough_evidence(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, client: TestClient,
 ) -> None:
     session, run, artifacts = asyncio.run(run_fixture(
         monkeypatch, (FIXTURE_TEXT,), no_results=True,
@@ -398,6 +400,26 @@ def test_zero_results_is_not_enough_evidence(
     assert report.verdict == LensVerdict.NOT_ENOUGH_EVIDENCE
     assert not row.judge_run_ids and not row.validation_run_ids
     assert not report.key_evidence
+    assert "judging" not in row.completed_stages
+    assert "validating" not in row.completed_stages
+    assert row.stage_timestamps["judging"]["reason"] == "no_selected_evidence"
+    assert row.stage_timestamps["validating"]["reason"] == "no_selected_evidence"
+    assert "judging" not in run.completed_stages
+    summary = asyncio.run(get_analysis_claims(
+        run.id, session, Settings(app_env="development"),
+    )).claims[0]
+    assert summary.skipped_stages == ["judging", "validating"]
+    assert summary.completed_stages[-2:] == ["aggregating", "building_report"]
+    client.app.dependency_overrides[get_db_session] = lambda: session
+    try:
+        response = client.get(f"/v1/analyses/{run.id}/claims")
+    finally:
+        client.app.dependency_overrides.pop(get_db_session, None)
+    assert response.status_code == 200
+    claim_json = response.json()["claims"][0]
+    assert claim_json["skipped_stages"] == ["judging", "validating"]
+    assert "judging" not in claim_json["completed_stages"]
+    assert claim_json["stage_timestamps"]["judging"]["reason"] == "no_selected_evidence"
 
 
 def test_one_failed_judge_is_excluded_without_corrupting_peers(

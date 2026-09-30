@@ -1,16 +1,26 @@
 """Provider-agnostic judge transport, with an OpenAI-shaped/Miri implementation."""
 
 import asyncio
+import json
+import logging
 import re
 from dataclasses import dataclass
 from time import monotonic
 from typing import Protocol
+from uuid import uuid4
 
 import httpx
 
+from app.adapters.structured_output import rejects_json_schema_mode, strict_chat_schema
 from app.core.debug_trace import record_model_event
-from app.judging.models import JudgeDecision, JudgeSlot, ProviderResponse
+from app.judging.models import JudgeDecisionV2, JudgeSlot, ProviderResponse
 from app.judging.prompt import PreparedJudgeInput
+
+logger = logging.getLogger(__name__)
+_SINGLE_JSON_FENCE = re.compile(
+    r"\A\s*```(?:json)?[ \t]*\r?\n(?P<body>.*?)\r?\n```[ \t]*\s*\Z",
+    re.I | re.S,
+)
 
 
 class ProviderFailure(Exception):
@@ -40,10 +50,14 @@ class OpenAICompatibleJudgeProvider:
         self, slot: JudgeSlot, prepared: PreparedJudgeInput,
     ) -> ProviderResponse:
         started = monotonic()
+        call_id = str(uuid4())
         debug_attempt = record_model_event(
             role=f"judge_{slot.slot}", provider=slot.provider, model=slot.model,
             attempt=0, status="calling", failure_type=None, http_status=None,
             elapsed_ms=0,
+            judge_run_id=prepared.judge_run_id, call_id=call_id,
+            operation_kind="judge_revision" if prepared.semantic_revision_number else "judge",
+            semantic_revision_number=prepared.semantic_revision_number,
         )
         body: dict[str, object] = {
             "model": slot.model,
@@ -53,12 +67,12 @@ class OpenAICompatibleJudgeProvider:
                 {"role": "user", "content": prepared.user_prompt},
             ],
         }
-        if slot.provider == "openai_compatible":
+        if slot.provider == "openai_compatible" and slot.request_json_schema:
             body["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
                     "name": "evidence_judge_decision", "strict": True,
-                    "schema": JudgeDecision.model_json_schema(),
+                    "schema": strict_chat_schema(JudgeDecisionV2.model_json_schema()),
                 },
             }
         headers = {"Authorization": f"Bearer {slot.api_key}"} if slot.api_key else {}
@@ -72,26 +86,32 @@ class OpenAICompatibleJudgeProvider:
                 )
                 response.raise_for_status()
         except httpx.TimeoutException as exc:
-            self._record(slot, started, debug_attempt, status="unavailable", failure_type="timeout")
+            self._record(slot, started, debug_attempt, status="unavailable", failure_type="timeout",
+                         prepared=prepared, call_id=call_id)
             raise ProviderFailure("timeout", retryable=True) from exc
         except asyncio.CancelledError:
             self._record(slot, started, debug_attempt, status="unavailable",
-                         failure_type="cancelled_or_deadline")
+                         failure_type="cancelled_or_deadline", prepared=prepared,
+                         call_id=call_id)
             raise
         except httpx.HTTPStatusError as exc:
             status = exc.response.status_code
-            category = "rate_limit" if status == 429 else "provider_error"
+            format_rejected = (slot.request_json_schema
+                               and rejects_json_schema_mode(exc.response))
+            category = ("response_format_unsupported" if format_rejected else
+                        "rate_limit" if status == 429 else "provider_error")
             self._record(
                 slot, started, debug_attempt, status="unavailable", failure_type=category,
                 http_status=status,
+                prepared=prepared, call_id=call_id,
             )
             raise ProviderFailure(
-                category, retryable=status == 429 or status >= 500,
+                category, retryable=format_rejected or status == 429 or status >= 500,
                 provider_request_id=_safe_id(exc.response.headers.get("x-request-id")),
             ) from exc
         except httpx.RequestError as exc:
             self._record(slot, started, debug_attempt, status="unavailable",
-                         failure_type="transport")
+                         failure_type="transport", prepared=prepared, call_id=call_id)
             raise ProviderFailure("transport", retryable=True) from exc
         content: str | None = None
         try:
@@ -107,9 +127,17 @@ class OpenAICompatibleJudgeProvider:
             self._record(
                 slot, started, debug_attempt, status="responded", response_content=content,
                 http_status=response.status_code,
+                prepared=prepared, call_id=call_id,
             )
+            normalized_content = _unwrap_single_json_fence(content)
+            if normalized_content is not content:
+                logger.info(
+                    "judge_response_transport_normalization slot=%d provider=%s model=%s "
+                    "category=single_json_fence",
+                    slot.slot, slot.provider, slot.model,
+                )
             return ProviderResponse(
-                content=content,
+                content=normalized_content,
                 input_tokens=_nonnegative_int(usage.get("prompt_tokens")),
                 output_tokens=_nonnegative_int(usage.get("completion_tokens")),
                 provider_request_id=_safe_id(response.headers.get("x-request-id")),
@@ -119,6 +147,7 @@ class OpenAICompatibleJudgeProvider:
             self._record(
                 slot, started, debug_attempt, status="responded", failure_type="malformed_json",
                 http_status=response.status_code, response_content=content,
+                prepared=prepared, call_id=call_id,
             )
             raise ProviderFailure("malformed_json", retryable=True) from exc
 
@@ -127,6 +156,7 @@ class OpenAICompatibleJudgeProvider:
         slot: JudgeSlot, started: float, attempt: int, *, status: str,
         failure_type: str | None = None, http_status: int | None = None,
         response_content: str | None = None,
+        prepared: PreparedJudgeInput, call_id: str,
     ) -> None:
         record_model_event(
             role=f"judge_{slot.slot}", provider=slot.provider, model=slot.model,
@@ -134,11 +164,33 @@ class OpenAICompatibleJudgeProvider:
             http_status=http_status,
             elapsed_ms=round((monotonic() - started) * 1000),
             response_content=response_content,
+            judge_run_id=prepared.judge_run_id, call_id=call_id,
+            operation_kind="judge_revision" if prepared.semantic_revision_number else "judge",
+            semantic_revision_number=prepared.semantic_revision_number,
         )
 
 
 def _nonnegative_int(value: object) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
+
+
+def _unwrap_single_json_fence(content: str) -> str:
+    """Remove only a whole-response Markdown wrapper around one JSON object.
+
+    This repairs transport presentation, never schema fields or medical text.
+    Prose, multiple blocks, and malformed/non-object JSON remain untouched for
+    the usual strict local parser to reject.
+    """
+
+    match = _SINGLE_JSON_FENCE.fullmatch(content)
+    if match is None:
+        return content
+    candidate = match.group("body").strip()
+    try:
+        decoded = json.loads(candidate)
+    except ValueError:
+        return content
+    return candidate if isinstance(decoded, dict) else content
 
 
 def _safe_id(value: str | None) -> str | None:

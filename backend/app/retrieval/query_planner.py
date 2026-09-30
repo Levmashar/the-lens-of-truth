@@ -3,6 +3,7 @@
 import re
 
 from app.medical.entities import MedicalEntity
+from app.retrieval.lexical import lay_variants
 from app.retrieval.models import ClaimSnapshot, QueryPlan, RetrievalQuery
 
 _STOPWORDS = frozenset({
@@ -10,6 +11,7 @@ _STOPWORDS = frozenset({
     "increases", "is", "of", "risk", "the", "use", "users", "with", "developing",
     "regular", "usage", "consumption", "body", "increased", "decreased",
     "increase", "decrease", "rate", "rates", "level", "levels",
+    "eat", "eats", "eating", "improve", "improves", "improved", "improving",
 })
 _NUMERIC = re.compile(r"(?<!\w)(?:\d+(?:\.\d+)?\s*%|\d{1,3}(?:,\d{3})+)(?!\w)")
 _MEASURED_OUTCOME = re.compile(
@@ -153,6 +155,32 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                     source_fields=(*lexical_sources, "raw_text"),
                     relation_semantics=claim.claim_type,
                 ))
+            if not any(query.family == "mesh" for query in queries):
+                # PubMed's official Automatic Term Mapping can recover a
+                # source term absent from Title/Abstract. A confident two-
+                # concept MeSH query already supplies this broader recall.
+                automatic = f"({' '.join(_tokens(exposure_term))}) AND " \
+                            f"({' '.join(_tokens(outcome_term))})"
+                queries.append(RetrievalQuery(
+                    query_id=f"Q{len(queries) + 1}", family="automatic", query=automatic,
+                    source_fields=(*lexical_sources, "pubmed_automatic_term_mapping"),
+                    relation_semantics=claim.claim_type,
+                ))
+                variants = lay_variants(outcome_term)
+                if variants:
+                    # Search-only variants are explicit in query provenance.
+                    # The exact outcome remains unchanged in PICO and report.
+                    variant_terms = " OR ".join(
+                        f'"{variant}"[Title/Abstract]' for _, variant in variants
+                    )
+                    queries.append(RetrievalQuery(
+                        query_id=f"Q{len(queries) + 1}", family="lay_variant",
+                        query=f"({left}) AND ({variant_terms})",
+                        source_fields=(*lexical_sources, *(
+                            f"retrieval_lay_variant:{word}" for word, _ in variants
+                        )),
+                        relation_semantics=claim.claim_type,
+                    ))
     if not queries:
         fallback_words = _tokens(claim.raw_text)
         if fallback_words:

@@ -316,6 +316,49 @@
 
 - [ ] Chinese UI/medical terminology review and native WeChat screens
 
+## Evidence-to-judgment validation contract repair
+
+- [x] Replay retained sunscreen Pack/three judge audits without altering them;
+      record a sanitized local note under ignored `runtime/debug/`
+- [x] Version judge decisions and frozen, coherent document input; expose
+      omitted sections and input hashes
+- [x] Split statement attribution from conclusion justification, target
+      numeric/quote/scope issues, and retain valid findings on bad conclusions
+- [x] Bound semantic revision to one append-only child per judge and prevent
+      parent/child double voting; preserve existing policy thresholds
+- [x] Correct report/debug target wording and allow neutral, provenance-
+      verified source excerpts only in development Unable reports
+- [x] Add deterministic regressions and an opt-in real-model semantic command
+- [x] Run the 14-case opt-in semantic check on configured slot 2: 13 expected
+      checks matched and 8 mismatched; no provider/format failures. This is
+      an evaluation result, not model qualification.
+- [x] Replay the retained sunscreen Pack without new retrieval; the new
+      input included 35 passages, and one live judge plus one revision were
+      audited. The revision remained invalid; no historical verdict changed.
+- [x] Run one new sunscreen development analysis: extraction/retrieval/report
+      completed, but all three judges failed provider or schema response;
+      policy 1.2 returned Unable with 0 qualified, not production qualified.
+- [x] Add bounded PubMed lexical fallback and rank direct endpoint studies
+      ahead of generic topical papers; keep every exclusion auditable
+- [x] Repair false multi-interval numeric mismatch and explicit semantic-ID
+      echo; accept bounded longer judge JSON without dropping citation checks
+- [x] Add versioned policy 1.3 for a clearly provisional, development-only
+      standard-risk result from one fully validated decisive assessment;
+      production and high-risk multi-judge gates remain unchanged
+- [x] Complete a fresh smoking/lung-cancer association analysis with a
+      provisional Supported report and validated frozen source excerpts
+- [x] Complete a fresh inverse smoking association as Contradicted with two
+      qualified judges; add a causal study-design gate after the carrot
+      reverse-causation counterexample
+- [x] Confirm carrot/eyesight finishes as Not Enough Evidence with the
+      causal-design reason; verify the final inverse claim still contradicts
+      and production/high-risk one-judge paths stay blocked
+- [ ] Improve/qualify semantic validation on an annotated set and investigate
+      remaining provider/schema failures; retain deterministic and production
+      judge-count gates
+- [ ] Evaluate statistical/scope behavior and release qualification on an
+      annotated benchmark before public medical use
+
 ## Phase 8: Evaluation benchmark
 
 - [ ] Annotation guideline and 300+ real zh-CN/English claim benchmark

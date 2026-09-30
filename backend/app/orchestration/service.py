@@ -10,8 +10,9 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.orm import Session
 
+from app.core.debug_trace import trace_claim
 from app.core.errors import LensError
-from app.judging.models import JudgeRun
+from app.judging.models import JudgeDecisionV2, JudgeRun
 from app.judging.persistence import persist_judge_runs
 from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.claim import Claim
@@ -22,17 +23,18 @@ from app.retrieval.claims import snapshot_claim
 from app.retrieval.models import ClaimSnapshot, EvidencePack, RetrievalResult
 from app.retrieval.persistence import persist_retrieval
 from app.schemas.analysis import CreateAnalysisRequest
-from app.validation.models import JudgeValidationRun
+from app.validation.models import JudgeValidationRun, ValidationStatus
 from app.validation.persistence import persist_validation_run
 from app.verdict.models import AggregationInput, AggregationMode
 from app.verdict.persistence import load_aggregation_context, persist_verdict_run
-from app.verdict.policy import POLICY_V1
+from app.verdict.policy import POLICY_V1, POLICY_V3
 from app.verdict.service import VerdictService
 
 logger = logging.getLogger(__name__)
 Retrieve = Callable[[ClaimSnapshot], Awaitable[RetrievalResult]]
 Judge = Callable[[UUID, EvidencePack], Awaitable[tuple[JudgeRun, ...]]]
 Validate = Callable[[JudgeRun, EvidencePack], Awaitable[JudgeValidationRun]]
+Revise = Callable[[JudgeRun, JudgeValidationRun, EvidencePack], Awaitable[JudgeRun]]
 
 
 class Ingestion(Protocol):
@@ -80,6 +82,19 @@ def _finish_stage(
     session.commit()
 
 
+def _skip_stage(
+    session: Session, row: AnalysisRunRecord | ClaimAnalysisRunRecord,
+    stage: str, *, reason: str,
+) -> None:
+    """Record an intentional skip without claiming that the stage completed."""
+
+    stamps = dict(row.stage_timestamps or {})
+    stamps[stage] = {"skipped_at": datetime.now(UTC).isoformat(), "reason": reason}
+    row.stage_timestamps = stamps
+    row.updated_at = datetime.now(UTC)
+    session.commit()
+
+
 def _failure_code(exc: Exception, stage: str) -> str:
     if isinstance(exc, LensError):
         return exc.code
@@ -94,6 +109,7 @@ class AnalysisOrchestrator:
     retrieve: Retrieve
     judge: Judge
     validate: Validate
+    revise: Revise | None = None
     total_timeout_seconds: float = 900.0
     claim_timeout_seconds: float = 300.0
     retrieval_timeout_seconds: float = 180.0
@@ -135,8 +151,9 @@ class AnalysisOrchestrator:
                         stored_claim = session.get(Claim, claim_row.claim_id)
                         if stored_claim is None:
                             raise LensError(404, "claim_missing", "Claim is unavailable.")
-                        async with asyncio.timeout(self.claim_timeout_seconds):
-                            await self._run_claim(session, row, claim_row, stored_claim)
+                        with trace_claim(claim_row.claim_id):
+                            async with asyncio.timeout(self.claim_timeout_seconds):
+                                await self._run_claim(session, row, claim_row, stored_claim)
                     except Exception as exc:
                         session.rollback()
                         claim_row.status = "failed"
@@ -227,36 +244,69 @@ class AnalysisOrchestrator:
         _finish_stage(session, row, "retrieving")
         pack = retrieval.pack
 
-        _checkpoint(session, row, "judging")
-        _checkpoint(session, analysis, "judging")
-        judges = await self.judge(pack_row.id, pack) if pack.selected_evidence_ids else ()
+        if pack.selected_evidence_ids:
+            _checkpoint(session, row, "judging")
+            _checkpoint(session, analysis, "judging")
+            judges = await self.judge(pack_row.id, pack)
+        else:
+            judges = ()
+            _skip_stage(session, row, "judging", reason="no_selected_evidence")
         if judges:
             persist_judge_runs(session, judges)
         row.judge_run_ids = [str(judge.judge_run_id) for judge in judges]
-        _finish_stage(session, row, "judging")
+        if pack.selected_evidence_ids:
+            _finish_stage(session, row, "judging")
 
-        _checkpoint(session, row, "validating")
-        _checkpoint(session, analysis, "validating")
-        validations = []
+        if pack.selected_evidence_ids:
+            _checkpoint(session, row, "validating")
+            _checkpoint(session, analysis, "validating")
+        else:
+            _skip_stage(session, row, "validating", reason="no_selected_evidence")
+        validations: list[JudgeValidationRun] = []
+        active_judges = list(judges)
         for judge in judges:
             if judge.outcome_status == "succeeded":
                 audit = await self.validate(judge, pack)
                 persist_validation_run(session, audit)
                 validations.append(audit)
+                if (self.revise is not None and isinstance(judge.decision, JudgeDecisionV2)
+                        and audit.status == ValidationStatus.INVALID
+                        and audit.result.targeted_issues):
+                    try:
+                        revised = await self.revise(judge, audit, pack)
+                        persist_judge_runs(session, (revised,))
+                        active_judges[active_judges.index(judge)] = revised
+                        validations.remove(audit)
+                        if revised.outcome_status == "succeeded":
+                            revised_audit = await self.validate(revised, pack)
+                            persist_validation_run(session, revised_audit)
+                            validations.append(revised_audit)
+                    except Exception:
+                        logger.warning(
+                            "semantic_revision_unavailable analysis=%s claim=%s judge=%s",
+                            analysis.id, claim.id, judge.judge_run_id,
+                        )
+        row.judge_run_ids = [str(judge.judge_run_id) for judge in active_judges]
         row.validation_run_ids = [str(audit.id) for audit in validations]
-        _finish_stage(session, row, "validating")
+        if pack.selected_evidence_ids:
+            _finish_stage(session, row, "validating")
 
         _checkpoint(session, row, "aggregating")
         _checkpoint(session, analysis, "aggregating")
+        # Historical synthetic fixture chains still exercise policy 1.1; live
+        # V2 judgments use the new contract. No legacy free text is remapped.
+        policy = (POLICY_V1 if active_judges and all(
+            judge.input_snapshot_version is None for judge in active_judges
+        ) else POLICY_V3)
         request = AggregationInput(
             claim_id=claim.id, evidence_pack_id=pack_row.id,
             evidence_pack_hash=pack_row.snapshot_hash,
-            judge_run_ids=tuple(judge.judge_run_id for judge in judges),
+            judge_run_ids=tuple(judge.judge_run_id for judge in active_judges),
             judge_validation_run_ids=tuple(audit.id for audit in validations),
-            mode=self.mode, policy_version=POLICY_V1.version,
+            mode=self.mode, policy_version=policy.version,
         )
         context = load_aggregation_context(session, request)
-        verdict = VerdictService().aggregate(request, context)
+        verdict = VerdictService(policy=policy).aggregate(request, context)
         verdict_row = persist_verdict_run(session, verdict)
         row.verdict_run_id = verdict_row.id
         _finish_stage(session, row, "aggregating")

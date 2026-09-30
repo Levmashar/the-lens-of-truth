@@ -132,10 +132,23 @@ export interface DebugModelEvent {
   http_status: number | null;
   elapsed_ms: number;
   response_excerpt: string | null;
+  analysis_id?: string | null;
+  claim_id?: string | null;
+  judge_run_id?: string | null;
+  statement_ids?: string[];
+  evidence_ids?: string[];
+  validation_run_id?: string | null;
+  call_id?: string | null;
+  operation_kind?: string | null;
+  semantic_revision_number?: number;
 }
 
 export interface DebugJudgeRun {
   slot: number;
+  judge_run_id?: string | null;
+  validation_run_id?: string | null;
+  revision_of_judge_run_id?: string | null;
+  semantic_revision_number?: number;
   provider: string;
   model: string;
   model_family: string;
@@ -145,6 +158,9 @@ export interface DebugJudgeRun {
   latency_ms: number;
   validation_status: string | null;
   validation_error_category: string | null;
+  statement_statuses?: Record<string, string>;
+  conclusion_status?: string | null;
+  targeted_issue_codes?: string[];
 }
 
 export interface ClaimSummary {
@@ -153,6 +169,7 @@ export interface ClaimSummary {
   status: ClaimStatus;
   stage: string;
   completed_stages: string[];
+  skipped_stages?: string[];
   stage_timestamps: Record<string, { started_at?: string; completed_at?: string }>;
   failure_code: string | null;
   evidence_pack_id: string | null;

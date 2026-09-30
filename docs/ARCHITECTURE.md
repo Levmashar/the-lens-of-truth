@@ -295,6 +295,13 @@ minimum is operational inability, not evidence insufficiency. This is a
 decision table after qualification and evidence-use validation, not raw
 majority voting. No numeric truth probability is calculated.
 
+Current live V2 orchestration uses versioned `verdict-policy-1.3`. In
+development/evaluation only, one *fully validated decisive* standard-risk
+assessment can produce a visibly provisional Supported/Contradicted report.
+This does not change the production two-judge threshold, the high-risk
+three-judge threshold, the frozen citation gates, or historical policy 1.1/1.2
+results. No-evidence and invalid-assessment runs cannot use this shortcut.
+
 Production additionally requires audited underlying model identity/snapshot,
 actual family verification, search isolation without any bypass, and a
 policy-approved entailment provider. New identity/family audit booleans on
@@ -434,6 +441,34 @@ bundle. URL submission, WeChat, localization, and public access controls
 remain later work.
 
 ## Safety and trust boundary
+
+### Evidence-to-judgment contract, superseding the Phase 6A free-text check
+
+The historical Phase 6A description below documents schema 1.0 behavior;
+for new runs ADR-033 supersedes its whole `reasoning_summary`-versus-each-
+citation check. `judge-input-2.0` is a deterministic, content-hashed view of
+the immutable Pack: diverse selected documents retain available frozen title,
+methods, results, and conclusion sections within a bounded character budget.
+Each passage keeps its original E ID and SHA-256, and omitted sections are
+recorded. All judges receive the same view. Validators may only inspect this
+view, never silently expand it; Pack 1.3/1.4 hashes remain unchanged.
+
+Schema 2.0 judge statements cite exact passage quotes, jointly where needed.
+`judge-validation-2.0` checks frozen provenance, quotation, and statement-
+local typed numbers; a semantic validator then assesses attribution and
+scope of each statement. A separate semantic check asks whether *validated*
+findings justify the proposed label for the original claim. A source opposing
+the claim may support a judge's accurate description of that opposition.
+Uncertain scope or missing context is not a proven mismatch. Valid findings
+remain recorded even if a conclusion fails, but only a fully validated
+conclusion can become an eligible decisive assessment.
+
+One target-specific revision may create a linked child `judge_run` with the
+same input and one model attempt. The active child or original is explicitly
+checkpointed, not found by latest-row search; a parent and child cannot both
+vote. The new policy version keeps the same count, risk, and production gates.
+Unqualified reports remain blocked in staging/production. Development Unable
+reports can show neutral exact retrieved excerpts when Pack provenance passes.
 
 Raw user content and retrieved documents are untrusted. Future stages must
 separate them from prompts/instructions, validate uploads and URLs, redact PII

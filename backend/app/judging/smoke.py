@@ -8,7 +8,7 @@ from app.adapters.judge import OpenAICompatibleJudgeProvider
 from app.core.config import get_settings
 from app.db.session import SessionLocal
 from app.judging.config import configured_slots
-from app.judging.models import JudgeSlot
+from app.judging.models import JudgeDecisionV2, JudgeSlot
 from app.judging.persistence import persist_judge_runs
 from app.judging.service import JudgeService
 from app.models.retrieval import EvidencePackRecord
@@ -72,9 +72,15 @@ async def smoke(pack_id: UUID) -> None:
         print(f"status: {run.outcome_status}\nlatency_ms: {run.latency_ms}")
         if run.decision:
             print(f"label: {run.decision.label.value}")
-            print(f"citations: {', '.join(run.decision.cited_evidence_ids)}")
-            print(f"opposing: {', '.join(run.decision.opposing_evidence_ids)}")
-            print(f"reason: {run.decision.reasoning_summary}")
+            if isinstance(run.decision, JudgeDecisionV2):
+                for statement in run.decision.statements:
+                    ids = ", ".join(ref.evidence_id for ref in statement.evidence_refs)
+                    print(f"{statement.statement_id}: {statement.text} [{ids}]")
+                print(f"conclusion: {run.decision.conclusion.justification}")
+            else:
+                print(f"citations: {', '.join(run.decision.cited_evidence_ids)}")
+                print(f"opposing: {', '.join(run.decision.opposing_evidence_ids)}")
+                print(f"reason: {run.decision.reasoning_summary}")
         else:
             print(f"failure: {run.error_category}")
     print("\nAGREEMENT SUMMARY (descriptive only)")

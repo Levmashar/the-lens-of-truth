@@ -4,15 +4,19 @@ import hashlib
 import json
 from dataclasses import dataclass
 
-from app.judging.models import JudgeLabel, JudgeRun
+from app.judging.models import JudgeDecisionV2, JudgeLabel, JudgeRun
+from app.judging.prompt import input_snapshot_hash, prepare_judge_input
+from app.pipeline.claim_types import ClaimType
 from app.retrieval.evidence_pack import canonical_pack_bytes
 from app.validation.models import (
+    ConclusionJustificationStatus,
     EntailmentStatus,
     IssueCode,
     JudgeValidationRun,
     NumericAlignment,
     RelationAlignment,
     ScopeAlignment,
+    StatementAttributionStatus,
     ValidationStatus,
 )
 from app.verdict.models import (
@@ -24,11 +28,46 @@ from app.verdict.models import (
     ReasonCode,
     VerdictResult,
 )
-from app.verdict.policy import POLICY_V1, VerdictPolicyV1
+from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3, VerdictPolicyV1
 
 
 def _unique_codes(codes: list[ReasonCode]) -> tuple[ReasonCode, ...]:
     return tuple(dict.fromkeys(codes))
+
+
+def _has_direct_causal_design(
+    context: AggregationContext, qualified: list[JudgeQualification],
+) -> bool:
+    """Require a conclusion-cited trial/synthesis for a decisive causal claim.
+
+    Study-design metadata is only a conservative sufficiency gate, never a
+    support/contradiction vote. Unknown/observational design cannot by itself
+    establish or rule out an effect, even if an association points the other way.
+    """
+
+    pack = context.pack
+    if pack is None:
+        return False
+    judges = {item.judge_run_id: item for item in context.judges}
+    passages = {item.evidence_id: item for item in pack.passages}
+    documents = {item.document_id: item for item in pack.documents}
+    stronger = {"randomized_controlled_trial", "clinical_trial",
+                "systematic_review", "meta_analysis"}
+    for item in qualified:
+        judge = judges[item.judge_run_id]
+        decision = judge.decision
+        if not isinstance(decision, JudgeDecisionV2):
+            continue
+        relied_on = set(decision.conclusion.based_on_statement_ids)
+        for statement in decision.statements:
+            if statement.statement_id not in relied_on:
+                continue
+            for ref in statement.evidence_refs:
+                passage = passages.get(ref.evidence_id)
+                document = documents.get(passage.passage.document_id) if passage else None
+                if document is not None and document.study_design in stronger:
+                    return True
+    return False
 
 
 def _pack_failure(
@@ -96,6 +135,40 @@ def _validation_failure(
             or result.validation_version != validation.validation_version
             or validation.validation_version != policy.validation_version):
         return ReasonCode.AUDIT_RECORD_MISMATCH
+    if isinstance(decision, JudgeDecisionV2):
+        if policy.validation_version != "judge-validation-2.0":
+            return ReasonCode.VALIDATION_UNAVAILABLE
+        expected = {statement.statement_id: tuple(ref.evidence_id for ref in
+                    statement.evidence_refs) for statement in decision.statements}
+        actual = {item.statement_id: item.evidence_ids
+                  for item in result.statement_attributions}
+        conclusion = result.conclusion_justification
+        if (actual != expected or conclusion is None
+                or conclusion.based_on_statement_ids
+                != decision.conclusion.based_on_statement_ids
+                or conclusion.evidence_ids != tuple(dict.fromkeys(
+                    ref.evidence_id for statement in decision.statements
+                    if statement.statement_id in decision.conclusion.based_on_statement_ids
+                    for ref in statement.evidence_refs
+                ))):
+            return ReasonCode.AUDIT_RECORD_MISMATCH
+        if result.fatal_issue_codes or any(issue.severity == "fatal"
+                                           for issue in result.targeted_issues):
+            return ReasonCode.VALIDATION_FATAL_ISSUE
+        if validation.status == ValidationStatus.INVALID:
+            return ReasonCode.VALIDATION_INVALID
+        if validation.status == ValidationStatus.PARTIALLY_VALIDATED:
+            return ReasonCode.VALIDATION_PARTIAL
+        if (validation.status != ValidationStatus.VALIDATED
+                or conclusion.status != ConclusionJustificationStatus.JUSTIFIED
+                or any(item.status != StatementAttributionStatus.SUPPORTED_BY_SOURCES
+                       for item in result.statement_attributions)
+                or not validation.entailment_provider or not validation.prompt_hash
+                or validation.attempt_count < 2):
+            return ReasonCode.VALIDATION_UNAVAILABLE
+        return None
+    if policy.validation_version == "judge-validation-2.0":
+        return ReasonCode.VALIDATION_UNAVAILABLE
     if (tuple(item.evidence_id for item in result.citation_validations)
             != decision.cited_evidence_ids
             or tuple(item.evidence_id for item in result.opposing_citation_validations)
@@ -235,10 +308,34 @@ def _audit_failure(
                 or judge.evidence_pack_id != request.evidence_pack_id
                 or judge.evidence_pack_hash != request.evidence_pack_hash):
             return ReasonCode.AUDIT_RECORD_MISMATCH
-    prompts = {(judge.prompt_version, judge.prompt_hash) for judge in context.judges
-               if judge.outcome_status == "succeeded"}
-    if len(prompts) > 1 or any(len(prompt_hash) != 64 for _, prompt_hash in prompts):
-        return ReasonCode.AUDIT_RECORD_MISMATCH
+    if request.policy_version in {POLICY_V2.version, POLICY_V3.version}:
+        if context.pack is None:
+            return ReasonCode.PACK_UNAVAILABLE
+        try:
+            prepared = prepare_judge_input(request.evidence_pack_id, context.pack)
+        except ValueError:
+            return ReasonCode.PACK_SELECTION_INVALID
+        if any(
+            judge.input_snapshot_version != prepared.input_snapshot_version
+            or judge.input_snapshot_hash != prepared.input_snapshot_hash
+            or judge.input_snapshot_json is None
+            or input_snapshot_hash(judge.input_snapshot_json) != prepared.input_snapshot_hash
+            for judge in context.judges
+        ):
+            return ReasonCode.AUDIT_RECORD_MISMATCH
+        snapshots = {(judge.input_snapshot_version, judge.input_snapshot_hash)
+                     for judge in context.judges if judge.outcome_status == "succeeded"}
+        if (len(snapshots) > 1 or any(version != "judge-input-2.0" or hash_ is None
+                                     or len(hash_) != 64 for version, hash_ in snapshots)):
+            return ReasonCode.AUDIT_RECORD_MISMATCH
+        ids = {judge.judge_run_id for judge in context.judges}
+        if any(judge.revision_of_judge_run_id in ids for judge in context.judges):
+            return ReasonCode.AUDIT_RECORD_MISMATCH
+    else:
+        prompts = {(judge.prompt_version, judge.prompt_hash) for judge in context.judges
+                   if judge.outcome_status == "succeeded"}
+        if len(prompts) > 1 or any(len(hash_) != 64 for _, hash_ in prompts):
+            return ReasonCode.AUDIT_RECORD_MISMATCH
     for validation in context.validations:
         if (validation.judge_run_id not in judge_ids
                 or validation.evidence_pack_id != request.evidence_pack_id
@@ -365,6 +462,34 @@ class VerdictService:
         reasons = [reason for item in qualifications for reason in item.exclusion_reasons]
         qualified = [item for item in qualifications if item.qualified]
         assert risk is not None
+        causal_design_insufficient = (
+            self.policy.version == POLICY_V3.version
+            and pack.claim_snapshot.claim_type in {
+                ClaimType.CAUSAL, ClaimType.PREVENTION, ClaimType.TREATMENT,
+            }
+            and any(item.label in {JudgeLabel.SUPPORTED, JudgeLabel.CONTRADICTED}
+                    for item in qualified)
+            and not _has_direct_causal_design(context, qualified)
+        )
+        # A single fully validated, decisive assessment can power an explicitly
+        # provisional development result. Production and high-risk claims keep
+        # their multi-judge thresholds; unavailable/partial assessments cannot
+        # be promoted to medical conclusions.
+        if (self.policy.version == POLICY_V3.version
+                and request.mode == AggregationMode.FIXTURE_OR_EVALUATION
+                and risk == "standard" and len(qualified) == 1):
+            label = qualified[0].label
+            if label in {JudgeLabel.SUPPORTED, JudgeLabel.CONTRADICTED}:
+                if causal_design_insufficient:
+                    reasons.append(ReasonCode.CAUSAL_EVIDENCE_TOO_INDIRECT)
+                    return _result(
+                        request, risk, LensVerdict.NOT_ENOUGH_EVIDENCE,
+                        reasons, qualifications,
+                    )
+                verdict = (LensVerdict.SUPPORTED if label == JudgeLabel.SUPPORTED
+                           else LensVerdict.CONTRADICTED)
+                reasons.append(ReasonCode.EVALUATION_SINGLE_VALIDATED_ASSESSMENT)
+                return _result(request, risk, verdict, reasons, qualifications)
         if len(qualified) < self.policy.minimum_judges(risk):
             reasons.append(ReasonCode.INSUFFICIENT_QUALIFIED_JUDGES)
             if any(reason in {
@@ -375,6 +500,12 @@ class VerdictService:
                 reasons.append(ReasonCode.INSUFFICIENT_VALIDATED_JUDGES)
             return _result(
                 request, risk, LensVerdict.UNABLE_TO_VERIFY_RELIABLY,
+                reasons, qualifications,
+            )
+        if causal_design_insufficient:
+            reasons.append(ReasonCode.CAUSAL_EVIDENCE_TOO_INDIRECT)
+            return _result(
+                request, risk, LensVerdict.NOT_ENOUGH_EVIDENCE,
                 reasons, qualifications,
             )
         counts = {label: sum(item.label == label for item in qualified)

@@ -503,10 +503,82 @@ that provider-latency issue remains open.
 
 ## Rules for future developers
 
+### Current evidence-to-judgment contract (2026-09-29)
+
+New judge runs use schema `2.0` and a frozen `judge-input-2.0` snapshot. The
+snapshot groups exact selected-document title/abstract sections, includes
+passage E IDs and hashes, records omissions, and has its own hash shared by
+all judges. It does not alter an existing Evidence Pack or its selection.
+Each material judge finding has its own exact quote/reference; validation
+first attributes that finding, then separately assesses whether the validated
+findings justify the proposed label. A correctly quoted finding can remain
+auditable when the conclusion fails. The old whole-explanation-against-each-
+citation approach is superseded for new runs; historical rows stay unchanged
+and are not retroactively mapped to statements.
+
+Only one targeted semantic revision per judge is allowed. It is a new
+append-only row linked to its parent, using the same frozen input and no
+other judges' answers. The claim checkpoint selects one active run per slot;
+parent and child cannot both count. `verdict-policy-1.2` retains the existing
+judge-count and release-qualification gates. An Unable report may show
+separately labeled, neutral frozen excerpts in development when provenance
+is intact; those excerpts are not validated support. See ADR-033 and the
+bounded, opt-in `python -m app.validation.semantic_eval --run` command. A
+small semantic evaluation is not clinical validation.
+
+The retained sunscreen Pack replay used the exact stored hash and generated a
+new, non-retroactive input view with 35 frozen E passages. A live schema-2.0
+judge returned four statements: three were source-attributed, one failed an
+exact quotation check. Its one linked revision also failed validation, so a
+new policy-1.2 evaluation over these explicitly named audit rows remained
+`unable_to_verify_reliably` with zero qualified assessments. One fresh
+sunscreen analysis completed extraction, retrieval, and report generation;
+its configured judge calls all failed provider or schema response, leaving
+zero qualified assessments. Neither is a medical verdict. The 14-case
+opt-in semantic check matched 13 expected checks and mismatched 8, with no
+provider/format failures. Semantic provider qualification and public release
+remain open.
+
+### Development verdict reliability update (2026-09-30)
+
+New live V2 runs use `verdict-policy-1.3`. For a **standard-risk development
+evaluation only**, exactly one decisive judge that passed frozen-pack,
+attributed-statement, numeric, quotation, and separate conclusion validation
+can produce a clearly labeled provisional Supported/Contradicted report. Its
+source cards are citation-validated, but `production_qualified` stays false.
+Production still needs two independently qualified judges for standard risk;
+high-risk claims still need three. Zero qualified assessments, incomplete
+retrieval, and genuinely insufficient evidence are never turned into binary
+verdicts. Historical policies and audit rows are not rewritten. See ADR-034.
+
+The live 2026-09-30 smoking/lung-cancer association run completed as
+`Provisional Supported (Development Only)` with one validated assessment and
+two validated source excerpts. Other model responses were excluded rather
+than silently counted. The same repair also tightened direct-study ranking,
+added bounded PubMed lexical fallbacks, accepted longer but still bounded
+structured judge output, recognized expanded `confidence interval (CI)` in
+numeric checks, and made semantic-validator identifier echo explicit. These
+changes address observed operational false failures, not clinical accuracy
+or public-release qualification. A carrot/eyesight claim can still reasonably
+return Not Enough Evidence when the retrieved human evidence is indirect.
+One live carrot run exposed exactly why: a judge and semantic validator both
+overread a cross-sectional association with *poor* night vision as proof that
+carrots worsen eyesight, despite reverse-causation language in the same
+paper. Policy 1.3 now requires a conclusion-cited trial or evidence synthesis
+before any causal/prevention/treatment claim gets a decisive label; otherwise
+it records `CAUSAL_EVIDENCE_TOO_INDIRECT`. Source-to-statement validation no
+longer includes the original claim, while conclusion validation still does.
+The post-gate live carrot analysis completed as `Not Enough Evidence` with
+`CAUSAL_EVIDENCE_TOO_INDIRECT`, not as a rejection. A fresh inverse smoking
+association still completed as provisional Contradicted after the final
+policy ordering fix. One-judge high-risk and production runs remain Unable.
+
 1. Preserve claim spans and provenance from ingestion through the final report.
 2. Treat social posts and retrieved text as untrusted data, never instructions.
 3. Do not let a model invent citations, identifiers, evidence URLs, or facts.
-4. Do not implement a single-model vote as the final medical verdict.
+4. Do not present a single-model evaluation result as a production medical
+   verdict. Versioned, citation-validated provisional development output must
+   be visibly labeled and remain blocked from public release.
 5. Keep retrieval, evidence packing, model adapters, citation validation, and
    aggregation independently testable and logged.
 6. Pin model versions and record prompt, retrieval-index, and evidence-snapshot

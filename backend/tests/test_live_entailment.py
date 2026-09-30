@@ -12,6 +12,7 @@ from app.judging.models import JudgeLabel
 from app.orchestration.worker import build_orchestrator, development_entailment_validator
 from app.validation.entailment import PreparedEntailmentInput, prepare_entailment_input
 from app.validation.models import EntailmentInput, EntailmentStatus
+from app.validation.semantic import prepare_semantic_input
 from app.verdict.models import AggregationMode
 from tests.test_validation import fixture_pack, judge_for
 
@@ -71,6 +72,46 @@ def test_adapter_rejects_wrong_frozen_evidence_id(monkeypatch: pytest.MonkeyPatc
     )
     with pytest.raises(ValueError, match="evidence ID mismatch"):
         asyncio.run(validator.validate(_prepared()))
+
+
+def test_semantic_adapter_retries_only_explicit_format_rejection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sent: list[dict[str, object]] = []
+    original_client = httpx.AsyncClient
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        payload: dict[str, object] = json.loads(request.content)
+        sent.append(payload)
+        if "response_format" in payload:
+            return httpx.Response(400, json={
+                "error": {"message": "json_schema response_format is not supported"},
+            })
+        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({
+            "statement_id": "S1", "evidence_ids": ["E1"],
+            "status": "supported_by_sources", "scope_match": "exact",
+            "reason": "The frozen passage supports the statement.",
+        })}}]})
+
+    monkeypatch.setattr(
+        httpx, "AsyncClient", lambda **kwargs: original_client(
+            transport=httpx.MockTransport(respond), **kwargs,
+        ),
+    )
+    validator = OpenAICompatibleEntailmentValidator(
+        provider="openai_compatible", model="fixture", base_url="https://example.test/v1",
+        api_key=None,
+    )
+    prepared = prepare_semantic_input(
+        "statement_attribution", {"statement": "X and Y were measured."},
+        judge_run_id="judge", validation_run_id="validation",
+        statement_ids=("S1",), evidence_ids=("E1",),
+    )
+    result = asyncio.run(validator.assess_statement(prepared))
+    assert result.status.value == "supported_by_sources"
+    assert len(sent) == 2
+    assert "response_format" in sent[0] and "response_format" not in sent[1]
+    assert sent[0]["messages"] == sent[1]["messages"]
 
 
 def test_evaluation_cross_checks_other_family_only() -> None:

@@ -226,6 +226,15 @@ class DebugModelEvent(BaseModel):
     http_status: int | None
     elapsed_ms: int
     response_excerpt: str | None
+    analysis_id: str | None = None
+    claim_id: str | None = None
+    judge_run_id: str | None = None
+    statement_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
+    validation_run_id: str | None = None
+    call_id: str | None = None
+    operation_kind: str | None = None
+    semantic_revision_number: int = 0
 
 
 class DebugModelStatus(BaseModel):
@@ -240,6 +249,10 @@ class DebugJudgeRun(BaseModel):
     """Non-sensitive audit summary available only in development debug mode."""
 
     slot: int
+    judge_run_id: UUID | None = None
+    validation_run_id: UUID | None = None
+    revision_of_judge_run_id: UUID | None = None
+    semantic_revision_number: int = 0
     provider: str
     model: str
     model_family: str
@@ -249,6 +262,9 @@ class DebugJudgeRun(BaseModel):
     latency_ms: int
     validation_status: str | None
     validation_error_category: str | None
+    statement_statuses: dict[str, str] = Field(default_factory=dict)
+    conclusion_status: str | None = None
+    targeted_issue_codes: list[str] = Field(default_factory=list)
 
 
 class ClaimAnalysisSummary(BaseModel):
@@ -257,6 +273,7 @@ class ClaimAnalysisSummary(BaseModel):
     status: str
     stage: str
     completed_stages: list[str]
+    skipped_stages: list[str] = Field(default_factory=list)
     stage_timestamps: dict[str, dict[str, str]]
     failure_code: str | None
     evidence_pack_id: UUID | None

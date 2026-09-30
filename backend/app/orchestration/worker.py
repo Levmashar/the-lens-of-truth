@@ -78,6 +78,14 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
             crossref_total_timeout_seconds=settings.crossref_total_timeout_seconds,
         )
 
+    provider = OpenAICompatibleJudgeProvider(settings.judge_attempt_timeout_seconds)
+    judge_service = JudgeService(
+        providers={"miri": provider, "openai_compatible": provider},
+        attempt_timeout_seconds=settings.judge_attempt_timeout_seconds,
+        total_timeout_seconds=settings.judge_total_timeout_seconds,
+        concurrency_limit=settings.judge_concurrency_limit,
+    )
+
     async def judging(pack_id: UUID, pack: EvidencePack) -> tuple[JudgeRun, ...]:
         try:
             slots = configured_slots(settings)
@@ -86,14 +94,7 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
             return ()
         if not slots:
             return ()
-        provider = OpenAICompatibleJudgeProvider(settings.judge_attempt_timeout_seconds)
-        service = JudgeService(
-            providers={"miri": provider, "openai_compatible": provider},
-            attempt_timeout_seconds=settings.judge_attempt_timeout_seconds,
-            total_timeout_seconds=settings.judge_total_timeout_seconds,
-            concurrency_limit=settings.judge_concurrency_limit,
-        )
-        runs, _ = await service.run(
+        runs, _ = await judge_service.run(
             pack_id, pack, slots,
             allow_same_family=(settings.app_env in {"development", "test"}
                                and settings.judge_allow_same_family_development),
@@ -102,13 +103,24 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
         )
         return runs
 
+    async def revision(
+        judge: JudgeRun, audit: JudgeValidationRun, pack: EvidencePack,
+    ) -> JudgeRun:
+        slots = configured_slots(settings)
+        slot = next((item for item in slots if item.slot == judge.slot), None)
+        if slot is None:
+            raise ValueError("Original judge slot is no longer configured")
+        return await judge_service.revise(judge, audit, pack, slot)
+
     async def validation(judge: JudgeRun, pack: EvidencePack) -> JudgeValidationRun:
+        validator = development_entailment_validator(settings, judge)
         return await ValidationService(
-            entailment_validator=development_entailment_validator(settings, judge),
+            entailment_validator=validator, semantic_validator=validator,
         ).run(judge, pack)
 
     return AnalysisOrchestrator(
         ingestion=ingestion, retrieve=retrieval, judge=judging, validate=validation,
+        revise=revision,
         total_timeout_seconds=settings.analysis_total_timeout_seconds,
         claim_timeout_seconds=settings.analysis_claim_timeout_seconds,
         retrieval_timeout_seconds=settings.analysis_retrieval_timeout_seconds,

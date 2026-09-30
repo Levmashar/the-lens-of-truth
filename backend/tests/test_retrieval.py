@@ -14,7 +14,7 @@ from app.pipeline.pico import NormalizedPico
 from app.retrieval.directness import _aliases as directness_aliases
 from app.retrieval.errors import RetrievalError
 from app.retrieval.evidence_pack import build_evidence_pack, deduplicate_documents
-from app.retrieval.models import ClaimSnapshot, EvidencePack
+from app.retrieval.models import AbstractSection, ClaimSnapshot, EvidencePack
 from app.retrieval.normalize import parse_pubmed_xml
 from app.retrieval.passages import extract_passages
 from app.retrieval.query_planner import plan_pubmed_queries
@@ -183,6 +183,82 @@ def test_population_qualifier_cannot_become_soy_exposure_query_anchor() -> None:
                for query in plan.queries if query.family == "lexical")
     assert "soy" in directness_aliases(snapshot, "intervention_or_exposure")
     assert "male" not in directness_aliases(snapshot, "intervention_or_exposure")
+
+
+def carrot_claim() -> ClaimSnapshot:
+    text = "Eating carrots improves eyesight"
+    return ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal",
+            intervention_or_exposure="Eating carrots", outcome="Improves eyesight",
+        ),
+        entities=(MedicalEntity(
+            surface_text="Eating", entity_type="intervention_or_exposure",
+            mesh_id="D004467", preferred_name="Eating", match_type="exact",
+            confidence=1.0,
+        ),),
+    )
+
+
+def test_carrot_query_uses_food_and_records_retrieval_only_lay_variants() -> None:
+    snapshot = carrot_claim()
+    plan = plan_pubmed_queries(snapshot)
+    assert plan.version == "1.2"
+    assert "mesh" not in [query.family for query in plan.queries]
+    assert plan.queries[0].query == (
+        '("carrots"[Title/Abstract]) AND ("eyesight"[Title/Abstract])'
+    )
+    assert "Eating" not in " ".join(query.query for query in plan.queries)
+    assert "improves" not in " ".join(query.query for query in plan.queries)
+    automatic = next(query for query in plan.queries if query.family == "automatic")
+    assert automatic.query == "(carrots) AND (eyesight)"
+    variant = next(query for query in plan.queries if query.family == "lay_variant")
+    assert '"vision"[Title/Abstract]' in variant.query
+    assert '"seeing"[Title/Abstract]' in variant.query
+    assert "retrieval_lay_variant:eyesight" in variant.source_fields
+    assert snapshot.pico is not None and snapshot.pico.outcome == "Improves eyesight"
+
+
+def test_carrot_lay_search_keeps_spurious_papers_auditable_but_not_selected() -> None:
+    snapshot = carrot_claim()
+    template = parse_pubmed_xml(XML)[0]
+    cases = (
+        ("22222222", "Carrots and seeing in the dark", "Journal Article",
+         "Carrot intake was compared with reported difficulty seeing at night.", True),
+        ("33333333", "Carrots and vision superfoods", "Editorial", "", False),
+        ("44444444", "Ophthalmology in proverbs", "Historical Article",
+         "The proverb says carrots improve vision.", False),
+        ("55555555", "Carrot appearance by image analysis", "Journal Article",
+         "An artificial vision system measured the appearance of carrots.", False),
+    )
+    documents = tuple(template.model_copy(update={
+        "document_id": f"pubmed:{pmid}", "pmid": pmid, "title": title,
+        "abstract": abstract or None,
+        "abstract_sections": (AbstractSection(text=abstract),) if abstract else (),
+        "publication_types": (publication_type,), "mesh_terms": (),
+        "query_ids": ("Q4",),
+    }) for pmid, title, publication_type, abstract, _ in cases)
+    passages = tuple(p for document in documents for p in extract_passages(document))
+    pack = build_evidence_pack(
+        snapshot, plan_pubmed_queries(snapshot), documents,
+        rank_passages(snapshot, documents, passages),
+    )
+    selected_pmids = {
+        next(document.pmid for document in pack.documents
+             if document.document_id == ranked.passage.document_id)
+        for ranked in pack.passages if ranked.selected_for_judging
+    }
+    assert selected_pmids == {"22222222"}
+    assert len(pack.documents) == 4
+    by_pmid = {document.document_id: document.pmid for document in pack.documents}
+    reasons = {
+        by_pmid[ranked.passage.document_id]: ranked.selection_reason
+        for ranked in pack.passages if not ranked.selected_for_judging
+    }
+    assert reasons["33333333"] == "non_evidence_publication_excluded"
+    assert reasons["44444444"] == "non_evidence_publication_excluded"
+    assert reasons["55555555"] == "nonclinical_visual_context_excluded"
 
 
 def test_pubmed_parsing_preserves_metadata_and_missing_fields() -> None:

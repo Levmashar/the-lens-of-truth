@@ -125,6 +125,34 @@ anonymous access is a prototype convention, not reviewed public auth.
 
 ## Phase 6C internal report contract (no HTTP route)
 
+### Current schema-2.0 contract overlay
+
+The Phase 5A/6A text below records the historical schema-1.0 CLI contract.
+For new runs, `JudgeDecisionV2` requires `schema_version: "2.0"`, a proposed
+`label`, 1–8 source-attributed `statements` (`statement_id`, `text`, `kind`,
+and exact `evidence_refs` containing E ID plus quote), a `conclusion` naming
+the statement IDs it relies on, and controlled `uncertainty_reasons`.
+`judge_run` additionally freezes `judge-input-2.0` JSON/hash and optional
+revision parent/number. Historical rows remain readable without inferred
+statement mappings. Validation 2.0 returns per-statement attribution status,
+scope, typed target issues, and a separate conclusion-justification status.
+Only a fully validated proposed conclusion is eligible under
+`verdict-policy-1.3` for new live runs. Standard-risk development reports may
+show an explicitly provisional Supported/Contradicted result from one such
+assessment; they remain `production_qualified=false`. Production still
+requires two independently qualified judges; high-risk still requires three.
+Historical policy 1.2 records are not reinterpreted.
+
+`LensReport` 1.1 can include `neutral_retrieved_sources` for an Unable result
+in development when the frozen Pack hash verifies. These exact excerpts are
+not attributed support/opposition and are not public-release evidence cards.
+The claim debug response includes judge/validation/call IDs, operation kind,
+statement/E IDs, and semantic revision number where available. A `calling`
+event means an outstanding request, not an empty provider response. The
+opt-in `python -m app.validation.semantic_eval --run --slot 2 --limit 14`
+checks the configured semantic model against synthetic hand-reviewed cases;
+it is not part of CI or a clinical-accuracy claim.
+
 After `alembic upgrade head`, pass the UUID of one persisted `verdict_run`:
 
 ```text

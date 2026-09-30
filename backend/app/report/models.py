@@ -69,6 +69,21 @@ class SourceReference(FrozenModel):
     url: str
 
 
+class NeutralRetrievedSource(FrozenModel):
+    """Frozen source excerpt, explicitly not validated support/opposition."""
+
+    evidence_id: str
+    pmid: str
+    doi: str | None
+    title: str
+    publication_date: str | None
+    passage_section: str
+    exact_excerpt: str
+    excerpt_truncated: bool
+    passage_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    source_url: str
+
+
 class ExcludedAssessment(FrozenModel):
     judge_run_id: UUID
     slot: int
@@ -115,6 +130,7 @@ class LensReport(FrozenModel):
     short_summary: str
     why_this_result: tuple[ReportReason, ...]
     key_evidence: tuple[SourceCard, ...]
+    neutral_retrieved_sources: tuple[NeutralRetrievedSource, ...] = ()
     evidence_limitations: tuple[str, ...]
     judge_summary: ReportJudgeSummary
     verification_status: ReportVerificationStatus

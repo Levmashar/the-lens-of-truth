@@ -51,6 +51,35 @@ describe("report presentation", () => {
     expect(node.querySelector("a")).toBeNull();
   });
 
+  it("shows neutral frozen sources for development Unable without claiming support", () => {
+    const unable = report("unable_to_verify_reliably", {
+      key_evidence: [], sources: [], neutral_retrieved_sources: [{
+        evidence_id: "E8", pmid: "123", doi: null, title: "Frozen review",
+        publication_date: null, passage_section: "RESULTS",
+        exact_excerpt: "Exact result <script>unsafe()</script>",
+        excerpt_truncated: false, passage_sha256: "a".repeat(64),
+        source_url: "https://pubmed.ncbi.nlm.nih.gov/123/",
+      }],
+    });
+    const node = createClaimResult(unable, analysisId, claimId);
+    expect(node.textContent).toContain("Retrieved sources — not validated support");
+    expect(node.textContent).toContain("Exact result <script>unsafe()</script>");
+    expect(node.querySelector("script")).toBeNull();
+    expect(node.textContent).not.toContain("Supporting evidence");
+  });
+
+  it("explains why an empty evidence search did not call a judge", () => {
+    const empty = report("not_enough_evidence", {
+      key_evidence: [], sources: [], judge_summary: {
+        qualified: 0, excluded: 0, validated_label_counts: {},
+        description: "", excluded_assessments: [],
+      },
+    });
+    const node = createClaimResult(empty, analysisId, claimId);
+    expect(node.querySelector(".details-body")?.textContent)
+      .toContain("No judge assessment ran because the search selected no usable evidence.");
+  });
+
   it("uses actual backend stages without a fabricated percentage", () => {
     const node = createProgress(progress({ status: "running", stage: "retrieving", completed_stages: ["extracting", "normalizing"] }));
     expect(node.textContent).toContain("Searching scientific evidence");

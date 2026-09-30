@@ -5,12 +5,14 @@ import json
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.judging.models import JudgeLabel, JudgeRun
+from app.judging.models import JudgeDecisionV2, JudgeLabel, JudgeRun
+from app.judging.prompt import input_snapshot_hash, prepare_judge_input
 from app.report.models import (
     EvidenceRole,
     EvidenceState,
     ExcludedAssessment,
     LensReport,
+    NeutralRetrievedSource,
     ReportClaim,
     ReportJudgeSummary,
     ReportProvenance,
@@ -23,17 +25,20 @@ from app.retrieval.evidence_pack import canonical_pack_bytes
 from app.retrieval.models import EvidencePack
 from app.validation.models import (
     CitationValidation,
+    ConclusionJustificationStatus,
     EntailmentStatus,
     IssueCode,
     JudgeValidationRun,
     RelationAlignment,
+    StatementAttributionStatus,
     ValidationStatus,
 )
+from app.validation.numeric import extract_quantities
 from app.verdict.models import AggregationMode, LensVerdict, ReasonCode, VerdictResult
 from app.verdict.service import semantic_result_hash
 
-REPORT_VERSION = "1.0"
-BUILDER_VERSION = "report-builder-1.1"
+REPORT_VERSION = "1.1"
+BUILDER_VERSION = "report-builder-1.2"
 MAX_EXCERPT_CHARS = 600
 DEVELOPMENT_NOTICE = (
     "Development/evaluation result — production evidence-isolation or model "
@@ -57,6 +62,11 @@ REASON_TEXT: dict[ReasonCode, str] = {
     ReasonCode.CONTRADICTED_BY_MULTIPLE_VALIDATED_JUDGES:
         "Multiple independent assessments conflicted with the claim "
         "and passed citation validation.",
+    ReasonCode.EVALUATION_SINGLE_VALIDATED_ASSESSMENT:
+        "One assessment passed evidence-use validation. This development result is "
+        "provisional and is not a production medical conclusion.",
+    ReasonCode.CAUSAL_EVIDENCE_TOO_INDIRECT:
+        "The cited study designs do not directly establish or rule out the claimed effect.",
     ReasonCode.UNANIMOUS_HIGH_RISK_SUPPORT:
         "All required validated assessments supported this high-risk claim.",
     ReasonCode.UNANIMOUS_HIGH_RISK_CONTRADICTION:
@@ -128,6 +138,10 @@ def semantic_report_hash(report: LensReport) -> str:
 
 
 def _summary(verdict: LensVerdict, reasons: tuple[ReasonCode, ...]) -> str:
+    if ReasonCode.EVALUATION_SINGLE_VALIDATED_ASSESSMENT in reasons:
+        relation = "supports" if verdict == LensVerdict.SUPPORTED else "conflicts with"
+        return ("One validated assessment " + relation + " this claim. "
+                "This is a provisional development result, not a trusted medical report.")
     if verdict == LensVerdict.SUPPORTED:
         return "The available validated evidence supports this claim at the stated scope."
     if verdict == LensVerdict.CONTRADICTED:
@@ -136,6 +150,9 @@ def _summary(verdict: LensVerdict, reasons: tuple[ReasonCode, ...]) -> str:
         return "The system could not complete a sufficiently reliable verification."
     if ReasonCode.RETRIEVAL_NO_RESULTS in reasons:
         return "The source search completed without results; no medical conclusion was reached."
+    if ReasonCode.CAUSAL_EVIDENCE_TOO_INDIRECT in reasons:
+        return ("The cited evidence is too indirect to establish or rule out "
+                "this causal claim.")
     if ReasonCode.VALIDATED_JUDGE_DISAGREEMENT in reasons:
         return "Validated assessments disagreed; no decisive conclusion was justified."
     return "Relevant evidence did not justify a reliable supported or contradicted conclusion."
@@ -182,8 +199,17 @@ def _limitations(
                           for citation in citations)
     result: list[str] = []
     if IssueCode.MATERIAL_NUMERIC_MISMATCH in issues:
-        result.append("A numerical magnitude in the claim was not supported by an assessed "
-                      "citation; that assessment was not used as validated positive evidence.")
+        if extract_quantities(pack.claim_snapshot.standalone_text):
+            result.append("A claim number or an assessment's numeric use did not match its "
+                          "cited source; the affected assessment was excluded.")
+        else:
+            result.append("An assessment misstated or could not verify a source number; "
+                          "this is not a numerical error in the submitted claim.")
+    if any(issue.issue_code == IssueCode.STATEMENT_NUMERIC_MISMATCH
+           and issue.target_type == "judge_statement"
+           for run in validations for issue in run.result.targeted_issues):
+        result.append("A judge-introduced statistic did not match its own cited quotation; "
+                      "the affected assessment was excluded.")
     if (IssueCode.RELATION_STRENGTH_MISMATCH in issues or weaker_relation) and (
         pack.claim_snapshot.claim_type == "causal"
     ):
@@ -243,6 +269,33 @@ def _cards(
         )
         if validation.status != ValidationStatus.VALIDATED and not limited_inconclusive:
             continue
+        if isinstance(judge.decision, JudgeDecisionV2):
+            conclusion = validation.result.conclusion_justification
+            if (conclusion is None or conclusion.status != ConclusionJustificationStatus.JUSTIFIED
+                    or judge.input_snapshot_hash is None
+                    or judge.input_snapshot_json is None):
+                continue
+            prepared = prepare_judge_input(judge.evidence_pack_id, pack)
+            if (judge.input_snapshot_hash != prepared.input_snapshot_hash
+                    or input_snapshot_hash(judge.input_snapshot_json)
+                    != prepared.input_snapshot_hash):
+                raise ValueError("Judge-visible input snapshot is invalid")
+            attributed = {item.statement_id: item
+                          for item in validation.result.statement_attributions}
+            for statement in judge.decision.statements:
+                if statement.statement_id not in conclusion.based_on_statement_ids:
+                    continue
+                item = attributed.get(statement.statement_id)
+                if item is None or item.status != StatementAttributionStatus.SUPPORTED_BY_SOURCES:
+                    continue
+                for ref in statement.evidence_refs:
+                    if ref.evidence_id not in prepared.selected_ids:
+                        raise ValueError("Validated statement cited nonvisible evidence")
+                    role = _role(judge.decision.label, "cited")
+                    uses.setdefault(ref.evidence_id, []).append(
+                        (role, judge.judge_run_id, validation.id)
+                    )
+            continue
         for citation in (*validation.result.citation_validations,
                          *validation.result.opposing_citation_validations):
             if not _eligible_citation(citation):
@@ -256,7 +309,8 @@ def _cards(
                 (role, judge.judge_run_id, validation.id)
             )
     cards: list[SourceCard] = []
-    for evidence_id in pack.selected_evidence_ids:
+    display_ids = tuple(dict.fromkeys((*pack.selected_evidence_ids, *uses)))
+    for evidence_id in display_ids:
         if evidence_id not in uses:
             continue
         passage = passages[evidence_id]
@@ -289,6 +343,38 @@ def _cards(
             citation_validated=True,
             cited_by_judge_run_ids=tuple(dict.fromkeys(use[1] for use in uses[evidence_id])),
             cited_by_validation_run_ids=tuple(dict.fromkeys(use[2] for use in uses[evidence_id])),
+        ))
+    return tuple(cards)
+
+
+def _neutral_sources(
+    verdict: VerdictResult, pack: EvidencePack,
+) -> tuple[NeutralRetrievedSource, ...]:
+    if (verdict.mode != AggregationMode.FIXTURE_OR_EVALUATION
+            or verdict.verdict != LensVerdict.UNABLE_TO_VERIFY_RELIABLY):
+        return ()
+    passages = {item.evidence_id: item for item in pack.passages}
+    documents = {item.document_id: item for item in pack.documents}
+    cards: list[NeutralRetrievedSource] = []
+    for evidence_id in pack.selected_evidence_ids[:5]:
+        item = passages.get(evidence_id)
+        document = documents.get(item.passage.document_id) if item else None
+        if (item is None or document is None or document.integrity.status == "retracted"
+                or not document.pmid or not document.canonical_url):
+            continue
+        text = item.passage.text
+        if hashlib.sha256(text.encode("utf-8")).hexdigest() != item.passage.content_sha256:
+            raise ValueError("Frozen neutral source passage hash is invalid")
+        cards.append(NeutralRetrievedSource(
+            evidence_id=evidence_id, pmid=document.pmid, doi=document.doi,
+            title=document.title,
+            publication_date=(document.publication_date.isoformat()
+                              if document.publication_date else None),
+            passage_section=item.passage.section,
+            exact_excerpt=text[:MAX_EXCERPT_CHARS],
+            excerpt_truncated=len(text) > MAX_EXCERPT_CHARS,
+            passage_sha256=item.passage.content_sha256,
+            source_url=document.canonical_url,
         ))
     return tuple(cards)
 
@@ -353,14 +439,18 @@ def build_report(
         generated_at=generated_at or datetime.now(UTC),
         production_qualified=verdict.production_qualified,
     )
+    display_label = DISPLAY_LABELS[verdict.verdict]
+    if ReasonCode.EVALUATION_SINGLE_VALIDATED_ASSESSMENT in verdict.reason_codes:
+        display_label = f"Provisional {display_label} (Development Only)"
     result = LensReport(
         report_version=REPORT_VERSION, verdict_run_id=verdict_run_id,
         claim=ReportClaim(text=pack.claim_snapshot.standalone_text,
                           claim_type=pack.claim_snapshot.claim_type),
-        verdict=verdict.verdict, verdict_display=DISPLAY_LABELS[verdict.verdict],
-        headline=DISPLAY_LABELS[verdict.verdict],
+        verdict=verdict.verdict, verdict_display=display_label,
+        headline=display_label,
         short_summary=_summary(verdict.verdict, verdict.reason_codes),
         why_this_result=reasons, key_evidence=cards,
+        neutral_retrieved_sources=_neutral_sources(verdict, pack),
         evidence_limitations=_limitations(pack, validations),
         judge_summary=ReportJudgeSummary(
             qualified=verdict.qualified_judges, excluded=verdict.excluded_judges,

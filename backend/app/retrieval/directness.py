@@ -8,6 +8,7 @@ the two core concepts. Every positive/negative contribution is exposed.
 import re
 from collections import Counter
 
+from app.retrieval.lexical import lay_variants
 from app.retrieval.models import (
     ClaimSnapshot,
     PubMedDocument,
@@ -18,7 +19,9 @@ from app.retrieval.models import (
 
 _SENTENCE = re.compile(r"(?<=[.!?])\s+|;\s+")
 _BACKGROUND = frozenset({"BACKGROUND", "INTRODUCTION", "OBJECTIVE", "PURPOSE"})
-_SUBSTANTIVE = frozenset({"RESULTS", "RESULT", "CONCLUSIONS", "CONCLUSION"})
+_SUBSTANTIVE = frozenset({
+    "RESULTS", "RESULT", "CONCLUSIONS", "CONCLUSION", "INTERPRETATION",
+})
 _METHODS = frozenset({"METHODS", "METHOD", "DESIGN", "PARTICIPANTS"})
 _CUES: dict[str, re.Pattern[str]] = {
     "causal": re.compile(
@@ -43,6 +46,11 @@ _NEVER_SMOKER = re.compile(
 _SMOKING = re.compile(r"\b(?:smoking|smokers?|tobacco)\b", re.I)
 _SCREENING_CESSATION = re.compile(r"\b(?:screening|cessation|quit(?:ting)?)\b", re.I)
 _POST_CESSATION = re.compile(r"\bafter\s+smoking\s+cessation\b", re.I)
+_SOCIAL_FOCUS = re.compile(
+    r"\b(?:attitudes?|perceptions?|hesitancy|beliefs?|refusal|"
+    r"communication|controversy|confirmatory bias|misinformation|"
+    r"decision[- ]making|health decisions?)\b", re.I,
+)
 _RISK_FOCUS = re.compile(r"\b(?:risk|inciden\w*|caus\w*|associat\w*|hazard|odds)\b", re.I)
 _REVERSE_CONTEXT = re.compile(
     r"\b(?:after|following|post[ -]?|survivors? of|patients? with|"
@@ -52,8 +60,11 @@ _MANAGEMENT = re.compile(
     r"\b(?:management|control|lowering|reduction|treatment|target|therapy|trajectories)\b",
     re.I,
 )
-_QUALIFIERS = frozenset({"frequent", "regular", "daily", "higher", "high", "invasive"})
-_USAGE = frozenset({"consumption", "usage", "use", "users", "of", "the"})
+_QUALIFIERS = frozenset({
+    "frequent", "regular", "daily", "higher", "high", "invasive",
+    "improve", "improves", "improved", "improving",
+})
+_USAGE = frozenset({"consumption", "usage", "use", "users", "of", "the", "eating"})
 
 
 def _section_kind(label: str) -> str:
@@ -88,19 +99,27 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
         reduced = [token for token in tokens if token not in _QUALIFIERS | _USAGE]
         if reduced and (len(reduced) < len(tokens) or head != source):
             values.append(" ".join(reduced))
+    if role == "outcome":
+        values.extend(variant for _, variant in lay_variants(source))
     return tuple(sorted({value.strip().casefold() for value in values if value and
                          len(value.strip()) >= 3}, key=lambda value: (-len(value), value)))
 
 
 def _matches(text: str, aliases: tuple[str, ...]) -> bool:
     for alias in aliases:
-        pattern = re.compile(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", re.I)
+        tokens = re.findall(r"[^\W_]+", alias, re.UNICODE)
+        if not tokens:
+            continue
+        pieces = [r"vaccin(?:e|ation|ated?|ating)" if token in {
+            "vaccine", "vaccination", "vaccinated", "vaccinate", "vaccinating",
+        } else re.escape(token) for token in tokens]
+        pattern = re.compile(r"(?<!\w)" + r"[\W_]+".join(pieces) + r"(?!\w)", re.I)
         for match in pattern.finditer(text):
             if alias == "smoking":
                 prefix = text[max(0, match.start() - 8):match.start()].casefold()
-                suffix = text[match.end():match.end() + 12].casefold()
+                suffix = text[match.end():match.end() + 16].casefold()
                 if (prefix.endswith(("never-", "never ", "non-", "non "))
-                        or suffix.startswith(("-related", "-associated"))):
+                        or suffix.startswith(("-related", "-associated", "-independent"))):
                     continue
             return True
     return False
@@ -140,6 +159,11 @@ def _direction(
     exposure_excluded: bool, covariate_only: bool,
 ) -> tuple[RelationshipDirection, tuple[str, ...]]:
     title = document.title
+    if any(re.search(r"(?<!\w)" + re.escape(alias) + r"[\W_]+independent\b",
+                     title, re.I) for alias in exposure):
+        return "incidental", ("exposure_independent_study_question",)
+    if _SOCIAL_FOCUS.search(title):
+        return "incidental", ("social_behavior_not_clinical_outcome_question",)
     if excluded:
         return "incidental", ("exposure_excluded_population",)
     if exposure_excluded:

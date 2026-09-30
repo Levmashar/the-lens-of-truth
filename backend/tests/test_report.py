@@ -238,7 +238,7 @@ def test_numeric_causal_and_scope_failures_surface_without_unsupported_number() 
     assert verdict.verdict == LensVerdict.CONTRADICTED
     report = build_report(uuid4(), verdict, pack, judges, tuple(validations), generated_at=NOW)
     assert len(report.evidence_limitations) >= 3
-    assert any("numerical magnitude" in item for item in report.evidence_limitations)
+    assert any("claim number" in item for item in report.evidence_limitations)
     assert any("Association does not by itself establish causation" in item
                for item in report.evidence_limitations)
     assert any("materially different" in item for item in report.evidence_limitations)

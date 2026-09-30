@@ -189,6 +189,7 @@ async def fixture_validation(judge: JudgeRun, pack: EvidencePack) -> JudgeValida
     """Explicit known synthetic validation, not a live entailment claim."""
 
     assert judge.decision is not None
+    assert isinstance(judge.decision, JudgeDecision)
     now = datetime.now(UTC)
     citation = CitationValidation(
         evidence_id=judge.decision.cited_evidence_ids[0], role="cited", exists=True,

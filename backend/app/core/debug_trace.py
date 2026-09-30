@@ -13,6 +13,7 @@ _MAX_EVENTS = 80
 _MAX_RESPONSE_CHARS = 3000
 _TTL_SECONDS = 3600
 _active_analysis: ContextVar[UUID | None] = ContextVar("debug_analysis", default=None)
+_active_claim: ContextVar[UUID | None] = ContextVar("debug_claim", default=None)
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,15 @@ class ModelDebugEvent:
     http_status: int | None
     elapsed_ms: int
     response_excerpt: str | None
+    analysis_id: str
+    claim_id: str | None = None
+    judge_run_id: str | None = None
+    statement_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
+    validation_run_id: str | None = None
+    call_id: str | None = None
+    operation_kind: str | None = None
+    semantic_revision_number: int = 0
 
 
 _traces: OrderedDict[UUID, tuple[float, list[ModelDebugEvent]]] = OrderedDict()
@@ -42,10 +52,26 @@ def trace_analysis(analysis_id: UUID, *, enabled: bool) -> Iterator[None]:
         _active_analysis.reset(token)
 
 
+@contextmanager
+def trace_claim(claim_id: UUID) -> Iterator[None]:
+    token = _active_claim.set(claim_id)
+    try:
+        yield
+    finally:
+        _active_claim.reset(token)
+
+
 def record_model_event(
     *, role: str, provider: str, model: str, attempt: int, status: str,
     failure_type: str | None, http_status: int | None, elapsed_ms: int,
     response_content: str | None = None,
+    judge_run_id: str | None = None,
+    statement_ids: tuple[str, ...] = (),
+    evidence_ids: tuple[str, ...] = (),
+    validation_run_id: str | None = None,
+    call_id: str | None = None,
+    operation_kind: str | None = None,
+    semantic_revision_number: int = 0,
 ) -> int:
     analysis_id = _active_analysis.get()
     if analysis_id is None:
@@ -63,6 +89,12 @@ def record_model_event(
         failure_type=failure_type, http_status=http_status, elapsed_ms=elapsed_ms,
         response_excerpt=(response_content[:_MAX_RESPONSE_CHARS]
                           if response_content is not None else None),
+        analysis_id=str(analysis_id),
+        claim_id=str(_active_claim.get()) if _active_claim.get() else None,
+        judge_run_id=judge_run_id, statement_ids=statement_ids,
+        evidence_ids=evidence_ids, validation_run_id=validation_run_id,
+        call_id=call_id, operation_kind=operation_kind,
+        semantic_revision_number=semantic_revision_number,
     ))
     if len(events) > _MAX_EVENTS:
         del events[:-_MAX_EVENTS]

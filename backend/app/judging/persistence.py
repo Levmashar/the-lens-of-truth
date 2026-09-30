@@ -18,6 +18,16 @@ def persist_judge_runs(session: Session, runs: tuple[JudgeRun, ...]) -> None:
                 or pack.snapshot_hash != run.evidence_pack_hash
             ):
                 raise ValueError("Judge run does not match the stored Evidence Pack")
+            if run.revision_of_judge_run_id is not None:
+                parent = session.get(JudgeRunRecord, run.revision_of_judge_run_id)
+                if (parent is None or parent.revision_of_judge_run_id is not None
+                        or parent.semantic_revision_number != 0
+                        or run.semantic_revision_number != 1
+                        or parent.claim_id != run.claim_id
+                        or parent.evidence_pack_id != run.evidence_pack_id
+                        or parent.input_snapshot_hash != run.input_snapshot_hash
+                        or parent.slot != run.slot or parent.model != run.model):
+                    raise ValueError("Semantic revision lineage is invalid")
             session.add(JudgeRunRecord(
                 id=run.judge_run_id, claim_id=run.claim_id,
                 evidence_pack_id=run.evidence_pack_id,
@@ -31,6 +41,11 @@ def persist_judge_runs(session: Session, runs: tuple[JudgeRun, ...]) -> None:
                 search_guard_bypassed=run.search_guard_bypassed,
                 search_isolation_verified=run.search_isolation_verified,
                 prompt_hash=run.prompt_hash, requested_at=run.requested_at,
+                input_snapshot_version=run.input_snapshot_version,
+                input_snapshot_hash=run.input_snapshot_hash,
+                input_snapshot_json=run.input_snapshot_json,
+                revision_of_judge_run_id=run.revision_of_judge_run_id,
+                semantic_revision_number=run.semantic_revision_number,
                 responded_at=run.responded_at, latency_ms=run.latency_ms,
                 attempt_count=run.attempt_count, outcome_status=run.outcome_status,
                 response_json=run.response_json,

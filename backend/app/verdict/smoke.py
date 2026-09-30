@@ -12,13 +12,14 @@ from app.verdict.persistence import (
     parse_id_list,
     persist_verdict_run,
 )
-from app.verdict.policy import POLICY_V1
+from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3
 from app.verdict.service import VerdictService
 
 
 def smoke(
     pack_id: UUID, judge_run_ids: tuple[UUID, ...],
     validation_run_ids: tuple[UUID, ...], mode: AggregationMode,
+    policy_version: str = POLICY_V3.version,
 ) -> None:
     if get_settings().app_env not in {"development", "test"}:
         raise SystemExit("The verdict smoke command is development/test only.")
@@ -27,15 +28,17 @@ def smoke(
         if pack_row is None:
             raise SystemExit("Evidence Pack not found.")
         pack_hash = pack_row.snapshot_hash
+        policies = {item.version: item for item in (POLICY_V1, POLICY_V2, POLICY_V3)}
+        policy = policies[policy_version]
         request = AggregationInput(
             claim_id=pack_row.claim_id, evidence_pack_id=pack_row.id,
             evidence_pack_hash=pack_row.snapshot_hash,
             judge_run_ids=judge_run_ids,
             judge_validation_run_ids=validation_run_ids,
-            mode=mode, policy_version=POLICY_V1.version,
+            mode=mode, policy_version=policy.version,
         )
         context = load_aggregation_context(session, request)
-        result = VerdictService().aggregate(request, context)
+        result = VerdictService(policy=policy).aggregate(request, context)
         record = persist_verdict_run(session, result)
         audit_id = record.id
     print(f"CLAIM\n{context.pack.claim_snapshot.raw_text if context.pack else '(unavailable)'}")
@@ -69,9 +72,13 @@ def main() -> None:
                         help="Comma-separated validation UUIDs; empty for no-results pack")
     parser.add_argument("--mode", choices=[item.value for item in AggregationMode],
                         default=AggregationMode.PRODUCTION.value)
+    parser.add_argument("--policy-version", choices=(POLICY_V1.version, POLICY_V2.version,
+                                                      POLICY_V3.version),
+                        default=POLICY_V3.version)
     args = parser.parse_args()
     smoke(args.pack, parse_id_list(args.judge_runs),
-          parse_id_list(args.validation_runs), AggregationMode(args.mode))
+          parse_id_list(args.validation_runs), AggregationMode(args.mode),
+          args.policy_version)
 
 
 if __name__ == "__main__":

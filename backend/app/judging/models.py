@@ -1,7 +1,9 @@
 """Strict per-judge contracts and append-only run summaries."""
 
+import json
 from datetime import datetime
 from enum import StrEnum
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -34,7 +36,7 @@ class UncertaintyReason(StrEnum):
 
 
 class JudgeDecision(BaseModel):
-    """A model judgment, not the Lens of Truth verdict or confidence."""
+    """Historical v1 free-text decision; never infer statement mappings from it."""
 
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
 
@@ -69,6 +71,80 @@ class JudgeDecision(BaseModel):
         return self
 
 
+class EvidenceRef(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+
+    evidence_id: str = Field(pattern=r"^E[1-9][0-9]*$")
+    quote: str = Field(min_length=3, max_length=1200)
+
+
+class JudgeStatement(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+
+    statement_id: str = Field(pattern=r"^S[1-9][0-9]*$")
+    text: str = Field(min_length=5, max_length=600)
+    kind: Literal["study_finding", "study_method", "limitation"]
+    evidence_refs: tuple[EvidenceRef, ...] = Field(min_length=1, max_length=4)
+
+    @model_validator(mode="after")
+    def distinct_refs(self) -> "JudgeStatement":
+        ids = [ref.evidence_id for ref in self.evidence_refs]
+        if len(ids) != len(set(ids)):
+            raise ValueError("duplicate statement evidence reference")
+        return self
+
+
+class JudgeConclusion(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+
+    based_on_statement_ids: tuple[str, ...] = Field(min_length=1, max_length=8)
+    justification: str = Field(min_length=5, max_length=1200)
+
+
+class JudgeDecisionV2(BaseModel):
+    """Source-attributed findings and a separate, proposed conclusion."""
+
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+
+    schema_version: Literal["2.0"]
+    label: JudgeLabel
+    statements: tuple[JudgeStatement, ...] = Field(min_length=1, max_length=8)
+    conclusion: JudgeConclusion
+    uncertainty_reasons: tuple[UncertaintyReason, ...] = ()
+
+    @model_validator(mode="after")
+    def valid_references(self) -> "JudgeDecisionV2":
+        ids = [statement.statement_id for statement in self.statements]
+        if len(ids) != len(set(ids)):
+            raise ValueError("duplicate statement ID")
+        used = self.conclusion.based_on_statement_ids
+        if len(used) != len(set(used)) or not set(used) <= set(ids):
+            raise ValueError("conclusion references unknown or duplicate statement")
+        return self
+
+
+AnyJudgeDecision = JudgeDecision | JudgeDecisionV2
+
+
+def decision_evidence_ids(decision: AnyJudgeDecision) -> tuple[str, ...]:
+    if isinstance(decision, JudgeDecisionV2):
+        return tuple(dict.fromkeys(
+            ref.evidence_id for statement in decision.statements
+            for ref in statement.evidence_refs
+        ))
+    return tuple(dict.fromkeys((*decision.cited_evidence_ids, *decision.opposing_evidence_ids)))
+
+
+def parse_stored_decision(data: dict[str, object]) -> AnyJudgeDecision:
+    # Strict models accept JSON arrays/enums through the JSON parser, while
+    # model_validate(dict) correctly rejects Python lists and raw enum strings.
+    # JSONB is decoded to a dict by SQLAlchemy, so restore JSON parsing here.
+    encoded = json.dumps(data)
+    if data.get("schema_version") == "2.0":
+        return JudgeDecisionV2.model_validate_json(encoded)
+    return JudgeDecision.model_validate_json(encoded)
+
+
 class JudgeSlot(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -80,6 +156,7 @@ class JudgeSlot(BaseModel):
     api_key: str | None = None
     search_override_active: bool = False
     search_guard_bypassed: bool = False
+    request_json_schema: bool = True
 
 
 class ProviderResponse(BaseModel):
@@ -118,7 +195,12 @@ class JudgeRun(BaseModel):
     attempt_count: int = Field(ge=0, le=2)
     outcome_status: str
     response_json: dict[str, object] | None = None
-    decision: JudgeDecision | None = None
+    decision: AnyJudgeDecision | None = None
+    input_snapshot_version: str | None = None
+    input_snapshot_hash: str | None = None
+    input_snapshot_json: dict[str, object] | None = None
+    revision_of_judge_run_id: UUID | None = None
+    semantic_revision_number: int = Field(default=0, ge=0, le=1)
     input_tokens: int | None = None
     output_tokens: int | None = None
     provider_request_id: str | None = None
@@ -132,6 +214,13 @@ class JudgeRun(BaseModel):
             raise ValueError("bypassed search guard cannot claim verified isolation")
         if self.schema_version_inferred and self.decision is None:
             raise ValueError("schema version inference requires a valid decision")
+        if (self.revision_of_judge_run_id is None) != (self.semantic_revision_number == 0):
+            raise ValueError("semantic revision number and parent must agree")
+        if isinstance(self.decision, JudgeDecisionV2) and (
+            self.input_snapshot_version != "judge-input-2.0"
+            or not self.input_snapshot_hash or self.input_snapshot_json is None
+        ):
+            raise ValueError("V2 decision requires a frozen judge-visible input snapshot")
         return self
 
 

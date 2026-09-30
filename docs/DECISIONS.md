@@ -645,3 +645,118 @@ could recover it, while estrogen-related meningioma/bone-health papers could
 rank as topical matches without measuring the asserted hormone endpoint.
 These are extraction and retrieval-selection defects, not grounds to change
 judge labels, citation validation, verdict thresholds, or report templates.
+
+## ADR-033 — Validate attributed findings before proposed conclusions
+
+**Decision:** new judge requests use strict decision schema 2.0: one
+source-attributed statement per finding/method/limitation, exact quote and E
+ID for each reference, and a separate proposed-label justification naming
+its statement IDs. A statement may cite multiple frozen passages jointly.
+Judge input `judge-input-2.0` groups exact frozen sections by selected
+document, records omitted E IDs and a content hash, and is identical for all
+judges. Passage IDs remain from the immutable Pack; historical Pack 1.3/1.4
+hashes and old judge rows are not rewritten. The old **whole free-text
+explanation against each individual citation** approach in ADR-021 is
+superseded for new runs. Historical v1 decisions remain readable, but no
+statement mappings are inferred for them under policy 1.2.
+Snapshot equivalence is checked by canonical JSON content hash after JSONB
+round-trip, not Python tuple/list object equality; the latter caused a live
+false provenance failure and is covered by a regression test.
+
+**Decision:** `judge-validation-2.0` first checks pack/input/quote/number
+provenance per statement, then asks a no-tools semantic validator whether the
+*statement* is attributed, and separately whether validated findings justify
+the proposed label for the *original claim*. Typed target-specific issues
+identify judge statement versus user claim versus source metadata. A correctly
+quoted estimate from one study is not compared with every other citation or
+with a user claim number. OR/RR/HR and other typed measures are not silently
+substituted. Missing context stays uncertain. The source can contradict the
+user claim while supporting an accurate judge statement; a null result alone
+does not establish absence of effect. Valid findings remain recorded even
+when a conclusion fails. Mock semantic providers test orchestration only;
+the bounded, opt-in real-model semantic command is not clinical validation.
+
+**Decision:** after a target-specific invalid validation, at most one
+same-provider, same-model semantic revision may be requested. It sees only
+the original claim, the *same* frozen input, its own response, and its own
+issues. The new append-only judge row links to its parent and gets one model
+attempt, without another schema retry. An explicit claim checkpoint names
+only the active run per slot for aggregation; parent and failed revision rows
+remain audit records, never second votes. Database uniqueness prevents a
+second child revision. `verdict-policy-1.2` retains existing 2/3 minimum
+judge counts and production identity/family/search/validator gates; it accepts
+only v2 validation. Policy 1.1 remains for historical fixtures and audit
+reading, not reinterpretation of old free text.
+
+**Decision:** report contract 1.1 and builder 1.2 attribute numeric issues to
+the actual target. An Unable result in development may show a separate
+neutral set of exact frozen, hash-verified retrieved excerpts, explicitly not
+validated support or opposition. Staging/production still deny unqualified
+reports. Debug events bind analysis/claim/judge/validation/call, operation,
+statement/E IDs, and revision; `calling` means awaiting a response. Stage
+execution is displayed separately from accepted assessment counts.
+
+**Reason:** retained sunscreen analysis
+`9338114b-f9fe-4642-b1e3-29830073400f` proved the old contract could
+cross-compare two studies' numbers, label E8 as contradicting judge use while
+its explanation said it opposed the *user claim*, and blame a nonexistent
+numeric magnitude in the claim. It also showed PMID 21135266's METHODS and
+RESULTS frozen but hidden behind its selected CONCLUSION. None of these
+observations establishes a particular sunscreen verdict; the old 1-of-3
+qualified Unable result remains an immutable historical outcome.
+
+## ADR-034 — Permit a clearly provisional single-assessment result in development
+
+**Decision:** new live V2 runs use `verdict-policy-1.3`. Only in
+`fixture_or_evaluation` mode, for a standard-risk claim, one fully validated
+decisive judge assessment may yield a provisional `supported` or
+`contradicted` result. The report labels this “Provisional … (Development
+Only),” keeps `production_qualified=false`, displays its exact validated
+citations, and records `EVALUATION_SINGLE_VALIDATED_ASSESSMENT` alongside all
+excluded-assessment reasons. Zero qualified judges, an inconclusive qualified
+judge, partial/invalid validation, no selected evidence, and high-risk claims
+cannot use this branch. Production still requires two independently qualified
+judges for standard risk and three for high risk, plus all existing identity,
+search-isolation, provenance, and approved-validator gates. Policies 1.1 and
+1.2 and historical append-only records are unchanged. This is a prototype
+demonstration output, not a public medical report or a substitute for the
+Phase 8 clinical evaluation benchmark.
+
+For causal/prevention/treatment wording under policy 1.3, a decisive label
+also needs at least one *conclusion-cited* trial or evidence synthesis in the
+frozen Pack. An observational/unknown-design citation alone yields
+`not_enough_evidence` with `CAUSAL_EVIDENCE_TOO_INDIRECT`, even when a semantic
+model mistakenly calls a reverse-direction association decisive. Study-design
+metadata is a conservative sufficiency gate, not a truth vote; a trial or
+synthesis still needs normal attribution and conclusion validation.
+
+**Reason:** live runs on a direct smoking/lung-cancer association found and
+validated strong cited evidence but frequently lost the second vote to
+provider response-shape or semantic-validator availability. Reporting only
+`Unable to Verify Reliably` hid that one assessment had actually passed every
+available evidence-use check. A versioned, visibly provisional evaluation
+result preserves useful prototype behavior without silently releasing a
+single-model medical verdict.
+
+## ADR-035 — Increase retrieval recall and repair validation contract edges
+
+**Decision:** the PubMed query planner retains MeSH/source-grounded queries
+and adds bounded automatic-term/lay-word fallbacks when a literal phrase is
+overly restrictive. Selection ranks direct exposure-outcome endpoint studies
+above generic topical articles and keeps exclusions in the auditable Pack.
+The judge accepts at most eight attributed statements and 1,200 conclusion
+characters, while its prompt still requests one or two concise decisive
+findings. Exact source IDs and quotes, numeric alignment, semantic validation,
+and the frozen input hash remain mandatory. The numeric parser recognizes
+`confidence interval (CI)` as well as `CI`, avoiding comparison against the
+wrong interval in a multi-estimate passage. The semantic validator receives
+and must echo exact required statement/evidence identifiers. Statement
+attribution deliberately omits the original claim so the model cannot
+confuse a source-to-statement check with the final claim check. No retrieval
+rank is treated as a medical support vote.
+
+**Reason:** the carrot/eyesight smoke had no selected papers because the
+literal query missed ordinary vision wording; smoking/lung-cancer runs had
+direct studies yet lost judges to bounded JSON-shape issues and one false
+numeric mismatch. These repairs improve reachability and audit fidelity, not
+the medical truth threshold for a production verdict.

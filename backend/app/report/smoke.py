@@ -35,6 +35,11 @@ def format_report(report: LensReport, audit_id: UUID) -> str:
             f"Validated citation: {'yes' if card.citation_validated else 'no'}",
             f"Source: {card.source_url}", "Excerpt (source text):", card.exact_excerpt,
         ])
+    if report.neutral_retrieved_sources:
+        lines.append("\nRETRIEVED SOURCES — NOT VALIDATED SUPPORT FOR A FINAL CONCLUSION")
+        for source in report.neutral_retrieved_sources:
+            lines.extend([source.evidence_id, f"PMID: {source.pmid}",
+                          f"Title: {source.title}", source.exact_excerpt])
     lines.extend(["", "LIMITATIONS", *([f"- {item}" for item in report.evidence_limitations]
                                          or ["- No additional material limitation recorded."]),
                   "", "ASSESSMENTS", report.judge_summary.description,

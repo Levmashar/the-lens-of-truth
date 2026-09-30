@@ -147,6 +147,9 @@ def test_risk_of_disease_demotes_progression_and_mortality_only_endpoints() -> N
         by_pmid["3013"].endpoint_directness.score
     )
     assert "post_disease_endpoint" in by_pmid["3012"].endpoint_directness.warnings
+    assert "3012" not in _selected_pmids(pack)
+    assert "3013" not in _selected_pmids(pack)
+    assert EvidencePack.model_validate_json(pack.model_dump_json()) == pack
 
 
 def test_post_outcome_rule_uses_pico_outcome_not_disease_name() -> None:
@@ -184,6 +187,7 @@ def test_smoking_risk_outranks_screening_and_never_smokers() -> None:
     assert by_pmid["3004"].relationship_directness.direction == "incidental"
     assert "exposure_excluded_population" in by_pmid["3003"].relationship_directness.warnings
     assert len(set(_selected_pmids(pack))) == len(pack.selected_evidence_ids)
+    assert EvidencePack.model_validate_json(pack.model_dump_json()) == pack
 
 
 def test_background_only_and_covariate_only_are_not_direct_exposure_studies() -> None:
@@ -299,3 +303,103 @@ def test_directness_metadata_and_selection_change_hash_deterministically() -> No
     assert hashlib.sha256(metadata_only).hexdigest() != hashlib.sha256(
         original_bytes
     ).hexdigest()
+
+
+def test_mmr_vaccination_cohort_beats_social_and_handout_candidates() -> None:
+    claim = _claim("MMR vaccine causes autism.", "MMR vaccine", "autism", "causal")
+    claim = claim.model_copy(update={"entities": (MedicalEntity(
+        surface_text="MMR vaccine", entity_type="intervention_or_exposure",
+        mesh_id="D022542", preferred_name="Measles-Mumps-Rubella Vaccine",
+        match_type="synonym", confidence=0.95,
+        terminology_source="mesh", terminology_version="2026",
+    ),)})
+    cohort = _doc(
+        "30831578", "Measles, Mumps, Rubella Vaccination and Autism: "
+        "A Nationwide Cohort Study.",
+        ("RESULTS", "Comparing MMR-vaccinated with MMR-unvaccinated children "
+         "yielded an autism hazard ratio of 0.93."),
+        ("CONCLUSION", "MMR vaccination was not associated with increased autism risk."),
+        quality=0.67,
+    )
+    social = _doc(
+        "32057491", "Confirmatory bias in health decisions: Evidence from "
+        "the MMR-autism controversy.",
+        ("ABSTRACT", "Parents discussed MMR vaccine and autism risk."),
+    )
+    handout = _doc(
+        "30831599", "The MMR Vaccine Is Not Associated With Risk for Autism.",
+    ).model_copy(update={"publication_types": ("Patient Education Handout",)})
+    pack = _pack(claim, social, handout, cohort)
+    assert _selected_pmids(pack) == ["30831578"]
+    by_pmid = {document.pmid: document for document in pack.documents}
+    assert by_pmid["30831578"].relationship_directness.direction == "aligned"
+    assert by_pmid["32057491"].relationship_directness.direction == "incidental"
+    assert len(pack.documents) == 3
+    reasons = {
+        next(doc.pmid for doc in pack.documents
+             if doc.document_id == item.passage.document_id): item.selection_reason
+        for item in pack.passages if not item.selected_for_judging
+    }
+    assert reasons["30831599"] == "non_evidence_publication_excluded"
+
+
+def test_direct_smoking_review_beats_genetic_modifier_question() -> None:
+    claim = _claim("Smoking increases the risk of lung cancer.", "Smoking", "lung cancer",
+                   "causal")
+    direct = _doc(
+        "12362269", "Molecular epidemiology of smoking and lung cancer.",
+        ("ABSTRACT", "Tobacco smoking causes lung cancer and increases its incidence."),
+        quality=0.48,
+    )
+    genetics = _doc(
+        "39366959", "Multi-ancestry GWAS meta-analyses of lung cancer reveal "
+        "susceptibility loci and elucidate smoking-independent genetic risk.",
+        ("ABSTRACT", "Genetic risk of lung cancer was distinguished from smoking "
+         "behavioral susceptibility."), quality=0.85,
+    )
+    interaction = _doc(
+        "38117513", "CYP2A6 Activity and Cigarette Consumption Interact in "
+        "Smoking-Related Lung Cancer Susceptibility.",
+        ("ABSTRACT", "Cigarette smoking causes lung cancer. Genetic variants "
+         "modified lung cancer susceptibility in smokers."),
+    )
+    pack = _pack(claim, genetics, interaction, direct)
+    assert _selected_pmids(pack)[0] == "12362269"
+    by_pmid = {document.pmid: document for document in pack.documents}
+    assert by_pmid["39366959"].relationship_directness.direction == "incidental"
+    selected = {item.evidence_id for item in pack.passages if item.selected_for_judging}
+    assert not any(item.evidence_id in selected and item.passage.document_id ==
+                   "pubmed:39366959" for item in pack.passages)
+    assert len(pack.documents) == 3
+
+
+def test_two_direct_titles_prevent_generic_outcome_reviews_from_padding_pack() -> None:
+    claim = _claim("Smoking increases the risk of lung cancer.", "Smoking", "lung cancer",
+                   "causal")
+    first = _doc("7101", "Smoking and lung cancer incidence in a cohort",
+                 ("RESULTS", "Smoking increased incident lung cancer risk."))
+    second = _doc("7102", "Smoking and lung cancer risk in adults",
+                  ("RESULTS", "Smoking was associated with lung cancer incidence."))
+    background = _doc("7103", "The epidemiology of lung cancer",
+                      ("ABSTRACT", "Smoking is associated with lung cancer incidence."),
+                      quality=0.9)
+    pack = _pack(claim, background, first, second)
+    assert set(_selected_pmids(pack)) == {"7101", "7102"}
+    assert len(pack.documents) == 3
+    assert any(item.selection_reason == "direct_title_evidence_available"
+               for item in pack.passages if item.passage.document_id == "pubmed:7103")
+    assert EvidencePack.model_validate_json(pack.model_dump_json()) == pack
+
+
+def test_title_only_paper_does_not_displace_full_direct_abstract() -> None:
+    claim = _claim("Smoking increases the risk of lung cancer.", "Smoking", "lung cancer",
+                   "causal")
+    full = _doc("7201", "Smoking and lung cancer incidence in a cohort",
+                ("RESULTS", "Smoking increased incident lung cancer risk."))
+    title_only = _doc("7202", "Smoking and lung cancer")
+    pack = _pack(claim, title_only, full)
+    assert _selected_pmids(pack) == ["7201"]
+    assert len(pack.documents) == 2
+    assert any(item.selection_reason == "title_only_when_abstract_available"
+               for item in pack.passages if item.passage.document_id == "pubmed:7202")
+    assert EvidencePack.model_validate_json(pack.model_dump_json()) == pack

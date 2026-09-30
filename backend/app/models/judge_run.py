@@ -16,6 +16,7 @@ class JudgeRunRecord(UUIDPrimaryKeyMixin, Base):
     __table_args__ = (
         Index("ix_judge_run_claim_id", "claim_id"),
         Index("ix_judge_run_evidence_pack_id", "evidence_pack_id"),
+        Index("uq_judge_run_single_revision", "revision_of_judge_run_id", unique=True),
     )
 
     claim_id: Mapped[UUID] = mapped_column(
@@ -51,6 +52,15 @@ class JudgeRunRecord(UUIDPrimaryKeyMixin, Base):
     )
     prompt_version: Mapped[str] = mapped_column(String(64), nullable=False)
     prompt_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    input_snapshot_version: Mapped[str | None] = mapped_column(String(64))
+    input_snapshot_hash: Mapped[str | None] = mapped_column(String(64))
+    input_snapshot_json: Mapped[dict[str, object] | None] = mapped_column(JSONB)
+    revision_of_judge_run_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("judge_run.id", ondelete="CASCADE"),
+    )
+    semantic_revision_number: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0",
+    )
     requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     responded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     latency_ms: Mapped[int] = mapped_column(Integer, nullable=False)

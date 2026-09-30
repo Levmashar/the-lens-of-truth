@@ -8,7 +8,7 @@ from time import monotonic
 from typing import Literal
 from uuid import uuid4
 
-from app.judging.models import JudgeLabel, JudgeRun
+from app.judging.models import JudgeDecisionV2, JudgeLabel, JudgeRun
 from app.retrieval.evidence_pack import JUDGE_READY_PACK_VERSIONS, canonical_pack_bytes
 from app.retrieval.models import EvidencePack
 from app.validation.entailment import (
@@ -33,6 +33,8 @@ from app.validation.numeric import VERSION as NUMERIC_VERSION
 from app.validation.numeric import compare_numbers
 from app.validation.scope import VERSION as SCOPE_VERSION
 from app.validation.scope import compare_relation, compare_scope
+from app.validation.semantic import SemanticValidator
+from app.validation.v2 import validate_v2
 
 VALIDATION_VERSION = "judge-validation-1.0"
 DETERMINISTIC_VERSION = f"pack-1.3+{NUMERIC_VERSION}+{SCOPE_VERSION}"
@@ -41,6 +43,7 @@ DETERMINISTIC_VERSION = f"pack-1.3+{NUMERIC_VERSION}+{SCOPE_VERSION}"
 @dataclass
 class ValidationService:
     entailment_validator: EvidenceEntailmentValidator | None = None
+    semantic_validator: SemanticValidator | None = None
     entailment_timeout_seconds: float = 20.0
 
     async def run(self, judge: JudgeRun, pack: EvidencePack) -> JudgeValidationRun:
@@ -48,6 +51,8 @@ class ValidationService:
 
         if judge.decision is None or judge.outcome_status != "succeeded":
             raise ValueError("Only successful, strictly parsed judge runs can be validated")
+        if isinstance(judge.decision, JudgeDecisionV2):
+            return await validate_v2(judge, pack, self.semantic_validator)
         decision = judge.decision
         started_at, start = datetime.now(UTC), monotonic()
         actual_hash = hashlib.sha256(canonical_pack_bytes(

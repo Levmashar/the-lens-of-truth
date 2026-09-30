@@ -9,11 +9,20 @@ from app.validation.models import NumericAlignment
 VERSION = "numeric-1.0"
 _NUMBER = r"\d+(?:\.\d+)?"
 _PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("relative_risk", re.compile(rf"\b(?:RR|relative risk)\s*[=:]?\s*({_NUMBER})\b", re.I)),
-    ("odds_ratio", re.compile(rf"\b(?:OR|odds ratio)\s*[=:]?\s*({_NUMBER})\b", re.I)),
-    ("hazard_ratio", re.compile(rf"\b(?:HR|hazard ratio)\s*[=:]?\s*({_NUMBER})\b", re.I)),
+    ("relative_risk", re.compile(
+        rf"\b(?:(?-i:RR)|relative risk(?:\s*\(\s*RR\s*\))?)"
+        rf"\s*(?:was|of|=|:)?\s*({_NUMBER})\b", re.I,
+    )),
+    ("odds_ratio", re.compile(
+        rf"\b(?:(?-i:OR)|odds ratio(?:\s*\(\s*OR\s*\))?)"
+        rf"\s*(?:was|of|=|:)?\s*({_NUMBER})\b", re.I,
+    )),
+    ("hazard_ratio", re.compile(
+        rf"\b(?:(?-i:HR)|hazard ratio(?:\s*\(\s*HR\s*\))?)"
+        rf"\s*(?:was|of|=|:)?\s*({_NUMBER})\b", re.I,
+    )),
     ("confidence_interval", re.compile(
-        rf"\b(?:95%\s*)?(?:CI|confidence interval)\s*[=:]?\s*"
+        rf"\b(?:95%\s*)?(?:CI|confidence interval(?:\s*\(\s*CI\s*\))?)\s*[=:]?\s*"
         rf"[\[(]?({_NUMBER})\s*(?:-|–|to|,)\s*({_NUMBER})[\])]??", re.I,
     )),
     ("p_value", re.compile(rf"\bp\s*([<=>])\s*({_NUMBER})\b", re.I)),
@@ -25,8 +34,8 @@ _PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     )),
     ("percent_change", re.compile(
         rf"\b(?:by\s+)?({_NUMBER})\s*%\s*(?:reduction|decrease|increase|higher|lower)\b|"
-        rf"\b(?:reduc\w*|decreas\w*|increas\w*|higher|lower)\s+"
-        rf"(?:\w+\s+){{0,5}}?by\s+({_NUMBER})\s*%", re.I,
+        rf"\b(?:reduc\w*|decreas\w*|increas\w*|higher|lower\w*)\s+"
+        rf"(?:\w+\s+){{0,5}}?(?:by|was|of)\s+({_NUMBER})\s*%", re.I,
     )),
     ("percentage_points", re.compile(rf"\b({_NUMBER})\s*percentage[ -]points?\b", re.I)),
     ("percent", re.compile(rf"\b({_NUMBER})\s*%", re.I)),
@@ -124,3 +133,31 @@ def compare_numbers(claim: str, reasoning: str, passage: str) -> NumericAlignmen
     if len(comparisons) == len(asserted):
         return NumericAlignment.ALIGNED
     return NumericAlignment.UNCERTAIN
+
+
+def compare_statement_numbers(
+    statement: str, quoted_source: str,
+) -> tuple[NumericAlignment, Quantity | None, Quantity | None]:
+    """Compare one attributed statement with its own cited quotation only.
+
+    A distinct study, an untyped year, or the original user's number never
+    enters this comparison. Multiple candidate estimates are uncertain unless
+    the exact typed value occurs in the quote.
+    """
+
+    asserted = extract_quantities(statement)
+    if not asserted:
+        return NumericAlignment.NOT_APPLICABLE, None, None
+    source = extract_quantities(quoted_source)
+    uncertain = False
+    for value in asserted:
+        same_type = [candidate for candidate in source if _compatible(value, candidate)]
+        if any(candidate.values == value.values and
+               (value.kind != "p_value" or candidate.operator == value.operator)
+               for candidate in same_type):
+            continue
+        if len(same_type) == 1:
+            return NumericAlignment.MISMATCH, value, same_type[0]
+        uncertain = True
+    return (NumericAlignment.UNCERTAIN if uncertain else NumericAlignment.ALIGNED,
+            None, None)

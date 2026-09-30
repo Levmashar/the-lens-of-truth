@@ -3,6 +3,7 @@
 import re
 from collections import defaultdict
 
+from app.retrieval.lexical import lay_variants
 from app.retrieval.models import ClaimSnapshot, EvidencePassage, PubMedDocument, RankedPassage
 from app.retrieval.study_quality import explicit_animal_subject
 
@@ -17,8 +18,22 @@ _RELATION_WORDS: dict[str, frozenset[str]] = {
 }
 _STOP = frozenset({
     "a", "and", "body", "consumption", "frequent", "higher", "in", "of",
-    "regular", "the", "usage", "use", "users",
+    "regular", "the", "usage", "use", "users", "eating", "improve", "improves",
+    "improved", "improving",
 })
+_NON_EVIDENCE_PUBLICATIONS = frozenset({
+    "editorial", "historical article", "comment", "letter", "news", "newspaper article",
+    "patient education handout",
+})
+_MODIFIER_STUDY_QUESTION = re.compile(
+    r"\b(?:GWAS|genom\w*|susceptib\w*|polymorph\w*|loci|"
+    r"gene[- ]environment|interact\w*)\b", re.I,
+)
+_ARTIFICIAL_VISION = re.compile(r"\b(?:artificial|computer|machine) vision\b", re.I)
+_HUMAN_VISUAL_SYSTEM = re.compile(
+    r"\b(?:eye|eyes|ocular|retina|retinal|ophthalm\w*|visual acuity)\b", re.I,
+)
+_DISEASE_RISK_FRAMING = re.compile(r"\b(?:caus\w*|risk|inciden\w*|develop\w*)\b", re.I)
 
 
 def _words(value: str | None) -> set[str]:
@@ -43,7 +58,7 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
     if slot is None:
         return ()
     head = re.split(r"\b(?:in|among)\b", slot, maxsplit=1, flags=re.I)[0]
-    return tuple(
+    linked = tuple(
         label for entity in claim.entities
         if entity.entity_type == role and entity.mesh_id and not entity.ambiguous
         and _words(entity.surface_text)
@@ -51,6 +66,8 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
         for label in (entity.surface_text, entity.preferred_name)
         if label
     )
+    return (*linked, *(variant for _, variant in lay_variants(slot))) if role == "outcome" \
+        else linked
 
 
 def rank_passages(
@@ -176,6 +193,16 @@ def _claim_focused(document: PubMedDocument) -> bool:
     )
 
 
+def _nonclinical_visual_context(claim: ClaimSnapshot | None, document: PubMedDocument) -> bool:
+    """Do not mistake machine inspection of food for a human vision endpoint."""
+
+    if not claim or not claim.pico or not lay_variants(claim.pico.outcome):
+        return False
+    source_text = f"{document.title} {document.abstract or ''}"
+    return bool(_ARTIFICIAL_VISION.search(source_text)
+                and not _HUMAN_VISUAL_SYSTEM.search(source_text))
+
+
 def select_top_evidence(
     passages: tuple[RankedPassage, ...], *, limit: int = 8,
     max_per_document: int = 1, documents: tuple[PubMedDocument, ...] = (),
@@ -207,7 +234,11 @@ def select_top_evidence(
             document and not population_mismatch
             and document.relationship_directness.direction not in {"reverse", "incidental"}
             and document.endpoint_directness.factors.get("endpoint_in_title") == 1.0
-            and document.relationship_directness.factors.get("exposure_in_document") == 1.0
+            and document.relationship_directness.factors.get("exposure_in_title") == 1.0
+        ) else 0.0
+        modifier_question_penalty = 0.16 if (
+            document and _MODIFIER_STUDY_QUESTION.search(document.title)
+            and not re.search(r"\b(?:epidemiology|review)\b", document.title, re.I)
         ) else 0.0
         relationship_mismatch_penalty = 0.22 if (
             document and document.relationship_directness.direction in {"reverse", "incidental"}
@@ -225,13 +256,15 @@ def select_top_evidence(
             "applicability_penalty": applicability_penalty,
             "endpoint_indirect_penalty": endpoint_indirect_penalty,
             "relationship_mismatch_penalty": relationship_mismatch_penalty,
+            "modifier_question_penalty": modifier_question_penalty,
             "priority_normalizer": 1.16,
         }
         priority = round(max(0.0, min(1.0,
             (sum(value for key, value in factors.items()
                  if key.endswith("_component") or key.endswith("_bonus"))
              - applicability_penalty - endpoint_indirect_penalty
-             - relationship_mismatch_penalty) / factors["priority_normalizer"],
+             - relationship_mismatch_penalty - modifier_question_penalty)
+            / factors["priority_normalizer"],
         )), 4)
         scored.append(passage.model_copy(update={
             "selection_priority_score": priority, "selection_factors": factors,
@@ -264,6 +297,57 @@ def select_top_evidence(
     unfocused = {
         document.document_id for document in documents if not _claim_focused(document)
     }
+    non_evidence_publications = {
+        document.document_id for document in documents
+        if any(kind.casefold() in _NON_EVIDENCE_PUBLICATIONS
+               for kind in document.publication_types)
+    }
+    nonclinical_visual = {
+        document.document_id for document in documents
+        if _nonclinical_visual_context(claim, document)
+    }
+    # A one-character synthetic endpoint ("Y") is not evidence that the
+    # claim concerns incident disease; it must not trigger a hard exclusion.
+    outcome_text = claim.pico.outcome.strip() if claim and claim.pico and claim.pico.outcome else ""
+    disease_risk_claim = bool(
+        claim and _DISEASE_RISK_FRAMING.search(claim.raw_text)
+        and (len(outcome_text) > 2 or any(
+            entity.entity_type == "outcome" and entity.mesh_id for entity in claim.entities
+        ))
+    )
+    wrong_endpoint = {
+        document.document_id for document in documents
+        if disease_risk_claim
+        and "post_disease_endpoint" in document.endpoint_directness.warnings
+    }
+    indirect_question = {
+        document.document_id for document in documents
+        if document.relationship_directness.direction in {"reverse", "incidental"}
+    }
+    otherwise_eligible = {
+        document.document_id for document in documents
+        if document.document_id not in (
+            retracted | nonhuman | unfocused | non_evidence_publications
+            | nonclinical_visual | wrong_endpoint | indirect_question
+        )
+    }
+    eligible_abstracts = {
+        document_id for document_id in otherwise_eligible
+        if any(item.passage_type == "abstract" for item in by_document.get(document_id, ()))
+    }
+    title_only_when_abstract_available = (
+        otherwise_eligible - eligible_abstracts if eligible_abstracts else set()
+    )
+    otherwise_eligible -= title_only_when_abstract_available
+    direct_title = {
+        document.document_id for document in documents
+        if document.document_id in otherwise_eligible
+        and document.relationship_directness.factors.get("exposure_in_title") == 1.0
+        and document.relationship_directness.factors.get("outcome_in_title") == 1.0
+    }
+    contextual_only = (
+        otherwise_eligible - direct_title if len(direct_title) >= 2 else set()
+    )
     direct_quantitative = {
         document.document_id for document in documents
         if document.endpoint_directness.factors.get("quantitative_outcome") == 1.0
@@ -280,7 +364,13 @@ def select_top_evidence(
     for passage in representatives:
         document_id = passage.passage.document_id
         if (document_id in retracted or document_id in nonhuman
-                or document_id in unfocused or document_id in weak_endpoint):
+                or document_id in unfocused or document_id in weak_endpoint
+                or document_id in non_evidence_publications
+                or document_id in nonclinical_visual
+                or document_id in indirect_question
+                or document_id in wrong_endpoint
+                or document_id in contextual_only
+                or document_id in title_only_when_abstract_available):
             continue
         if counts[document_id] >= max_per_document:
             continue
@@ -307,6 +397,18 @@ def select_top_evidence(
             reason = "retracted_excluded"
         elif passage.passage.document_id in nonhuman:
             reason = "nonhuman_evidence_excluded"
+        elif passage.passage.document_id in non_evidence_publications:
+            reason = "non_evidence_publication_excluded"
+        elif passage.passage.document_id in nonclinical_visual:
+            reason = "nonclinical_visual_context_excluded"
+        elif passage.passage.document_id in wrong_endpoint:
+            reason = "post_disease_endpoint_excluded"
+        elif passage.passage.document_id in indirect_question:
+            reason = "indirect_relationship_question_excluded"
+        elif passage.passage.document_id in title_only_when_abstract_available:
+            reason = "title_only_when_abstract_available"
+        elif passage.passage.document_id in contextual_only:
+            reason = "direct_title_evidence_available"
         elif passage.passage.document_id in unfocused:
             reason = "insufficient_claim_focus"
         elif passage.passage.document_id in weak_endpoint:

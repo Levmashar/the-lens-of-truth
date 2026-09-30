@@ -65,6 +65,7 @@ from app.schemas.analysis import (
 from app.schemas.retrieval import EvidencePreviewRequest, EvidencePreviewResponse
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.image_ingestion import ScreenshotSanitizer
+from app.validation.models import JudgeValidationResult
 from app.verdict.models import LensVerdict
 
 router = APIRouter()
@@ -306,6 +307,18 @@ def _debug_model_statuses(
             status=last.status if last else "not_called",
             failure_type=last.failure_type if last else None,
         ))
+    validator_pairs = tuple(dict.fromkeys(
+        (event.role, event.provider, event.model) for event in events
+        if event.role in {"semantic_validator", "citation_validator"}
+    ))
+    for role, validator_provider, model in validator_pairs:
+        last = next(event for event in reversed(events)
+                    if event.role == role and event.provider == validator_provider
+                    and event.model == model)
+        statuses.append(DebugModelStatus(
+            role=role, provider=validator_provider, model=model, status=last.status,
+            failure_type=last.failure_type,
+        ))
     return statuses
 
 
@@ -367,6 +380,10 @@ async def get_analysis_claims(
         summaries.append(ClaimAnalysisSummary(
             claim_id=row.claim_id, ordinal=row.ordinal, status=row.status,
             stage=row.stage, completed_stages=row.completed_stages,
+            skipped_stages=[
+                stage for stage, timestamps in row.stage_timestamps.items()
+                if "skipped_at" in timestamps
+            ],
             stage_timestamps=row.stage_timestamps,
             failure_code=row.failure_code,
             evidence_pack_id=row.evidence_pack_id, evidence_pack_hash=row.evidence_pack_hash,
@@ -401,13 +418,31 @@ def _debug_judge_runs(
         if judge is None or judge.claim_id != row.claim_id:
             continue
         validation = validations.get(judge.id)
+        try:
+            validation_result = (JudgeValidationResult.model_validate(validation.result_json)
+                                 if validation else None)
+        except ValueError:
+            validation_result = None
         summaries.append(DebugJudgeRun(
             slot=judge.slot, provider=judge.provider, model=judge.model,
+            judge_run_id=judge.id,
+            validation_run_id=validation.id if validation else None,
+            revision_of_judge_run_id=judge.revision_of_judge_run_id,
+            semantic_revision_number=judge.semantic_revision_number or 0,
             model_family=judge.model_family, outcome_status=judge.outcome_status,
             error_category=judge.error_category, attempt_count=judge.attempt_count,
             latency_ms=judge.latency_ms,
             validation_status=validation.status if validation else None,
             validation_error_category=validation.error_category if validation else None,
+            statement_statuses=({item.statement_id: item.status.value
+                                 for item in validation_result.statement_attributions}
+                                if validation_result else {}),
+            conclusion_status=(validation_result.conclusion_justification.status.value
+                               if validation_result and
+                               validation_result.conclusion_justification else None),
+            targeted_issue_codes=([item.issue_code.value
+                                   for item in validation_result.targeted_issues]
+                                  if validation_result else []),
         ))
     return summaries
 

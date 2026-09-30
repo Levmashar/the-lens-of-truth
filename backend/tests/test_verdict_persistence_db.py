@@ -58,7 +58,7 @@ def test_verdict_runs_append_and_postgres_blocks_update(
             session.flush()
             session.add(EvidencePackRecord(
                 id=request.evidence_pack_id, claim_id=pack.claim_id, run_id=retrieval_id,
-                version="1.3", snapshot_hash=pack.snapshot_hash,
+                version=pack.evidence_pack_version, snapshot_hash=pack.snapshot_hash,
                 snapshot_json=pack.model_dump(mode="json"), created_at=datetime.now(UTC),
             ))
             session.flush()

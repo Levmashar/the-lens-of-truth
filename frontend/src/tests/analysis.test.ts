@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createAnalysisPage } from "../pages/analysis";
-import { analysisId, claimId2, claimSummary, jsonResponse, progress, report, summaries } from "./fixtures";
+import { createDebugProgress } from "../components/debugProgress";
+import { analysisId, claimId, claimId2, claimSummary, jsonResponse, progress, report, summaries } from "./fixtures";
 
 let dispose: (() => void) | null = null;
 
@@ -29,6 +30,27 @@ function mockResponses(analysis: ReturnType<typeof progress>, claims = summaries
 }
 
 describe("analysis page", () => {
+  it("marks judge and validation stages as skipped when retrieval selected no evidence", () => {
+    const node = createDebugProgress(progress({ debug_enabled: true }), [
+      claimSummary({
+        completed_stages: ["normalizing", "retrieving", "aggregating", "building_report"],
+        skipped_stages: ["judging", "validating"],
+        debug_judge_runs: [], judge_run_ids: [], judge_validation_run_ids: [],
+      }),
+    ], null);
+    expect(node.textContent).toContain("Judging: skipped because no evidence was selected");
+    expect(node.textContent).toContain("Validation: skipped because no judge was called");
+    expect(node.querySelectorAll('[data-state="skipped"]')).toHaveLength(4);
+    expect(node.textContent).not.toContain("Judging: completed");
+  });
+
+  it("does not call an empty validation stage a successful assessment", () => {
+    const node = createDebugProgress(progress({ debug_enabled: true }), [
+      claimSummary({ debug_judge_runs: [], judge_validation_run_ids: [] }),
+    ], null);
+    expect(node.textContent).toContain("no judge assessment was available to validate");
+    expect(node.textContent).not.toContain("0 accepted / 0 rejected");
+  });
   it("loads progress, per-claim status, and a persisted report", async () => {
     const fetchMock = mockResponses(progress());
     const node = mount();
@@ -130,12 +152,20 @@ describe("analysis page", () => {
       role: "extraction", provider: "openai_compatible", model: "fixture-extractor",
       attempt: 1, status: "responded", failure_type: null, http_status: 200,
       elapsed_ms: 1234, response_excerpt: '{"claims":[{"raw_span":"Vitamin C prevents the common cold."}]}',
+      analysis_id: analysisId, claim_id: claimId, judge_run_id: "judge-run-1",
+      statement_ids: ["S1"], evidence_ids: ["E8"],
+      validation_run_id: "validation-run-1", call_id: "call-1",
+      operation_kind: "statement_attribution", semantic_revision_number: 0,
     }] }), summaries());
     const node = mount();
     await vi.waitFor(() => expect(node.textContent).toContain("Model responses"));
     expect(node.textContent).toContain("fixture-extractor — Responded");
     expect(node.textContent).toContain("fixture-judge — Unavailable (timeout)");
     expect(node.querySelector(".debug-response-text")?.textContent).toContain("raw_span");
+    expect(node.textContent).toContain("judge judge-run-1");
+    expect(node.textContent).toContain("statements S1");
+    expect(node.textContent).toContain("evidence E8");
+    expect(node.textContent).toContain("call call-1");
   });
 
   it("removes repeated result copy without hiding the qualification notice", async () => {

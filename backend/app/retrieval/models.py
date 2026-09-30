@@ -32,14 +32,17 @@ class ClaimSnapshot(FrozenModel):
 
 class RetrievalQuery(FrozenModel):
     query_id: str
-    family: Literal["mesh", "lexical", "relation", "distinctive", "endpoint"]
+    family: Literal[
+        "mesh", "lexical", "relation", "distinctive", "endpoint",
+        "automatic", "lay_variant",
+    ]
     query: str
     source_fields: tuple[str, ...]
     relation_semantics: ClaimType | None = None
 
 
 class QueryPlan(FrozenModel):
-    version: Literal["1.0", "1.1"] = "1.1"
+    version: Literal["1.0", "1.1", "1.2"] = "1.2"
     source: Literal["pubmed"] = "pubmed"
     claim_type: ClaimType | None = None
     queries: tuple[RetrievalQuery, ...]
@@ -185,6 +188,9 @@ class RankedPassage(FrozenModel):
         "relevant_abstract", "title_only", "title_unique_relevance", "background_fallback",
         "retracted_excluded", "nonhuman_evidence_excluded", "insufficient_claim_focus",
         "endpoint_indirect_when_direct_alternatives_exist",
+        "non_evidence_publication_excluded", "nonclinical_visual_context_excluded",
+        "post_disease_endpoint_excluded", "indirect_relationship_question_excluded",
+        "title_only_when_abstract_available", "direct_title_evidence_available",
     ] | None = None
 
 

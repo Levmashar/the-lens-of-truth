@@ -71,6 +71,12 @@ class IssueCode(StrEnum):
     ENTAILMENT_UNCERTAIN = "ENTAILMENT_UNCERTAIN"
     ENTAILMENT_UNAVAILABLE = "ENTAILMENT_UNAVAILABLE"
     QUALITY_PRIOR_LOW = "QUALITY_PRIOR_LOW"
+    QUOTE_NOT_IN_FROZEN_PASSAGE = "QUOTE_NOT_IN_FROZEN_PASSAGE"
+    STATEMENT_NUMERIC_MISMATCH = "STATEMENT_NUMERIC_MISMATCH"
+    STATEMENT_ATTRIBUTION_FAILED = "STATEMENT_ATTRIBUTION_FAILED"
+    CONCLUSION_NOT_JUSTIFIED = "CONCLUSION_NOT_JUSTIFIED"
+    INVALID_CONCLUSION_PREMISE = "INVALID_CONCLUSION_PREMISE"
+    LEGACY_MAPPING_UNVERIFIED = "LEGACY_MAPPING_UNVERIFIED"
 
 
 FATAL_ISSUES = frozenset({
@@ -81,7 +87,62 @@ FATAL_ISSUES = frozenset({
     IssueCode.RELATION_STRENGTH_MISMATCH,
     IssueCode.EVIDENCE_CONTRADICTS_JUDGE_USE,
     IssueCode.NO_VALID_DECISIVE_CITATION,
+    IssueCode.QUOTE_NOT_IN_FROZEN_PASSAGE, IssueCode.STATEMENT_NUMERIC_MISMATCH,
+    IssueCode.STATEMENT_ATTRIBUTION_FAILED, IssueCode.CONCLUSION_NOT_JUSTIFIED,
+    IssueCode.INVALID_CONCLUSION_PREMISE,
 })
+
+
+class StatementAttributionStatus(StrEnum):
+    SUPPORTED_BY_SOURCES = "supported_by_sources"
+    CONTRADICTED_BY_SOURCES = "contradicted_by_sources"
+    NOT_ESTABLISHED_BY_SOURCES = "not_established_by_sources"
+    UNABLE_TO_ASSESS = "unable_to_assess"
+
+
+class ConclusionJustificationStatus(StrEnum):
+    JUSTIFIED = "justified"
+    NOT_JUSTIFIED = "not_justified"
+    UNCERTAIN = "uncertain"
+    UNABLE_TO_ASSESS = "unable_to_assess"
+
+
+class SemanticScope(StrEnum):
+    EXACT = "exact"
+    COMPATIBLE_BUT_NARROWER = "compatible_but_narrower"
+    BROADER_OR_INDIRECT = "broader_or_indirect"
+    MISMATCH = "mismatch"
+    UNKNOWN = "unknown"
+
+
+class ValidationIssue(FrozenModel):
+    target_type: Literal["user_claim", "judge_statement", "source_metadata"]
+    target_id: str
+    evidence_refs: tuple[str, ...]
+    issue_code: IssueCode
+    observed_value: str | None = None
+    source_value: str | None = None
+    measure_type: str | None = None
+    severity: Literal["fatal", "warning"]
+
+
+class StatementAttribution(FrozenModel):
+    statement_id: str
+    evidence_ids: tuple[str, ...]
+    status: StatementAttributionStatus
+    scope_match: SemanticScope = SemanticScope.UNKNOWN
+    reason: str = Field(min_length=1, max_length=600)
+    issues: tuple[ValidationIssue, ...] = ()
+    validator_provenance: dict[str, str] = Field(default_factory=dict)
+
+
+class ConclusionJustification(FrozenModel):
+    status: ConclusionJustificationStatus
+    based_on_statement_ids: tuple[str, ...]
+    evidence_ids: tuple[str, ...]
+    reason: str = Field(min_length=1, max_length=600)
+    issues: tuple[ValidationIssue, ...] = ()
+    validator_provenance: dict[str, str] = Field(default_factory=dict)
 
 
 class EntailmentInput(FrozenModel):
@@ -135,6 +196,9 @@ class JudgeValidationResult(FrozenModel):
     fatal_issue_codes: tuple[IssueCode, ...]
     warnings: tuple[IssueCode, ...]
     validation_version: str
+    statement_attributions: tuple[StatementAttribution, ...] = ()
+    conclusion_justification: ConclusionJustification | None = None
+    targeted_issues: tuple[ValidationIssue, ...] = ()
 
 
 class JudgeValidationRun(FrozenModel):

@@ -33,6 +33,12 @@ export interface LensReport {
   short_summary: string;
   why_this_result: ReportReason[];
   key_evidence: SourceCard[];
+  neutral_retrieved_sources?: {
+    evidence_id: string; pmid: string; doi: string | null; title: string;
+    publication_date: string | null; passage_section: string;
+    exact_excerpt: string; excerpt_truncated: boolean;
+    passage_sha256: string; source_url: string;
+  }[];
   evidence_limitations: string[];
   judge_summary: {
     qualified: number;

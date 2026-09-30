@@ -89,6 +89,14 @@ def test_judge_runs_append_and_keep_pack_provenance(
                 "fake": FakeProvider(json.dumps(protocol_payload)),
             }).run(pack_id, pack, (slot(1),)))
             persist_judge_runs(session, first)
+            revised = first[0].model_copy(update={
+                "judge_run_id": uuid4(),
+                "revision_of_judge_run_id": first[0].judge_run_id,
+                "semantic_revision_number": 1,
+                "attempt_count": 1,
+                "prompt_hash": "e" * 64,
+            })
+            persist_judge_runs(session, (revised,))
             persist_judge_runs(session, second)
             persist_judge_runs(session, failed)
             persist_judge_runs(session, bypassed)
@@ -97,10 +105,14 @@ def test_judge_runs_append_and_keep_pack_provenance(
             rows = list(session.scalars(select(JudgeRunRecord).where(
                 JudgeRunRecord.evidence_pack_id == pack_id,
             )))
-            assert len(rows) == 6
+            assert len(rows) == 7
             assert rows[0].id != rows[1].id
             assert {row.evidence_pack_hash for row in rows} == {pack.snapshot_hash}
-            assert sum(row.decision_json is not None for row in rows) == 4
+            assert sum(row.decision_json is not None for row in rows) == 5
+            child = next(row for row in rows if row.revision_of_judge_run_id is not None)
+            assert child.revision_of_judge_run_id == first[0].judge_run_id
+            assert child.input_snapshot_hash == first[0].input_snapshot_hash
+            assert child.semantic_revision_number == 1
             assert sum(row.schema_version_inferred for row in rows) == 1
             assert next(
                 row for row in rows if row.schema_version_inferred

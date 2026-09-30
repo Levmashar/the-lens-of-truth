@@ -56,3 +56,9 @@ class VerdictPolicyV1:
 
 
 POLICY_V1 = VerdictPolicyV1()
+POLICY_V2 = VerdictPolicyV1(
+    version="verdict-policy-1.2", validation_version="judge-validation-2.0",
+)
+POLICY_V3 = VerdictPolicyV1(
+    version="verdict-policy-1.3", validation_version="judge-validation-2.0",
+)

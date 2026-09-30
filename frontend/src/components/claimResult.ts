@@ -43,6 +43,33 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   } else evidence.append(element("p", "muted-copy", "No source excerpts qualified for display in this report."));
   article.append(evidence);
 
+  if (report.verdict === "unable_to_verify_reliably" &&
+      !report.production_qualified && report.neutral_retrieved_sources?.length) {
+    const neutral = element("section", "report-section");
+    append(neutral,
+      element("h4", "card-title", "Retrieved sources — not validated support for a final conclusion"),
+      element("p", "muted-copy", "These are exact frozen excerpts. Their relevance or direction was not validated as a final medical conclusion."),
+    );
+    for (const source of report.neutral_retrieved_sources) {
+      const card = element("article", "evidence-card");
+      append(card,
+        element("p", "", `E${source.evidence_id.replace(/^E/, "")} · PMID ${source.pmid} · ${source.passage_section}`),
+        element("h5", "", source.title),
+        element("blockquote", "", source.exact_excerpt),
+      );
+      const safeUrl = safeExternalUrl(source.source_url);
+      if (safeUrl) {
+        const link = element("a", "source-link", "View PubMed source ↗");
+        link.href = safeUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        card.append(link);
+      }
+      neutral.append(card);
+    }
+    article.append(neutral);
+  }
+
   if (report.evidence_limitations.length) {
     const limits = element("section", "limitations-card");
     append(limits, element("h4", "card-title", "Limitations"));
@@ -55,7 +82,14 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   const assessment = element("details", "assessment-details");
   assessment.append(element("summary", "details-summary", "How was this checked?"));
   const assessmentBody = element("div", "details-body");
-  assessmentBody.append(element("p", "", report.judge_summary.description));
+  const assessmentDescription = report.judge_summary.description.trim() || (
+    report.verdict === "not_enough_evidence"
+      && report.judge_summary.qualified === 0
+      && report.judge_summary.excluded === 0
+      ? "No judge assessment ran because the search selected no usable evidence."
+      : "No assessment description was recorded."
+  );
+  assessmentBody.append(element("p", "", assessmentDescription));
   const facts = element("dl", "meta-grid");
   append(facts, labeledValue("Qualified assessments", String(report.judge_summary.qualified)),
     labeledValue("Excluded assessments", String(report.judge_summary.excluded)),
