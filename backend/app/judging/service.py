@@ -14,6 +14,8 @@ from uuid import UUID, uuid4
 from pydantic import ValidationError
 
 from app.adapters.judge import JudgeProvider, ProviderFailure
+from app.core.diagnostics import sanitize_diagnostic
+from app.judging.compact23 import VERSION as AXES_COMPACT_VERSION
 from app.judging.config import is_search_enabled_model
 from app.judging.models import (
     AnyJudgeDecision,
@@ -26,11 +28,12 @@ from app.judging.models import (
     describe_disagreement,
 )
 from app.judging.prompt import (
-    PROMPT_VERSION,
     PreparedJudgeInput,
     input_snapshot_hash,
+    prepare_compact_v2,
     prepare_judge_input,
 )
+from app.judging.source_units import materialize_content, normalize_parent_unit_ids
 from app.retrieval.models import EvidencePack
 from app.validation.models import JudgeValidationRun, ValidationStatus
 
@@ -67,6 +70,8 @@ class JudgeService:
     total_timeout_seconds: float = 80.0
     concurrency_limit: int = 3
     breaker: CircuitBreaker = field(default_factory=CircuitBreaker)
+    compact_development: bool = False
+    axes_development: bool = False
 
     async def run(
         self, pack_id: UUID, pack: EvidencePack, slots: tuple[JudgeSlot, ...], *,
@@ -99,10 +104,31 @@ class JudgeService:
         if self.concurrency_limit < 1:
             raise ValueError("Judge concurrency limit must be positive")
         prepared = prepare_judge_input(pack_id, pack)
+        if self.axes_development:
+            if app_env not in {"development", "test"}:
+                raise ValueError("Axes judge contract is development/test only")
+            from app.judging.compact23 import prepare_compact23
+
+            prepared = prepare_compact23(pack_id, pack)
+        elif self.compact_development:
+            if app_env not in {"development", "test"}:
+                raise ValueError("Compact judge prompt is development/test only")
+            prepared = prepare_compact_v2(prepared)
         semaphore = asyncio.Semaphore(self.concurrency_limit)
+        # Some OpenAI-compatible gateways queue large concurrent requests per
+        # endpoint. Keep independent gateways parallel, but avoid consuming a
+        # slot's entire deadline while another slot occupies the same gateway.
+        endpoint_semaphores = {
+            slot.base_url.rstrip("/"): asyncio.Semaphore(1)
+            for slot in slots if slot.provider in {"openai_compatible", "paratera"}
+        }
 
         async def one(slot: JudgeSlot) -> JudgeRun:
             async with semaphore:
+                endpoint = endpoint_semaphores.get(slot.base_url.rstrip("/"))
+                if slot.provider in {"openai_compatible", "paratera"} and endpoint is not None:
+                    async with endpoint:
+                        return await self._run_slot(pack, prepared, slot)
                 return await self._run_slot(pack, prepared, slot)
 
         runs = tuple(await asyncio.gather(*(one(slot) for slot in slots)))
@@ -122,7 +148,10 @@ class JudgeService:
         attempts = 0
         decision: AnyJudgeDecision | None = None
         schema_version_inferred = False
+        source_unit_id_normalizations: list[dict[str, str]] = []
         response_json: dict[str, object] | None = None
+        rejected_responses: list[dict[str, object]] = []
+        attempt_failures: list[dict[str, object]] = []
         error: str | None = None
         failure_request_id: str | None = None
         provider_response = None
@@ -140,18 +169,51 @@ class JudgeService:
                         failure_request_id = None
                         decision = None
                         schema_version_inferred = False
+                        source_unit_id_normalizations = []
                         response_json = None
                         try:
                             async with asyncio.timeout(self.attempt_timeout_seconds):
                                 provider_response = await provider.evaluate(
                                     request_slot, prepared_for_slot,
                                 )
+                                parsed_content = provider_response.content
+                                if (self.axes_development and
+                                        prepared.prompt_version == AXES_COMPACT_VERSION):
+                                    parsed_content, source_unit_id_normalizations = (
+                                        normalize_parent_unit_ids(
+                                            parsed_content, prepared.input_snapshot_json,
+                                        )
+                                    )
                                 decision, schema_version_inferred = parse_provider_decision(
-                                    provider_response.content, prepared.selected_ids,
+                                    parsed_content, prepared.selected_ids,
+                                    allow_visible_siblings=(self.axes_development
+                                                            and prepared.prompt_version ==
+                                                            AXES_COMPACT_VERSION),
+                                    snapshot=prepared.input_snapshot_json
+                                    if prepared.input_snapshot_version in
+                                    {"judge-input-2.1", "judge-input-2.2", "judge-input-2.3"}
+                                    else None,
                                 )
                                 if not isinstance(decision, JudgeDecisionV2):
                                     raise DecisionFailure("legacy_schema_not_accepted")
+                                if (prepared.prompt_version ==
+                                        "judge-2.11-compact-development-2026-10-02"
+                                        and "RESPONSE CONTRACT: Qualitative claim." in
+                                        prepared.user_prompt):
+                                    prose = " ".join([s.text for s in decision.statements] +
+                                                     [decision.conclusion.justification])
+                                    if re.search(r"\d", re.sub(r"\bS[1-8]\b", "", prose)):
+                                        raise DecisionFailure("optional_numeric_content",
+                                                              retryable=True)
                             response_json = decision.model_dump(mode="json")
+                            if prepared.input_snapshot_version == "judge-input-2.3":
+                                response_json["raw_model_content"] = sanitize_diagnostic(
+                                    provider_response.content, (slot.api_key or "",),
+                                )
+                                if source_unit_id_normalizations:
+                                    response_json["source_unit_id_normalizations"] = (
+                                        source_unit_id_normalizations
+                                    )
                             error = None
                             break
                         except TimeoutError:
@@ -165,6 +227,19 @@ class JudgeService:
                                 )
                         except DecisionFailure as exc:
                             error, retryable = exc.category, exc.retryable
+                            rejected_responses.append({
+                                "attempt": attempts, "category": exc.category,
+                                "schema_errors": exc.schema_errors,
+                                "content": sanitize_diagnostic(
+                                    provider_response.content, (slot.api_key or "",),
+                                )[:32768]
+                                if provider_response else None,
+                                "content_truncated": bool(provider_response and
+                                                          len(provider_response.content) > 32768),
+                            })
+                        if error is not None:
+                            attempt_failures.append({"attempt": attempts, "category": error,
+                                                     "retryable": retryable})
                         logger.warning(
                             "judge_attempt slot=%d provider=%s model=%s family=%s "
                             "attempt=%d failure=%s elapsed_ms=%d retry=%s",
@@ -184,10 +259,17 @@ class JudgeService:
                 error = "internal_error"
         if error is not None:
             decision = None
-            response_json = None
+            response_json = ({"rejected_responses": rejected_responses}
+                             if rejected_responses else None)
             schema_version_inferred = False
+        if prepared.input_snapshot_version == "judge-input-2.3" and attempt_failures:
+            response_json = {**(response_json or {}), "attempt_failures": attempt_failures}
         if error is None:
             self.breaker.record(slot.slot, success=True)
+            if isinstance(decision, JudgeDecisionV2) and len(decision.statements) > 3:
+                logger.info("judge_expanded_findings slot=%d count=%d "
+                            "reason=additional_context_or_conflict_requested "
+                            "justification_recorded=true", slot.slot, len(decision.statements))
         elif error not in {"circuit_open", "provider_unconfigured"}:
             self.breaker.record(slot.slot, success=False)
         responded_at = datetime.now(UTC)
@@ -208,7 +290,7 @@ class JudgeService:
             search_override_active=slot.search_override_active,
             search_guard_bypassed=slot.search_guard_bypassed,
             search_isolation_verified=False,
-            prompt_version=PROMPT_VERSION, prompt_hash=prepared.prompt_hash,
+            prompt_version=prepared.prompt_version, prompt_hash=prepared.prompt_hash,
             input_snapshot_version=prepared.input_snapshot_version,
             input_snapshot_hash=prepared.input_snapshot_hash,
             input_snapshot_json=prepared.input_snapshot_json,
@@ -235,11 +317,16 @@ class JudgeService:
                 or original.revision_of_judge_run_id is not None
                 or not isinstance(original.decision, JudgeDecisionV2)
                 or validation.judge_run_id != original.judge_run_id
-                or validation.status != ValidationStatus.INVALID
+                or (validation.status not in {ValidationStatus.INVALID,
+                                               ValidationStatus.PARTIALLY_VALIDATED}
+                    and not (validation.status == ValidationStatus.UNABLE_TO_VALIDATE
+                             and any(i.issue_code.value == "NUMERIC_UNCERTAIN"
+                                     for i in validation.result.targeted_issues)))
                 or original.slot != slot.slot or original.model != slot.model
                 or original.evidence_pack_hash != pack.snapshot_hash):
             raise ValueError("Judge run is not eligible for semantic revision")
-        base = prepare_judge_input(original.evidence_pack_id, pack)
+        base = prepare_judge_input(original.evidence_pack_id, pack,
+                                   version=original.input_snapshot_version or "judge-input-2.0")
         if (original.input_snapshot_hash != base.input_snapshot_hash
                 or original.input_snapshot_json is None
                 or input_snapshot_hash(original.input_snapshot_json)
@@ -250,10 +337,13 @@ class JudgeService:
         if not issues:
             raise ValueError("No target-specific semantic issue to revise")
         system = base.system_prompt + (
-            "\nONE SEMANTIC REVISION ONLY. Recheck your own statements, exact quotes, "
+            "\nONE SEMANTIC REVISION ONLY. Recheck your own statements and source units, "
             "numeric attribution, and conclusion. Retain uncertainty if the "
             "frozen sources cannot justify a decisive label. Do not use outside "
-            "sources or another judge's response. Return the same strict V2 schema.\n"
+            "sources or another judge's response. Return the same content contract. "
+            "An optional unresolved numerical detail may be omitted in a fresh statement "
+            "only if the remaining conclusion is still established at the unchanged "
+            "claim magnitude and scope. Never omit an essential quantity.\n"
         )
         user = base.user_prompt + "\nYOUR PREVIOUS DECISION AND TARGETED ISSUES:\n" + json.dumps({
             "your_decision": original.decision.model_dump(mode="json"),
@@ -271,14 +361,18 @@ class JudgeService:
 
 
 class DecisionFailure(Exception):
-    def __init__(self, category: str, *, retryable: bool = False) -> None:
+    def __init__(self, category: str, *, retryable: bool = False,
+                 schema_errors: tuple[dict[str, object], ...] = ()) -> None:
         self.category = category
         self.retryable = retryable
+        self.schema_errors = schema_errors
         super().__init__(category)
 
 
 def parse_provider_decision(
     content: str, selected_ids: tuple[str, ...],
+    *, snapshot: dict[str, object] | None = None,
+    allow_visible_siblings: bool = False,
 ) -> tuple[AnyJudgeDecision, bool]:
     """Infer only the fixed protocol version; never repair a medical judgment.
 
@@ -287,6 +381,35 @@ def parse_provider_decision(
     production qualification.
     """
 
+    if snapshot is not None:
+        if not content.strip():
+            raise DecisionFailure("empty_response", retryable=True)
+        if len(content) > 65536:
+            raise DecisionFailure("schema_violation", retryable=True)
+        try:
+            json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise DecisionFailure("malformed_json", retryable=True) from exc
+        try:
+            decision = materialize_content(content, snapshot)
+            allowed_ids = selected_ids
+            if allow_visible_siblings:
+                raw_visible = snapshot.get("judge_visible_evidence_ids")
+                if (snapshot.get("validation_contract") != "judge-validation-2.3"
+                        or not isinstance(raw_visible, list)
+                        or not all(isinstance(identifier, str) for identifier in raw_visible)
+                        or not set(selected_ids) <= set(raw_visible)):
+                    raise ValueError("Invalid frozen judge-visible evidence set")
+                allowed_ids = tuple(raw_visible)
+            _validate_decision_citations(decision, allowed_ids)
+            return decision, False
+        except KeyError as exc:
+            raise DecisionFailure("invalid_source_unit", retryable=True) from exc
+        except ValidationError as exc:
+            raise DecisionFailure("schema_violation", retryable=True,
+                                  schema_errors=_schema_errors(exc)) from exc
+        except ValueError as exc:
+            raise DecisionFailure("schema_violation", retryable=True) from exc
     try:
         return parse_decision(content, selected_ids), False
     except DecisionFailure as exc:
@@ -322,10 +445,16 @@ def parse_decision(content: str, selected_ids: tuple[str, ...]) -> AnyJudgeDecis
         raise DecisionFailure("unsupported_label")
     try:
         decision = (JudgeDecisionV2.model_validate_json(content)
-                    if data.get("schema_version") == "2.0"
+                    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3"}
                     else JudgeDecision.model_validate_json(content))
     except ValidationError as exc:
-        raise DecisionFailure("schema_violation", retryable=True) from exc
+        raise DecisionFailure("schema_violation", retryable=True,
+                              schema_errors=_schema_errors(exc)) from exc
+    _validate_decision_citations(decision, selected_ids)
+    return decision
+
+
+def _validate_decision_citations(decision: AnyJudgeDecision, selected_ids: tuple[str, ...]) -> None:
     allowed = set(selected_ids)
     cited = set(decision_evidence_ids(decision))
     prose = (" ".join(statement.text for statement in decision.statements)
@@ -336,4 +465,10 @@ def parse_decision(content: str, selected_ids: tuple[str, ...]) -> AnyJudgeDecis
         raise DecisionFailure("invalid_evidence_citation", retryable=True)
     if re.search(r"\b(?:PMID|DOI)\s*[:#]?\s*\S+", prose, re.I):
         raise DecisionFailure("invalid_evidence_citation", retryable=True)
-    return decision
+
+
+def _schema_errors(exc: ValidationError) -> tuple[dict[str, object], ...]:
+    """Field paths/types only; do not persist error inputs, prompts or provider internals."""
+    return tuple({"location": error["loc"], "type": error["type"]}
+                 for error in exc.errors(include_input=False, include_context=False,
+                                         include_url=False)[:20])

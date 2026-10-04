@@ -27,7 +27,7 @@ from app.validation.models import JudgeValidationRun, ValidationStatus
 from app.validation.persistence import persist_validation_run
 from app.verdict.models import AggregationInput, AggregationMode
 from app.verdict.persistence import load_aggregation_context, persist_verdict_run
-from app.verdict.policy import POLICY_V1, POLICY_V3
+from app.verdict.policy import POLICY_V1, POLICY_V3, POLICY_V4
 from app.verdict.service import VerdictService
 
 logger = logging.getLogger(__name__)
@@ -270,7 +270,11 @@ class AnalysisOrchestrator:
                 persist_validation_run(session, audit)
                 validations.append(audit)
                 if (self.revise is not None and isinstance(judge.decision, JudgeDecisionV2)
-                        and audit.status == ValidationStatus.INVALID
+                        and (audit.status in {ValidationStatus.INVALID,
+                                              ValidationStatus.PARTIALLY_VALIDATED}
+                             or (audit.status == ValidationStatus.UNABLE_TO_VALIDATE
+                                 and any(i.issue_code.value == "NUMERIC_UNCERTAIN"
+                                         for i in audit.result.targeted_issues)))
                         and audit.result.targeted_issues):
                     try:
                         revised = await self.revise(judge, audit, pack)
@@ -297,7 +301,7 @@ class AnalysisOrchestrator:
         # V2 judgments use the new contract. No legacy free text is remapped.
         policy = (POLICY_V1 if active_judges and all(
             judge.input_snapshot_version is None for judge in active_judges
-        ) else POLICY_V3)
+        ) else POLICY_V4 if pack.evidence_pack_version == "1.5" else POLICY_V3)
         request = AggregationInput(
             claim_id=claim.id, evidence_pack_id=pack_row.id,
             evidence_pack_hash=pack_row.snapshot_hash,

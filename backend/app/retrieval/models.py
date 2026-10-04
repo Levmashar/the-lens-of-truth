@@ -122,6 +122,46 @@ class CrossrefEnrichment(FrozenModel):
     references: tuple[IntegrityReference, ...] = ()
 
 
+DocumentPurpose = Literal[
+    "causal_assessment", "systematic_evidence_summary", "clinical_guideline",
+    "public_health_guidance", "patient_information", "fact_sheet", "research_report",
+    "press_release", "other",
+]
+
+
+class RelationshipAnalysis(FrozenModel):
+    """Claim-exposure design, not the publication/container design."""
+
+    analysis_design: Literal[
+        "randomized_intervention", "secondary_observational_analysis", "prospective_cohort",
+        "case_control", "cross_sectional", "systematic_review", "meta_analysis", "unknown",
+        "diagnostic_accuracy",
+    ] = "unknown"
+    exposure_assignment: Literal["randomized", "observed", "synthesized", "unknown"] = "unknown"
+    basis: str = "not_established"
+    evidence_text: str | None = None
+
+
+class AuthoritativeMetadata(FrozenModel):
+    source_id: str
+    organization: str
+    document_purpose: DocumentPurpose
+    last_verified_at: datetime
+    updated_at: date | None = None
+    content_version: str
+    currency: Literal["current", "stale", "unknown"]
+    availability: Literal["available"] = "available"
+    summary_source: bool = True
+    underlying_studies_known: bool = False
+    reference_urls: tuple[str, ...] = ()
+    underlying_pmids: tuple[str, ...] = ()
+    independence_group: str
+    attribution: str
+    extraction_version: str = "approved-html-1.0"
+    retained_block_count: int = 0
+    omitted_block_count: int = 0
+
+
 class PubMedDocument(FrozenModel):
     document_id: str
     pmid: str
@@ -151,6 +191,11 @@ class PubMedDocument(FrozenModel):
         default_factory=RelationshipDirectness
     )
     endpoint_directness: EndpointDirectness = Field(default_factory=EndpointDirectness)
+    # Common frozen document envelope; authoritative documents have no PMID ("").
+    source_kind: Literal["pubmed", "authoritative_public_health"] = "pubmed"
+    authoritative: AuthoritativeMetadata | None = None
+    relationship_analysis: RelationshipAnalysis | None = None
+    evidence_role_hint: Literal["direct", "contextual", "incompatible"] | None = None
 
 
 class PubMedFetchResult(FrozenModel):
@@ -191,6 +236,11 @@ class RankedPassage(FrozenModel):
         "non_evidence_publication_excluded", "nonclinical_visual_context_excluded",
         "post_disease_endpoint_excluded", "indirect_relationship_question_excluded",
         "title_only_when_abstract_available", "direct_title_evidence_available",
+        "unstated_active_comparator_excluded",
+        "specific_outcome_endpoint_absent_excluded",
+        "exposure_arm_population_mismatch_excluded",
+        "contextual_relevance",
+        "direct_assessment_relevance",
     ] | None = None
 
 
@@ -206,16 +256,23 @@ class RetrievalDiagnostics(FrozenModel):
     integrity_status_counts: dict[str, int] = Field(default_factory=dict)
     crossref_status_counts: dict[str, int] = Field(default_factory=dict)
     doi_coverage: int = 0
+    search_executions: tuple["QueryExecution", ...] = ()
+    authoritative_statuses: dict[str, str] = Field(default_factory=dict)
 
 
 class QueryExecution(FrozenModel):
     query_id: str
     pmids: tuple[str, ...]
     cache_hit: bool
+    actual_query: str | None = None
+    sort: str | None = None
+    retmax: int | None = None
+    total_count: int | None = None
+    returned_count: int | None = None
 
 
 class EvidencePack(FrozenModel):
-    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4"] = "1.4"
+    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"] = "1.4"
     claim_id: UUID
     claim_snapshot: ClaimSnapshot
     query_plan: QueryPlan

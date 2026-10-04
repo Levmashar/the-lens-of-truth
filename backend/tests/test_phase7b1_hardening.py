@@ -126,6 +126,52 @@ def test_reconstruction_keeps_exact_raw_span_and_explicit_population() -> None:
     )
 
 
+def test_reported_soy_input_preserves_two_atomic_claims_without_invented_mechanism() -> None:
+    source = "Regular usage of soy increases estrogen levels in body, and lowers muscle gain"
+    first = "Regular usage of soy increases estrogen levels in body"
+    second = "lowers muscle gain"
+    second_start = source.index(second)
+    payload = ClaimExtractionPayload(claims=[
+        ExtractedClaimCandidate(
+            raw_span=first, span_start=0, span_end=len(first), claim_type="causal",
+            pico=PicoCandidate(
+                intervention_or_exposure="Regular usage of soy",
+                outcome="estrogen levels in body",
+            ),
+        ),
+        ExtractedClaimCandidate(
+            raw_span=second, span_start=second_start, span_end=len(source),
+            normalized_claim="Soy versus meat lowers muscle gain because of estrogen.",
+            claim_type="causal", resolved_from_span_start=0,
+            resolved_from_span_end=len(first),
+            pico=PicoCandidate(
+                intervention_or_exposure="soy protein", comparator="meat",
+                outcome="increased estrogen levels",
+            ),
+        ),
+    ])
+
+    first_claim, second_claim = validate_claim_candidates(
+        payload=payload, source_text=source, maximum_claims=20,
+    )
+    first_pico = normalize_pico(first_claim, source_text=source)
+    second_pico = normalize_pico(second_claim, source_text=source)
+
+    assert first_claim.normalized_claim == first
+    assert second_claim.raw_span == source[second_start:]
+    assert second_claim.normalized_claim == "Regular usage of soy lowers muscle gain."
+    assert second_claim.standalone_status == "reconstructed"
+    assert source[
+        second_claim.resolved_from_span_start:second_claim.resolved_from_span_end
+    ] == "Regular usage of soy"
+    assert first_pico.outcome == "estrogen levels in body"
+    assert second_pico.original_claim == second
+    assert second_pico.intervention_or_exposure == "Regular usage of soy"
+    assert second_pico.outcome == "muscle gain"
+    assert second_pico.comparator is None
+    assert "estrogen" not in second_claim.normalized_claim.lower()
+
+
 def test_inflected_model_outcome_keeps_only_verbatim_source_endpoint() -> None:
     source = "Regular soy consumption in men increases estrogen levels."
     candidate = ExtractedClaimCandidate(

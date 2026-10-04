@@ -10,18 +10,30 @@ const roleLabels = {
 
 export function createEvidenceCard(source: SourceCard): HTMLElement {
   const article = element("article", "evidence-card");
-  append(article, element("p", "evidence-kicker", readableToken(source.study_design)),
+  const design = source.analysis_design === "secondary_observational_analysis"
+    ? "Secondary observational analysis within a randomized trial cohort"
+    : source.analysis_design === "unknown" ? "Study design unavailable"
+    : readableToken(source.analysis_design || source.study_design);
+  append(article, element("p", "evidence-kicker", source.organization
+    ? `${source.organization} · ${readableToken(source.document_purpose || "other")}` : design),
     element("h4", "evidence-title", source.title));
   const publication = [source.journal, source.publication_date].filter(Boolean).join(" · ");
-  if (publication) article.append(element("p", "evidence-meta", publication));
+  if (publication) article.append(element("p", "evidence-meta", source.organization
+    ? `Updated/reviewed: ${publication}` : publication));
   const roles = element("p", "evidence-role", source.evidence_roles.map((role) => roleLabels[role]).join(" · "));
   article.append(roles);
-  article.append(element("p", "excerpt-label", "Exact evidence excerpt"));
-  const quote = element("blockquote", "evidence-quote", source.exact_excerpt);
-  article.append(quote);
-  if (source.excerpt_truncated) article.append(element("p", "field-hint", "Excerpt shortened in the frozen report."));
+  const excerpts = source.excerpts?.length ? source.excerpts : [{
+    evidence_id: source.evidence_id, section: source.passage_section,
+    exact_text: source.exact_excerpt, truncated: source.excerpt_truncated,
+  }];
+  for (const excerpt of excerpts) {
+    article.append(element("p", "excerpt-label", `${excerpt.section} · ${excerpt.evidence_id}`));
+    article.append(element("blockquote", "evidence-quote", excerpt.exact_text));
+    if (excerpt.truncated) article.append(element("p", "field-hint", "Excerpt shortened in the frozen report."));
+  }
+  if (source.attribution) article.append(element("p", "field-hint", source.attribution));
   const foot = element("div", "evidence-footer");
-  foot.append(element("span", "source-id", `PMID ${source.pmid}`));
+  if (source.pmid) foot.append(element("span", "source-id", `PMID ${source.pmid}`));
   if (source.doi) foot.append(element("span", "source-id", `DOI ${source.doi}`));
   const safeUrl = safeExternalUrl(source.source_url);
   if (safeUrl) {
@@ -36,6 +48,7 @@ export function createEvidenceCard(source: SourceCard): HTMLElement {
     ? "Publication integrity: no signal found in completed checks"
     : `Publication integrity: ${readableToken(source.integrity_status)}`);
   integrity.dataset.status = source.integrity_status;
+  if (source.organization) integrity.textContent = `Source currency: ${source.currency || "unknown"}`;
   article.append(integrity);
   for (const limitation of source.limitations) article.append(element("p", "source-limitation", limitation));
   return article;

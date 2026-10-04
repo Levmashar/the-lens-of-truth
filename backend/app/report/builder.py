@@ -7,6 +7,7 @@ from uuid import UUID
 
 from app.judging.models import JudgeDecisionV2, JudgeLabel, JudgeRun
 from app.judging.prompt import input_snapshot_hash, prepare_judge_input
+from app.report.explanation import build_explanation
 from app.report.models import (
     EvidenceRole,
     EvidenceState,
@@ -19,6 +20,7 @@ from app.report.models import (
     ReportReason,
     ReportVerificationStatus,
     SourceCard,
+    SourceExcerpt,
     SourceReference,
 )
 from app.retrieval.evidence_pack import canonical_pack_bytes
@@ -37,8 +39,8 @@ from app.validation.numeric import extract_quantities
 from app.verdict.models import AggregationMode, LensVerdict, ReasonCode, VerdictResult
 from app.verdict.service import semantic_result_hash
 
-REPORT_VERSION = "1.1"
-BUILDER_VERSION = "report-builder-1.2"
+REPORT_VERSION = "1.3"
+BUILDER_VERSION = "report-builder-1.5"
 MAX_EXCERPT_CHARS = 600
 DEVELOPMENT_NOTICE = (
     "Development/evaluation result — production evidence-isolation or model "
@@ -132,12 +134,20 @@ def semantic_report_hash(report: LensReport) -> str:
     semantic = report.model_dump(mode="json", exclude={
         "semantic_hash": True, "provenance": {"generated_at": True},
     })
+    if report.report_version not in {"1.2", "1.3"}:
+        for card in semantic["key_evidence"]:
+            for field in ("document_id", "source_kind", "organization", "document_purpose",
+                          "analysis_design", "exposure_assignment", "attribution", "currency",
+                          "excerpts"):
+                card.pop(field, None)
     return hashlib.sha256(json.dumps(
         semantic, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
     ).encode("utf-8")).hexdigest()
 
 
-def _summary(verdict: LensVerdict, reasons: tuple[ReasonCode, ...]) -> str:
+def _summary(
+    verdict: LensVerdict, reasons: tuple[ReasonCode, ...], *, selected_evidence_count: int,
+) -> str:
     if ReasonCode.EVALUATION_SINGLE_VALIDATED_ASSESSMENT in reasons:
         relation = "supports" if verdict == LensVerdict.SUPPORTED else "conflicts with"
         return ("One validated assessment " + relation + " this claim. "
@@ -150,6 +160,9 @@ def _summary(verdict: LensVerdict, reasons: tuple[ReasonCode, ...]) -> str:
         return "The system could not complete a sufficiently reliable verification."
     if ReasonCode.RETRIEVAL_NO_RESULTS in reasons:
         return "The source search completed without results; no medical conclusion was reached."
+    if not selected_evidence_count and ReasonCode.INSUFFICIENT_DECISIVE_EVIDENCE in reasons:
+        return ("Retrieved sources did not qualify for this claim's evidence review; "
+                "no medical conclusion was reached.")
     if ReasonCode.CAUSAL_EVIDENCE_TOO_INDIRECT in reasons:
         return ("The cited evidence is too indirect to establish or rule out "
                 "this causal claim.")
@@ -275,7 +288,10 @@ def _cards(
                     or judge.input_snapshot_hash is None
                     or judge.input_snapshot_json is None):
                 continue
-            prepared = prepare_judge_input(judge.evidence_pack_id, pack)
+            prepared = prepare_judge_input(
+                judge.evidence_pack_id, pack,
+                version=judge.input_snapshot_version or "judge-input-2.0",
+            )
             if (judge.input_snapshot_hash != prepared.input_snapshot_hash
                     or input_snapshot_hash(judge.input_snapshot_json)
                     != prepared.input_snapshot_hash):
@@ -326,11 +342,11 @@ def _cards(
                 and validation.judge_run_id in {use[1] for use in uses[evidence_id]})
         ):
             raise ValueError("Qualified citation integrity differs from frozen source")
-        if not document.pmid or not document.canonical_url:
+        if not document.canonical_url or not (document.pmid or document.authoritative):
             raise ValueError("Qualified evidence lacks source reference")
         text = passage.passage.text
         cards.append(SourceCard(
-            evidence_id=evidence_id, pmid=document.pmid, doi=document.doi,
+            evidence_id=evidence_id, pmid=document.pmid or None, doi=document.doi,
             title=document.title, journal=document.journal,
             publication_date=(document.publication_date.isoformat()
                               if document.publication_date else None),
@@ -343,8 +359,39 @@ def _cards(
             citation_validated=True,
             cited_by_judge_run_ids=tuple(dict.fromkeys(use[1] for use in uses[evidence_id])),
             cited_by_validation_run_ids=tuple(dict.fromkeys(use[2] for use in uses[evidence_id])),
+            document_id=document.document_id, source_kind=document.source_kind,
+            organization=document.authoritative.organization if document.authoritative else None,
+            document_purpose=document.authoritative.document_purpose
+            if document.authoritative else None,
+            analysis_design=document.relationship_analysis.analysis_design
+            if document.relationship_analysis else None,
+            exposure_assignment=document.relationship_analysis.exposure_assignment
+            if document.relationship_analysis else None,
+            attribution=document.authoritative.attribution if document.authoritative else None,
+            currency=document.authoritative.currency if document.authoritative else None,
+            excerpts=(SourceExcerpt(evidence_id=evidence_id, source_unit_id=f"{evidence_id}.U1",
+                                    section=passage.passage.section,
+                                    exact_text=text,
+                                    truncated=False,
+                                    passage_sha256=passage.passage.content_sha256),),
         ))
-    return tuple(cards)
+    grouped: dict[str, SourceCard] = {}
+    for card in cards:
+        key = card.document_id or card.evidence_id
+        previous = grouped.get(key)
+        if previous:
+            grouped[key] = previous.model_copy(update={
+                "excerpts": (*previous.excerpts, *card.excerpts),
+                "evidence_roles": tuple(dict.fromkeys((*previous.evidence_roles,
+                                                       *card.evidence_roles))),
+                "cited_by_judge_run_ids": tuple(dict.fromkeys((*previous.cited_by_judge_run_ids,
+                                                               *card.cited_by_judge_run_ids))),
+                "cited_by_validation_run_ids": tuple(dict.fromkeys((
+                    *previous.cited_by_validation_run_ids, *card.cited_by_validation_run_ids))),
+            })
+        else:
+            grouped[key] = card
+    return tuple(grouped.values())
 
 
 def _neutral_sources(
@@ -360,13 +407,13 @@ def _neutral_sources(
         item = passages.get(evidence_id)
         document = documents.get(item.passage.document_id) if item else None
         if (item is None or document is None or document.integrity.status == "retracted"
-                or not document.pmid or not document.canonical_url):
+                or not (document.pmid or document.authoritative) or not document.canonical_url):
             continue
         text = item.passage.text
         if hashlib.sha256(text.encode("utf-8")).hexdigest() != item.passage.content_sha256:
             raise ValueError("Frozen neutral source passage hash is invalid")
         cards.append(NeutralRetrievedSource(
-            evidence_id=evidence_id, pmid=document.pmid, doi=document.doi,
+            evidence_id=evidence_id, pmid=document.pmid or None, doi=document.doi,
             title=document.title,
             publication_date=(document.publication_date.isoformat()
                               if document.publication_date else None),
@@ -392,7 +439,7 @@ def build_report(
         pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
         pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
     )).hexdigest()
-    if (pack.evidence_pack_version not in {"1.3", "1.4"}
+    if (pack.evidence_pack_version not in {"1.3", "1.4", "1.5"}
             or pack.snapshot_hash != actual_pack_hash
             or verdict.evidence_pack_hash != actual_pack_hash
             or verdict.claim_id != pack.claim_id
@@ -417,6 +464,7 @@ def build_report(
     ):
         raise ValueError("Verdict qualification references an unlisted judge")
     cards = _cards(verdict, pack, judges, validations)
+    explanation = build_explanation(verdict, pack, judges, validations, cards)
     if verdict.verdict in {LensVerdict.SUPPORTED, LensVerdict.CONTRADICTED} and not cards:
         raise ValueError("Decisive verdict has no validated frozen citation to present")
     reasons = tuple(ReportReason(code=code, text=REASON_TEXT[code])
@@ -448,7 +496,7 @@ def build_report(
                           claim_type=pack.claim_snapshot.claim_type),
         verdict=verdict.verdict, verdict_display=display_label,
         headline=display_label,
-        short_summary=_summary(verdict.verdict, verdict.reason_codes),
+        short_summary=explanation.summary, verdict_explanation=explanation,
         why_this_result=reasons, key_evidence=cards,
         neutral_retrieved_sources=_neutral_sources(verdict, pack),
         evidence_limitations=_limitations(pack, validations),

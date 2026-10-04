@@ -1,0 +1,16 @@
+# Opt-in evaluation guard. Not a production deployment file or credential override.
+services:
+  backend:
+    command:
+      - python
+      - -m
+      - app.evaluation.call_budget
+      - --ledger
+      - /app/runtime/slice4-continuation-20261002.sqlite3
+      - --limit
+      - '120'
+      - --module
+      - app.evaluation.server
+    volumes:
+      - ./runtime:/app/runtime
+      - ./backend/app:/app/app:ro

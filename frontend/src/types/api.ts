@@ -61,6 +61,7 @@ export interface AnalysisClaim {
     outcome: string | null;
     timeframe: string | null;
     claim_type: string | null;
+    numeric_effect?: { raw_text: string; status: string; kind: string; value: string | null; unit: string | null; direction: string | null } | null;
   } | null;
   normalization_status: string;
   normalization_quality: {
@@ -120,6 +121,7 @@ export interface DebugModelStatus {
   model: string;
   status: string;
   failure_type: string | null;
+  origin?: "analysis" | "current_configuration";
 }
 
 export interface DebugModelEvent {
@@ -159,8 +161,37 @@ export interface DebugJudgeRun {
   validation_status: string | null;
   validation_error_category: string | null;
   statement_statuses?: Record<string, string>;
+  evidence_axes?: Record<string, { direction: string; scope: string; strength: string; role: string; finding_basis?: string; scope_basis?: string }>;
   conclusion_status?: string | null;
   targeted_issue_codes?: string[];
+  numeric_findings?: {
+    version: string; target_id: string; material: boolean; source_fidelity: string;
+    asserted_values: string[]; source_measure: string; claim_measure: string;
+    comparability: string; numeric_effect: string; semantic_scope_checked: boolean;
+    structure_status: string; evidence_ids: string[]; differences: string[]; conversions: string[];
+  }[];
+  proposed_label?: string | null;
+  finding_count?: number;
+  qualification_reason_codes?: string[];
+  qualification_success?: boolean;
+  exclusion_reasons?: string[];
+  source_ids?: Record<string, string[]>;
+  id_normalizations?: { statement_id: string; returned_id: string; resolved_id: string; rule: string }[];
+  judge_unit_id_normalizations?: { statement_id: string; from: string; to: string; rule: string }[];
+  null_diagnostics?: Record<string, { null_precision_reason: string | null; gradient_kind: string; raw_finding_basis: string; raw_scope_basis: string }>;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  model_identity_verified?: boolean;
+  model_family_verified?: boolean;
+  failure_categories?: string[];
+  attempt_failure_types?: string[];
+}
+
+export interface DebugClaimDiagnostics {
+  extraction: { raw_claim: string; normalized_claim: string | null; claim_type: string | null; risk_class: string; pico: AnalysisClaim["pico"]; numeric_effect: NonNullable<AnalysisClaim["pico"]>["numeric_effect"] } | null;
+  retrieval: { candidates: number | null; selected_documents: number | null; selected_authoritative: number; selected_pubmed: number; roles: Record<string, number> };
+  waterfall: Record<string, string>;
+  final: { qualified_judges: number; qualified_positions: (string | null)[]; aggregation_reasons: string[]; production_qualified: boolean; total_model_calls: number | null; elapsed_ms: number | null };
 }
 
 export interface ClaimSummary {
@@ -181,6 +212,7 @@ export interface ClaimSummary {
   production_qualified: boolean | null;
   result_label: VerdictLabel | null;
   debug_judge_runs?: DebugJudgeRun[] | null;
+  debug_diagnostics?: DebugClaimDiagnostics | null;
 }
 
 export interface AnalysisClaimsResponse {

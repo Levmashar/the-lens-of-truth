@@ -262,19 +262,21 @@ def annotate_directness(
         )
         # A named excluded population is a stronger signal than a mention of
         # smoking in contextual background, but applies only to smoking claims.
-        excluded = bool(_SMOKING.search(" ".join(exposure)) and _NEVER_SMOKER.search(
+        excluded = bool(not document.authoritative
+                        and _SMOKING.search(" ".join(exposure)) and _NEVER_SMOKER.search(
             document.title + " " + " ".join(
                 item.passage.text for item in items
                 if _section_kind(item.passage.section) in {"METHODS", "BACKGROUND"}
             )
         ))
         document_text = " ".join(item.passage.text for item in items)
-        exposure_excluded = any(re.search(
+        exposure_excluded = not document.authoritative and any(re.search(
             r"\b(?:except|excluding|other than)\s+" + re.escape(alias) + r"\b",
             document_text, re.I,
         ) for alias in exposure)
         covariate_only = bool(
-            not title_exposure and counts["exposure"] <= 2 and any(re.search(
+            not document.authoritative and not title_exposure and counts["exposure"] <= 2
+            and any(re.search(
                 r"\badjust(?:ed|ing|ment)?\s+(?:for|by)\b[^.]{0,110}\b"
                 + re.escape(alias) + r"\b", document_text, re.I,
             ) for alias in exposure)

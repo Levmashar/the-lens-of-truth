@@ -9,6 +9,61 @@ import { Poller } from "../utils/polling";
 import { analysisId, claimId, progress, report } from "./fixtures";
 
 describe("report presentation", () => {
+  it("uses the saved explanation below the label and shows development details on demand", () => {
+    const saved = report("not_enough_evidence", { verdict_explanation: {
+      version: "1.0", reason_category: "numeric_magnitude_unverified",
+      summary: "Direction is supported; the claimed 85% magnitude is not established.",
+      established: "Direction is supported.", unresolved: "85% is not established.",
+      evidence_ids: ["E1"],
+    } });
+    const normal = createClaimResult(saved, analysisId, claimId);
+    expect(normal.querySelector(".verdict-summary")?.textContent).toBe(saved.verdict_explanation?.summary);
+    expect(normal.textContent).toContain("Why this result");
+    expect(normal.querySelector(".verdict-explanation-details")).toBeNull();
+    const debug = createClaimResult(saved, analysisId, claimId, true);
+    const details = debug.querySelector(".verdict-explanation-details");
+    expect(details?.textContent).toContain("Verdict explanation");
+    expect(details?.textContent).toContain("numeric_magnitude_unverified");
+    expect(details?.textContent).toContain("E1");
+    expect(details?.textContent).toContain("85% is not established.");
+  });
+
+  it("retains historical summary fallback and treats explanation strings as text", () => {
+    const historical = report();
+    expect(createClaimResult(historical, analysisId, claimId)
+      .querySelector(".verdict-summary")?.textContent).toBe(historical.short_summary);
+    const saved = report("not_enough_evidence", { verdict_explanation: {
+      version: "1.0", reason_category: "other_bounded_reason", evidence_ids: [],
+      summary: "<script>alert(1)</script>", established: null, unresolved: null,
+    } });
+    const node = createClaimResult(saved, analysisId, claimId, true);
+    expect(node.querySelector("script")).toBeNull();
+    expect(node.querySelector(".verdict-summary")?.textContent).toBe(saved.verdict_explanation?.summary);
+  });
+
+  it("renders one authoritative card with multiple exact units and no fake PMID", () => {
+    const card = { ...report().key_evidence[0], pmid: null,
+      source_kind: "authoritative_public_health" as const, organization: "NCI",
+      document_purpose: "systematic_evidence_summary", currency: "current" as const,
+      excerpts: ["E1", "E2"].map((id) => ({ evidence_id: id, source_unit_id: `${id}.U1`,
+        section: "Assessment", exact_text: `Frozen ${id} <script>x()</script>`,
+        truncated: false, passage_sha256: "a".repeat(64) })),
+    };
+    const node = createEvidenceCard(card);
+    expect(node.querySelectorAll(".evidence-quote")).toHaveLength(2);
+    expect(node.querySelectorAll(".evidence-title")).toHaveLength(1);
+    expect(node.textContent).toContain("NCI");
+    expect(node.textContent).not.toContain("PMID");
+    expect(node.querySelector("script")).toBeNull();
+  });
+
+  it("displays the exposure analysis instead of a parent trial label", () => {
+    const node = createEvidenceCard({ ...report().key_evidence[0],
+      study_design: "randomized_controlled_trial", analysis_design: "secondary_observational_analysis",
+    });
+    expect(node.textContent).toContain("Secondary observational analysis within a randomized trial cohort");
+    expect(node.textContent).not.toContain("Randomized Controlled Trial");
+  });
   it.each([
     ["supported", "Supported"], ["contradicted", "Contradicted"],
     ["not_enough_evidence", "Not Enough Evidence"],

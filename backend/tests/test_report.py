@@ -13,6 +13,7 @@ from app.pipeline.claim_types import ClaimType
 from app.report.builder import (
     DISPLAY_LABELS,
     REASON_TEXT,
+    _summary,
     build_report,
     semantic_report_hash,
 )
@@ -197,6 +198,16 @@ def test_no_results_is_not_no_research_claim() -> None:
     assert report.verification_status.evidence_state == EvidenceState.NO_RESULTS
     assert not report.key_evidence
     assert "no research" not in report.short_summary.lower()
+
+
+def test_unselected_retrieved_sources_are_not_described_as_no_search_results() -> None:
+    summary = _summary(
+        LensVerdict.NOT_ENOUGH_EVIDENCE,
+        (ReasonCode.INSUFFICIENT_DECISIVE_EVIDENCE,),
+        selected_evidence_count=0,
+    )
+    assert "did not qualify" in summary
+    assert "without results" not in summary
 
 
 def test_numeric_causal_and_scope_failures_surface_without_unsupported_number() -> None:

@@ -34,6 +34,20 @@ _HUMAN_VISUAL_SYSTEM = re.compile(
     r"\b(?:eye|eyes|ocular|retina|retinal|ophthalm\w*|visual acuity)\b", re.I,
 )
 _DISEASE_RISK_FRAMING = re.compile(r"\b(?:caus\w*|risk|inciden\w*|develop\w*)\b", re.I)
+_ACTIVE_COMPARISON = re.compile(
+    r"\b(?:versus|vs\.?|compared?\s+(?:with|to|against)|comparison\s+(?:with|of)|"
+    r"differences?\s+between)\b", re.I,
+)
+_NO_EFFECT_CONTROL = re.compile(
+    r"\b(?:placebo|controls?|usual\s+care|standard\s+care|"
+    r"no\s+supplementation|unsupplemented|without\s+supplementation|"
+    r"non[- ]?users?|non[- ]?consumers?|unexposed|baseline)\b", re.I,
+)
+_DIFFERENCE_TITLE = re.compile(r"\b(?:no\s+)?(?:significant\s+)?differences?\b", re.I)
+_COORDINATED_ACTIVE_EXPOSURES = re.compile(
+    r"\b(?:and|or)\s+(?:[\w-]+\s+){0,3}"
+    r"(?:protein|supplements?|diets?|treatments?|therapies)\b", re.I,
+)
 
 
 def _words(value: str | None) -> set[str]:
@@ -203,6 +217,55 @@ def _nonclinical_visual_context(claim: ClaimSnapshot | None, document: PubMedDoc
                 and not _HUMAN_VISUAL_SYSTEM.search(source_text))
 
 
+def _unstated_active_comparator(
+    claim: ClaimSnapshot | None, document: PubMedDocument,
+) -> bool:
+    """Exclude a *relative active-treatment question* from an absolute claim.
+
+    This is a narrow title-level study-question guard, not a verdict about the
+    treatment. A placebo/no-exposure comparison can answer an absolute-effect
+    question; an alternate active exposure alone cannot. All excluded records
+    remain in the auditable pack.
+    """
+
+    if claim is None or claim.pico is None or claim.pico.comparator:
+        return False
+    if _ACTIVE_COMPARISON.search(claim.standalone_text):
+        # The comparison was actually asserted, even if PICO missed its slot.
+        return False
+    title = document.title
+    exposure = claim.pico.intervention_or_exposure
+    if not exposure:
+        return False
+    head = re.split(r"\b(?:in|among)\b", exposure, maxsplit=1, flags=re.I)[0]
+    source_words = tuple(word.casefold() for word in _WORD.findall(head)
+                         if word.casefold() not in _STOP)
+    if not source_words:
+        return False
+    anchor = source_words[0]
+    if not re.search(rf"(?<!\w){re.escape(anchor)}(?!\w)", title, re.I):
+        return False
+    if (_NO_EFFECT_CONTROL.search(title)
+            or re.search(rf"\b(?:no|without|zero)\s+{re.escape(anchor)}\b", title, re.I)
+            or re.search(
+                rf"\bcomparison\s+of\b.{{0,40}}\b{re.escape(anchor)}\s+"
+                r"(?:doses?|intake\s+levels?|frequenc(?:y|ies)|amounts?)\b",
+                title, re.I,
+            )):
+        return False
+    if _ACTIVE_COMPARISON.search(title):
+        return True
+    if not _DIFFERENCE_TITLE.search(title):
+        return False
+    # "No difference ... consuming soy and whey protein" is still a
+    # comparative study question, even without the word "versus".
+    return any(
+        re.search(rf"(?<!\w){re.escape(word)}\s+{_COORDINATED_ACTIVE_EXPOSURES.pattern}",
+                  title, re.I)
+        for word in source_words
+    )
+
+
 def select_top_evidence(
     passages: tuple[RankedPassage, ...], *, limit: int = 8,
     max_per_document: int = 1, documents: tuple[PubMedDocument, ...] = (),
@@ -306,6 +369,21 @@ def select_top_evidence(
         document.document_id for document in documents
         if _nonclinical_visual_context(claim, document)
     }
+    unstated_active_comparator = {
+        document.document_id for document in documents
+        if _unstated_active_comparator(claim, document)
+    }
+    absent_specific_endpoint = {
+        document.document_id for document in documents
+        if document.endpoint_directness.factors.get("specific_size_endpoint_required") == 1.0
+        and document.endpoint_directness.factors.get("specific_size_endpoint_present") != 1.0
+    }
+    exposure_arm_population_mismatch = {
+        document.document_id for document in documents
+        if any(warning.startswith(("female_exposure_arm_only_vs_male_claim",
+                                   "male_exposure_arm_only_vs_female_claim"))
+               for warning in document.applicability_warnings)
+    }
     # A one-character synthetic endpoint ("Y") is not evidence that the
     # claim concerns incident disease; it must not trigger a hard exclusion.
     outcome_text = claim.pico.outcome.strip() if claim and claim.pico and claim.pico.outcome else ""
@@ -329,6 +407,8 @@ def select_top_evidence(
         if document.document_id not in (
             retracted | nonhuman | unfocused | non_evidence_publications
             | nonclinical_visual | wrong_endpoint | indirect_question
+            | unstated_active_comparator | absent_specific_endpoint
+            | exposure_arm_population_mismatch
         )
     }
     eligible_abstracts = {
@@ -370,6 +450,9 @@ def select_top_evidence(
                 or document_id in indirect_question
                 or document_id in wrong_endpoint
                 or document_id in contextual_only
+                or document_id in unstated_active_comparator
+                or document_id in absent_specific_endpoint
+                or document_id in exposure_arm_population_mismatch
                 or document_id in title_only_when_abstract_available):
             continue
         if counts[document_id] >= max_per_document:
@@ -405,6 +488,12 @@ def select_top_evidence(
             reason = "post_disease_endpoint_excluded"
         elif passage.passage.document_id in indirect_question:
             reason = "indirect_relationship_question_excluded"
+        elif passage.passage.document_id in unstated_active_comparator:
+            reason = "unstated_active_comparator_excluded"
+        elif passage.passage.document_id in absent_specific_endpoint:
+            reason = "specific_outcome_endpoint_absent_excluded"
+        elif passage.passage.document_id in exposure_arm_population_mismatch:
+            reason = "exposure_arm_population_mismatch_excluded"
         elif passage.passage.document_id in title_only_when_abstract_available:
             reason = "title_only_when_abstract_available"
         elif passage.passage.document_id in contextual_only:

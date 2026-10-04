@@ -84,6 +84,11 @@ def test_verdict_runs_append_and_postgres_blocks_update(
             assert first_report.id != second_report.id
             assert first_report.semantic_hash == second_report.semantic_hash
             assert first_report.result_json["production_qualified"] is False
+            assert first_report.result_json["verdict_explanation"]["version"] == "1.0"
+            assert first_report.result_json["verdict_explanation"] == (
+                second_report.result_json["verdict_explanation"]
+            )
+            assert first_report.result_json["verdict_explanation"]["evidence_ids"] == ["E1"]
             assert len(list(session.scalars(select(ReportRunRecord).where(
                 ReportRunRecord.verdict_run_id == first.id,
             )))) == 2

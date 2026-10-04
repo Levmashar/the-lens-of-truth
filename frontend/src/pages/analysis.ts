@@ -116,7 +116,9 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     append(cardTop, element("p", "eyebrow", `Claim ${claim.ordinal}`));
     const claimStatus = summary?.status === "completed" ? "Completed" : summary?.status === "failed" ? "Unable to complete" : summary?.status === "running" ? "Analyzing" : "Waiting";
     cardTop.append(element("span", "claim-status", claimStatus));
-    append(card, cardTop, element("h3", "claim-text", claim.raw_text));
+    // Coordinated source spans can omit a shared subject. Show the verified
+    // standalone proposition that retrieval and judging actually assess.
+    append(card, cardTop, element("h3", "claim-text", claim.normalized_text ?? claim.raw_text));
     if (summary?.status === "failed") {
       card.append(element("p", "claim-failure", summary.failure_code?.endsWith("_timeout")
         ? "This claim took too long to verify. No report is available."
@@ -125,7 +127,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
         : "This claim could not be completed reliably. No report is available."));
     } else if (summary?.status === "completed") {
       const report = reports.get(claim.claim_id);
-      if (report) card.append(createClaimResult(report, id, claim.claim_id));
+      if (report) card.append(createClaimResult(report, id, claim.claim_id, analysis?.debug_enabled));
       else if (reportErrors.has(claim.claim_id)) card.append(element("p", "report-error", reportErrors.get(claim.claim_id)));
       else card.append(element("div", "skeleton skeleton-report"));
     } else {

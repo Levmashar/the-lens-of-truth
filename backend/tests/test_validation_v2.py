@@ -107,7 +107,7 @@ def judge_for(
     pack_id: object | None = None,
 ) -> JudgeRun:
     pack_id = pack_id or uuid4()
-    prepared = prepare_judge_input(pack_id, pack)
+    prepared = prepare_judge_input(pack_id, pack, version="judge-input-2.0")
     decision = JudgeDecisionV2(
         schema_version="2.0", label=label, statements=statements,
         conclusion=JudgeConclusion(
@@ -275,6 +275,10 @@ def test_semantic_conclusion_input_names_exact_ids_to_echo() -> None:
     assert payload["required_statement_ids"] == ["S1", "S2"]
     assert payload["required_evidence_ids"] == ["E4", "E7"]
     assert "Copy required_statement_ids" in prepared.system_prompt
+    assert "active-intervention-versus-active-intervention" in prepared.system_prompt
+    assert 'An "and" coordination in the source is not a "because" claim' in (
+        prepared.system_prompt
+    )
 
 
 @pytest.mark.parametrize(("statement", "source", "expected"), [

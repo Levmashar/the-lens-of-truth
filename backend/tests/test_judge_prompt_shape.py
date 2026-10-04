@@ -7,7 +7,7 @@ from app.judging.prompt import PROMPT_VERSION, SYSTEM_INSTRUCTIONS
 
 
 def test_toy_example_has_structured_conclusion_and_is_not_medical_evidence() -> None:
-    assert PROMPT_VERSION == "judge-2.3-2026-09-30"
+    assert PROMPT_VERSION == "judge-2.7-2026-10-01"
     example = SYSTEM_INSTRUCTIONS.split("SHAPE EXAMPLE ONLY", maxsplit=1)[1]
     example = example[example.index("{"):example.index("\nIn your real answer")]
     payload = json.loads(example)
@@ -17,3 +17,10 @@ def test_toy_example_has_structured_conclusion_and_is_not_medical_evidence() -> 
     assert "toy" in payload["statements"][0]["text"].casefold()
     assert "Do not copy" in SYSTEM_INSTRUCTIONS
     assert "never a string" in SYSTEM_INSTRUCTIONS
+
+
+def test_judge_prompt_keeps_standalone_claim_and_unstated_comparator_distinct() -> None:
+    assert "`exact_atomic_claim` is the complete proposition" in SYSTEM_INSTRUCTIONS
+    assert "source-provenance fields" in SYSTEM_INSTRUCTIONS
+    assert "different active exposure" in SYSTEM_INSTRUCTIONS
+    assert "Coordinated claims joined by \"and\"" in SYSTEM_INSTRUCTIONS

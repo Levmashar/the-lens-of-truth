@@ -9,6 +9,30 @@ _LOCAL_ONLY_KEYWORDS = frozenset({
 })
 
 
+def quota_exhausted(response: httpx.Response) -> bool:
+    """Recognize an explicit billing/key quota failure without storing its body."""
+    if response.status_code not in {402, 403}:
+        return False
+    try:
+        payload = response.json()
+    except ValueError:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    error = payload.get("error")
+    if isinstance(error, dict):
+        details = " ".join(str(error.get(key, "")) for key in ("code", "type", "message"))
+    elif isinstance(error, str):
+        details = error
+    else:
+        return False
+    details = details[:2048].casefold()
+    return any(token in details for token in (
+        "all_time_limit_exceeded", "api key quota exceeded", "insufficient credits",
+        "run out of credits", "insufficient balance",
+    ))
+
+
 def strict_chat_schema(schema: dict[str, Any]) -> dict[str, Any]:
     """Use the strict chat-API JSON Schema subset; keep richer checks locally.
 

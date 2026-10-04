@@ -43,7 +43,7 @@
 .debug-response { border: 1px solid #516b61; border-radius: var(--radius-sm); margin-top: var(--space-3); padding: var(--space-3); }
 .debug-response summary { cursor: pointer; overflow-wrap: anywhere; }
 .debug-response p { color: #c8d8d0; font-size: .82rem; }
-.debug-response-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; background: #0f1d19; padding: var(--space-3); border-radius: var(--radius-sm); font-size: .78rem; }
+.debug-response-text { white-space: pre-wrap; overflow-wrap: anywhere; background: #0f1d19; padding: var(--space-3); border-radius: var(--radius-sm); font-size: .78rem; }
 .skeleton-stack { display: grid; gap: var(--space-4); }
 .skeleton { background: linear-gradient(90deg, #e8eeea, #f4f7f4, #e8eeea); background-size: 200% 100%; animation: shimmer 2s linear infinite; border-radius: var(--radius-sm); }
 .skeleton-title { width: 46%; height: 32px; }

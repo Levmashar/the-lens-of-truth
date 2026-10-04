@@ -1,9 +1,10 @@
-"""PubMed-only retrieval orchestration, independent of API and persistence."""
+"""Bounded retrieval into one frozen pack, independent of API and persistence."""
 
 import asyncio
 from collections import Counter
 from typing import Literal
 
+from app.adapters.authoritative import AuthoritativeAdapter
 from app.adapters.crossref import CrossrefAdapter
 from app.adapters.pubmed import PubMedAdapter
 from app.retrieval.evidence_pack import build_evidence_pack, deduplicate_documents
@@ -27,6 +28,7 @@ async def retrieve_pubmed(
     selected_limit: int = 8, max_per_document: int = 1,
     crossref: CrossrefAdapter | None = None,
     crossref_total_timeout_seconds: float = 30,
+    authoritative: AuthoritativeAdapter | None = None,
 ) -> RetrievalResult:
     """Retrieve a bounded source set and freeze it without asserting a verdict."""
 
@@ -37,6 +39,7 @@ async def retrieve_pubmed(
         pmids, cache_hit = await adapter.search(query.query)
         executions.append(QueryExecution(
             query_id=query.query_id, pmids=pmids, cache_hit=cache_hit,
+            **getattr(adapter, "last_search_diagnostics", {}),
         ))
         for pmid in pmids:
             provenance.setdefault(pmid, set()).add(query.query_id)
@@ -95,6 +98,10 @@ async def retrieve_pubmed(
             "metadata_provenance": provenance_fields,
         })))
     documents = tuple(enriched)
+    source_statuses: dict[str, str] = {}
+    if authoritative:
+        approved_docs, source_statuses = await authoritative.retrieve(claim)
+        documents = (*documents, *approved_docs)
     status: Literal["ok", "no_results", "partial_metadata"] = (
         "partial_metadata" if missing else "no_results" if not documents else "ok"
     )
@@ -114,11 +121,13 @@ async def retrieve_pubmed(
             document.crossref.check.status for document in documents if document.crossref
         ).items())),
         doi_coverage=sum(document.doi is not None for document in documents),
+        search_executions=tuple(executions), authoritative_statuses=source_statuses,
     )
     return RetrievalResult(
         pack=build_evidence_pack(
             claim, plan, documents, ranked,
             selected_limit=selected_limit, max_per_document=max_per_document,
+            pack_version="1.5" if authoritative else "1.4",
         ),
         diagnostics=diagnostics, query_executions=tuple(executions),
     )

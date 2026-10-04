@@ -10,7 +10,11 @@ import httpx
 import pytest
 
 from app.adapters.judge import OpenAICompatibleJudgeProvider, ProviderFailure
-from app.adapters.structured_output import rejects_json_schema_mode, strict_chat_schema
+from app.adapters.structured_output import (
+    quota_exhausted,
+    rejects_json_schema_mode,
+    strict_chat_schema,
+)
 from app.core.config import Settings
 from app.judging.config import configured_slots
 from app.judging.models import (
@@ -117,7 +121,22 @@ class FakeProvider:
         self.received.append((judge_slot.slot, prepared.pack_hash,
                               prepared.prompt_hash, prepared.selected_ids))
         await asyncio.sleep(self.delay)
-        return ProviderResponse(content=self.response)
+        return ProviderResponse(content=unit_content(self.response))
+
+
+def unit_content(content: str) -> str:
+    """Transport fixtures now emit caller-owned protocol metadata nowhere."""
+    try:
+        data = json.loads(content)
+    except ValueError:
+        return content
+    if not isinstance(data, dict) or "statements" not in data:
+        return content
+    data.pop("schema_version", None)
+    for statement in data["statements"]:
+        statement["source_unit_ids"] = [f"{r['evidence_id']}.U1"
+                                        for r in statement.pop("evidence_refs")]
+    return json.dumps(data)
 
 
 def test_three_independent_parallel_judges_share_exact_pack() -> None:
@@ -222,7 +241,7 @@ def test_invalid_citation_retries_once_without_accepting_the_bad_response() -> N
             content = decision_json("supported", "E999") if self.calls == 1 else (
                 decision_json("supported", "E1")
             )
-            return ProviderResponse(content=content)
+            return ProviderResponse(content=unit_content(content))
 
     fake = BadThenGood()
     run = asyncio.run(JudgeService({"fake": fake}).run(
@@ -264,14 +283,15 @@ def test_only_missing_protocol_version_can_be_inferred() -> None:
         parse_provider_decision(json.dumps({**payload, "schema_version": "2.0"}), ("E1",))
 
 
-def test_service_audits_protocol_inference_without_changing_citations() -> None:
+def test_service_attaches_protocol_metadata_without_model_inference() -> None:
     payload = json.loads(decision_json("supported"))
     del payload["schema_version"]
     run = asyncio.run(JudgeService({"fake": FakeProvider(json.dumps(payload))}).run(
         uuid4(), pack_for(), (slot(1),),
     ))[0][0]
     assert run.outcome_status == "succeeded" and run.attempt_count == 1
-    assert run.schema_version_inferred is True
+    assert run.schema_version_inferred is False
+    assert run.decision.schema_version == "2.2"
     assert run.decision is not None
     assert run.decision.statements[0].evidence_refs[0].evidence_id == "E1"
     assert run.response_json == run.decision.model_dump(mode="json")
@@ -281,13 +301,12 @@ def test_prompt_lists_all_uncertainty_reasons_and_rejects_invented_reason() -> N
     prepared = prepare_judge_input(uuid4(), pack_for())
     for reason in UncertaintyReason:
         assert reason.value in prepared.system_prompt
-    assert "never invent a different reason string" in prepared.system_prompt
-    assert "Each\nstatement must express ONE factual" in prepared.system_prompt
-    assert "No extra fields or raw PMID/DOI" in prepared.system_prompt
-    assert "NOT the same\nas a finding that it established absence" in prepared.system_prompt
-    assert "Prefer one or two decisive statements" in prepared.system_prompt
-    assert "Every material factual premise" in prepared.system_prompt
-    assert "schema_version key" in prepared.system_prompt
+    assert "source_unit_ids" in prepared.system_prompt
+    assert "never copy a quotation" in prepared.system_prompt
+    assert "null\nresult alone does not prove absence" in prepared.system_prompt
+    assert "two or three material" in prepared.system_prompt
+    assert "every factual conclusion premise" in prepared.system_prompt
+    assert "Do not output schema_version" in prepared.system_prompt
     payload = json.loads(decision_json())
     payload["uncertainty_reasons"] = ["causal_uncertainty"]
     with pytest.raises(DecisionFailure, match="schema_violation"):
@@ -346,7 +365,7 @@ def test_prompt_hash_reproducible_pack_change_changes_provenance() -> None:
     second = prepare_judge_input(pack_id, changed)
     assert first.pack_hash != second.pack_hash
     assert first.prompt_hash != second.prompt_hash
-    assert first.user_prompt.count("Sunscreen use was associated") == 1
+    assert first.user_prompt.count("Sunscreen use was associated") == 2
     assert len(first.selected_ids) >= 1
 
 
@@ -547,7 +566,7 @@ def test_openai_shaped_adapter_never_requests_tools_or_search(
         body = json.loads(request.content)
         seen.append(body)
         return httpx.Response(200, json={
-            "choices": [{"message": {"content": decision_json()}}],
+            "choices": [{"message": {"content": unit_content(decision_json())}}],
             "usage": {"prompt_tokens": 30, "completion_tokens": 12},
             "model": "returned-snapshot",
         }, headers={"x-request-id": "safe_id_123"})
@@ -568,6 +587,9 @@ def test_openai_shaped_adapter_never_requests_tools_or_search(
     openai_slot = slot(1).model_copy(update={"provider": "openai_compatible"})
     asyncio.run(adapter.evaluate(openai_slot, prepared))
     assert seen[1]["response_format"]["type"] == "json_schema"
+    paratera_slot = slot(1).model_copy(update={"provider": "paratera"})
+    asyncio.run(adapter.evaluate(paratera_slot, prepared))
+    assert seen[2]["response_format"]["type"] == "json_schema"
 
 
 def test_explicit_response_format_rejection_gets_one_plain_json_retry(
@@ -583,7 +605,7 @@ def test_explicit_response_format_rejection_gets_one_plain_json_retry(
                 "error": {"message": "response_format json_schema is not supported"},
             })
         return httpx.Response(200, json={
-            "choices": [{"message": {"content": decision_json()}}],
+            "choices": [{"message": {"content": unit_content(decision_json())}}],
         })
 
     client_type = httpx.AsyncClient
@@ -649,3 +671,27 @@ def test_strict_chat_schema_requires_all_fields_without_weakening_local_validati
     assert "default" not in outbound["properties"]["uncertainty_reasons"]
     assert "minLength" not in outbound["$defs"]["EvidenceRef"]["properties"]["quote"]
     assert pydantic_schema["$defs"]["EvidenceRef"]["properties"]["quote"]["minLength"] == 3
+
+
+def test_key_lifetime_quota_is_explicit_and_never_retried(monkeypatch: pytest.MonkeyPatch) -> None:
+    client_type = httpx.AsyncClient
+    calls = []
+
+    async def respond(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(403, json={
+            "error": {"message": "API key quota exceeded (ALL_TIME_LIMIT_EXCEEDED)."},
+        })
+
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: client_type(
+        transport=httpx.MockTransport(respond), **kwargs,
+    ))
+    service = JudgeService({"openai_compatible": OpenAICompatibleJudgeProvider(5)})
+    configured = slot(1).model_copy(update={"provider": "openai_compatible"})
+    runs, _ = asyncio.run(service.run(uuid4(), pack_for(), (configured,)))
+    assert len(calls) == 1
+    assert runs[0].error_category == "quota_exceeded"
+    assert runs[0].attempt_count == 1
+    assert not quota_exhausted(httpx.Response(403, json={
+        "error": {"message": "This model is not allowed for this API key."},
+    }))

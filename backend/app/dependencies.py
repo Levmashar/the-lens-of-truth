@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from app.adapters.authoritative import AuthoritativeAdapter, load_manifest
 from app.adapters.claim_extractor import (
     ClaimExtractorAdapter,
     DisabledClaimExtractor,
@@ -165,4 +166,13 @@ def get_crossref_adapter(
         max_retries=settings.crossref_max_retries,
         cache=RedisQueryCache(settings.redis_url, label="Crossref DOI"),
         cache_ttl_seconds=settings.crossref_cache_ttl_seconds,
+    )
+def get_authoritative_adapter(settings: Settings) -> AuthoritativeAdapter | None:
+    if not settings.authoritative_enabled:
+        return None
+    manifest = (load_manifest(settings.authoritative_manifest_path)
+                if settings.authoritative_manifest_path else load_manifest())
+    return AuthoritativeAdapter(
+        manifest, max_age_days=settings.authoritative_max_update_age_days,
+        verified_age_days=settings.authoritative_max_review_age_days,
     )

@@ -1,6 +1,196 @@
 # Architecture
 
+## Pre-pilot stabilization boundary
+
+`pipeline/numeric_effect.py` records the source's numeric notation and can
+recover a literal exposure/outcome from a simple explicit atomic relation when
+model PICO grounding fails. It does not infer effect truth, change claim type,
+or convert RR, fold and percentage-point measures. The new PICO JSON field is
+absent from legacy serialization when null, preserving frozen hashes.
+
+Joint checker 2.3 clarifies ranked passage `evidence_ids` versus document IDs and frozen
+`source_unit_ids`. A returned child unit may normalize only to the exact parent
+supplied for that statement in the same request. Both returned and resolved IDs
+are audited; arbitrary or foreign IDs fail. Qualifier 1.4 records frozen-source
+null/contrast reasons and permits a demonstrated frequency gradient even if the
+checker called it dose; actual dose and alternative comparators remain separate.
+An optional numeric warning may survive checker uncertainty only when the
+qualitative finding is a literal source substring and the user claim is
+qualitative. Material numbers still block through existing rules.
+
+The development-only diagnostics read persisted artifacts for claim-stage
+counts, judge categories and a failure waterfall. Live call totals use process
+trace when available; a separate export reports only audited attempt counts
+when that trace has expired. Neither path changes medical reports or retention.
+
+## Reliability Slice 4.1 development contract (supersedes Slice 4 numeric format guard)
+
+The architecture remains V2, not V3. Current sources, Pack 1.5 selection and all
+three judges are unchanged. New development/test decisions use 2.3; production
+retains the existing path/qualification requirements. No semantic revision loop.
+
+`judging/compact23.py` requests 2–3 material findings, hard maximum five. Original
+text, separately model-written qualitative finding, optional numeric details and
+numeric dependency are retained separately. Models may still request four/five;
+the preference is not represented as a guarantee of provider compliance.
+`validation/numeric23.py` checks every asserted numeric field. A qualitative
+warning can survive only with source-grounded independent attribution; a failed
+material quantity blocks qualification and cannot become an opposite vote.
+Original text is never stripped or rewritten into a fabricated proposition.
+
+`validation/joint23.py` makes one bounded 25-second dual-target request:
+source→qualitative-finding attribution and finding→exact-claim axes. The proposed
+label/conclusion/other votes are absent. Source IDs, ordered statement IDs,
+frozen units, provenance and numeric issues remain auditable. Transport failure
+or ID/schema noncompliance fails closed without a semantic retry.
+
+`validation/axes.py` preserves raw direction, scope, strength, role and explicit
+scope/finding bases. Its pure mapping applies existing design, question, integrity,
+numeric and risk rules to the judge proposal. Null comparator is unspecified;
+a source-grounded same-exposure gradient may count at narrower scope for a
+frequency claim. Untested dose/population, active alternative or wrong endpoint
+cannot gain decisive weight by this exception. Imprecise-null/reverse-causation
+findings remain nondecisive. A model's precise-null classification also requires
+affirmative frozen precision/exclusion wording; that lexical necessary condition
+is NOT proof of clinical equivalence. No voting, threshold or production bypass.
+
+`validation/audit23.py` reconstructs raw content, prompt hashes, canonical JSON
+snapshot, exact joint request/response and version-specific qualifier output.
+JSON array/tuple representation differences do not change canonical content.
+Tampering or missing raw audit still fails closed. Existing JSONB is sufficient;
+append-only database behavior and historical contracts remain unchanged.
+
+Only development diagnostics gain collapsed four-axis details. Ordinary reports
+retain simple labels and the development qualification notice. See the Slice 4.1
+results for semantic failures that software CI does not establish away.
+
+## Slice 4: isolated evaluation, not a pipeline replacement
+
+`app/evaluation` operates only through opt-in development/test commands. It
+freezes read-only original artifacts or clearly labeled fresh/synthetic controls;
+models reuse the same hash-bound source text without retrieving between models.
+Case annotations never enter prompts. Private artifacts stay in ignored runtime,
+use exclusive creation, retain original expiry and checkpoint each completed row
+append-only. Budget/quota/transport failures are not medical evidence insufficiency.
+
+V3 `app/judging/v3.py` permits only frozen document/unit IDs, controlled relation,
+scope, materiality, basis and reasons. Python checks identities/content hashes/
+integrity/design and derives positions with the existing question-specific policy
+and assertion-numeric checks. An optional single batched decisive checker is
+non-voting. There is no V3 clinical persistence/API/aggregation integration.
+Evaluation-only lean/oracle subsets change selections/hashes, not source content
+or role eligibility. Incompatible oracle sources remain blocked by normal policy.
+
+`prepare_minimal_v2` is also evaluation-only; default V2 remains unchanged.
+`ensemble` reuses actual V2 audit artifacts through `VerdictService(POLICY_V4)`;
+V3 outputs are never invented into V2 votes. Provider response identity metadata
+is captured where available, but gateway aliases are not verified pinned models.
+See [bake-off gates/results](JUDGE_BAKEOFF_RESULTS.md): false decisive probe
+results and lean recall loss prevented adoption. Normal evidence/medical policy,
+production qualification, judge-family/count thresholds and append-only DB rules
+remain as implemented in Slice 3.
+
+## Reliability Slice 3: bounded multi-source coverage
+
+The server-owned `app/retrieval/authoritative_manifest.json` is an approved URL
+index, not a claim-to-label map. `AuthoritativeAdapter` fetches only those exact
+HTTPS URLs; domain allowlist, no redirects, 12-second timeout, 2 MB response cap,
+two concurrent fetches and four candidate documents bound the channel. No link
+is followed, no JavaScript runs, and no judge receives browsing/search tools.
+Complete visible paragraphs are entity/whitespace-normalized, sectioned, hashed
+and frozen (at most eight retained paragraphs/8,000 characters per source).
+Topic aliases/PICO select sources and relevant paragraphs deterministically.
+
+PubMed and authoritative documents share a frozen envelope, distinguished by
+`source_kind`. Authoritative sources have no invented PMID or DOI. Organization,
+purpose, canonical URL, supplied update date, availability, fetch/review dates,
+content hash, extraction version, references and currency travel with the Pack.
+The source-body version hash covers the extracted body; the Pack hash also covers
+the actual retained subset and its omission counts. Currency never comes from
+HTTP 200, HTTP Date or a site-wide footer. Defaults are a 90-day manifest-review
+window and 3,650-day document-date window: engineering freshness, not clinical currency.
+
+New `1.5` Packs bind role-aware selections before judging. At most two direct
+approved sources are reserved alongside PubMed; at most two contextual documents
+use otherwise free slots. Incompatible evidence stays auditable, outside judge
+input. Context cannot independently qualify a decisive conclusion. A summary
+mentioning a never-smoker study is not itself a never-smoker cohort: population
+exclusion heuristics for individual studies do not define the summary's scope.
+
+`relationship_analysis` preserves actual Methods-grounded exposure assignment
+separately from parent `study_design`. Unknown stays unknown. Nested observed
+smoking analysis is not randomized smoking. MeSH "As Topic" is not synthesis
+design. Harmful-exposure causal questions can pass the design gate with a current
+direct causal assessment/systematic summary; treatment/prevention retain actual
+intervention/synthesis requirements. Diagnostics require explicit accuracy/reference-
+standard evidence; essential numerical magnitude checks remain unchanged. Unreviewed
+convergent-observational sufficiency is deliberately not enabled.
+
+Document purpose/design affect eligibility only: attribution → label-blind relation
+classification → pure qualification still determine evidence use. One source's
+sections are one source; known cited PMIDs and shared summary lineage are not
+independent replications. Reports bundle multiple exact cited excerpts into one
+document card. No V3 rewrite, family/count relaxation or production approval occurs.
+
 ## Implemented boundary
+
+Reliability Slice 2 supersedes the holistic conclusion-check step for new
+input/decision/validation `2.2` invocations. The existing split is not rebuilt:
+
+```text
+Frozen source units → source attribution (unchanged)
+                    → one batch of statement→exact-claim relations
+                    → deterministic qualification of the proposed judge label
+                    → existing deterministic Lens policy / report
+```
+
+The relation request includes exact claim/type/PICO, every source-validated
+eligible statement and its frozen study/integrity/scope metadata, but never the
+judge's proposed label, other judges, majority or final verdict. The adapter
+offers no browsing tools. Its 18-second call remains inside the existing total
+validation ceiling. Strict output requires the exact ordered statement IDs.
+Transport/schema/deadline failure is not scientific insufficiency.
+
+`conclusion-qualifier-1.0` is pure Python: no calls, clock or randomness. Direct
+material support/contradiction needs compatible scope, an actual relied-on
+decisive finding, no opposing material direction and the existing causal design
+gate. Context does not vote; an unrelated trial cannot satisfy the gate for a
+cohort finding. NEI can qualify for insufficiency, unresolved semantic uncertainty,
+conflict or blocked claim-strength gates, but not clear one-sided decisive evidence.
+Essential numeric overclaim blocks support without relabeling the judge; accurate
+counterestimates need not equal the user's claim. Incomplete integrity remains
+operational uncertainty, not scientific NEI. Parent design tags never authorize
+the model to invent a randomized exposure contrast.
+
+Existing `judge_validation_run.result_json` holds typed relation provenance and
+the qualifier audit. Aggregation recomputes the input/hash/frozen metadata and
+pure output before accepting a validated 2.2 assessment. Append-only triggers
+remain unchanged; no migration is required. Historical 2.0/2.1 decisions continue
+using their recorded holistic flow and are not retrospectively requalified.
+No provider selection, public route/response/UI, count threshold or production
+release policy changes accompany this slice. See ADR-038 and
+[Slice 2 results](RELIABILITY_SLICE2_RESULTS.md) for measurements and review limits.
+
+Slice 1 of the reliability reset adds backend-owned citation units to the
+existing frozen document input; it does not replace the schema-2.0 attribution
+and conclusion architecture. New contracts are input/decision/validation 2.1,
+while historical contracts are reconstructed by their recorded version.
+Each whole included passage is a stable `E#.U1` unit with document/passage
+hashes, content version and exact offsets. All judges receive identical units.
+The backend, not the model, materializes quoted evidence. Canonical input and
+Pack verification remain mandatory before semantic checking or aggregation.
+
+Assertion-specific numeric validation distinguishes a typed wrong statistic
+from an unresolved parser assignment. It checks only a statement's own unit
+references (and separately the conclusion's referenced findings), not every
+number in an abstract. Required unresolved quantities prevent reliance.
+Optional unsupported prose needs a fresh single-budget revision with the
+unchanged complete evidence, preserving rejected findings and lineage.
+Semantic scope/endpoint/comparator checks remain separate and mandatory.
+Existing JSONB audit columns suffice; no migration or threshold change was
+made. Developer capture/evaluation utilities are read-only with respect to
+historical DB records. Detailed measurements and limits are in
+[RELIABILITY_SLICE1_RESULTS.md](RELIABILITY_SLICE1_RESULTS.md).
 
 The repository implements intake, normalization, PubMed retrieval with frozen
 Evidence Pack 1.3, independent judging, per-judge evidence-use validation,
@@ -435,6 +625,9 @@ limitations, safety text, and a prominent backend development notice when
 `production_qualified=false`. The frontend does not infer source roles or a
 medical verdict. It maps four controlled verdict labels and safe operational
 error categories to UI copy. A 403 report gate is not a fifth medical result.
+The claim card displays the backend's source-verified standalone proposition,
+not a raw second-clause fragment missing its shared subject; exact source
+offsets and raw wording remain in the API for provenance.
 Text nodes are created with `textContent`, and external source URLs are used
 only when the backend-provided URL is HTTP(S). No credentials enter the web
 bundle. URL submission, WeChat, localization, and public access controls
@@ -459,6 +652,18 @@ local typed numbers; a semantic validator then assesses attribution and
 scope of each statement. A separate semantic check asks whether *validated*
 findings justify the proposed label for the original claim. A source opposing
 the claim may support a judge's accurate description of that opposition.
+For coordinated fragments, `exact_atomic_claim` is the authoritative
+standalone proposition, while `raw_source_span` and `pico.original_claim`
+remain provenance. Retrieval selection excludes unasserted active-comparator
+studies from the judge subset but retains them in the Evidence Pack; a
+no-exposure or expressly claimed comparator remains eligible. New judge and
+semantic prompts require the actual source comparison and measured mechanism
+to match a proposed decisive conclusion. A specific gain/growth endpoint
+cannot be satisfied by generic muscle soreness/biomarker measurements. A
+mixed-sex trial does not establish applicability when the numbered arm
+testing the claimed exposure is explicitly limited to the other sex; the
+arm-restriction signal and exclusion remain auditable in the pack. A
+conjunction is not mediation.
 Uncertain scope or missing context is not a proven mismatch. Valid findings
 remain recorded even if a conclusion fails, but only a fully validated
 conclusion can become an eligible decisive assessment.
@@ -474,3 +679,37 @@ Raw user content and retrieved documents are untrusted. Future stages must
 separate them from prompts/instructions, validate uploads and URLs, redact PII
 before model calls, check retractions and identifiers in retrieval, and force
 high-risk cases through stricter abstention thresholds.
+
+## Slice 4 development path (2026-10-02)
+
+Normal development/test workers retain the 2.2 attribution/conclusion contract,
+Pack 1.5 and Slice 3 selection. Three independent configured judge slots receive
+the identical frozen snapshot. Compact qualitative findings omit optional stats;
+source-unit IDs and backend-materialized quotations are unchanged. Numeric prose
+is rejected at the response boundary on qualitative requests, with at most the
+existing format retry. Quantitative requests retain essential numeric checks.
+
+For each parsed judge: deterministic reference/provenance/assertion preflight,
+ONE joint semantic request containing distinct source-attribution and exact-claim
+relation arrays, then the existing pure question-specific qualifier. The checker
+receives no proposed label/conclusion/other judge and cannot vote. It receives
+the same frozen visible units to detect omitted contrary findings. Slot 3 is the
+development checker (currently Gemini Lite); its own judge vote remains separate.
+Attribution failure, missing counterevidence, uncertainty or tampering cannot
+produce a qualified decision. The exact joint request, hash, response and qualifier
+remain in append-only JSONB; no migration or historical rewrite is needed.
+
+Versioned joint prompts 1.0/1.1 remain reconstructible. Version 1.1 distinguishes
+direction from scope and preserves negation. Aggregation accepts one *HTTP*
+request only for this audited dual-target development contract, not one missing
+semantic target. Production still requires the existing qualifications/counts.
+Development semantic revisions are disabled; production/historical cascade paths
+remain unchanged. V3 plus generic consistency guards is evaluation-only because
+its real-source basis/schema gate failed. No lean selector was adopted.
+
+The opt-in `docker-compose.slice4-budget.yml` wraps server and evaluation model
+traffic with the same atomic SQLite ceiling. It is a task guard, not medical
+policy or a permanent billing limiter. Its ledger is exhausted at 120 requests;
+do not reset it or silently switch ledgers. Software tests must not run app startup
+reconciliation against an active acceptance database; the health test mocks those
+lifecycle side effects, and the documented PostgreSQL command uses a separate DB.

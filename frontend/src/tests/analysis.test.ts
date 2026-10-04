@@ -19,6 +19,30 @@ function mount(): HTMLElement {
   return page.node;
 }
 
+describe("numeric diagnostics", () => {
+  it("separates fidelity, measure, comparability and numeric effect without parser dumps", () => {
+    const node = createDebugProgress(progress({ debug_enabled: true }), [claimSummary({
+      debug_judge_runs: [{ slot: 1, provider: "fixture", model: "fixture", model_family: "fixture",
+        outcome_status: "succeeded", error_category: null, attempt_count: 1, latency_ms: 10,
+        validation_status: "validated", validation_error_category: null,
+        numeric_findings: [{ version: "numeric-fidelity-comparability-1.0", target_id: "S3",
+          material: true, source_fidelity: "verified", asserted_values: ["90"],
+          source_measure: "population_attributable_fraction", claim_measure: "percent_change",
+          comparability: "different_measure", numeric_effect: "noncomparable",
+          semantic_scope_checked: true, structure_status: "structured", evidence_ids: ["E2"],
+          differences: [], conversions: [] }],
+      }],
+    })], null);
+    const numeric = node.querySelector(".debug-numeric-finding");
+    expect(numeric?.textContent).toContain("Numeric source fidelity: verified");
+    expect(numeric?.textContent).toContain("Source measure: population attributable fraction");
+    expect(numeric?.textContent).toContain("Claim measure: percent change");
+    expect(numeric?.textContent).toContain("Comparability: different measure");
+    expect(numeric?.textContent).toContain("Numeric effect: noncomparable");
+    expect(numeric?.textContent).not.toContain("asserted_tokens");
+  });
+});
+
 function mockResponses(analysis: ReturnType<typeof progress>, claims = summaries(), reportResponse = report()): ReturnType<typeof vi.fn> {
   const fetchMock = vi.fn((url: string) => {
     if (url.endsWith("/report")) return Promise.resolve(jsonResponse(reportResponse));
@@ -30,6 +54,36 @@ function mockResponses(analysis: ReturnType<typeof progress>, claims = summaries
 }
 
 describe("analysis page", () => {
+  it("shows a compact failure waterfall and keeps raw responses collapsed", () => {
+    const node = createDebugProgress(progress({ debug_enabled: true, debug_events: [{
+      role: "judge_1", provider: "fixture", model: "fixture", attempt: 1,
+      status: "responded", failure_type: null, http_status: 200, elapsed_ms: 12,
+      response_excerpt: '{"label":"supported"}',
+    }] }), [claimSummary({ debug_diagnostics: {
+      extraction: { raw_claim: "Smoking increases lung cancer risk by 85%.",
+        normalized_claim: "Smoking increases lung cancer risk by 85%.",
+        claim_type: "causal", risk_class: "standard",
+        pico: { original_claim: "Smoking increases lung cancer risk by 85%.",
+          population: null, intervention_or_exposure: "Smoking", comparator: null,
+          outcome: "lung cancer risk", timeframe: null, claim_type: "causal" },
+        numeric_effect: { raw_text: "by 85%", status: "parsed", kind: "percent_change",
+          value: "85", unit: "%", direction: "increase" } },
+      retrieval: { candidates: 18, selected_documents: 4, selected_authoritative: 1,
+        selected_pubmed: 3, roles: { direct: 3, contextual: 1, incompatible: 0 } },
+      waterfall: { extraction: "PASS", normalization: "PASS", retrieval: "PASS",
+        selection: "PASS", judge_response: "2/3 usable", source_attribution: "1/3",
+        semantic_classification: "1/3", judge_qualification: "1/3",
+        final_aggregation: "unable_to_verify_reliably" },
+      final: { qualified_judges: 1, qualified_positions: ["supported"],
+        aggregation_reasons: ["TOO_FEW_QUALIFIED"], production_qualified: false,
+        total_model_calls: 6, elapsed_ms: 25000 },
+    } })], null);
+    expect(node.textContent).toContain("Submitted quantity:");
+    expect(node.textContent).toContain("1/3");
+    expect(node.textContent).toContain("TOO_FEW_QUALIFIED");
+    expect(node.querySelector("details.debug-responses")?.hasAttribute("open")).toBe(false);
+    expect(node.querySelector("details.debug-evidence-axes[open]")).not.toBeNull();
+  });
   it("marks judge and validation stages as skipped when retrieval selected no evidence", () => {
     const node = createDebugProgress(progress({ debug_enabled: true }), [
       claimSummary({
@@ -59,6 +113,19 @@ describe("analysis page", () => {
     expect(node.textContent).not.toContain("1 of 1 claims completed");
     expect(fetchMock.mock.calls.some(([url]) => url.endsWith("/claims"))).toBe(true);
     expect(fetchMock.mock.calls.some(([url]) => url.endsWith("/report"))).toBe(true);
+  });
+
+  it("shows the assessed standalone claim instead of a coordinated fragment", async () => {
+    const soyClaim = {
+      ...progress().claims[0],
+      raw_text: "lowers muscle gain",
+      normalized_text: "Regular usage of soy lowers muscle gain.",
+      standalone_status: "reconstructed" as const,
+    };
+    mockResponses(progress({ claims: [soyClaim] }));
+    const node = mount();
+    await vi.waitFor(() => expect(node.querySelector(".claim-text")?.textContent)
+      .toBe("Regular usage of soy lowers muscle gain."));
   });
 
   it("keeps a completed report while another claim fails", async () => {
@@ -139,6 +206,7 @@ describe("analysis page", () => {
     const node = mount();
     await vi.waitFor(() => expect(node.textContent).toContain("Judge 1: inclusionai/ling-3.0-flash"));
     expect(node.textContent).toContain("Error code: timeout");
+    expect(node.textContent).toContain("No usable answer arrived before the judge deadline.");
     expect(node.textContent).toContain("citation validation: not recorded");
   });
 
@@ -166,6 +234,53 @@ describe("analysis page", () => {
     expect(node.textContent).toContain("statements S1");
     expect(node.textContent).toContain("evidence E8");
     expect(node.textContent).toContain("call call-1");
+  });
+
+  it("labels historical model identities separately from the current configuration", async () => {
+    mockResponses(progress({ debug_enabled: true, debug_models: [
+      { role: "judge_1", provider: "openai_compatible", model: "GLM-4.6",
+        status: "responded", failure_type: null, origin: "analysis" },
+      { role: "judge_3", provider: "openai_compatible", model: "DeepSeek-V3.2-Exp",
+        status: "not_called", failure_type: null, origin: "current_configuration" },
+    ] }), summaries());
+    const node = mount();
+    await vi.waitFor(() => expect(node.textContent).toContain("GLM-4.6"));
+    expect(node.textContent).toContain("Responded · this analysis");
+    expect(node.textContent).toContain("DeepSeek-V3.2-Exp");
+    expect(node.textContent).toContain("Not called · current configuration");
+  });
+
+  it("shows independent evidence axes inside development diagnostics", async () => {
+    const checked = claimSummary({ debug_judge_runs: [{
+      slot: 2, provider: "fixture", model: "fixture", model_family: "fixture",
+      outcome_status: "succeeded", error_category: null, attempt_count: 1, latency_ms: 10,
+      validation_status: "validated", validation_error_category: null,
+      evidence_axes: { S1: { direction: "opposes_claim", scope: "compatible_but_narrower",
+        strength: "strong", role: "direct" } },
+    }] });
+    mockResponses(progress({ debug_enabled: true }), summaries([checked]));
+    const node = mount();
+    await vi.waitFor(() => expect(node.textContent).toContain("Direction: opposes_claim"));
+    expect(node.textContent).toContain("Scope: compatible_but_narrower");
+    expect(node.textContent).toContain("Strength: strong");
+    expect(node.textContent).toContain("Role: direct");
+    expect(node.querySelector("details.debug-evidence-axes")?.hasAttribute("open")).toBe(false);
+  });
+
+  it("groups repeated numeric issues and exposes audited development ID conversion", () => {
+    const checked = claimSummary({ debug_judge_runs: [{
+      slot: 2, provider: "fixture", model: "fixture", model_family: "fixture",
+      outcome_status: "succeeded", error_category: null, attempt_count: 1, latency_ms: 10,
+      validation_status: "invalid", validation_error_category: "material_preflight_failure",
+      targeted_issue_codes: ["NUMERIC_UNCERTAIN", "NUMERIC_UNCERTAIN", "STATEMENT_NUMERIC_MISMATCH"],
+      judge_unit_id_normalizations: [{ statement_id: "S1", from: "E2", to: "E2.U1",
+        rule: "unique-frozen-parent-unit-1.0" }],
+    }] });
+    const node = createDebugProgress(progress({ debug_enabled: true }), [checked], null);
+    expect(node.textContent).toContain("NUMERIC_UNCERTAIN x2");
+    expect(node.textContent).toContain("A required numerical statement or source reference could not be verified");
+    expect(node.textContent).toContain("E2 → E2.U1");
+    expect(node.textContent).not.toContain("NUMERIC_UNCERTAIN, NUMERIC_UNCERTAIN");
   });
 
   it("removes repeated result copy without hiding the qualification notice", async () => {

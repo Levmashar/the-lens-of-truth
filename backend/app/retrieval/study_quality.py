@@ -57,6 +57,75 @@ _EXPLICIT_ANIMAL = re.compile(
 _EXPLICIT_HUMAN = re.compile(
     r"\b(?:humans?|people|patients?|adults?|children|men|women|boys|girls)\b", re.I,
 )
+_NUMBERED_SUBSTUDY_INTRO = re.compile(
+    r"\bsub[- ]?(?:investigations?|studies)\b[^:]{0,120}:", re.I,
+)
+_NUMBERED_ARM = re.compile(r"(?<!\d)(\d{1,2})\)\s*")
+_SEX_ONLY_SUBSTUDIES = re.compile(
+    r"\bsub[- ]?(?:investigations?|studies)\s+(\d{1,2})"
+    r"(?:\s*(?:to|through|-)\s*(\d{1,2}))?\s+"
+    r"(?:were|was)\s+(?:conducted\s+in|limited\s+to|restricted\s+to)\s+"
+    r"(women|men|females|males)\s*,?\s*only\b", re.I,
+)
+_EXPOSURE_FILLER = frozenset({
+    "a", "an", "the", "regular", "frequent", "daily", "higher", "high", "lower",
+    "low", "use", "usage", "users", "consumption", "consuming", "intake", "eating",
+})
+
+
+def _exposure_arm_population_mismatch(claim: ClaimSnapshot, document: PubMedDocument) -> str | None:
+    """Detect explicit sex restriction of the numbered arm containing the exposure.
+
+    A mixed-sex document is not evidence that *every* intervention arm included
+    both sexes. No warning is inferred from demographics alone: the source must
+    label a numbered intervention arm and explicitly restrict that arm's group.
+    """
+
+    if claim.pico is None or not claim.pico.population or not claim.pico.intervention_or_exposure:
+        return None
+    population = claim.pico.population.casefold()
+    male = bool(re.search(r"\b(?:men|males?|boys?)\b", population))
+    female = bool(re.search(r"\b(?:women|females?|girls?)\b", population))
+    if male == female:
+        return None
+    exposure_head = re.split(
+        r"\b(?:in|among)\b", claim.pico.intervention_or_exposure,
+        maxsplit=1, flags=re.I,
+    )[0]
+    anchor = next((word.casefold() for word in re.findall(r"[^\W_]+", exposure_head)
+                   if word.casefold() not in _EXPOSURE_FILLER and len(word) > 2), None)
+    if anchor is None:
+        return None
+    source = document.abstract or ""
+    intro = _NUMBERED_SUBSTUDY_INTRO.search(source)
+    if intro is None:
+        return None
+    list_text = source[intro.end():intro.end() + 800]
+    positions = tuple(_NUMBERED_ARM.finditer(list_text))
+    exposure_arms: set[int] = set()
+    for index, match in enumerate(positions):
+        end = positions[index + 1].start() if index + 1 < len(positions) else len(list_text)
+        arm_text = list_text[match.end():end].split(";", 1)[0]
+        arm_text = re.split(r"\.\s+(?=[A-Z][a-z])", arm_text, maxsplit=1)[0]
+        if re.search(rf"(?<!\w){re.escape(anchor)}(?!\w)", arm_text, re.I):
+            exposure_arms.add(int(match.group(1)))
+    if not exposure_arms:
+        return None
+    incompatible: set[int] = set()
+    for match in _SEX_ONLY_SUBSTUDIES.finditer(source):
+        start = int(match.group(1))
+        end = int(match.group(2) or start)
+        if not 1 <= start <= end <= 20:
+            continue
+        arm_sex = match.group(3).casefold()
+        if (male and arm_sex in {"women", "females"}) or (
+            female and arm_sex in {"men", "males"}
+        ):
+            incompatible.update(range(start, end + 1))
+    if exposure_arms <= incompatible:
+        return ("female_exposure_arm_only_vs_male_claim" if male else
+                "male_exposure_arm_only_vs_female_claim")
+    return None
 
 
 def explicit_animal_subject(text: str) -> bool:
@@ -123,6 +192,9 @@ def applicability_flags(claim: ClaimSnapshot, document: PubMedDocument) -> tuple
         flags.append("female_only_vs_male_claim")
     if female_claim and male_only:
         flags.append("male_only_vs_female_claim")
+    arm_mismatch = _exposure_arm_population_mismatch(claim, document)
+    if arm_mismatch:
+        flags.append(arm_mismatch)
     if "non-pregnant" in population and "pregnancy" in terms:
         flags.append("pregnancy_population_mismatch")
     if claim.claim_type == "prevention" and re.search(r"\btreatment of\b", title):
@@ -133,6 +205,8 @@ def applicability_flags(claim: ClaimSnapshot, document: PubMedDocument) -> tuple
 
 
 def annotate_study_quality(claim: ClaimSnapshot, document: PubMedDocument) -> PubMedDocument:
+    from app.retrieval.analysis_design import characterize_analysis
+
     design, source = classify_study_design(document)
     classified = document.model_copy(update={"study_design": design, "study_design_source": source})
     flags = applicability_flags(claim, classified)
@@ -147,6 +221,7 @@ def annotate_study_quality(claim: ClaimSnapshot, document: PubMedDocument) -> Pu
     base = _DESIGN_PRIORS[design]
     prior = round(base * integrity_multiplier * applicability_multiplier, 4)
     return classified.model_copy(update={
+        "relationship_analysis": characterize_analysis(claim, classified),
         "quality_prior": prior,
         "quality_factors": {
             "study_design_base": base, "human_evidence": human_evidence,

@@ -2,9 +2,18 @@ import type { VerdictLabel } from "./api";
 
 export interface ReportReason { code: string; text: string }
 
+export interface VerdictExplanation {
+  version: "1.0";
+  summary: string;
+  reason_category: string;
+  established: string | null;
+  unresolved: string | null;
+  evidence_ids: string[];
+}
+
 export interface SourceCard {
   evidence_id: string;
-  pmid: string;
+  pmid: string | null;
   doi: string | null;
   title: string;
   journal: string | null;
@@ -21,6 +30,18 @@ export interface SourceCard {
   cited_by_judge_run_ids: string[];
   cited_by_validation_run_ids: string[];
   limitations: string[];
+  document_id?: string | null;
+  source_kind?: string;
+  organization?: string | null;
+  document_purpose?: string | null;
+  analysis_design?: string | null;
+  exposure_assignment?: string | null;
+  attribution?: string | null;
+  currency?: string | null;
+  excerpts?: {
+    evidence_id: string; source_unit_id: string; section: string;
+    exact_text: string; truncated: boolean; passage_sha256: string;
+  }[];
 }
 
 export interface LensReport {
@@ -31,10 +52,11 @@ export interface LensReport {
   verdict_display: string;
   headline: string;
   short_summary: string;
+  verdict_explanation?: VerdictExplanation | null;
   why_this_result: ReportReason[];
   key_evidence: SourceCard[];
   neutral_retrieved_sources?: {
-    evidence_id: string; pmid: string; doi: string | null; title: string;
+    evidence_id: string; pmid: string | null; doi: string | null; title: string;
     publication_date: string | null; passage_section: string;
     exact_excerpt: string; excerpt_truncated: boolean;
     passage_sha256: string; source_url: string;
@@ -53,7 +75,7 @@ export interface LensReport {
     production_qualified: boolean;
     development_notice: string | null;
   };
-  sources: { evidence_id: string; pmid: string; doi: string | null; url: string }[];
+  sources: { evidence_id: string; pmid: string | null; doi: string | null; url: string }[];
   safety_notice: string;
   production_qualified: boolean;
   provenance: {

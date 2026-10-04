@@ -12,7 +12,7 @@ from app.verdict.persistence import (
     parse_id_list,
     persist_verdict_run,
 )
-from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3
+from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3, POLICY_V4
 from app.verdict.service import VerdictService
 
 
@@ -28,7 +28,7 @@ def smoke(
         if pack_row is None:
             raise SystemExit("Evidence Pack not found.")
         pack_hash = pack_row.snapshot_hash
-        policies = {item.version: item for item in (POLICY_V1, POLICY_V2, POLICY_V3)}
+        policies = {item.version: item for item in (POLICY_V1, POLICY_V2, POLICY_V3, POLICY_V4)}
         policy = policies[policy_version]
         request = AggregationInput(
             claim_id=pack_row.claim_id, evidence_pack_id=pack_row.id,
@@ -73,7 +73,7 @@ def main() -> None:
     parser.add_argument("--mode", choices=[item.value for item in AggregationMode],
                         default=AggregationMode.PRODUCTION.value)
     parser.add_argument("--policy-version", choices=(POLICY_V1.version, POLICY_V2.version,
-                                                      POLICY_V3.version),
+                                                      POLICY_V3.version, POLICY_V4.version),
                         default=POLICY_V3.version)
     args = parser.parse_args()
     smoke(args.pack, parse_id_list(args.judge_runs),

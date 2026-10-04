@@ -1,0 +1,16 @@
+# Explicitly authorized Slice 4.1 ledger; never reuse/reset the Slice 4 ledger.
+services:
+  backend:
+    command:
+      - python
+      - -m
+      - app.evaluation.call_budget
+      - --ledger
+      - /app/runtime/slice4_1-20261002.sqlite3
+      - --limit
+      - '150'
+      - --module
+      - app.evaluation.server
+    volumes:
+      - ./runtime:/app/runtime
+      - ./backend/app:/app/app:ro

@@ -94,6 +94,15 @@ CASES: tuple[Case, ...] = (
          ("The powered trial's confidence interval excluded a 50% or greater "
           "increase in Y under the tested X regimen.",),
          "contradicted", Attribution.SUPPORTED_BY_SOURCES, Conclusion.JUSTIFIED),
+    Case("active-comparator-not-no-exposure", "Using X lowers Y.",
+         "The trial found no difference in Y between X and active treatment W.",
+         ("The trial found no difference in Y between X and active treatment W; "
+          "it did not include a no-treatment group.",),
+         "contradicted", Attribution.SUPPORTED_BY_SOURCES, Conclusion.NOT_JUSTIFIED),
+    Case("explicit-control-contrast", "Using X increases Y.",
+         "The trial found higher Y with X than with no X.",
+         ("Participants were randomized to X or no X; Y was higher in the X arm.",),
+         "supported", Attribution.SUPPORTED_BY_SOURCES, Conclusion.JUSTIFIED),
 )
 
 
@@ -120,7 +129,7 @@ async def run(slot_number: int, limit: int) -> int:
         }
         prepared = prepare_semantic_input(
             "statement_attribution", {
-                "original_claim": case.claim, "statement": statement,
+                "statement": statement,
                 "frozen_passages": [
                     {"evidence_id": evidence_id, "section": "RESULTS",
                      "passage": passage, "title": "Synthetic evaluation fixture",

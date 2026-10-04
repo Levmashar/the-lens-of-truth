@@ -1,0 +1,74 @@
+{
+  "version": "approved-sources-1.0",
+  "sources": [
+    {
+      "source_id": "nci-tobacco", "organization": "NCI",
+      "canonical_url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco",
+      "document_title": "Tobacco", "document_purpose": "public_health_guidance",
+      "topic_terms": ["smoking", "tobacco", "cigarette", "lung cancer"],
+      "root_attribute": "class", "root_value": "cgdp-article-body",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "tobacco-established-body",
+      "attribution": "Tobacco was originally published by the National Cancer Institute."
+    },
+    {
+      "source_id": "nci-smoking-pdq", "organization": "NCI",
+      "canonical_url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/quit-smoking-hp-pdq",
+      "document_title": "Cigarette Smoking: Health Risks and How to Quit (PDQ) – Health Professional Version",
+      "document_purpose": "systematic_evidence_summary",
+      "topic_terms": ["smoking", "tobacco", "cigarette", "lung cancer"],
+      "root_attribute": "id", "root_value": "cgvBody",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "tobacco-established-body",
+      "attribution": "PDQ Cigarette Smoking was originally published by the National Cancer Institute."
+    },
+    {
+      "source_id": "cdc-cigarettes-cancer", "organization": "CDC",
+      "canonical_url": "https://www.cdc.gov/tobacco/about/cigarettes-and-cancer.html",
+      "document_title": "Health Effects of Cigarettes: Cancer", "document_purpose": "fact_sheet",
+      "topic_terms": ["smoking", "tobacco", "cigarette", "lung cancer"],
+      "root_attribute": "class", "root_value": "cdc-dfe-body__center",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "tobacco-established-body", "attribution": "Source: CDC."
+    },
+    {
+      "source_id": "nci-sunlight", "organization": "NCI",
+      "canonical_url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/sunlight",
+      "document_title": "Sunlight", "document_purpose": "public_health_guidance",
+      "topic_terms": ["sunscreen", "melanoma", "sun protection", "skin cancer"],
+      "root_attribute": "class", "root_value": "cgdp-article-body",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "sun-protection-guidance",
+      "attribution": "Sunlight was originally published by the National Cancer Institute."
+    },
+    {
+      "source_id": "who-hypertension", "organization": "WHO",
+      "canonical_url": "https://www.who.int/news-room/fact-sheets/detail/hypertension",
+      "document_title": "Hypertension", "document_purpose": "fact_sheet",
+      "topic_terms": ["high blood pressure", "hypertension", "stroke", "cardiovascular"],
+      "root_attribute": "class", "root_value": "sf-detail-body-wrapper",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "hypertension-guidance", "attribution": "Source: World Health Organization."
+    },
+    {
+      "source_id": "nccih-cold-evidence", "organization": "NIH/NCCIH",
+      "canonical_url": "https://www.nccih.nih.gov/health/providers/digest/the-common-cold-and-complementary-health-approaches-science",
+      "document_title": "The Common Cold and Complementary Health Approaches: What the Science Says",
+      "document_purpose": "systematic_evidence_summary",
+      "topic_terms": ["vitamin C", "common cold", "colds"],
+      "root_attribute": "tag", "root_value": "main",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "vitamin-c-cold-synthesis", "attribution": "Source: NIH/NCCIH."
+    },
+    {
+      "source_id": "iarc-tobacco-code", "organization": "IARC",
+      "canonical_url": "https://www.iarc.who.int/reference/european-code-against-cancer-4th-edition-tobacco-and-cancer/",
+      "document_title": "European Code against Cancer, 4th Edition: Tobacco and cancer",
+      "document_purpose": "research_report",
+      "topic_terms": ["smoking", "tobacco", "lung cancer"],
+      "root_attribute": "class", "root_value": "entry-content",
+      "last_verified_at": "2026-10-01T16:30:00Z", "retrieval_method": "html_blocks",
+      "independence_group": "tobacco-established-body", "attribution": "Source: IARC."
+    }
+  ]
+}

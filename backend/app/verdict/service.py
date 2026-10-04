@@ -8,6 +8,7 @@ from app.judging.models import JudgeDecisionV2, JudgeLabel, JudgeRun
 from app.judging.prompt import input_snapshot_hash, prepare_judge_input
 from app.pipeline.claim_types import ClaimType
 from app.retrieval.evidence_pack import canonical_pack_bytes
+from app.retrieval.sufficiency import design_eligible, design_fact, question_category
 from app.validation.models import (
     ConclusionJustificationStatus,
     EntailmentStatus,
@@ -19,6 +20,13 @@ from app.validation.models import (
     StatementAttributionStatus,
     ValidationStatus,
 )
+from app.validation.qualification import (
+    CAUSAL_DESIGNS,
+    ConclusionQualificationAudit,
+    qualify_conclusion,
+)
+from app.validation.relation_flow import build_relation_payload
+from app.validation.relations import RelationValidationAudit, canonical_hash, prepare_relation_input
 from app.verdict.models import (
     AggregationContext,
     AggregationInput,
@@ -28,7 +36,7 @@ from app.verdict.models import (
     ReasonCode,
     VerdictResult,
 )
-from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3, VerdictPolicyV1
+from app.verdict.policy import POLICY_V1, POLICY_V2, POLICY_V3, POLICY_V4, VerdictPolicyV1
 
 
 def _unique_codes(codes: list[ReasonCode]) -> tuple[ReasonCode, ...]:
@@ -51,8 +59,7 @@ def _has_direct_causal_design(
     judges = {item.judge_run_id: item for item in context.judges}
     passages = {item.evidence_id: item for item in pack.passages}
     documents = {item.document_id: item for item in pack.documents}
-    stronger = {"randomized_controlled_trial", "clinical_trial",
-                "systematic_review", "meta_analysis"}
+    stronger = CAUSAL_DESIGNS
     for item in qualified:
         judge = judges[item.judge_run_id]
         decision = judge.decision
@@ -65,7 +72,11 @@ def _has_direct_causal_design(
             for ref in statement.evidence_refs:
                 passage = passages.get(ref.evidence_id)
                 document = documents.get(passage.passage.document_id) if passage else None
-                if document is not None and document.study_design in stronger:
+                if pack.evidence_pack_version == "1.5":
+                    if document and design_eligible(question_category(pack.claim_snapshot),
+                                                    design_fact(document)):
+                        return True
+                elif document is not None and document.study_design in stronger:
                     return True
     return False
 
@@ -76,7 +87,9 @@ def _pack_failure(
     pack = context.pack
     if pack is None or context.stored_pack_hash is None:
         return ReasonCode.PACK_UNAVAILABLE
-    if pack.evidence_pack_version not in {policy.pack_version, "1.4"}:
+    if pack.evidence_pack_version not in {policy.pack_version, "1.4", "1.5"}:
+        return ReasonCode.PACK_VERSION_UNSUPPORTED
+    if pack.evidence_pack_version == "1.5" and policy.version != POLICY_V4.version:
         return ReasonCode.PACK_VERSION_UNSUPPORTED
     if (context.stored_pack_version is not None
             and context.stored_pack_version != pack.evidence_pack_version):
@@ -133,7 +146,11 @@ def _validation_failure(
             or result.judge_label != decision.label
             or result.validation_status != validation.status
             or result.validation_version != validation.validation_version
-            or validation.validation_version != policy.validation_version):
+            or (validation.validation_version != policy.validation_version and not (
+                isinstance(decision, JudgeDecisionV2) and decision.schema_version in
+                {"2.1", "2.2", "2.3"}
+                and validation.validation_version == f"judge-validation-{decision.schema_version}"
+                and policy.validation_version == "judge-validation-2.0"))):
         return ReasonCode.AUDIT_RECORD_MISMATCH
     if isinstance(decision, JudgeDecisionV2):
         if policy.validation_version != "judge-validation-2.0":
@@ -159,13 +176,56 @@ def _validation_failure(
             return ReasonCode.VALIDATION_INVALID
         if validation.status == ValidationStatus.PARTIALLY_VALIDATED:
             return ReasonCode.VALIDATION_PARTIAL
+        from app.validation.joint import PROMPTS as JOINT_PROMPTS
+        from app.validation.joint23 import PROMPTS as AXES_PROMPTS
+
+        joint_development = (evaluation_mode and decision.schema_version in {"2.2", "2.3"} and
+                             validation.prompt_version in {*JOINT_PROMPTS, *AXES_PROMPTS} and
+                             (result.relation_validation or {}).get("prompt_version") ==
+                             validation.prompt_version)
         if (validation.status != ValidationStatus.VALIDATED
                 or conclusion.status != ConclusionJustificationStatus.JUSTIFIED
                 or any(item.status != StatementAttributionStatus.SUPPORTED_BY_SOURCES
                        for item in result.statement_attributions)
                 or not validation.entailment_provider or not validation.prompt_hash
-                or validation.attempt_count < 2):
+                or validation.attempt_count < (1 if joint_development else 2)):
             return ReasonCode.VALIDATION_UNAVAILABLE
+        if decision.schema_version == "2.3":
+            from app.validation.axes import QUALIFIER_VERSIONS, AxesQualificationAudit, qualify_axes
+
+            try:
+                axes_audit = AxesQualificationAudit.model_validate(result.conclusion_qualification)
+                if (axes_audit.version not in QUALIFIER_VERSIONS
+                        or axes_audit.input.base.proposed_label != decision.label
+                        or axes_audit.output != qualify_axes(axes_audit.input,
+                                                            version=axes_audit.version)
+                        or axes_audit.output.status != ConclusionJustificationStatus.JUSTIFIED):
+                    return ReasonCode.AUDIT_RECORD_MISMATCH
+            except (ValueError, TypeError):
+                return ReasonCode.AUDIT_RECORD_MISMATCH
+        if decision.schema_version == "2.2":
+            try:
+                relation = RelationValidationAudit.model_validate(result.relation_validation)
+                qualifier = ConclusionQualificationAudit.model_validate(
+                    result.conclusion_qualification,
+                )
+            except (ValueError, TypeError):
+                return ReasonCode.AUDIT_RECORD_MISMATCH
+            if (relation.version != "relation-validation-1.0"
+                    or qualifier.version not in {"conclusion-qualifier-1.0",
+                                                 "conclusion-qualifier-1.1"}
+                    or relation.error_category or qualifier.input.defects
+                    or relation.input_hash != canonical_hash(relation.input_json)
+                    or relation.provider != validation.entailment_provider
+                    or relation.model != validation.entailment_model
+                    or qualifier.input.proposed_label != decision.label
+                    or qualifier.input.based_on_statement_ids !=
+                    decision.conclusion.based_on_statement_ids
+                    or qualifier.input.relations != relation.assessments
+                    or tuple(r.statement_id for r in relation.assessments) != tuple(expected)
+                    or qualifier.output != qualify_conclusion(qualifier.input)
+                    or qualifier.output.status != ConclusionJustificationStatus.JUSTIFIED):
+                return ReasonCode.AUDIT_RECORD_MISMATCH
         return None
     if policy.validation_version == "judge-validation-2.0":
         return ReasonCode.VALIDATION_UNAVAILABLE
@@ -308,11 +368,14 @@ def _audit_failure(
                 or judge.evidence_pack_id != request.evidence_pack_id
                 or judge.evidence_pack_hash != request.evidence_pack_hash):
             return ReasonCode.AUDIT_RECORD_MISMATCH
-    if request.policy_version in {POLICY_V2.version, POLICY_V3.version}:
+    if request.policy_version in {POLICY_V2.version, POLICY_V3.version, POLICY_V4.version}:
         if context.pack is None:
             return ReasonCode.PACK_UNAVAILABLE
         try:
-            prepared = prepare_judge_input(request.evidence_pack_id, context.pack)
+            version = (context.judges[0].input_snapshot_version
+                       if context.judges else "judge-input-2.1")
+            prepared = prepare_judge_input(request.evidence_pack_id, context.pack,
+                                           version=version or "judge-input-2.0")
         except ValueError:
             return ReasonCode.PACK_SELECTION_INVALID
         if any(
@@ -325,7 +388,10 @@ def _audit_failure(
             return ReasonCode.AUDIT_RECORD_MISMATCH
         snapshots = {(judge.input_snapshot_version, judge.input_snapshot_hash)
                      for judge in context.judges if judge.outcome_status == "succeeded"}
-        if (len(snapshots) > 1 or any(version != "judge-input-2.0" or hash_ is None
+        if (len(snapshots) > 1 or any(version not in
+                                    {"judge-input-2.0", "judge-input-2.1", "judge-input-2.2",
+                                     "judge-input-2.3"}
+                                    or hash_ is None
                                      or len(hash_) != 64 for version, hash_ in snapshots)):
             return ReasonCode.AUDIT_RECORD_MISMATCH
         ids = {judge.judge_run_id for judge in context.judges}
@@ -341,6 +407,71 @@ def _audit_failure(
                 or validation.evidence_pack_id != request.evidence_pack_id
                 or validation.evidence_pack_hash != request.evidence_pack_hash):
             return ReasonCode.AUDIT_RECORD_MISMATCH
+        judge = next(j for j in context.judges if j.judge_run_id == validation.judge_run_id)
+        if (isinstance(judge.decision, JudgeDecisionV2) and judge.decision.schema_version == "2.3"
+                and validation.status == ValidationStatus.VALIDATED):
+            from app.validation.audit23 import audit_matches23
+
+            if (context.pack is None or context.claim is None
+                    or not audit_matches23(judge, validation, context.pack,
+                                           context.claim.risk_class)):
+                return ReasonCode.AUDIT_RECORD_MISMATCH
+        if (isinstance(judge.decision, JudgeDecisionV2)
+                and judge.decision.schema_version == "2.2"
+                and validation.status == ValidationStatus.VALIDATED):
+            try:
+                relation = RelationValidationAudit.model_validate(
+                    validation.result.relation_validation,
+                )
+                qualifier = ConclusionQualificationAudit.model_validate(
+                    validation.result.conclusion_qualification,
+                )
+                if context.pack is None or context.claim is None:
+                    return ReasonCode.AUDIT_RECORD_MISSING
+                payload, findings = build_relation_payload(context.pack, judge.decision.statements)
+                from app.validation.joint import PROMPTS as JOINT_PROMPTS
+                from app.validation.joint import JointResponse, check_response, prepare_joint_input
+
+                if relation.prompt_version in JOINT_PROMPTS:
+                    prepared_relation = prepare_joint_input(judge, context.pack, str(validation.id),
+                                                             version=relation.prompt_version)
+                    joint = JointResponse.model_validate_json(json.dumps(relation.joint_response))
+                    check_response(joint, prepared_relation)
+                    if (joint.missing_material_evidence or joint.assessments != relation.assessments
+                            or any(a.status != b.status or a.scope_match != b.scope_match
+                                   or a.reason != b.reason
+                                   for a, b in zip(joint.attributions,
+                                                   validation.result.statement_attributions,
+                                                   strict=True))):
+                        return ReasonCode.AUDIT_RECORD_MISMATCH
+                else:
+                    if relation.joint_response is not None:
+                        return ReasonCode.AUDIT_RECORD_MISMATCH
+                    prepared_relation = prepare_relation_input(
+                        payload, judge_run_id=str(judge.judge_run_id),
+                        validation_run_id=str(validation.id),
+                        statement_ids=tuple(s.statement_id for s in judge.decision.statements),
+                        prompt_version=relation.prompt_version,
+                    )
+                exact_input = json.loads(prepared_relation.user_prompt.split("\n", 1)[1])
+                if (relation.prompt_hash != prepared_relation.prompt_hash
+                        or relation.input_hash != canonical_hash(exact_input)
+                        or relation.input_json != exact_input
+                        or qualifier.input.findings != findings
+                        or qualifier.input.claim_type != context.pack.claim_snapshot.claim_type
+                        or qualifier.input.risk_class != context.claim.risk_class):
+                    return ReasonCode.AUDIT_RECORD_MISMATCH
+                modern = context.pack.evidence_pack_version == "1.5"
+                if (qualifier.version != ("conclusion-qualifier-1.1" if modern else
+                                          "conclusion-qualifier-1.0")
+                        or qualifier.input.evidence_policy != ("question-evidence-1.0"
+                                                               if modern else "legacy-1.0")
+                        or qualifier.input.question_category != (
+                            question_category(context.pack.claim_snapshot) if modern else "other"
+                        )):
+                    return ReasonCode.AUDIT_RECORD_MISMATCH
+            except (ValueError, TypeError, KeyError):
+                return ReasonCode.AUDIT_RECORD_MISMATCH
     if len({item.judge_run_id for item in context.validations}) != len(context.validations):
         return ReasonCode.AUDIT_RECORD_MISMATCH
     return None
@@ -463,7 +594,7 @@ class VerdictService:
         qualified = [item for item in qualifications if item.qualified]
         assert risk is not None
         causal_design_insufficient = (
-            self.policy.version == POLICY_V3.version
+            self.policy.version in {POLICY_V3.version, POLICY_V4.version}
             and pack.claim_snapshot.claim_type in {
                 ClaimType.CAUSAL, ClaimType.PREVENTION, ClaimType.TREATMENT,
             }
@@ -475,7 +606,7 @@ class VerdictService:
         # provisional development result. Production and high-risk claims keep
         # their multi-judge thresholds; unavailable/partial assessments cannot
         # be promoted to medical conclusions.
-        if (self.policy.version == POLICY_V3.version
+        if (self.policy.version in {POLICY_V3.version, POLICY_V4.version}
                 and request.mode == AggregationMode.FIXTURE_OR_EVALUATION
                 and risk == "standard" and len(qualified) == 1):
             label = qualified[0].label

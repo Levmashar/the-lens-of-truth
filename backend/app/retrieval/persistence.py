@@ -22,7 +22,8 @@ def persist_retrieval(session: Session, result: RetrievalResult) -> EvidencePack
 
     pack = result.pack
     run = RetrievalRun(
-        id=uuid4(), claim_id=pack.claim_id, source="pubmed",
+        id=uuid4(), claim_id=pack.claim_id,
+        source="combined" if pack.evidence_pack_version == "1.5" else "pubmed",
         status=result.diagnostics.status,
         query_plan_json=pack.query_plan.model_dump(mode="json"),
         diagnostics_json=result.diagnostics.model_dump(mode="json"),
@@ -47,14 +48,15 @@ def persist_retrieval(session: Session, result: RetrievalResult) -> EvidencePack
         document_rows: dict[str, EvidenceDocument] = {}
         for document in pack.documents:
             document_row = session.scalar(select(EvidenceDocument).where(
-                EvidenceDocument.source_kind == "pubmed",
-                EvidenceDocument.pmid == document.pmid,
+                EvidenceDocument.source_kind == document.source_kind,
+                EvidenceDocument.canonical_url == document.canonical_url,
                 EvidenceDocument.content_sha256 == document.content_sha256,
             ))
             if document_row is None:
                 document_row = EvidenceDocument(
-                    id=uuid4(), source_kind="pubmed", source_tier=None,
-                    canonical_url=document.canonical_url, pmid=document.pmid, doi=document.doi,
+                    id=uuid4(), source_kind=document.source_kind, source_tier=None,
+                    canonical_url=document.canonical_url, pmid=document.pmid or None,
+                    doi=document.doi,
                     title=document.title, abstract=document.abstract,
                     abstract_sections=[section.model_dump(mode="json")
                                        for section in document.abstract_sections],
@@ -69,6 +71,8 @@ def persist_retrieval(session: Session, result: RetrievalResult) -> EvidencePack
                 session.flush()
             document_rows[document.document_id] = document_row
             for query_id in document.query_ids:
+                if query_id not in query_rows:
+                    continue
                 session.add(RetrievalDocumentQuery(
                     document_id=document_row.id, query_id=query_rows[query_id].id,
                 ))

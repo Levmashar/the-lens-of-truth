@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from enum import StrEnum
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -41,9 +42,18 @@ class ReportReason(FrozenModel):
     text: str
 
 
+class SourceExcerpt(FrozenModel):
+    evidence_id: str
+    source_unit_id: str
+    section: str
+    exact_text: str
+    truncated: bool
+    passage_sha256: str
+
+
 class SourceCard(FrozenModel):
     evidence_id: str
-    pmid: str
+    pmid: str | None
     doi: str | None
     title: str
     journal: str | None
@@ -60,11 +70,20 @@ class SourceCard(FrozenModel):
     cited_by_judge_run_ids: tuple[UUID, ...]
     cited_by_validation_run_ids: tuple[UUID, ...]
     limitations: tuple[str, ...] = ()
+    document_id: str | None = None
+    source_kind: str = "pubmed"
+    organization: str | None = None
+    document_purpose: str | None = None
+    analysis_design: str | None = None
+    exposure_assignment: str | None = None
+    attribution: str | None = None
+    currency: str | None = None
+    excerpts: tuple[SourceExcerpt, ...] = ()
 
 
 class SourceReference(FrozenModel):
     evidence_id: str
-    pmid: str
+    pmid: str | None
     doi: str | None
     url: str
 
@@ -73,7 +92,7 @@ class NeutralRetrievedSource(FrozenModel):
     """Frozen source excerpt, explicitly not validated support/opposition."""
 
     evidence_id: str
-    pmid: str
+    pmid: str | None
     doi: str | None
     title: str
     publication_date: str | None
@@ -120,6 +139,34 @@ class ReportProvenance(FrozenModel):
     production_qualified: bool
 
 
+class ExplanationReason(StrEnum):
+    NUMERIC_MAGNITUDE_UNVERIFIED = "numeric_magnitude_unverified"
+    NUMERIC_EVIDENCE_NOT_COMPARABLE = "numeric_evidence_not_comparable"
+    SCOPE_TOO_NARROW = "scope_too_narrow"
+    COMPARATOR_MISMATCH = "comparator_mismatch"
+    POPULATION_MISMATCH = "population_mismatch"
+    OUTCOME_MISMATCH = "outcome_mismatch"
+    CAUSAL_DESIGN_INSUFFICIENT = "causal_design_insufficient"
+    CONFLICTING_MATERIAL_EVIDENCE = "conflicting_material_evidence"
+    ONLY_INDIRECT_EVIDENCE = "only_indirect_evidence"
+    ONLY_CONTEXTUAL_EVIDENCE = "only_contextual_evidence"
+    INSUFFICIENT_DIRECT_EVIDENCE = "insufficient_direct_evidence"
+    TECHNICAL_VALIDATION_FAILURE = "technical_validation_failure"
+    INSUFFICIENT_QUALIFIED_JUDGES = "insufficient_qualified_judges"
+    SUPPORTED_BY_VALIDATED_EVIDENCE = "supported_by_validated_evidence"
+    CONTRADICTED_BY_VALIDATED_EVIDENCE = "contradicted_by_validated_evidence"
+    OTHER_BOUNDED_REASON = "other_bounded_reason"
+
+
+class VerdictExplanation(FrozenModel):
+    version: Literal["1.0"] = "1.0"
+    summary: str = Field(min_length=1)
+    reason_category: ExplanationReason
+    established: str | None
+    unresolved: str | None
+    evidence_ids: tuple[str, ...]
+
+
 class LensReport(FrozenModel):
     report_version: str
     verdict_run_id: UUID
@@ -128,6 +175,9 @@ class LensReport(FrozenModel):
     verdict_display: str
     headline: str
     short_summary: str
+    verdict_explanation: VerdictExplanation | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
     why_this_result: tuple[ReportReason, ...]
     key_evidence: tuple[SourceCard, ...]
     neutral_retrieved_sources: tuple[NeutralRetrievedSource, ...] = ()
@@ -142,6 +192,13 @@ class LensReport(FrozenModel):
 
     @model_validator(mode="after")
     def visible_qualification(self) -> "LensReport":
+        if self.report_version == "1.3":
+            if self.verdict_explanation is None:
+                raise ValueError("Report 1.3 requires a saved verdict explanation")
+            if self.short_summary != self.verdict_explanation.summary:
+                raise ValueError("Report summary differs from saved verdict explanation")
+        elif self.verdict_explanation is not None:
+            raise ValueError("Historical report cannot carry a new verdict explanation")
         if (self.production_qualified != self.verification_status.production_qualified
                 or self.production_qualified != self.provenance.production_qualified):
             raise ValueError("Report production qualification mismatch")

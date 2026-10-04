@@ -29,6 +29,22 @@ _POST_DISEASE_ENDPOINT = re.compile(
 _DISEASE_OCCURRENCE = re.compile(
     r"\b(?:risk|inciden\w*|develop\w*|new cases?)\b", re.I,
 )
+_MUSCLE_SIZE_OUTCOME = re.compile(r"\bmuscl\w*\b.*\b(?:gains?|growth|mass)\b", re.I)
+_MUSCLE_GAIN_CUE = re.compile(
+    r"\bmuscle\s+(?:gains?|growth)\b|"
+    r"\b(?:gains?|growth)\s+(?:(?:in|of|the|lean)\s+){0,3}muscle"
+    r"(?:\s+mass)?\b", re.I,
+)
+_MUSCLE_MASS_CHANGE_CUE = re.compile(
+    r"\b(?:increas\w*|decreas\w*|chang\w*)\s+"
+    r"(?:(?:in|of|the|lean)\s+){0,3}muscle\s+mass\b|"
+    r"\bmuscle\s+mass\s+(?:(?:was|were|is|has|had)\s+){0,2}"
+    r"(?:increas\w*|decreas\w*|chang\w*)\b", re.I,
+)
+_MUSCLE_ENDPOINT_UNMEASURED = re.compile(
+    r"\bmuscle\s+(?:gains?|growth|mass)\b.{0,25}"
+    r"\b(?:not|never)\s+(?:measur\w*|assess\w*|evaluat\w*)\b", re.I,
+)
 
 
 def _outcome_terms(claim: ClaimSnapshot) -> tuple[tuple[str, ...], bool]:
@@ -43,7 +59,9 @@ def _outcome_terms(claim: ClaimSnapshot) -> tuple[tuple[str, ...], bool]:
     return tuple(sorted(values, key=lambda value: (-len(value), value))), measured
 
 
-def _endpoint_signal(text: str, aliases: tuple[str, ...], measured: bool) -> tuple[bool, bool]:
+def _endpoint_signal(
+    text: str, aliases: tuple[str, ...], measured: bool, *, muscle_size: bool = False,
+) -> tuple[bool, bool]:
     """Require an outcome mention plus measurement/change for quantitative endpoints."""
 
     context_only = False
@@ -55,6 +73,14 @@ def _endpoint_signal(text: str, aliases: tuple[str, ...], measured: bool) -> tup
                 modifier = bool(_MECHANISM.match(sentence[mention.end():]))
                 context_only |= modifier
                 if modifier:
+                    continue
+                if muscle_size and not (
+                    (_MUSCLE_GAIN_CUE.search(sentence)
+                     or _MUSCLE_MASS_CHANGE_CUE.search(sentence))
+                    and not _MUSCLE_ENDPOINT_UNMEASURED.search(sentence)
+                ):
+                    # A generic linked "Muscles" concept plus blood biomarkers
+                    # does not establish the asserted gain/growth endpoint.
                     continue
                 if measured and not _MEASUREMENT_CUE.search(nearby):
                     continue
@@ -69,6 +95,10 @@ def annotate_endpoints(
     """Expose separately scored endpoint fit for every auditable document/passage."""
 
     outcome, measured = _outcome_terms(claim)
+    muscle_size = bool(
+        claim.pico and claim.pico.outcome
+        and _MUSCLE_SIZE_OUTCOME.search(claim.pico.outcome)
+    )
     exposure = _aliases(claim, "intervention_or_exposure")
     if not outcome or not exposure:
         return documents, passages
@@ -78,7 +108,9 @@ def annotate_endpoints(
     annotated_docs: list[PubMedDocument] = []
     annotated_items: dict[str, RankedPassage] = {}
     for document in documents:
-        title_signal, title_mechanism = _endpoint_signal(document.title, outcome, measured)
+        title_signal, title_mechanism = _endpoint_signal(
+            document.title, outcome, measured, muscle_size=muscle_size,
+        )
         title_exposure = _matches(document.title, exposure)
         post_disease_endpoint = bool(
             not measured and claim.claim_type in {"causal", "association", "prevention"}
@@ -92,19 +124,25 @@ def annotate_endpoints(
         has_substantive = False
         has_methods = False
         has_background = False
+        has_abstract = False
         for item in sections:
             section = _section_kind(item.passage.section)
             text = item.passage.text
             outcome_mentioned = _matches(text, outcome)
-            signal, mechanism = _endpoint_signal(text, outcome, measured)
+            signal, mechanism = _endpoint_signal(
+                text, outcome, measured, muscle_size=muscle_size,
+            )
             exposure_mentioned = _matches(text, exposure)
             same_sentence = any(
-                _matches(sentence, exposure) and _endpoint_signal(sentence, outcome, measured)[0]
+                _matches(sentence, exposure) and _endpoint_signal(
+                    sentence, outcome, measured, muscle_size=muscle_size,
+                )[0]
                 for sentence in _sentences(text)
             )
             has_substantive |= signal and section == "SUBSTANTIVE"
             has_methods |= signal and section == "METHODS"
             has_background |= signal and section == "BACKGROUND"
+            has_abstract |= signal and section == "ABSTRACT"
             role = (0.25 if section == "SUBSTANTIVE" else 0.15 if section == "METHODS"
                     else 0.12 if section == "TITLE" else 0.06 if section == "ABSTRACT"
                     else -0.10)
@@ -141,7 +179,10 @@ def annotate_endpoints(
         strongest = max((annotated_items[item.evidence_id].endpoint_directness.score
                          for item in sections), default=0.0)
         background_only = has_background and not (
-            title_signal or has_methods or has_substantive
+            title_signal or has_methods or has_substantive or has_abstract
+        )
+        specific_size_endpoint = bool(
+            title_signal or has_methods or has_substantive or has_abstract
         )
         score = round(max(0.0, min(1.0,
             0.65 * strongest + 0.20 * title_signal + 0.10 * has_substantive
@@ -159,6 +200,8 @@ def annotate_endpoints(
                     "endpoint_in_results": float(has_substantive),
                     "endpoint_in_methods": float(has_methods),
                     "endpoint_only_background": float(background_only),
+                    "specific_size_endpoint_required": float(muscle_size),
+                    "specific_size_endpoint_present": float(specific_size_endpoint),
                     "post_disease_endpoint_penalty": 0.20 if post_disease_endpoint else 0.0,
                 },
                 reasons=("endpoint_studied" if score >= 0.5 else "endpoint_indirect",),
@@ -166,6 +209,8 @@ def annotate_endpoints(
                     warning for warning, applies in (
                         ("mechanism_only_title", title_mechanism and not title_signal),
                         ("post_disease_endpoint", post_disease_endpoint),
+                        ("specific_size_endpoint_absent", muscle_size
+                         and not specific_size_endpoint),
                     ) if applies
                 ),
             ),

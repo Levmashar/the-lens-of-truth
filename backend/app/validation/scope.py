@@ -137,14 +137,17 @@ def compare_relation(
     if ranked.relationship_directness.direction == "reverse":
         return RelationAlignment.REVERSE
     if claim_type == ClaimType.CAUSAL:
-        observational = document.study_design in {
+        design = (document.relationship_analysis.analysis_design
+                  if document.relationship_analysis else document.study_design)
+        observational = design in {
             "cohort", "case_control", "cross_sectional", "observational",
+            "secondary_observational_analysis", "prospective_cohort",
         }
         if _NO_CAUSALITY.search(source) or (observational and _ASSOCIATION.search(source)):
             return RelationAlignment.WEAKER_THAN_CLAIM
         if _ASSOCIATION.search(source) and not _CAUSAL.search(source):
             return RelationAlignment.WEAKER_THAN_CLAIM
-        if document.study_design in {"randomized_controlled_trial", "clinical_trial"}:
+        if design in {"randomized_controlled_trial", "clinical_trial", "randomized_intervention"}:
             return RelationAlignment.ALIGNED
         return RelationAlignment.UNCERTAIN
     if claim_type == ClaimType.ASSOCIATION:

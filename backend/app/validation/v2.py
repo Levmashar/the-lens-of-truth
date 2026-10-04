@@ -2,17 +2,19 @@
 
 import asyncio
 import hashlib
+import json
 from datetime import UTC, datetime
 from time import monotonic
 from uuid import uuid4
 
 from app.judging.models import JudgeDecisionV2, JudgeRun
 from app.judging.prompt import (
-    INPUT_SNAPSHOT_VERSION,
     input_snapshot_hash,
     prepare_judge_input,
 )
+from app.judging.source_units import materialize_content
 from app.retrieval.models import EvidencePack
+from app.validation.assertion_numeric import compare_assertion_numbers
 from app.validation.models import (
     ConclusionJustification,
     ConclusionJustificationStatus,
@@ -27,6 +29,9 @@ from app.validation.models import (
     ValidationStatus,
 )
 from app.validation.numeric import compare_statement_numbers
+from app.validation.qualification import ConclusionQualificationAudit, qualify_conclusion
+from app.validation.relation_flow import qualify_with_relations
+from app.validation.relations import RelationValidationAudit
 from app.validation.semantic import PROMPT_VERSION, SemanticValidator, prepare_semantic_input
 
 VALIDATION_VERSION = "judge-validation-2.0"
@@ -48,28 +53,59 @@ def _issue(
 
 async def validate_v2(
     judge: JudgeRun, pack: EvidencePack, validator: SemanticValidator | None,
-    *, timeout_seconds: float = 45.0,
+    *, timeout_seconds: float = 45.0, risk_class: str = "standard",
 ) -> JudgeValidationRun:
     decision = judge.decision
     if not isinstance(decision, JudgeDecisionV2):
         raise ValueError("V2 validation requires a V2 decision")
     started_at, start = datetime.now(UTC), monotonic()
     validation_id = uuid4()
-    prepared = prepare_judge_input(judge.evidence_pack_id, pack)
+    unit_contract = decision.schema_version in {"2.1", "2.2", "2.3"}
+    relation_contract = decision.schema_version == "2.2"
+    validation_version = f"judge-validation-{decision.schema_version}"
+    prepared = prepare_judge_input(
+        judge.evidence_pack_id, pack,
+        version=f"judge-input-{decision.schema_version}",
+    )
     snapshot_valid = (
-        judge.input_snapshot_version == INPUT_SNAPSHOT_VERSION
+        judge.input_snapshot_version == prepared.input_snapshot_version
         and judge.input_snapshot_hash == prepared.input_snapshot_hash
         and judge.input_snapshot_json is not None
         and input_snapshot_hash(judge.input_snapshot_json) == prepared.input_snapshot_hash
         and judge.evidence_pack_hash == pack.snapshot_hash
         and judge.claim_id == pack.claim_id
     )
+    if unit_contract and snapshot_valid:
+        try:
+            rematerialized = materialize_content(json.dumps({
+                "label": decision.label,
+                "statements": [{k: v for k, v in s.model_dump(mode="json").items()
+                                if k != "evidence_refs"}
+                               for s in decision.statements],
+                "conclusion": decision.conclusion.model_dump(mode="json"),
+                "uncertainty_reasons": decision.uncertainty_reasons,
+            }), prepared.input_snapshot_json)
+            snapshot_valid = rematerialized == decision
+        except (ValueError, KeyError):
+            snapshot_valid = False
     passage_map = {item.evidence_id: item for item in pack.passages}
     document_map = {item.document_id: item for item in pack.documents}
     visible = set(prepared.selected_ids) if snapshot_valid else set()
+    from app.judging.compact23 import VERSION as AXES_COMPACT_VERSION
+
+    if (snapshot_valid and decision.schema_version == "2.3"
+            and judge.prompt_version == AXES_COMPACT_VERSION):
+        # The current development prompt exposes complete sections of selected
+        # documents. Their exact frozen child units are citable; other Pack
+        # passages remain excluded. Historical prompt contracts stay unchanged.
+        raw_visible = prepared.input_snapshot_json.get("judge_visible_evidence_ids")
+        if isinstance(raw_visible, list) and all(isinstance(i, str) for i in raw_visible):
+            visible = set(raw_visible)
     calls = 0
     prompt_hashes: list[str] = []
     error_category: str | None = None
+    relation_audit: RelationValidationAudit | None = None
+    qualification_audit: ConclusionQualificationAudit | None = None
 
     async def one_statement(statement: object) -> StatementAttribution:
         nonlocal calls, error_category
@@ -78,6 +114,7 @@ async def validate_v2(
         issues: list[ValidationIssue] = []
         frozen: list[dict[str, object]] = []
         quotes: list[str] = []
+        numeric_diagnostic: dict[str, object] | None = None
         if not snapshot_valid:
             issues.append(_issue(IssueCode.PACK_HASH_MISMATCH, statement.statement_id, ids))
         for ref in statement.evidence_refs:
@@ -87,7 +124,9 @@ async def validate_v2(
                 issues.append(_issue(IssueCode.CITATION_NOT_SELECTED,
                                      statement.statement_id, (ref.evidence_id,)))
                 continue
-            if document is None or not document.pmid or not document.canonical_url:
+            if document is None or not document.canonical_url or not (
+                document.pmid or document.authoritative
+            ):
                 issues.append(_issue(IssueCode.DOCUMENT_PROVENANCE_MISSING,
                                      statement.statement_id, (ref.evidence_id,)))
                 continue
@@ -105,8 +144,32 @@ async def validate_v2(
                 "title": document.title, "pmid": document.pmid,
                 "study_design": document.study_design,
                 "integrity": document.integrity.status,
+                **({"analysis_design": document.relationship_analysis.model_dump(mode="json")
+                    if document.relationship_analysis else None,
+                    "source_kind": document.source_kind,
+                    "authoritative": document.authoritative.model_dump(mode="json")
+                    if document.authoritative else None}
+                   if pack.evidence_pack_version == "1.5" else {}),
             })
-        if not issues:
+        if not issues and unit_contract and decision.schema_version != "2.3":
+            check = compare_assertion_numbers(
+                statement.text, tuple(quotes),
+                                              user_claim=pack.claim_snapshot.standalone_text)
+            numeric_diagnostic = check.diagnostic()
+            numeric_diagnostic["source_unit_ids"] = list(statement.source_unit_ids)
+            if check.status in {NumericAlignment.MISMATCH, NumericAlignment.UNCERTAIN}:
+                issues.append(_issue(
+                    IssueCode.STATEMENT_NUMERIC_MISMATCH if check.status ==
+                    NumericAlignment.MISMATCH else IssueCode.NUMERIC_UNCERTAIN,
+                    statement.statement_id, ids,
+                    observed=str(check.asserted.values) if check.asserted else statement.text,
+                    source=str([q.values for q in check.candidates]),
+                    measure=check.asserted.kind if check.asserted else "unclassified",
+                    severity="fatal" if check.status == NumericAlignment.MISMATCH else "warning",
+                ).model_copy(update={"numeric_diagnostic": numeric_diagnostic,
+                                     "conclusion_dependency": statement.statement_id in
+                                     decision.conclusion.based_on_statement_ids}))
+        elif not issues and not unit_contract:
             numeric, asserted, observed = compare_statement_numbers(
                 statement.text, " ".join(quotes),
             )
@@ -139,6 +202,7 @@ async def validate_v2(
             "statement_attribution", {
                 "statement": statement.model_dump(mode="json"),
                 "frozen_passages": frozen,
+                "numeric_verification": numeric_diagnostic,
             }, judge_run_id=str(judge.judge_run_id),
             validation_run_id=str(validation_id),
             statement_ids=(statement.statement_id,), evidence_ids=ids,
@@ -196,17 +260,39 @@ async def validate_v2(
                 item.status == StatementAttributionStatus.UNABLE_TO_ASSESS
                 for item in dependencies
             )
+            uncertain_quantity = unit_contract and any(
+                issue.issue_code == IssueCode.NUMERIC_UNCERTAIN
+                for item in dependencies for issue in item.issues
+            )
             bad_dependency = any(
                 item.status != StatementAttributionStatus.SUPPORTED_BY_SOURCES
-                or any(issue.severity == "fatal" for issue in item.issues)
+                or any(issue.severity == "fatal" or (unit_contract and
+                       issue.issue_code == IssueCode.NUMERIC_UNCERTAIN) for issue in item.issues)
                 for item in dependencies
             )
-            if unavailable_dependency:
+            if relation_contract:
+                conclusion, relation_audit, qualification_audit, relation_calls = (
+                    await qualify_with_relations(
+                        judge, pack, attributions, validator, validation_id, risk_class=risk_class,
+                    )
+                )
+                calls += relation_calls
+                if relation_calls:
+                    prompt_hashes.append(relation_audit.prompt_hash)
+                error_category = error_category or relation_audit.error_category
+            elif unavailable_dependency:
                 conclusion = ConclusionJustification(
                     status=ConclusionJustificationStatus.UNABLE_TO_ASSESS,
                     based_on_statement_ids=decision.conclusion.based_on_statement_ids,
                     evidence_ids=conclusion_ids,
                     reason="A required statement assessment was unavailable.",
+                )
+            elif uncertain_quantity:
+                conclusion = ConclusionJustification(
+                    status=ConclusionJustificationStatus.UNCERTAIN,
+                    based_on_statement_ids=decision.conclusion.based_on_statement_ids,
+                    evidence_ids=conclusion_ids,
+                    reason="A required quantitative assignment remains unresolved.",
                 )
             elif bad_dependency:
                 conclusion = ConclusionJustification(
@@ -295,6 +381,45 @@ async def validate_v2(
         )
 
     targeted = tuple(issue for item in attributions for issue in item.issues) + conclusion.issues
+    if unit_contract and attributions and decision.schema_version != "2.3":
+        dependency_ids = set(decision.conclusion.based_on_statement_ids)
+        source_texts = tuple(ref.quote for statement in decision.statements
+                             if statement.statement_id in dependency_ids
+                             for ref in statement.evidence_refs)
+        check = compare_assertion_numbers(
+            decision.conclusion.justification,
+            source_texts,
+                                          user_claim=pack.claim_snapshot.standalone_text)
+        if check.status in {NumericAlignment.MISMATCH, NumericAlignment.UNCERTAIN}:
+            issue = _issue(
+                IssueCode.STATEMENT_NUMERIC_MISMATCH if check.status == NumericAlignment.MISMATCH
+                else IssueCode.NUMERIC_UNCERTAIN, "conclusion", conclusion.evidence_ids,
+                observed=decision.conclusion.justification,
+                measure=check.asserted.kind if check.asserted else "unclassified",
+                severity="fatal" if check.status == NumericAlignment.MISMATCH else "warning",
+            ).model_copy(update={"numeric_diagnostic": check.diagnostic(),
+                                 "conclusion_dependency": True})
+            targeted += (issue,)
+            if qualification_audit is not None:
+                revised_input = qualification_audit.input.model_copy(update={
+                    "defects": (*qualification_audit.input.defects, issue),
+                })
+                revised_output = qualify_conclusion(revised_input)
+                qualification_audit = ConclusionQualificationAudit(
+                    input=revised_input, output=revised_output,
+                )
+                conclusion = conclusion.model_copy(update={
+                    "status": (ConclusionJustificationStatus.UNABLE_TO_ASSESS
+                               if relation_audit and relation_audit.error_category
+                               else revised_output.status),
+                    "reason": "; ".join(revised_output.reason_codes),
+                    "issues": (*conclusion.issues, issue),
+                })
+            else:
+                conclusion = conclusion.model_copy(update={
+                    "status": ConclusionJustificationStatus.UNCERTAIN,
+                    "issues": (*conclusion.issues, issue),
+                })
     fatal = tuple(dict.fromkeys(issue.issue_code for issue in targeted
                                 if issue.severity == "fatal"))
     warnings = tuple(dict.fromkeys(issue.issue_code for issue in targeted
@@ -316,8 +441,11 @@ async def validate_v2(
         evidence_pack_hash=judge.evidence_pack_hash, judge_label=decision.label,
         citation_validations=(), opposing_citation_validations=(),
         validation_status=status, fatal_issue_codes=fatal, warnings=warnings,
-        validation_version=VALIDATION_VERSION, statement_attributions=attributions,
+        validation_version=validation_version, statement_attributions=attributions,
         conclusion_justification=conclusion, targeted_issues=targeted,
+        relation_validation=relation_audit.model_dump(mode="json") if relation_audit else None,
+        conclusion_qualification=(qualification_audit.model_dump(mode="json")
+                                  if qualification_audit else None),
     )
     aggregate_hash = (hashlib.sha256("".join(sorted(prompt_hashes)).encode()).hexdigest()
                       if prompt_hashes else None)
@@ -325,8 +453,11 @@ async def validate_v2(
         id=validation_id, judge_run_id=judge.judge_run_id,
         evidence_pack_id=judge.evidence_pack_id,
         evidence_pack_hash=judge.evidence_pack_hash,
-        validation_version=VALIDATION_VERSION,
-        deterministic_validator_version=DETERMINISTIC_VERSION,
+        validation_version=validation_version,
+        deterministic_validator_version=("source-unit-assertion-numeric-2.1+conclusion-qualifier-1.0"
+                                         if relation_contract else
+                                         "source-unit-assertion-numeric-2.1") if unit_contract
+        else DETERMINISTIC_VERSION,
         entailment_provider=validator.provider if validator else None,
         entailment_model=validator.model if validator else None,
         prompt_version=PROMPT_VERSION if prompt_hashes else None,

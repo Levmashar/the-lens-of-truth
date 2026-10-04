@@ -1,5 +1,232 @@
 # API Specification
 
+## Numeric fidelity/comparability development diagnostics
+
+With development debug enabled, each `debug_judge_runs` row from
+`GET /v1/analyses/{analysis_id}/claims` adds `numeric_findings`, an array of
+compact audit summaries (empty for older audits):
+
+```json
+{
+  "version": "numeric-fidelity-comparability-1.0",
+  "target_id": "S3",
+  "material": true,
+  "source_fidelity": "verified",
+  "asserted_values": ["90"],
+  "source_measure": "population_attributable_fraction",
+  "claim_measure": "percent_change",
+  "comparability": "different_measure",
+  "numeric_effect": "noncomparable",
+  "semantic_scope_checked": true,
+  "structure_status": "structured",
+  "evidence_ids": ["E2"],
+  "differences": ["measure"],
+  "conversions": []
+}
+```
+
+Source fidelity is `verified`, `mismatch`, `uncertain` or `not_found`.
+Comparability is `aligned`, `compatible_but_narrower`, `different_measure`,
+`different_comparator`, `different_population`, `different_exposure`,
+`different_endpoint`, `different_timeframe`, `not_comparable` or `uncertain`.
+Numeric effect is `supports_magnitude`, `opposes_magnitude`, `noncomparable`
+or `unresolved`. Structure is `structured`, `embedded_numeric_assertions`
+or `mixed_measures_in_qualitative_finding`. An unchecked semantic scope is
+explicitly preliminary; source verification is not judge qualification.
+
+Measures include percent change, percentage points, RR, OR, HR, rate ratio,
+absolute risk, risk difference, population/exposed attributable fractions,
+prevalence, incidence rate, event count, fold change, duration, dose and unknown.
+The full typed fidelity/comparability records remain in append-only validation
+JSONB under new `numeric-materiality-1.2`; the API returns this allowlist, not a
+raw parser dump. Historical 1.0/1.1 validations omit stored new fields and replay
+with their original versions. No migration or historical report backfill.
+
+The UI shows compact material numeric diagnostics. Expanded raw-response
+excerpts render as wrapping plain text without a nested scroll container;
+the default collapsed disclosure, sanitization and existing excerpt caps remain.
+Verdict Explanation 1.0 consumes qualified numeric diagnostics descriptively;
+its report schema, voting thresholds and verdict labels are unchanged.
+
+## Verdict Explanation 1.0 — report response addition
+
+New `GET /v1/analyses/{analysis_id}/claims/{claim_id}/report` snapshots use
+LensReport `1.3` / builder `report-builder-1.5` and include:
+
+```json
+{
+  "verdict_explanation": {
+    "version": "1.0",
+    "summary": "Validated evidence supports the claimed direction of effect. The retrieved evidence does not establish the claimed 85% magnitude at a sufficiently comparable scope, so the specific magnitude could not be verified.",
+    "reason_category": "numeric_magnitude_unverified",
+    "established": "Validated evidence supports the claimed direction of effect.",
+    "unresolved": "The retrieved evidence does not establish the claimed 85% magnitude at a sufficiently comparable scope, so the specific magnitude could not be verified.",
+    "evidence_ids": ["E1"]
+  }
+}
+```
+
+`established` and `unresolved` are nullable; `evidence_ids` contains only
+qualified frozen evidence responsible for the explanation. New `short_summary`
+equals the saved explanation summary. The explanation is included in the
+report semantic hash and existing append-only JSONB audit; no schema migration.
+Historical reports omit this field and retain their saved summaries and hashes.
+GET never generates or backfills an explanation.
+
+Reason categories: `numeric_magnitude_unverified`, `numeric_evidence_not_comparable`,
+`scope_too_narrow`, `comparator_mismatch`, `population_mismatch`, `outcome_mismatch`,
+`causal_design_insufficient`, `conflicting_material_evidence`, `only_indirect_evidence`,
+`only_contextual_evidence`, `insufficient_direct_evidence`, `technical_validation_failure`,
+`insufficient_qualified_judges`, `supported_by_validated_evidence`,
+`contradicted_by_validated_evidence`, `other_bounded_reason`.
+
+The verdict explanation is descriptive and non-voting. It cannot alter or
+override the deterministic Lens verdict. Templates use qualified audited
+findings/diagnostics only; no model call, retrieval or new medical reasoning.
+Unable describes process failures, separately from scientific NEI. The frontend
+shows `summary` beneath the label, keeps existing reasons, and exposes the
+structured fields in development technical details when debug mode is enabled.
+
+## Configured versus historical development models
+
+When debug mode is enabled, `GET /v1/analyses/{analysis_id}` returns
+`debug_models` from current backend `JUDGE_N_*` environment settings for
+uncalled slots. Each row has `origin=current_configuration`. If this analysis
+has a live model event or persisted judge audit, its actual provider/model
+and status take precedence and `origin=analysis`. This prevents a settings
+change from relabeling an old analysis. The frontend displays the origin;
+there are no frontend-bundled judge model names. Backend settings are loaded
+at startup, so `.env` changes require backend recreation. These fields remain
+development-only and never expose API credentials.
+
+## Pre-pilot development diagnostics
+
+Existing URLs and verdict labels are unchanged. `AnalysisClaim.pico` may include
+`numeric_effect`: `{raw_text,status,kind,value,unit,direction}`. Kinds include
+percent change, percentage points, fold change, risk ratio and unknown; status
+is `parsed` or `uncertain`. Historical null fields are omitted from frozen PICO
+serialization. The submitted text remains available as `original_claim`.
+
+With development debug enabled, `GET /v1/analyses/{id}/claims` adds
+`debug_diagnostics` per claim: extraction/PICO, retrieval counts and source-role
+counts, a deterministic stage waterfall, qualified positions, aggregation
+reasons, available call total and elapsed time. `debug_judge_runs` adds proposal,
+finding count, source IDs, raw axes bases, null/gradient diagnostics, reason and
+failure codes, token counts when supplied, identity flags and audited ID
+normalizations. These fields are absent when debug is disabled. A PASS stage
+means execution completed, not medical correctness. Raw model responses remain
+inside a separate collapsed development-only section; prompts and credentials
+are not returned.
+
+For current development 2.13 judging only, `debug_judge_runs` also returns
+`judge_unit_id_normalizations`: bounded `{statement_id, from, to, rule}`
+records when an exact frozen parent evidence ID was expanded to its unique
+`.U1` source unit. This is distinct from the semantic validator's existing
+`id_normalizations` field. Unknown or ambiguous IDs are rejected, and neither
+field appears outside development debug. Repeated targeted issue codes are
+counted in the UI without changing the underlying audit rows. A structured
+model response still does not imply that its citations or final assessment
+qualified.
+
+New joint prompt `joint-evidence-axes-2.3-2026-10-02` and qualifier
+`conclusion-qualifier-1.4` preserve the 2.3 decision schema. The original
+`joint_response` and `id_normalizations` are stored in append-only validation
+JSONB. A foreign or fabricated ID fails validation.
+
+## Reliability Slice 4.1: versioned development audit additions
+
+Existing submission, progress, report routes and Lens labels are unchanged.
+New development/test judge audits use `schema_version=2.3`, with maximum five
+statements. Each keeps `text`, `qualitative_finding`, `numeric_details` (string
+array), `numeric_dependency`, `kind` and backend-materialized source-unit refs.
+Conclusions keep original `justification`, `qualitative_justification`, dependency
+flag and exact `based_on_statement_ids`. Raw model content is also retained under
+existing sanitization/retention rules; ordinary users are not given raw prompts.
+
+New validation `relation_validation` has `version=evidence-claim-axes-1.0`, exact
+`input_json/input_hash`, prompt/provider/model provenance and `joint_response`:
+
+```json
+{
+  "attributions": [{
+    "statement_id": "S1", "evidence_ids": ["E1"],
+    "status": "supported_by_sources", "scope_match": "exact",
+    "reason": "Illustrative source-grounded description", "numeric_independent": true
+  }],
+  "assessments": [{
+    "statement_id": "S1", "direction": "opposes_claim",
+    "scope": "compatible_but_narrower", "strength": "strong", "role": "direct",
+    "scope_basis": "exposure_gradient", "finding_basis": "direct_result",
+    "reason": "Illustrative tested greater-versus-lesser exposure result"
+  }],
+  "missing_material_evidence": false
+}
+```
+
+Enums: direction supports_claim/opposes_claim/neutral/mixed/unclear;
+scope aligned/compatible_but_narrower/broader_or_indirect/incompatible/uncertain;
+strength decisive/strong/supporting/weak/insufficient/uncertain;
+role direct/synthesis/contextual/mechanistic/background/uncertain.
+These are raw model assessments, not final medical votes. Python qualification
+is recorded separately in `conclusion_qualification`. Optional numeric warning
+codes are `OPTIONAL_NUMERIC_DETAIL_INVALID` and `OPTIONAL_NUMERIC_DETAIL_UNCERTAIN`;
+material failures retain the existing fatal mismatch/unresolved quantity behavior.
+
+Latest prompt: `judge-2.12.1-compact-development-2026-10-02`;
+joint: `joint-evidence-axes-2.2-2026-10-02`;
+qualifier: `conclusion-qualifier-1.3`. Earlier 4.1 versions (judge 2.12, joint
+2.0/2.1, qualifier 1.2) remain reconstructible; historical 2.2 is unchanged.
+`attempt_count=1` is one joint request, not one independent judge or production
+approval. New debug claim summaries may include `evidence_axes` keyed by S ID,
+containing only direction/scope/strength/role. Hidden when development debug is off.
+
+Slice 4.1 semantic acceptance is partial; see `RELIABILITY_SLICE4_1_RESULTS.md`.
+
+## Slice 4 boundary: no public contract change
+
+Normal API judging stays input/decision `2.2`, combined Pack `1.5` and report `1.2`.
+The unit-only V3/minimal-V2/lean/oracle implementations are opt-in developer CLI
+experiments, not API versions or approved report artifacts. No extraction,
+normalization, progress, claim-result or debug schema was changed by Slice 4.
+Normal frontend HTTP acceptance remains the existing consent/submission/polling/
+claims/report flow; no visual browser acceptance is claimed.
+
+Private developer artifacts record provider/model aliases, bounded source-unit
+classifications, input/prompt/Pack hashes, failures, timing and usage. They must
+not be exposed to regular clients as clinically qualified results. Provider
+reasoning/credentials are not retained; no browsing tool is supplied. Captures
+expire and cannot be reclassified as originals after fresh retrieval. See
+[Slice 4 reproduction/results](RELIABILITY_SLICE4_RESULTS.md).
+
+## Slice 3 additions (existing endpoints, no new public browsing API)
+
+Normal analysis and evidence-preview retrieval now freeze combined Pack `1.5`
+when `AUTHORITATIVE_ENABLED=true` (default). A false setting retains PubMed-only
+`1.4`. Source URLs are server-manifest entries; API clients cannot supply a source
+URL to this adapter. Query diagnostics additionally record `actual_query`, `sort`,
+`retmax`, `total_count`, `returned_count`, cache state and authoritative availability/
+currency. Legacy caches may have unknown total counts; these are never invented.
+ESearch explicitly uses relevance sorting.
+
+Frozen document additions: `source_kind`, `authoritative`, `relationship_analysis`,
+`evidence_role_hint`. Authoritative metadata includes source ID, organization,
+controlled purpose, last review/update date, content version/hash, currency,
+reference URLs, underlying PMIDs, summary/lineage indicators and attribution.
+`study_design` remains the parent design; actual `analysis_design` and
+`exposure_assignment` are separate. Roles are direct/contextual/incompatible, not
+supports/contradicts votes. The common internal document uses empty PMID for a
+non-PubMed source; persistence and public report PMID are nullable, never fabricated.
+
+LensReport `1.2` source cards add `document_id`, `source_kind`, organization,
+document purpose, analysis design, exposure assignment, currency, attribution and
+`excerpts[]`. Each excerpt retains E ID, unit ID, exact text, section, truncation
+indicator and full passage hash. New grouped excerpts retain complete frozen
+passage text; legacy preview fields keep their explicitly marked short prefixes.
+Multiple excerpts from one document form one
+card; old report fields remain supported. Frontend uses analysis design ahead of
+parent design and does not render "PMID null". Judge wire input remains `2.2`;
+new purpose/role/design metadata is included identically for all judges.
+
 Base path: `/v1`. Phase 2 performs secure intake, OCR for screenshots, PII
 masking, and atomic-claim extraction only. It does not retrieve evidence or
 return a medical verdict. Phase 3A additionally returns claim-grounded PICO
@@ -21,6 +248,90 @@ model is introduced. The Phase 7A route contracts below supersede earlier
 Phase 2-only lifecycle descriptions.
 
 ## Phase 7A asynchronous analysis lifecycle
+
+### Slice 2 internal validation overlay
+
+New invocations use canonical decision `2.2`, `judge-input-2.2` and
+`judge-validation-2.2`. Model content keeps the same Slice 1 wire shape below;
+the backend attaches versions and exact frozen references. No public route,
+medical-label enum, request body, frontend type or production release gate changes.
+Historical 2.0/2.1 rows remain readable under their original contracts.
+
+After source attribution, an independent semantic adapter receives one batch
+without the proposed judge label. Its strict output is:
+
+```json
+{"assessments":[{"statement_id":"S1","relation":"insufficient",
+"scope":"aligned","materiality":"supporting",
+"reason":"The validated finding reports association, not the asserted causation."}]}
+```
+
+Relation: `supports_claim|contradicts_claim|insufficient|context_only|uncertain`.
+Scope: `aligned|compatible_but_narrower|broader_or_indirect|mismatch|uncertain`.
+Materiality: `decisive|supporting|contextual|uncertain`. Exact ordered IDs,
+1–8 assessments, no extra fields, reason max 1200 characters, JSON max 16384.
+The request uses only validated statements and frozen metadata, no tools.
+
+Internal validation JSONB adds `relation_validation` (contract, provider/model,
+prompt version/hash, input hash/exact input, assessments/error category) and
+`conclusion_qualification` (qualifier version, full typed inputs, output status,
+decisive/conflicting/insufficient/contextual IDs and reason codes). Pure output
+statuses are `justified|not_justified|uncertain`. Existing
+`conclusion_justification` remains a compatibility view, not another model call.
+Relation operational failure maps to `unable_to_assess`/excluded validation,
+never a fabricated NEI vote. Normal users do not receive raw requests/provider
+internals. Developer tracing retains its existing restricted/redacted boundary.
+Null new fields are omitted when serializing historical results.
+
+### Slice 1 internal judging contract overlay
+
+No public route, request body, medical-label enum, or release gate changes.
+New append-only judge rows use decision `2.1` and `judge-input-2.1`, preserving
+the existing 2.0 statement-attribution/conclusion structure. The model wire
+contains `label`, `statements`, `conclusion`, and `uncertainty_reasons` only:
+
+```json
+{
+  "label": "not_enough_evidence",
+  "statements": [
+    {
+      "statement_id": "S1",
+      "text": "The trial reported an association at its studied scope.",
+      "kind": "study_finding",
+      "source_unit_ids": ["E1.U1"]
+    }
+  ],
+  "conclusion": {
+    "based_on_statement_ids": ["S1"],
+    "justification": "S1 does not establish the original causal claim."
+  },
+  "uncertainty_reasons": ["association_not_causation"]
+}
+```
+
+`source_units` in the frozen input bind `unit_id`, `evidence_id`, `document_id`,
+`document_sha256`, `passage_sha256`, `content_version`, exact `start`/`end`
+offsets, `text`, and `section`. Offsets are Python character indexes in the
+stored passage. Units are whole included sections; document context remains
+in the existing bundles. The backend materializes canonical `evidence_refs`
+and sets `schema_version: "2.1"`. A model must not supply trusted quotes,
+offsets, hashes, or protocol metadata. Unknown IDs and modified snapshots fail;
+valid references still require semantic attribution and conclusion validation.
+
+New targeted numeric issues can include `numeric_diagnostic` (asserted tokens
+and offsets, measure, candidates, reason, source-unit IDs) and
+`conclusion_dependency`. Definite false statistics remain fatal. Unresolved
+required quantities prevent eligibility; optional unresolved detail does not
+become a certified explanation. It can only be removed through the existing
+single append-only semantic revision and a new validation. Parent and child
+never count as two judges. Historical free-text 2.0 quotes retain their exact
+checks and are not retroactively certified.
+
+On final schema failure, existing internal `response_json` can contain
+`rejected_responses`: attempt, category, safe schema locations/types, bounded
+sanitized visible content and truncation flag. No normal-user response gains
+raw provider output or schema internals. Successful `response_json` remains
+the canonical decision; all existing identity/isolation/release checks apply.
 
 The Phase 7B browser app consumes this contract directly. It first uploads a
 screenshot when selected, then sends the upload UUID in the ordinary 202 start
@@ -434,7 +745,15 @@ entities), `query_plan` (version, source, query IDs/families/field provenance),
   and numeric coverage/background/diversity factors. A query's
   `relation_semantics` preserves causal versus association wording. Passage
   factors and `retrieval_score` measure topical relevance only, never evidence
-  quality or medical truth. Each document additionally carries `integrity`
+  quality or medical truth. New Pack 1.4 selections may mark an unasserted
+  active-treatment comparison
+  as `unstated_active_comparator_excluded`, or a paper without the specific
+  claimed muscle-gain/growth endpoint as
+  `specific_outcome_endpoint_absent_excluded`. An explicitly women-only or
+  men-only numbered exposure arm that conflicts with the claim population is
+  marked `exposure_arm_population_mismatch_excluded`. These records remain in
+  the returned audit pack but are absent from `selected_evidence_ids`; none
+  of these reasons is a medical verdict. Each document additionally carries `integrity`
   (`status`, `sources`, `checked_at`, `check_version`, `warnings`, structured
   references, and per-provider checks), optional `crossref` enrichment,
   `metadata_provenance`, canonical `study_design` and its source,
@@ -648,3 +967,22 @@ expose backing-service details.
 
 Server errors do not expose exception details, OCR output, uploaded image data,
 or provider responses.
+
+### Slice 4 development validation audit
+
+Public analysis/report contracts and four Lens labels are unchanged. New normal
+development/test judge decisions still use 2.2 source-unit references. The compact
+development prompt is versioned separately; quantitative claims still receive
+numeric alignment checks. `optional_numeric_content` is a bounded judge-format
+failure, not permission to delete numbers or manufacture a clinical finding.
+
+Append-only validation `result_json.relation_validation` may now contain
+`joint_response` with strict `attributions`, `assessments` and
+`missing_material_evidence`. Its `prompt_version` is
+`joint-source-relation-1.1-2026-10-02` (historical 1.0 also reconstructible).
+`input_json/input_hash/prompt_hash` describe the ACTUAL dual-target request;
+`attempt_count=1` denotes one semantic HTTP request, not a skipped target.
+The conclusion remains backend-qualified separately. Missing material evidence
+sets validation unavailable and cannot qualify a verdict. These diagnostics are
+development-only; normal users receive safe error/report text, not raw prompts.
+No new production validator approval or model identity certification is implied.

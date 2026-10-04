@@ -3,10 +3,23 @@
 import re
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    model_serializer,
+    model_validator,
+)
 
 from app.adapters.claim_extractor import ExtractedClaimCandidate
 from app.pipeline.claim_types import ClaimType, legacy_claim_type
+from app.pipeline.numeric_effect import (
+    NumericEffect,
+    literal_exposure,
+    literal_outcome,
+    numeric_effect,
+)
 from app.pipeline.standalone import validate_standalone
 
 if TYPE_CHECKING:
@@ -28,6 +41,7 @@ class NormalizedPico(BaseModel):
     outcome: str | None = None
     timeframe: str | None = None
     claim_type: ClaimType | None = None
+    numeric_effect: NumericEffect | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -35,6 +49,13 @@ class NormalizedPico(BaseModel):
         if isinstance(value, dict) and isinstance(value.get("claim_type"), str):
             return {**value, "claim_type": legacy_claim_type(value["claim_type"])}
         return value
+
+    @model_serializer(mode="wrap")
+    def serialize(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+        result: dict[str, object] = handler(self)
+        if result.get("numeric_effect") is None:
+            result.pop("numeric_effect", None)
+        return result
 
 
 def normalize_pico(
@@ -73,11 +94,18 @@ def normalize_pico(
             # The second clause itself explicitly supplies the outcome. This
             # recovery is deliberately limited to verified coordination.
             values["outcome"] = shared_clause[1]
+    if values["intervention_or_exposure"] is None:
+        values["intervention_or_exposure"] = literal_exposure(candidate.raw_span)
+    recovered = literal_outcome(candidate.raw_span, values["intervention_or_exposure"])
+    if recovered and (values["outcome"] is None or
+                      values["outcome"].casefold() in recovered.casefold()):
+        values["outcome"] = recovered
     return NormalizedPico.model_validate(
         {
             "original_claim": candidate.raw_span,
             **values,
             "claim_type": candidate.claim_type,
+            "numeric_effect": numeric_effect(candidate.raw_span),
         }
     )
 
@@ -110,6 +138,7 @@ def normalize_stored_pico(
         outcome=_grounded_value(outcome, raw_text),
         timeframe=_grounded_value(timeframe, raw_text),
         claim_type=legacy_claim_type(claim_type),
+        numeric_effect=numeric_effect(raw_text),
     )
 
 

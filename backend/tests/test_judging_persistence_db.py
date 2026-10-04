@@ -113,10 +113,14 @@ def test_judge_runs_append_and_keep_pack_provenance(
             assert child.revision_of_judge_run_id == first[0].judge_run_id
             assert child.input_snapshot_hash == first[0].input_snapshot_hash
             assert child.semantic_revision_number == 1
-            assert sum(row.schema_version_inferred for row in rows) == 1
-            assert next(
-                row for row in rows if row.schema_version_inferred
-            ).id == inferred[0].judge_run_id
+            # The unit wire contains content only: metadata is caller-owned.
+            assert not any(row.schema_version_inferred for row in rows)
+            assert all(row.input_snapshot_version == "judge-input-2.2" for row in rows)
+            for row in rows:
+                if row.decision_json:
+                    assert row.decision_json["schema_version"] == "2.2"
+                    assert row.decision_json["statements"][0]["source_unit_ids"]
+                    assert row.input_snapshot_json["source_units"][0]["passage_sha256"]
             assert sum(row.error_category == "provider_error" for row in rows) == 2
             assert all(row.prompt_version == first[0].prompt_version for row in rows)
             bypassed_rows = [row for row in rows if row.search_guard_bypassed]

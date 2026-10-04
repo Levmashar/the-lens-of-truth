@@ -2,14 +2,20 @@
 
 import asyncio
 import json
+from uuid import uuid4
 
 import httpx
 import pytest
 
 from app.adapters.entailment import OpenAICompatibleEntailmentValidator
 from app.core.config import Settings
+from app.core.debug_trace import model_events, trace_analysis
 from app.judging.models import JudgeLabel
-from app.orchestration.worker import build_orchestrator, development_entailment_validator
+from app.orchestration.worker import (
+    build_orchestrator,
+    configured_development_validator,
+    development_entailment_validator,
+)
 from app.validation.entailment import PreparedEntailmentInput, prepare_entailment_input
 from app.validation.models import EntailmentInput, EntailmentStatus
 from app.validation.semantic import prepare_semantic_input
@@ -27,7 +33,10 @@ def _prepared() -> PreparedEntailmentInput:
     ))
 
 
-def test_adapter_sends_one_frozen_passage_without_tools(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("gateway", ["openai_compatible", "paratera"])
+def test_adapter_sends_one_frozen_passage_without_tools(
+    monkeypatch: pytest.MonkeyPatch, gateway: str,
+) -> None:
     original_client = httpx.AsyncClient
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -36,6 +45,7 @@ def test_adapter_sends_one_frozen_passage_without_tools(monkeypatch: pytest.Monk
         payload = json.loads(request.content)
         assert "tools" not in payload
         assert "search" not in payload
+        assert payload["response_format"]["type"] == "json_schema"
         assert payload["messages"][1]["content"].count("X was associated with Y") == 1
         return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({
             "status": "entails_judge_use", "evidence_claim": "Association only.",
@@ -47,7 +57,7 @@ def test_adapter_sends_one_frozen_passage_without_tools(monkeypatch: pytest.Monk
         lambda **kwargs: original_client(transport=httpx.MockTransport(handler), **kwargs),
     )
     validator = OpenAICompatibleEntailmentValidator(
-        provider="openai_compatible", model="other-family", base_url="https://example.test/v1",
+        provider=gateway, model="other-family", base_url="https://example.test/v1",
         api_key="fixture-key",
     )
     result = asyncio.run(validator.validate(_prepared()))
@@ -142,3 +152,58 @@ def test_search_enabled_model_is_not_cross_validator() -> None:
         judge_2_model_family="google", judge_2_base_url="https://example.test/v1",
     )
     assert development_entailment_validator(settings, judge) is None
+
+
+def test_explicit_paratera_validator_is_independent_of_judge_three() -> None:
+    judge = judge_for(fixture_pack()).model_copy(update={"model_family": "glm"})
+    settings = Settings(
+        _env_file=None, app_env="development",
+        validator_provider="paratera", validator_model="GLM-5.2",
+        validator_base_url="https://llmapi.paratera.com/v1",
+        validator_api_key="fixture-key",
+    )
+    validator = development_entailment_validator(settings, judge)
+    assert validator is not None and validator.provider == "paratera"
+    assert validator.model == "GLM-5.2"
+    assert configured_development_validator(settings, timeout_seconds=75).timeout_seconds == 75
+    with pytest.raises(ValueError, match="Validator requires"):
+        configured_development_validator(
+            settings.model_copy(update={"validator_api_key": None}), timeout_seconds=75,
+        )
+    production = settings.model_copy(update={"app_env": "production"})
+    assert development_entailment_validator(production, judge) is None
+
+
+def test_joint_transport_deadline_closes_the_calling_debug_event(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original_client = httpx.AsyncClient
+
+    async def waiting(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(10)
+        return httpx.Response(200, json={})
+
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: original_client(
+        transport=httpx.MockTransport(waiting), **kwargs,
+    ))
+    validator = OpenAICompatibleEntailmentValidator(
+        "paratera", "fixture", "https://example.test/v1", "fixture-key",
+    )
+    prepared = prepare_semantic_input(
+        "statement_attribution", {"statement": "X and Y were measured."},
+        judge_run_id="judge", validation_run_id="validation",
+        statement_ids=("S1",), evidence_ids=("E1",),
+    )
+    identifier = uuid4()
+
+    async def run() -> None:
+        with trace_analysis(identifier, enabled=True):
+            with pytest.raises(TimeoutError):
+                async with asyncio.timeout(0.01):
+                    await validator.assess_statement(prepared)
+
+    asyncio.run(run())
+    events = model_events(identifier)
+    assert events[-1]["status"] == "unavailable"
+    assert events[-1]["failure_type"] == "cancelled_or_deadline"
+    assert events[-1]["call_id"] == events[0]["call_id"]

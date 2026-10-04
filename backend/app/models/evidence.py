@@ -58,7 +58,7 @@ class EvidencePassage(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         ForeignKey("evidence_document.id", ondelete="CASCADE"),
         nullable=False,
     )
-    section: Mapped[str | None] = mapped_column(String(128))
+    section: Mapped[str | None] = mapped_column(Text)
     char_start: Mapped[int | None] = mapped_column()
     char_end: Mapped[int | None] = mapped_column()
     snippet: Mapped[str] = mapped_column(Text, nullable=False)

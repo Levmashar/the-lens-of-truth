@@ -72,11 +72,16 @@ class PubMedAdapter:
         self._cache = cache
         self._cache_ttl = cache_ttl_seconds
         self._client = client
+        self.last_search_diagnostics: dict[str, object] = {}
 
     async def search(self, query: str) -> tuple[tuple[str, ...], bool]:
         """Return PMIDs and whether the result came from the optional cache."""
 
         normalized = " ".join(query.split())
+        self.last_search_diagnostics = {
+            "actual_query": normalized, "sort": "relevance", "retmax": self._retmax,
+            "total_count": None, "returned_count": None,
+        }
         digest = hashlib.sha256(
             f"pubmed|{_VERSION}|relevance|{self._retmax}|{normalized}".encode()
         ).hexdigest()
@@ -86,9 +91,13 @@ class PubMedAdapter:
             if cached is not None:
                 try:
                     parsed = json.loads(cached)
+                    if isinstance(parsed, dict):
+                        self.last_search_diagnostics["total_count"] = parsed.get("total_count")
+                        parsed = parsed.get("pmids")
                     if isinstance(parsed, list) and all(
                         isinstance(item, str) and item.isdigit() for item in parsed
                     ):
+                        self.last_search_diagnostics["returned_count"] = len(parsed)
                         return tuple(parsed), True
                 except (ValueError, TypeError):
                     pass
@@ -104,6 +113,10 @@ class PubMedAdapter:
                     raise RetrievalError("rate_limited")
                 raise RetrievalError("upstream_http")
             ids = data["esearchresult"]["idlist"]
+            count = data["esearchresult"].get("count")
+            if isinstance(count, (str, int)) and str(count).isdigit():
+                self.last_search_diagnostics["total_count"] = int(count)
+            self.last_search_diagnostics["returned_count"] = len(ids)
             if not isinstance(ids, list) or not all(
                 isinstance(item, str) and item.isdigit() for item in ids
             ):
@@ -111,7 +124,8 @@ class PubMedAdapter:
         except (ValueError, KeyError, TypeError) as exc:
             raise RetrievalError("malformed_response") from exc
         if self._cache is not None:
-            await self._cache.set(cache_key, json.dumps(ids), self._cache_ttl)
+            await self._cache.set(cache_key, json.dumps({"pmids": ids, "total_count":
+                                 self.last_search_diagnostics["total_count"]}), self._cache_ttl)
         return tuple(ids), False
 
     async def fetch(self, pmids: tuple[str, ...]) -> PubMedFetchResult:

@@ -1,5 +1,161 @@
 # Delivery Roadmap
 
+## 2026-10-03 bounded numeric-parser follow-up
+
+- [x] Reproduce exact failures before edits; record actual read-only retained replay
+- [x] Preserve original occurrence spans/text and classify numeric roles explicitly
+- [x] Recognize risk x/× ranges without invented conversions or scope
+- [x] Bind S1 results to S1's actual frozen citation; reject coincidental matches
+- [x] Distinguish claim references, local measures/direction and source allegations
+- [x] Preserve PAF sex bindings, mixed fields, evidence/raw responses and labels
+- [x] Version 1.3 behavior; replay historical 1.0/1.1/1.2 unchanged
+- [x] Record configured-but-skipped semantic checks and blocking issue references
+- [x] Pass 63 adversarial controls and exact three-response numeric preflight replay
+- [x] Backend/PostgreSQL/Ruff/mypy/Alembic/diff checks; zero paid calls
+- [ ] Separately authorize semantic attribution/magnitude qualification evaluation;
+      offline checker boundary entry is not judge qualification
+
+## 2026-10-03 numeric fidelity/comparability repair
+
+- [x] Separate frozen-source fidelity from claim magnitude and scope comparison
+- [x] Add versioned typed quantities, statuses, differences and conversion records
+- [x] Preserve verified noncomparable quantities without magnitude voting
+- [x] Keep ambiguous times-higher literals unresolved and PAF/OR/HR distinct
+- [x] Preserve Grok mixed-field defect, Claude comparison path and Luna NEI controls
+- [x] Replay historical numeric versions and persist append-only JSONB diagnostics
+- [x] Feed qualified diagnostics to descriptive Verdict Explanation 1.0 only
+- [x] Expose compact development diagnostics and remove raw-response scroll boxes
+- [x] Run offline, PostgreSQL, frontend/build, Ruff/mypy/Alembic and Docker checks
+- [x] Record one normal smoking API acceptance within eight paid calls;
+      five used, all models responded, only Luna qualified; stop boundary observed
+- [x] Resolve live conclusion wording failures in the bounded follow-up above:
+      Grok `20-40x` and Claude negated claimed 85%/PAF context; no further repair
+      or paid run performed after this acceptance failure
+- [ ] Establish broader model/validator repeatability and independent medical
+      acceptance before treating development outcomes as production qualified
+
+## 2026-10-03 Verdict Explanation 1.0
+
+- [x] Add versioned explanation artifact to new report JSONB and semantic hashes
+- [x] Generate controlled summaries after aggregation from qualified audited inputs
+- [x] Distinguish numeric magnitude gaps, noncomparable estimates and direction
+- [x] Explain scope/design/conflict/context/direct evidence gaps for NEI
+- [x] Keep Unable operational and preserve provisional development notices
+- [x] Display saved summary below the label and fields in development diagnostics
+- [x] Preserve historical JSON/hash behavior and append-only report snapshots
+- [x] Cover requested offline cases, smoking 85% regression and rejected findings
+- [x] Backend and PostgreSQL append-only checks; frontend tests/build; Ruff/mypy/Alembic
+- [x] Document the descriptive, non-voting boundary; no paid calls/model changes
+
+## 2026-10-03 Paratera model migration
+
+- [x] Confirm account catalog IDs, chat endpoint, Bearer auth and small
+      structured-output behavior without exposing credentials
+- [x] Name Paratera in the provider abstraction while reusing the existing
+      OpenAI-compatible adapter; configure explicit development validator
+- [x] Keep AIMLAPI Luna, V2 policy, retrieval, thresholds and append-only runs
+- [x] Run software checks before the bounded six-case live smoke
+- [x] Diagnose retained analysis `26ff08a7-76b9-4cef-93a6-f88b438baf2a`;
+      fix stale validator Calling state using saved audits and cancellation events
+- [x] After expanded user authorization, probe actual frozen contracts and select
+      AIMLAPI Grok/Sonnet plus pinned Haiku validator; retain failed candidates
+- [x] Document the six-case operational results and provider failures in
+      `PARATERA_MODEL_MIGRATION_RESULTS.md` before any broader evaluation
+- [x] Verify Haiku strict schema/IDs on 13 frozen-case checks
+- [x] Recognize explicit key-quota failures without retry; rebuild/restart backend
+- [ ] Raise configured AIMLAPI API-key lifetime quota (`ALL_TIME_LIMIT_EXCEEDED`);
+      positive account balance alone did not unblock the key
+- [ ] Complete bounded Grok six-case normal acceptance after quota restoration;
+      two parsed smoking requests do not establish reliability
+- [ ] Review material numeric and sunscreen/Vitamin C semantic failures before
+      claiming improved reliability or production qualification
+
+## 2026-10-03 smoking numeric/provenance repair
+
+- [x] Reconstruct `0e8beb6c-196c-4a54-9f96-249de6988309` from retained
+      append-only judge/Pack artifacts; separate parser false alarms from true
+      unsupported effects
+- [x] Version assertion-specific numeric parsing/materiality; retain exact
+      historical 1.0 audit behavior and strict required-magnitude failures
+- [x] Bound and audit development-only `E34` to unique `E34.U1` transport repair;
+      reject unknown/ambiguous IDs and production shorthand
+- [x] Permit exact frozen sibling sections of selected documents under the
+      current development prompt; continue backend-owned quotation/provenance checks
+- [x] Increase bounded development semantic-check timeout to 75 seconds and
+      claim deadline to 420 seconds; keep retry/count and production rules intact
+- [x] Summarize duplicate numeric diagnostics in the development UI
+- [ ] Complete normal three-judge repeatability and independent medical review;
+      one technical smoke is not clinical or production qualification
+- [ ] Address intermittent Qwen full-Pack timeouts without unbounded retries;
+      normal repeat `38efcbb4-2f0e-4a01-bd05-c380bfdbe993` timed out at 110s
+- [ ] Evaluate and constrain peripheral judge findings: ERNIE cited mLOY/HR
+      evidence for a smoking 85% claim; do not silently drop that premise
+- [ ] Review fold-range to percent-range transformations under explicit typed
+      rules before accepting the original Qwen numeric conclusion
+- [ ] Qualify underlying model identity, family independence, evidence isolation,
+      and the semantic validator before any public medical verdict
+
+## Judge-provider transition
+
+- [x] Keep GPT Luna on AIMLAPI; configure Paratera Qwen3.5-35B-A3B and
+      ERNIE-4.5-Turbo-128K as the two other judge slots
+- [x] Replace misleading small-only probes with a full frozen-Pack and normal
+      API acceptance; all three judges parsed successfully in analysis
+      `1809e961-ec67-4688-8836-025f2919fdd5`
+- [x] Deduplicate the development judge wire prompt, retain the frozen audit
+      snapshot, widen bounded deadlines, and serialize shared-gateway calls
+- [ ] Measure multi-run Paratera stability and separately inspect the inherited
+      ERNIE semantic validator's current 75-second budget/format behavior
+- [x] Verify corrected Paratera `llmapi.paratera.com/v1` endpoint; move both
+      local Paratera judge slots to it and restart the backend
+- [x] Replace failed third judge/development validator after the user's
+      instruction to change the non-working models; old V3.2-Exp returned 404
+- [x] Remove unused `MIRI_JUDGE_N_MODEL` entries; preserve inactive Miri credentials
+- [x] Keep AIMLAPI GPT Luna and probe Paratera GLM-4.6 on a frozen Evidence Pack
+- [x] Configure user-selected Paratera DeepSeek-V3.2-Exp as judge 3; expose
+      run-audited versus current-configuration model names in debug mode
+- [x] Verify why DeepSeek-V4-Flash small-probe success did not generalize:
+      a full frozen-Pack call exceeded 60 seconds; do not use it as judge 3
+- [x] Run one bounded end-to-end diagnostic with the current three slots;
+      3/3 judge responses parsed, but 0/3 passed material numeric preflight
+- [x] Diagnose material numeric preflight on the smoking "by 85%" claim with
+      frozen examples; preserve strict asserted-effect checks and audit replay
+
+## Pre-pilot stabilization
+
+- [x] Recover literal outcomes/exposures in simple numeric claims; preserve typed or uncertain magnitude
+- [x] Audit deterministic frozen child-unit to evidence-ID conversions
+- [x] Expose null/gradient reasons and per-judge failure categories in development diagnostics
+- [x] Add a claim failure waterfall and retained-analysis export without extending retention
+- [x] Add offline numeric, source-ID, null, gradient and materiality controls
+- [ ] Manual frontend diagnostic pilot on varied claims; review raw semantic errors
+- [ ] Confirm live numeric end-to-end behavior in that pilot; offline readiness is not a live verdict
+- [ ] Review classifier null-direction/gradient consistency before any benchmark or production claim
+
+The stabilization report records test results and exact commands. No paid model
+matrix is part of this step; the user will perform broader manual testing.
+
+## Reliability Slice 4.1 — implementation delivered, semantic gate partial
+
+- [x] Read-only export of the retained manual sunscreen failure; no TTL extension
+- [x] New V2 decision 2.3 with separate qualitative/numeric fields and exact raw audit
+- [x] Independent direction/scope/strength/role and versioned Python qualification
+- [x] Unspecified-comparator and tested same-exposure frequency-gradient handling
+- [x] Optional-number warnings with independent qualitative attribution; strict material numbers
+- [x] Source-grounded precise-null guard; unchanged historical qualifier reconstruction
+- [x] Canonical JSON PostgreSQL round-trip audit fix and append-only regression
+- [x] Focused offline/live controls, normal API acceptance and one same-Pack repeat each
+- [x] 622 PostgreSQL/backend tests, Ruff, mypy, Alembic, 43 frontend tests/build, Docker
+- [x] Stop paid calls at 146/150; preserve old 120-call ledger and configuration
+- [ ] Review remaining raw imprecise-null/opposition and dose/gradient inconsistencies
+- [ ] Review source-unit-ID response noncompliance and numeric independence false rejections
+- [ ] Complete numeric normal-API acceptance: outcome was omitted upstream; not repaired here
+- [ ] Repeat the final joint 2.2 / qualifier 1.3 contract on independently reviewed examples
+- [ ] Reviewed diagnostic pilot before 300-claim benchmark adoption; no production approval
+
+See `RELIABILITY_SLICE4_1_RESULTS.md`. Historical completion boxes below do not
+mean these new semantic acceptance limitations are resolved.
+
 ## Phase 1: Repository foundation
 
 - [x] Monorepo layout and developer documentation
@@ -353,11 +509,146 @@
 - [x] Confirm carrot/eyesight finishes as Not Enough Evidence with the
       causal-design reason; verify the final inverse claim still contradicts
       and production/high-risk one-judge paths stay blocked
+- [x] Show reconstructed standalone claims, not source fragments, in the
+      result card; regress the exact coordinated soy input without an invented
+      estrogen mechanism or meat comparator
+- [x] Preserve explicit outcome qualifiers in linked PubMed queries and keep
+      unasserted soy-versus-whey/animal comparisons auditable but out of judge
+      selection; retain no-soy/placebo and stated-comparator evidence
+- [x] Remove leading conclusion-direction verbs from outcome search terms
+      without changing the extracted proposition or its PICO direction
+- [x] Exclude muscle-soreness/biomarker-only papers for a muscle-gain endpoint
+      while keeping them in the frozen audit pack; distinguish no qualifying
+      selected source from no search results in report copy
+- [x] Exclude explicitly women-only numbered soy intervention arms from
+      men-specific claims despite mixed-sex parent trials; keep the paper and
+      arm-restriction signal in the audit pack
+- [x] Version judge/semantic instructions so an active comparator or
+      unmeasured mechanism cannot be silently substituted for the user's claim
+- [x] Rerun soy inputs on the rebuilt configured stack: the men-specific
+      full analysis had 33 auditable documents, zero applicable selected
+      passages, zero judges, and an honest Not Enough Evidence result; the
+      final improved-query preview retrieved 43 documents and still selected
+      none. The more general
+      wording still has unqualified judge/semantic responses and remains
+      Unable to Verify Reliably rather than receiving a fabricated verdict
 - [ ] Improve/qualify semantic validation on an annotated set and investigate
       remaining provider/schema failures; retain deterministic and production
       judge-count gates
 - [ ] Evaluate statistical/scope behavior and release qualification on an
       annotated benchmark before public medical use
+
+## Reliability reset: Slice 1 only
+
+- [x] Capture retained smoking/sunscreen originals, active revisions, source
+      membership, numeric/quote diagnostics and rejection ledger without edits
+- [x] Confirm comma HR/CI parser false rejection before changing validation
+- [x] Add versioned backend source units; remove quote/protocol metadata
+      copying from new model output; retain old input/decision contracts
+- [x] Check asserted quantities by statement/source and dependency; retain
+      mismatches and essential uncertainty; use one fresh revision for optional
+      unresolved detail without silently certifying or dropping it
+- [x] Preserve provenance, append-only lineage, thresholds and public gates;
+      test corruption, false statistics, material uncertainty and round trips
+- [x] Run Python 3.13 software/DB tests, Ruff, mypy and Alembic schema checks
+- [x] Run separate bounded live evaluation: 10 synthetic controls, zero final
+      false rejection/acceptance; two original Packs, two structured responses,
+      corrected HR/CI attribution; final revision probes had six supported
+      active findings but zero eligible conclusions; one earlier sunscreen
+      probe qualified, showing remaining semantic instability
+- [x] Document actual causes, measurements and exact replay commands in
+      `RELIABILITY_SLICE1_RESULTS.md`; mark unavailable historical schema detail
+
+## Reliability reset: Slice 2
+
+- [x] Replay exact retained Slice 1 requests/findings before changing behavior;
+      classify status/rationale contradiction and scope/strength ambiguity
+- [x] Preserve source-to-statement attribution and frozen source-unit contracts
+- [x] Add strict statement-to-claim relation/scope/materiality schema and one
+      bounded label-blind batch per new judge decision
+- [x] Replace new-run holistic conclusion LLM calls with a pure versioned qualifier;
+      retain historical flow, no label flipping, no weakened production gates
+- [x] Persist relation provenance/input hashes/results and qualifier inputs/output
+      in append-only JSONB; recheck frozen audit inputs during aggregation
+- [x] Add 32 conditional engineering controls, paired configured-model comparison,
+      three identical-prompt trials, and offline qualification replay
+- [x] Run bounded frozen and fresh development evaluations; report failures as
+      failures rather than requiring particular medical labels
+- [x] Regression-test decisive/conflicting/contextual findings, numerical overclaim,
+      causal-design gates, transport/schema failures, thresholds and DB append-only behavior
+- [x] Document software/model results separately in `RELIABILITY_SLICE2_RESULTS.md`
+- [ ] Independent human review of relation labels, scope and materiality;
+      benchmark is explicitly engineer-authored until that review happens
+- [ ] Qualify an approved, verified semantic validator for production;
+      current development aliases are not certified model identities
+- [ ] Medical/clinical qualification and reviewed scientific sufficiency policy later
+- [x] Slice 3: curated approved-source coverage, frozen combined Packs and query tracing
+- [x] Separate actual exposure-analysis design from parent study/publication type
+- [x] Group multiple cited units into one document card, preserving all audit IDs
+- [x] Add bounded contextual roles and question-specific design eligibility
+- [x] Offline adapter/Pack/qualifier tests and PostgreSQL/frontend regression checks
+- [x] Bounded paired coverage evaluation; record pilot failures, not forced labels
+- [ ] Independently review source-purpose assignments and currency limits clinically
+- [ ] Review convergent observational sufficiency before enabling any such causal gate
+- [ ] Resolve remaining provider/semantic failures measured in Slice 3 results
+- [ ] Add reviewed numeric ratio/multiple typing controls (`9 out of 10`, `25 times`)
+      without suppressing material uncertainty or changing verdict thresholds
+- [ ] Annotate direct/background relevance and review bounded contextual selection;
+      retrieved NCI Sunlight/NCCIH evidence did not reach the six-case judge views
+- [ ] Decide on V3 only using the measured residual failures; not implemented here
+
+## Reliability Slice 4: initial investigation (historical)
+
+- [x] Read-only retained smoking/sunscreen capture and exact NUMERIC_UNCERTAIN diagnosis
+- [x] Sanitized gateway catalog; six actual chat candidates, no browsing/tools
+- [x] Fixed 40-case engineer conditional suite, 30/10 split and opaque source IDs
+- [x] Frozen public-source controls and reviewed development oracle source subsets
+- [x] Implement evaluation-only V2/minimal-V2/V3 and decisive non-voting checker
+- [x] Compare bounded current/lean/oracle evidence and Lite-only identical-input repeats
+- [x] Offline one/two/three V2 audit subsets using unchanged Lens policy
+- [x] Preserve pilots/quota failures and add append-only response checkpoints
+- [x] Normal HTTP acceptance for smoking, regular/inverse smoking and invasive sunscreen
+- [x] Software/static/PostgreSQL/append-only/Alembic/frontend/Docker checks
+- [x] Document failed gates and retain normal architecture/models/configuration
+- [ ] Repair measured scope/materiality/null/conflict false decisive probe results
+- [ ] Repair optional generated numeric failure paths without suppressing material checks
+- [ ] Complete clean paired held-out model/validator comparisons within agreed paid budget
+- [ ] Improve reviewed source recall before adopting lean or replacing normal selection
+- [ ] Complete normal broad-skin/BP/Vitamin-C/carrot/soy acceptance and browser QA
+- [ ] Run all-three-judge five-repeat real frozen Pack and final Lens stability matrix
+- [ ] Independently review provisional annotations and source oracle; no clinical approval yet
+- [ ] Reconsider adoption only after safety/recall/identity gates pass; V3 NOT integrated
+
+Initial investigation was not complete. See `RELIABILITY_SLICE4_RESULTS.md` and
+`JUDGE_BAKEOFF_RESULTS.md`; no `.env` or production thresholds were changed.
+
+## Slice 4 continuation: bounded implementation delivered; acceptance limitations explicit
+
+- [x] Persist and enforce an atomic additional-request ceiling; stopped at 120/120
+- [x] Diagnose imprecise-null, dose/scope and conflict false-decisive patterns;
+      label reconstructed old responses honestly and preserve original artifacts
+- [x] Add generic V3 consistency guards and preliminary-decisive-only checker;
+      reject adoption after real authoritative-source/schema failures
+- [x] Select V2, current evidence selection and current three model families;
+      no replacement, no `.env` or production qualification changes
+- [x] Integrate one joint source/relation request per judge in development/test,
+      exact request/response audits, immutable units and unchanged Python qualifier
+- [x] Reject optional numeric prose in new qualitative judge output; preserve
+      genuine quantitative checks and historical prompt/audit reconstruction
+- [x] Disable development semantic revisions; retain bounded format retries
+- [x] Reduce measured normal flow to 6-7 post-retrieval requests, including retries
+- [x] Run focused frozen controls and normal HTTP positive/inverse/sunscreen/
+      carrot/numeric checks; count failed and interrupted runs, not just successes
+- [x] Fix health-test lifecycle interference without changing production recovery
+- [x] Final backend/PostgreSQL/static/Alembic/frontend/Docker/diff verification
+- [ ] Confirm repeated smoking and inverse acceptance without test interference;
+      the hard ceiling prevents another paid run in this continuation
+- [ ] Improve remaining gateway format compliance and carrot NEI qualification
+- [ ] Review numeric effect/dose/duration assignment and provisional annotations
+- [ ] Independently qualify model identity, source isolation and approved validation
+
+The bounded repair is implemented, not a completed clinical/repeatability gate.
+Do not resume paid calls against a fresh ledger to evade the completed ceiling.
 
 ## Phase 8: Evaluation benchmark
 

@@ -1,5 +1,14 @@
 # Database Foundation
 
+Slice 3 source purpose/currency/lineage/analysis design reside in immutable Pack
+JSONB and qualifier inputs in append-only validation JSONB; they require no new
+audit tables. `evidence_document.source_kind` distinguishes PubMed from approved
+public-health sources, whose PMID/DOI may be null. Canonical URL and content hash
+identify approved source versions. New Packs/versions append; historical snapshots
+are not rewritten. Migration `20261001_0018` changes `evidence_passage.section`
+from VARCHAR(128) to Text because official headings exceeded that bound. Downgrade
+refuses existing headings longer than 128 characters rather than truncating them.
+
 PostgreSQL is the durable record. Alembic enables the `vector` extension,
 creates the Phase 1 foundation, and adds Phase 2 short-lived upload metadata
 and coreference provenance. Existing nullable claim PICO columns are now
@@ -15,6 +24,17 @@ and creates `RetrievalRun`, `RetrievalQuery`, `RetrievalDocumentQuery`, and
 reruns append records rather than updating an earlier pack.
 Pack/run rows cascade when the parent short-lived claim is purged; shared
 public PubMed document rows are independent of submission retention.
+
+Reliability Slice 1 requires no migration. Existing append-only `judge_run`
+JSONB stores `judge-input-2.1` source units (IDs, offsets, text, document/passage
+hashes and section context) and canonical decision 2.1 materialized references.
+Failed responses can retain sanitized visible content and safe schema-error
+paths in `response_json`; successful response JSON remains canonical decision
+JSON. `judge_validation_run.result_json` stores assertion-local numeric
+diagnostics and conclusion dependency. Historical 1.0/2.0 rows and Pack hashes
+are not updated or retroactively certified. Parent/child revision lineage and
+append-only triggers remain unchanged. Developer replay exports are not a
+retention extension; see `RELIABILITY_SLICE1_RESULTS.md`.
 
 | Model | Responsibility |
 |---|---|

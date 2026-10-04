@@ -243,6 +243,24 @@ class DebugModelStatus(BaseModel):
     model: str
     status: str
     failure_type: str | None
+    origin: Literal["analysis", "current_configuration"] = "current_configuration"
+
+
+class DebugNumericFinding(BaseModel):
+    version: str
+    target_id: str
+    material: bool
+    source_fidelity: str
+    asserted_values: list[str]
+    source_measure: str
+    claim_measure: str
+    comparability: str
+    numeric_effect: str
+    semantic_scope_checked: bool
+    structure_status: str
+    evidence_ids: list[str]
+    differences: list[str]
+    conversions: list[str]
 
 
 class DebugJudgeRun(BaseModel):
@@ -265,6 +283,23 @@ class DebugJudgeRun(BaseModel):
     statement_statuses: dict[str, str] = Field(default_factory=dict)
     conclusion_status: str | None = None
     targeted_issue_codes: list[str] = Field(default_factory=list)
+    numeric_findings: list[DebugNumericFinding] = Field(default_factory=list)
+    evidence_axes: dict[str, dict[str, str]] = Field(default_factory=dict)
+    proposed_label: str | None = None
+    finding_count: int = 0
+    qualification_reason_codes: list[str] = Field(default_factory=list)
+    qualification_success: bool = False
+    exclusion_reasons: list[str] = Field(default_factory=list)
+    source_ids: dict[str, list[str]] = Field(default_factory=dict)
+    id_normalizations: list[dict[str, str]] = Field(default_factory=list)
+    judge_unit_id_normalizations: list[dict[str, str]] = Field(default_factory=list)
+    null_diagnostics: dict[str, dict[str, str | None]] = Field(default_factory=dict)
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    model_identity_verified: bool = False
+    model_family_verified: bool = False
+    failure_categories: list[str] = Field(default_factory=list)
+    attempt_failure_types: list[str] = Field(default_factory=list)
 
 
 class ClaimAnalysisSummary(BaseModel):
@@ -285,6 +320,7 @@ class ClaimAnalysisSummary(BaseModel):
     production_qualified: bool | None
     result_label: LensVerdict | None
     debug_judge_runs: list[DebugJudgeRun] | None = None
+    debug_diagnostics: dict[str, object] | None = None
 
 
 class AnalysisClaimsResponse(BaseModel):

@@ -19,6 +19,10 @@ _MEASURED_OUTCOME = re.compile(
     r"severity|duration|pressure|glucose|cholesterol)\b", re.I,
 )
 _SAFE_TOKEN = re.compile(r"[^\W_]+(?:[-'][^\W_]+)*", re.UNICODE)
+_DIRECTIONAL_OUTCOME_PREFIX = re.compile(
+    r"^\s*(?:lowers|reduces|decreases|increases|raises|boosts|improves|worsens)\s+"
+    r"(?:the\s+)?", re.I,
+)
 _RELATION_TERMS: dict[str, tuple[str, ...]] = {
     "causal": ("risk", "incidence", "causation", "cohort"),
     "association": ("association", "risk", "cohort"),
@@ -57,6 +61,13 @@ def _lexical_terms(value: str) -> str:
     return " AND ".join(f'"{word}"[Title/Abstract]' for word in words)
 
 
+def _outcome_search_text(value: str) -> str:
+    """Remove only a leading effect verb from retrieval wording, never PICO."""
+
+    stripped = _DIRECTIONAL_OUTCOME_PREFIX.sub("", value, count=1).strip()
+    return stripped if _tokens(stripped) else value
+
+
 def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
     """Create a small set of queries without adding unstated clinical details."""
 
@@ -89,7 +100,7 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
 
     if exposure_term and outcome_term:
         left = _lexical_terms(exposure_term)
-        right = _lexical_terms(outcome_term)
+        right = _lexical_terms(_outcome_search_text(outcome_term))
         if left and right:
             lexical = f"({left}) AND ({right})"
             lexical_sources = (
@@ -132,16 +143,17 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                         source_fields=(*lexical_sources, "pico.outcome", "pico.population"),
                         relation_semantics=claim.claim_type,
                     ))
-            if outcome_entity and outcome and not exposure_entity and (
-                set(_tokens(outcome)) - set(_tokens(outcome_entity.surface_text))
+            if outcome_entity and outcome and (
+                set(_tokens(_outcome_search_text(outcome)))
+                - set(_tokens(outcome_entity.surface_text))
             ):
                 # A broad linked outcome ("Muscles") must not erase an
-                # asserted qualifier such as "growth" when the exposure is
-                # unresolved. Keep this bounded source-grounded variant.
-                specific = f"({left}) AND ({_lexical_terms(outcome)})"
+                # asserted qualifier such as "growth", regardless of whether
+                # the exposure was also linked. Keep this bounded variant.
+                specific = f"({left}) AND ({_lexical_terms(_outcome_search_text(outcome))})"
                 queries.append(RetrievalQuery(
                     query_id=f"Q{len(queries) + 1}", family="lexical", query=specific,
-                    source_fields=("pico.intervention_or_exposure", "pico.outcome"),
+                    source_fields=(lexical_sources[0], "pico.outcome"),
                     relation_semantics=claim.claim_type,
                 ))
             numbers = tuple(dict.fromkeys(_NUMERIC.findall(claim.raw_text)))[:2]
@@ -160,7 +172,7 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                 # source term absent from Title/Abstract. A confident two-
                 # concept MeSH query already supplies this broader recall.
                 automatic = f"({' '.join(_tokens(exposure_term))}) AND " \
-                            f"({' '.join(_tokens(outcome_term))})"
+                            f"({' '.join(_tokens(_outcome_search_text(outcome_term)))})"
                 queries.append(RetrievalQuery(
                     query_id=f"Q{len(queries) + 1}", family="automatic", query=automatic,
                     source_fields=(*lexical_sources, "pubmed_automatic_term_mapping"),

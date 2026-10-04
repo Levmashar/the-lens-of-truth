@@ -50,12 +50,13 @@ def test_query_planning_mesh_lexical_causal_and_numeric() -> None:
     snapshot = claim("Frequent sunscreen use causes a 292% increase in invasive melanoma risk.")
     plan = plan_pubmed_queries(snapshot)
     assert [query.family for query in plan.queries] == [
-        "mesh", "lexical", "relation", "distinctive",
+        "mesh", "lexical", "relation", "lexical", "distinctive",
     ]
     assert '"Sunscreening Agents"[MeSH Terms]' in plan.queries[0].query
     assert '"Melanoma"[MeSH Terms]' in plan.queries[0].query
     assert "sunscreen" in plan.queries[1].query
-    assert "292%" in plan.queries[3].query
+    assert '"invasive"[Title/Abstract]' in plan.queries[3].query
+    assert "292%" in plan.queries[4].query
     assert all(query.relation_semantics == "causal" for query in plan.queries)
     assert all("population" not in query.source_fields for query in plan.queries)
     assert all("comparator" not in query.source_fields for query in plan.queries)
@@ -183,6 +184,70 @@ def test_population_qualifier_cannot_become_soy_exposure_query_anchor() -> None:
                for query in plan.queries if query.family == "lexical")
     assert "soy" in directness_aliases(snapshot, "intervention_or_exposure")
     assert "male" not in directness_aliases(snapshot, "intervention_or_exposure")
+
+
+def test_linked_soy_and_muscle_still_query_asserted_growth_endpoint() -> None:
+    text = "Soy use lowers muscle growth."
+    snapshot = ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal",
+            intervention_or_exposure="soy use", outcome="muscle growth",
+        ),
+        entities=(
+            MedicalEntity(
+                surface_text="soy", entity_type="intervention_or_exposure",
+                match_type="unresolved",
+            ),
+            MedicalEntity(
+                surface_text="muscle", entity_type="outcome", match_type="unresolved",
+            ),
+        ),
+    )
+
+    plan = plan_pubmed_queries(snapshot)
+    assert any(
+        '"soy"[Title/Abstract]' in query.query
+        and '"muscle"[Title/Abstract]' in query.query
+        and '"growth"[Title/Abstract]' in query.query
+        and query.source_fields[-1] == "pico.outcome"
+        for query in plan.queries if query.family == "lexical"
+    )
+
+
+def test_directional_verb_is_removed_only_from_outcome_search_terms() -> None:
+    text = "Regular soy usage in male body lowers muscle gain."
+    snapshot = ClaimSnapshot(
+        claim_id=CLAIM_ID, raw_text=text, claim_type="causal",
+        pico=NormalizedPico(
+            original_claim=text, claim_type="causal", population="male body",
+            intervention_or_exposure="Regular soy usage in male body",
+            outcome="lowers muscle gain",
+        ),
+        entities=(MedicalEntity(
+            surface_text="muscle", entity_type="outcome", mesh_id="D009132",
+            preferred_name="Muscles", match_type="synonym", confidence=0.95,
+        ),),
+    )
+    plan = plan_pubmed_queries(snapshot)
+    specific = [query for query in plan.queries if query.family == "lexical"
+                and query.source_fields[-1] == "pico.outcome"]
+    assert len(specific) == 1
+    assert '"muscle"[Title/Abstract]' in specific[0].query
+    assert '"gain"[Title/Abstract]' in specific[0].query
+    assert '"lowers"[Title/Abstract]' not in " ".join(query.query for query in plan.queries)
+    assert snapshot.pico is not None and snapshot.pico.outcome == "lowers muscle gain"
+    endpoint_only = snapshot.model_copy(update={
+        "pico": snapshot.pico.model_copy(update={"outcome": "muscle gain"}),
+    })
+    assert len(plan.queries) == len(plan_pubmed_queries(endpoint_only).queries)
+
+    no_entity = snapshot.model_copy(update={"entities": ()})
+    no_entity_plan = plan_pubmed_queries(no_entity)
+    lexical = next(query for query in no_entity_plan.queries if query.family == "lexical")
+    assert '"muscle"[Title/Abstract]' in lexical.query
+    assert '"gain"[Title/Abstract]' in lexical.query
+    assert '"lowers"[Title/Abstract]' not in lexical.query
 
 
 def carrot_claim() -> ClaimSnapshot:

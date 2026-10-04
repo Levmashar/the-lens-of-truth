@@ -29,6 +29,16 @@ class Settings(BaseSettings):
     )
     log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
     debug_mode: bool = Field(default=False, validation_alias="DEBUG_MODE")
+    authoritative_enabled: bool = Field(default=True, validation_alias="AUTHORITATIVE_ENABLED")
+    authoritative_manifest_path: Path | None = Field(
+        default=None, validation_alias="AUTHORITATIVE_MANIFEST_PATH",
+    )
+    authoritative_max_update_age_days: int = Field(
+        default=3650, ge=1, le=36500, validation_alias="AUTHORITATIVE_MAX_UPDATE_AGE_DAYS",
+    )
+    authoritative_max_review_age_days: int = Field(
+        default=90, ge=1, le=365, validation_alias="AUTHORITATIVE_MAX_REVIEW_AGE_DAYS",
+    )
     api_v1_prefix: str = Field(default="/v1", validation_alias="API_V1_PREFIX")
     database_url: str = Field(
         default="postgresql+psycopg://lens:lens@localhost:5432/lens",
@@ -109,7 +119,7 @@ class Settings(BaseSettings):
     crossref_total_timeout_seconds: float = Field(
         default=30.0, gt=0, le=60, validation_alias="CROSSREF_TOTAL_TIMEOUT_SECONDS"
     )
-    judge_1_provider: Literal["miri", "openai_compatible"] | None = Field(
+    judge_1_provider: Literal["miri", "openai_compatible", "paratera"] | None = Field(
         default=None, validation_alias="JUDGE_1_PROVIDER"
     )
     judge_1_model: str | None = Field(default=None, validation_alias="JUDGE_1_MODEL")
@@ -118,7 +128,7 @@ class Settings(BaseSettings):
     )
     judge_1_base_url: str | None = Field(default=None, validation_alias="JUDGE_1_BASE_URL")
     judge_1_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_1_API_KEY")
-    judge_2_provider: Literal["miri", "openai_compatible"] | None = Field(
+    judge_2_provider: Literal["miri", "openai_compatible", "paratera"] | None = Field(
         default=None, validation_alias="JUDGE_2_PROVIDER"
     )
     judge_2_model: str | None = Field(default=None, validation_alias="JUDGE_2_MODEL")
@@ -127,7 +137,7 @@ class Settings(BaseSettings):
     )
     judge_2_base_url: str | None = Field(default=None, validation_alias="JUDGE_2_BASE_URL")
     judge_2_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_2_API_KEY")
-    judge_3_provider: Literal["miri", "openai_compatible"] | None = Field(
+    judge_3_provider: Literal["miri", "openai_compatible", "paratera"] | None = Field(
         default=None, validation_alias="JUDGE_3_PROVIDER"
     )
     judge_3_model: str | None = Field(default=None, validation_alias="JUDGE_3_MODEL")
@@ -136,11 +146,17 @@ class Settings(BaseSettings):
     )
     judge_3_base_url: str | None = Field(default=None, validation_alias="JUDGE_3_BASE_URL")
     judge_3_api_key: SecretStr | None = Field(default=None, validation_alias="JUDGE_3_API_KEY")
+    validator_provider: Literal["miri", "openai_compatible", "paratera"] | None = Field(
+        default=None, validation_alias="VALIDATOR_PROVIDER"
+    )
+    validator_model: str | None = Field(default=None, validation_alias="VALIDATOR_MODEL")
+    validator_base_url: str | None = Field(default=None, validation_alias="VALIDATOR_BASE_URL")
+    validator_api_key: SecretStr | None = Field(default=None, validation_alias="VALIDATOR_API_KEY")
     judge_attempt_timeout_seconds: float = Field(
-        default=45.0, gt=0, le=60, validation_alias="JUDGE_ATTEMPT_TIMEOUT_SECONDS"
+        default=60.0, gt=0, le=60, validation_alias="JUDGE_ATTEMPT_TIMEOUT_SECONDS"
     )
     judge_total_timeout_seconds: float = Field(
-        default=80.0, gt=0, le=120, validation_alias="JUDGE_TOTAL_TIMEOUT_SECONDS"
+        default=110.0, gt=0, le=120, validation_alias="JUDGE_TOTAL_TIMEOUT_SECONDS"
     )
     judge_concurrency_limit: int = Field(
         default=3, ge=1, le=3, validation_alias="JUDGE_CONCURRENCY_LIMIT"
@@ -155,7 +171,7 @@ class Settings(BaseSettings):
         default=900.0, gt=0, le=1800, validation_alias="ANALYSIS_TOTAL_TIMEOUT_SECONDS"
     )
     analysis_claim_timeout_seconds: float = Field(
-        default=300.0, gt=0, le=600, validation_alias="ANALYSIS_CLAIM_TIMEOUT_SECONDS"
+        default=420.0, gt=0, le=600, validation_alias="ANALYSIS_CLAIM_TIMEOUT_SECONDS"
     )
     analysis_retrieval_timeout_seconds: float = Field(
         default=180.0, gt=0, le=300, validation_alias="ANALYSIS_RETRIEVAL_TIMEOUT_SECONDS"

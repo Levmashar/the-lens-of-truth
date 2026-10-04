@@ -11,10 +11,15 @@ from uuid import uuid4
 
 import httpx
 
-from app.adapters.structured_output import rejects_json_schema_mode, strict_chat_schema
+from app.adapters.structured_output import (
+    quota_exhausted,
+    rejects_json_schema_mode,
+    strict_chat_schema,
+)
 from app.core.debug_trace import record_model_event
 from app.judging.models import JudgeDecisionV2, JudgeSlot, ProviderResponse
 from app.judging.prompt import PreparedJudgeInput
+from app.judging.source_units import JudgeContent, JudgeContent23
 
 logger = logging.getLogger(__name__)
 _SINGLE_JSON_FENCE = re.compile(
@@ -67,12 +72,30 @@ class OpenAICompatibleJudgeProvider:
                 {"role": "user", "content": prepared.user_prompt},
             ],
         }
-        if slot.provider == "openai_compatible" and slot.request_json_schema:
+        if prepared.input_snapshot_version == "judge-input-3.0":
+            # Probe only until measured adoption gates pass; no change to V2.
+            from app.judging.v3 import JudgeContentV3
+            output_schema = JudgeContentV3.model_json_schema()
+        elif prepared.input_snapshot_version == "judge-input-2.3":
+            output_schema = JudgeContent23.model_json_schema()
+        else:
+            output_schema = (JudgeContent if prepared.input_snapshot_version in
+                             {"judge-input-2.1", "judge-input-2.2"}
+                             else JudgeDecisionV2).model_json_schema()
+        if (prepared.prompt_version == "judge-2.11-compact-development-2026-10-02"
+                and "RESPONSE CONTRACT: Qualitative claim." in prepared.user_prompt):
+            # Schema guidance supplements the prompt; local parsing enforces it
+            # even if a gateway ignores constrained output. Frozen IDs retain digits.
+            for definition in output_schema.get("$defs", {}).values():
+                for name, field in definition.get("properties", {}).items():
+                    if name in {"text", "justification"}:
+                        field["pattern"] = r"^(?:[^0-9]|S[1-8])*$"
+        if slot.provider in {"openai_compatible", "paratera"} and slot.request_json_schema:
             body["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
                     "name": "evidence_judge_decision", "strict": True,
-                    "schema": strict_chat_schema(JudgeDecisionV2.model_json_schema()),
+                    "schema": strict_chat_schema(output_schema),
                 },
             }
         headers = {"Authorization": f"Bearer {slot.api_key}"} if slot.api_key else {}
@@ -99,6 +122,7 @@ class OpenAICompatibleJudgeProvider:
             format_rejected = (slot.request_json_schema
                                and rejects_json_schema_mode(exc.response))
             category = ("response_format_unsupported" if format_rejected else
+                        "quota_exceeded" if quota_exhausted(exc.response) else
                         "rate_limit" if status == 429 else "provider_error")
             self._record(
                 slot, started, debug_attempt, status="unavailable", failure_type=category,
@@ -142,6 +166,8 @@ class OpenAICompatibleJudgeProvider:
                 output_tokens=_nonnegative_int(usage.get("completion_tokens")),
                 provider_request_id=_safe_id(response.headers.get("x-request-id")),
                 model_snapshot=_safe_model(returned_model),
+                system_fingerprint=_safe_id(payload.get("system_fingerprint")),
+                response_id=_safe_id(payload.get("id")),
             )
         except (ValueError, KeyError, IndexError, TypeError) as exc:
             self._record(
@@ -193,8 +219,9 @@ def _unwrap_single_json_fence(content: str) -> str:
     return candidate if isinstance(decoded, dict) else content
 
 
-def _safe_id(value: str | None) -> str | None:
-    return value if value and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) else None
+def _safe_id(value: object) -> str | None:
+    return value if (isinstance(value, str)
+                     and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value)) else None
 
 
 def _safe_model(value: object) -> str | None:

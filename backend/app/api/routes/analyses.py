@@ -19,6 +19,7 @@ from app.core.errors import LensError
 from app.db.session import get_db_session
 from app.dependencies import (
     get_analysis_ingestion_service,
+    get_authoritative_adapter,
     get_crossref_adapter,
     get_pubmed_adapter,
 )
@@ -57,6 +58,7 @@ from app.schemas.analysis import (
     DebugJudgeRun,
     DebugModelEvent,
     DebugModelStatus,
+    DebugNumericFinding,
     OcrPreviewLine,
     OcrPreviewResponse,
     ScreenshotOcrMetadata,
@@ -96,6 +98,7 @@ async def preview_pubmed_evidence(
         max_per_document=settings.pubmed_max_passages_per_document,
         crossref=crossref,
         crossref_total_timeout_seconds=settings.crossref_total_timeout_seconds,
+        authoritative=get_authoritative_adapter(settings),
     )
     persist_retrieval(session, result)
     return EvidencePreviewResponse(evidence_pack=result.pack, diagnostics=result.diagnostics)
@@ -280,14 +283,52 @@ async def get_analysis(
         claims=claims, screenshot_ocr=detail.screenshot_ocr if detail else None,
         updated_at=run.updated_at, debug_enabled=settings.debug_enabled,
         debug_events=debug_events,
-        debug_models=_debug_model_statuses(settings, debug_events)
+        debug_models=_debug_model_statuses(settings, debug_events, session, run)
         if debug_events is not None else None,
     )
 
 
 def _debug_model_statuses(
-    settings: Settings, events: list[DebugModelEvent],
+    settings: Settings, events: list[DebugModelEvent], session: Session,
+    run: AnalysisRunRecord,
 ) -> list[DebugModelStatus]:
+    """Prefer this analysis's persisted model identity over today's settings."""
+
+    actual: dict[str, tuple[str, str, str, str | None]] = {}
+    audited_validators: dict[tuple[str, str, str], tuple[str, str | None]] = {}
+    if run.submission_id is not None:
+        submission = session.get(Submission, run.submission_id)
+        if submission is not None and submission.extraction_model:
+            actual["extraction"] = (
+                submission.extraction_provider or "unconfigured",
+                submission.extraction_model, "responded", None,
+            )
+    for claim_row in claim_runs(session, run.id):
+        for judge_id in claim_row.judge_run_ids:
+            judge = session.get(JudgeRunRecord, UUID(judge_id))
+            if judge is not None and judge.claim_id == claim_row.claim_id:
+                actual[f"judge_{judge.slot}"] = (
+                    judge.provider, judge.model,
+                    "responded" if judge.outcome_status == "succeeded" else "unavailable",
+                    judge.error_category,
+                )
+        for validation_id in claim_row.validation_run_ids or ():
+            validation = session.get(JudgeValidationRunRecord, UUID(validation_id))
+            if (validation is None or not validation.entailment_provider
+                    or not validation.entailment_model or not validation.attempt_count):
+                continue
+            role = ("semantic_validator" if validation.validation_version !=
+                    "judge-validation-1.0" else "citation_validator")
+            failure = validation.error_category
+            unavailable = failure in {
+                "joint_axes_timeout", "joint_axes_validator_unavailable",
+                "source_id_contract_error",
+                "joint_validator_unavailable", "entailment_provider_error",
+            }
+            audited_validators[(role, validation.entailment_provider,
+                                validation.entailment_model)] = (
+                "unavailable" if unavailable else "responded", failure if unavailable else None,
+            )
     configured = [
         ("extraction", settings.claim_extractor_provider, settings.claim_extractor_model),
         ("judge_1", settings.judge_1_provider, settings.judge_1_model),
@@ -295,29 +336,51 @@ def _debug_model_statuses(
         ("judge_3", settings.judge_3_provider, settings.judge_3_model),
     ]
     statuses: list[DebugModelStatus] = []
-    for role, provider, model in configured:
+    for role, configured_provider, model in configured:
+        provider: str = configured_provider or "unconfigured"
+        last = next((event for event in reversed(events) if event.role == role), None)
+        recorded = actual.get(role)
+        if recorded is not None:
+            provider, model, status, failure = recorded
+            if last is not None and last.model == model:
+                status, failure = last.status, last.failure_type
+            origin: Literal["analysis", "current_configuration"] = "analysis"
+        elif last is not None:
+            provider, model, status, failure = (
+                last.provider, last.model, last.status, last.failure_type,
+            )
+            origin = "analysis"
+        else:
+            status, failure, origin = "not_called", None, "current_configuration"
         if not model:
             continue
-        last = next(
-            (event for event in reversed(events)
-             if event.role == role and event.model == model), None,
-        )
         statuses.append(DebugModelStatus(
-            role=role, provider=provider or "unconfigured", model=model,
-            status=last.status if last else "not_called",
-            failure_type=last.failure_type if last else None,
+            role=role, provider=provider, model=model,
+            status=status, failure_type=failure, origin=origin,
         ))
-    validator_pairs = tuple(dict.fromkeys(
+    validator_pairs = tuple(dict.fromkeys([*audited_validators, *(
         (event.role, event.provider, event.model) for event in events
         if event.role in {"semantic_validator", "citation_validator"}
-    ))
+    )]))
+    if (not validator_pairs and settings.validator_provider and settings.validator_model):
+        validator_pairs = (("semantic_validator", settings.validator_provider,
+                            settings.validator_model),)
     for role, validator_provider, model in validator_pairs:
-        last = next(event for event in reversed(events)
-                    if event.role == role and event.provider == validator_provider
-                    and event.model == model)
+        last = next((event for event in reversed(events)
+                     if event.role == role and event.provider == validator_provider
+                     and event.model == model), None)
+        audited = audited_validators.get((role, validator_provider, model))
+        if audited is not None and (last is None or last.status == "calling"):
+            status, failure = audited
+        elif last is not None:
+            status, failure = last.status, last.failure_type
+        else:
+            status, failure = "not_called", None
         statuses.append(DebugModelStatus(
-            role=role, provider=validator_provider, model=model, status=last.status,
-            failure_type=last.failure_type,
+            role=role, provider=validator_provider, model=model, status=status,
+            failure_type=failure,
+            origin="analysis" if audited is not None or last is not None
+            else "current_configuration",
         ))
     return statuses
 
@@ -398,6 +461,10 @@ async def get_analysis_claims(
             debug_judge_runs=(
                 _debug_judge_runs(session, row) if settings.debug_enabled else None
             ),
+            debug_diagnostics=(
+                _debug_claim_diagnostics(session, row, verdict, model_events(analysis_id))
+                if settings.debug_enabled else None
+            ),
         ))
     return AnalysisClaimsResponse(analysis_id=analysis_id, claims=summaries)
 
@@ -407,6 +474,12 @@ def _debug_judge_runs(
 ) -> list[DebugJudgeRun]:
     """Read only allowlisted audit metadata; never expose prompts or responses."""
 
+    verdict = session.get(VerdictRunRecord, row.verdict_run_id) if row.verdict_run_id else None
+    raw_qualifications = ((verdict.result_json or {}).get("judge_qualifications")
+                          if verdict else None)
+    qualifications = ({str(item.get("judge_run_id")): item for item in raw_qualifications
+                       if isinstance(item, dict) and item.get("judge_run_id")}
+                      if isinstance(raw_qualifications, list) else {})
     validations: dict[UUID, JudgeValidationRunRecord] = {}
     for raw_id in row.validation_run_ids:
         validation = session.get(JudgeValidationRunRecord, UUID(raw_id))
@@ -423,6 +496,59 @@ def _debug_judge_runs(
                                  if validation else None)
         except ValueError:
             validation_result = None
+        axes: dict[str, dict[str, str]] = {}
+        if validation_result and validation_result.validation_version == "judge-validation-2.3":
+            from app.validation.joint23 import JointResponse23
+
+            try:
+                response = JointResponse23.model_validate_json(json.dumps(
+                    (validation_result.relation_validation or {}).get("joint_response")))
+                axes = {a.statement_id: {k: str(v) for k, v in a.model_dump().items()
+                                         if k in {"direction", "scope", "strength", "role",
+                                                  "scope_basis", "finding_basis"}}
+                        for a in response.assessments}
+            except ValueError:
+                pass
+        decision = judge.decision_json or {}
+        statements = decision.get("statements")
+        statement_rows = statements if isinstance(statements, list) else []
+        qualification_data = (validation_result.conclusion_qualification
+                              if validation_result else None) or {}
+        qualification_output = qualification_data.get("output")
+        reason_values = (qualification_output.get("reason_codes")
+                         if isinstance(qualification_output, dict) else None)
+        relation_data = (validation_result.relation_validation
+                         if validation_result else None) or {}
+        id_values = relation_data.get("id_normalizations")
+        unit_id_values = (judge.response_json or {}).get("source_unit_id_normalizations")
+        finding_values = relation_data.get("finding_diagnostics")
+        failures = (judge.response_json or {}).get("attempt_failures")
+        attempt_failure_types = ([str(item.get("category")) for item in failures
+                                  if isinstance(item, dict) and item.get("category")]
+                                 if isinstance(failures, list) else [])
+        verdict_qualification = qualifications.get(str(judge.id), {})
+        from app.validation.numeric_effects import NumericFinding
+
+        numeric_summaries: list[DebugNumericFinding] = []
+        for raw in (validation_result.numeric_findings or ()) if validation_result else ():
+            numeric = NumericFinding.model_validate(raw)
+            compact = DebugNumericFinding(
+                version=numeric.version, target_id=numeric.target_id, material=numeric.material,
+                source_fidelity=numeric.fidelity.status,
+                asserted_values=list(numeric.fidelity.asserted.values),
+                source_measure=(numeric.fidelity.source.kind if numeric.fidelity.source else
+                                "unknown"),
+                claim_measure=numeric.comparability.claim_measure,
+                comparability=numeric.comparability.status, numeric_effect=numeric.numeric_effect,
+                semantic_scope_checked=numeric.semantic_scope_checked,
+                structure_status=numeric.structure_status,
+                evidence_ids=list(numeric.fidelity.source_evidence_ids),
+                differences=list(numeric.comparability.differences),
+                conversions=list(numeric.comparability.conversions),
+            )
+            if compact not in numeric_summaries:
+                numeric_summaries.append(compact)
+        exclusion_values = verdict_qualification.get("exclusion_reasons")
         summaries.append(DebugJudgeRun(
             slot=judge.slot, provider=judge.provider, model=judge.model,
             judge_run_id=judge.id,
@@ -443,8 +569,121 @@ def _debug_judge_runs(
             targeted_issue_codes=([item.issue_code.value
                                    for item in validation_result.targeted_issues]
                                   if validation_result else []),
+            evidence_axes=axes,
+            numeric_findings=numeric_summaries,
+            proposed_label=(str(decision["label"]) if decision.get("label") else None),
+            finding_count=len(statement_rows),
+            qualification_reason_codes=([str(v) for v in reason_values]
+                                        if isinstance(reason_values, list) else []),
+            qualification_success=verdict_qualification.get("qualified") is True,
+            exclusion_reasons=([str(v) for v in exclusion_values]
+                               if isinstance(exclusion_values, list) else []),
+            source_ids=({str(s.get("statement_id")): [str(r.get("evidence_id"))
+                for r in s.get("evidence_refs", []) if isinstance(r, dict)]
+                for s in statement_rows if isinstance(s, dict)}),
+            id_normalizations=([dict(v) for v in id_values if isinstance(v, dict)]
+                               if isinstance(id_values, list) else []),
+            judge_unit_id_normalizations=([
+                {str(key): str(value) for key, value in item.items()}
+                for item in unit_id_values if isinstance(item, dict)
+            ] if isinstance(unit_id_values, list) else []),
+            null_diagnostics=({str(k): {str(key): str(value) if value is not None
+                else None for key, value in v.items()} for k, v in finding_values.items()
+                if isinstance(v, dict)} if isinstance(finding_values, dict) else {}),
+            input_tokens=judge.input_tokens, output_tokens=judge.output_tokens,
+            model_identity_verified=bool(judge.model_identity_verified),
+            model_family_verified=bool(judge.model_family_verified),
+            failure_categories=[
+                *( ["schema_or_format_retry"] if any(kind in {
+                    "schema_violation", "malformed_json", "empty_response",
+                    "response_format_unsupported"} for kind in attempt_failure_types) else [] ),
+                *( ["source_id_error"] if "invalid_source_unit" in attempt_failure_types
+                    else [] ),
+                *( ["source_id_error"] if validation and validation.error_category ==
+                    "source_id_contract_error" else [] ),
+                *( ["unsupported_finding"] if validation_result and any(
+                    item.issue_code.value == "STATEMENT_ATTRIBUTION_FAILED"
+                    for item in validation_result.targeted_issues) else [] ),
+                *( ["optional_numeric_warning"] if validation_result and any(
+                    item.issue_code.value.startswith("OPTIONAL_NUMERIC")
+                    for item in validation_result.targeted_issues) else [] ),
+                *( ["material_numeric_failure"] if validation_result and any(
+                    item.issue_code.value in {"NUMERIC_UNCERTAIN", "STATEMENT_NUMERIC_MISMATCH"}
+                    for item in validation_result.targeted_issues) else [] ),
+                *( ["semantic_axes_unqualified"] if validation_result and
+                    validation_result.conclusion_qualification and
+                    qualification_output and isinstance(qualification_output, dict) and
+                    qualification_output.get("status") != "justified" else [] ),
+            ],
+            attempt_failure_types=attempt_failure_types,
         ))
     return summaries
+
+
+def _debug_claim_diagnostics(
+    session: Session, row: ClaimAnalysisRunRecord, verdict: VerdictRunRecord | None,
+    events: list[dict[str, object]],
+) -> dict[str, object]:
+    """Allowlisted development snapshot. PASS means pipeline completion only."""
+    claim = session.get(Claim, row.claim_id)
+    pack_row = (session.get(EvidencePackRecord, row.evidence_pack_id)
+                if row.evidence_pack_id else None)
+    pack = EvidencePack.model_validate(pack_row.snapshot_json) if pack_row else None
+    judges = _debug_judge_runs(session, row)
+    selected = set(pack.selected_evidence_ids) if pack else set()
+    selected_doc_ids = ({p.passage.document_id for p in pack.passages if p.evidence_id in selected}
+                        if pack else set())
+    documents = {d.document_id: d for d in pack.documents} if pack else {}
+    roles = {role: sum(1 for d in selected_doc_ids if documents[d].evidence_role_hint == role)
+             for role in ("direct", "contextual", "incompatible")}
+    usable = sum(j.outcome_status == "succeeded" for j in judges)
+    attributed = sum(bool(j.statement_statuses) and all(
+        status == "supported_by_sources" for status in j.statement_statuses.values())
+        for j in judges)
+    classified = sum(bool(j.evidence_axes) for j in judges)
+    qualified = [j for j in judges if j.qualification_success]
+    extraction = bool(claim)
+    normalization = bool(claim and claim.outcome and claim.intervention_or_exposure
+                         and claim.normalization_status not in {"partial", "pending"})
+    run_events = [e for e in events if e.get("claim_id") in {None, str(row.claim_id)}]
+    analysis = session.get(AnalysisRunRecord, row.analysis_run_id)
+    start = analysis.started_at if analysis and analysis.started_at else row.started_at
+    finish = row.finished_at or row.updated_at
+    return {
+        "extraction": ({"raw_claim": claim.raw_text,
+                        "normalized_claim": claim.normalized_text,
+                        "claim_type": claim.claim_type, "risk_class": claim.risk_class,
+                        "pico": claim.pico_json,
+                        "numeric_effect": (claim.pico_json or {}).get("numeric_effect")}
+                       if claim else None),
+        "retrieval": {"candidates": len(pack.documents) if pack else None,
+                      "selected_documents": len(selected_doc_ids) if pack else None,
+                      "selected_authoritative": sum(documents[d].source_kind ==
+                         "authoritative_public_health" for d in selected_doc_ids),
+                      "selected_pubmed": sum(documents[d].source_kind == "pubmed"
+                                             for d in selected_doc_ids), "roles": roles},
+        "waterfall": {
+            "extraction": "PASS" if extraction else "FAIL" if row.status == "failed" else "UNKNOWN",
+            "normalization": "PASS" if normalization else "FAIL" if extraction and
+                row.status == "failed" else "UNKNOWN",
+            "retrieval": "PASS" if pack else "FAIL" if row.status == "failed" and
+                row.stage == "retrieving" else "UNKNOWN",
+            "selection": "PASS" if selected else "FAIL" if pack else "UNKNOWN",
+            "judge_response": f"{usable}/3 usable",
+            "source_attribution": f"{attributed}/3",
+            "semantic_classification": f"{classified}/3",
+            "judge_qualification": f"{len(qualified)}/3",
+            "final_aggregation": verdict.verdict if verdict else "UNKNOWN",
+        },
+        "final": {"qualified_judges": len(qualified),
+                  "qualified_positions": [j.proposed_label for j in qualified],
+                  "aggregation_reasons": verdict.reason_codes if verdict else [],
+                  "production_qualified": verdict.production_qualified if verdict else False,
+                  "total_model_calls": (sum(e.get("status") == "calling" for e in run_events)
+                                        if run_events else None),
+                  "elapsed_ms": (max(0, round((finish - start).total_seconds() * 1000))
+                                 if start and finish else None)},
+    }
 
 
 @router.get("/{analysis_id}/claims/{claim_id}/report", response_model=LensReport)

@@ -62,3 +62,6 @@ POLICY_V2 = VerdictPolicyV1(
 POLICY_V3 = VerdictPolicyV1(
     version="verdict-policy-1.3", validation_version="judge-validation-2.0",
 )
+POLICY_V4 = VerdictPolicyV1(
+    version="verdict-policy-1.4", validation_version="judge-validation-2.0",
+)

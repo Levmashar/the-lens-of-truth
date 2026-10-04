@@ -6,7 +6,15 @@ from enum import StrEnum
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 
 class JudgeLabel(StrEnum):
@@ -75,7 +83,7 @@ class EvidenceRef(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
 
     evidence_id: str = Field(pattern=r"^E[1-9][0-9]*$")
-    quote: str = Field(min_length=3, max_length=1200)
+    quote: str = Field(min_length=3, max_length=32000)
 
 
 class JudgeStatement(BaseModel):
@@ -85,6 +93,20 @@ class JudgeStatement(BaseModel):
     text: str = Field(min_length=5, max_length=600)
     kind: Literal["study_finding", "study_method", "limitation"]
     evidence_refs: tuple[EvidenceRef, ...] = Field(min_length=1, max_length=4)
+    source_unit_ids: tuple[str, ...] = ()
+    qualitative_finding: str | None = Field(default=None, min_length=5, max_length=600)
+    numeric_details: tuple[str, ...] = Field(default=(), max_length=4)
+    numeric_dependency: bool | None = None
+
+    @model_serializer(mode="wrap")
+    def preserve_legacy_shape(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+        result = handler(self)
+        if not self.source_unit_ids:
+            result.pop("source_unit_ids", None)
+        if self.qualitative_finding is None:
+            for key in ("qualitative_finding", "numeric_details", "numeric_dependency"):
+                result.pop(key, None)
+        return dict(result)
 
     @model_validator(mode="after")
     def distinct_refs(self) -> "JudgeStatement":
@@ -99,6 +121,16 @@ class JudgeConclusion(BaseModel):
 
     based_on_statement_ids: tuple[str, ...] = Field(min_length=1, max_length=8)
     justification: str = Field(min_length=5, max_length=1200)
+    qualitative_justification: str | None = Field(default=None, min_length=5, max_length=1200)
+    numeric_dependency: bool | None = None
+
+    @model_serializer(mode="wrap")
+    def preserve_legacy_shape(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+        result = dict(handler(self))
+        if self.qualitative_justification is None:
+            result.pop("qualitative_justification", None)
+            result.pop("numeric_dependency", None)
+        return result
 
 
 class JudgeDecisionV2(BaseModel):
@@ -106,7 +138,7 @@ class JudgeDecisionV2(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
 
-    schema_version: Literal["2.0"]
+    schema_version: Literal["2.0", "2.1", "2.2", "2.3"]
     label: JudgeLabel
     statements: tuple[JudgeStatement, ...] = Field(min_length=1, max_length=8)
     conclusion: JudgeConclusion
@@ -120,6 +152,30 @@ class JudgeDecisionV2(BaseModel):
         used = self.conclusion.based_on_statement_ids
         if len(used) != len(set(used)) or not set(used) <= set(ids):
             raise ValueError("conclusion references unknown or duplicate statement")
+        if self.schema_version in {"2.1", "2.2", "2.3"} and any(
+            not s.source_unit_ids for s in self.statements
+        ):
+            raise ValueError("Backend source units required for unit decisions")
+        if self.schema_version == "2.3":
+            if len(self.statements) > 5 or any(
+                s.qualitative_finding is None or s.numeric_dependency is None
+                or any(not detail or len(detail) > 600 for detail in s.numeric_details)
+                for s in self.statements
+            ) or self.conclusion.qualitative_justification is None or (
+                self.conclusion.numeric_dependency is None
+            ):
+                raise ValueError("2.3 requires separate qualitative propositions and dependencies")
+        elif any(s.qualitative_finding is not None or s.numeric_details
+                 or s.numeric_dependency is not None for s in self.statements) or (
+                     self.conclusion.qualitative_justification is not None
+                     or self.conclusion.numeric_dependency is not None
+                 ):
+            raise ValueError("Historical contracts cannot carry 2.3 semantic fields")
+        if self.schema_version == "2.0" and any(
+            len(ref.quote) > 1200 or statement.source_unit_ids
+            for statement in self.statements for ref in statement.evidence_refs
+        ):
+            raise ValueError("Historical free-text citation contract unchanged")
         return self
 
 
@@ -140,7 +196,7 @@ def parse_stored_decision(data: dict[str, object]) -> AnyJudgeDecision:
     # model_validate(dict) correctly rejects Python lists and raw enum strings.
     # JSONB is decoded to a dict by SQLAlchemy, so restore JSON parsing here.
     encoded = json.dumps(data)
-    if data.get("schema_version") == "2.0":
+    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3"}:
         return JudgeDecisionV2.model_validate_json(encoded)
     return JudgeDecision.model_validate_json(encoded)
 
@@ -163,6 +219,8 @@ class ProviderResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     content: str
+    system_fingerprint: str | None = None
+    response_id: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
     provider_request_id: str | None = None
@@ -217,7 +275,7 @@ class JudgeRun(BaseModel):
         if (self.revision_of_judge_run_id is None) != (self.semantic_revision_number == 0):
             raise ValueError("semantic revision number and parent must agree")
         if isinstance(self.decision, JudgeDecisionV2) and (
-            self.input_snapshot_version != "judge-input-2.0"
+            self.input_snapshot_version != f"judge-input-{self.decision.schema_version}"
             or not self.input_snapshot_hash or self.input_snapshot_json is None
         ):
             raise ValueError("V2 decision requires a frozen judge-visible input snapshot")

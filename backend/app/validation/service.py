@@ -46,13 +46,23 @@ class ValidationService:
     semantic_validator: SemanticValidator | None = None
     entailment_timeout_seconds: float = 20.0
 
-    async def run(self, judge: JudgeRun, pack: EvidencePack) -> JudgeValidationRun:
+    async def run(
+        self, judge: JudgeRun, pack: EvidencePack, *, risk_class: str = "standard",
+    ) -> JudgeValidationRun:
         """Create a fresh audit object even when validating the same run twice."""
 
         if judge.decision is None or judge.outcome_status != "succeeded":
             raise ValueError("Only successful, strictly parsed judge runs can be validated")
         if isinstance(judge.decision, JudgeDecisionV2):
-            return await validate_v2(judge, pack, self.semantic_validator)
+            if judge.decision.schema_version == "2.3":
+                from typing import cast
+
+                from app.validation.joint23 import JointValidator23, validate_joint23
+
+                checker = (cast(JointValidator23, self.semantic_validator)
+                           if hasattr(self.semantic_validator, "assess_joint23") else None)
+                return await validate_joint23(judge, pack, checker, risk_class=risk_class)
+            return await validate_v2(judge, pack, self.semantic_validator, risk_class=risk_class)
         decision = judge.decision
         started_at, start = datetime.now(UTC), monotonic()
         actual_hash = hashlib.sha256(canonical_pack_bytes(

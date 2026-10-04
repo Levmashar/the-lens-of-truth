@@ -3,7 +3,7 @@ import { createEvidenceCard } from "./evidenceCard";
 import { append, element, labeledValue, safeExternalUrl } from "../utils/dom";
 import { readableToken, verdictLabels } from "../utils/format";
 
-export function createClaimResult(report: LensReport, analysisId: string, claimId: string): HTMLElement {
+export function createClaimResult(report: LensReport, analysisId: string, claimId: string, debugEnabled = false): HTMLElement {
   const article = element("article", "report-card");
   article.dataset.verdict = report.verdict;
 
@@ -21,9 +21,10 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   if (report.headline.trim().toLowerCase() !== label.toLowerCase()) {
     verdict.append(element("p", "verdict-headline", report.headline));
   }
-  if (report.short_summary.trim().toLowerCase() !== label.toLowerCase()
-      && report.short_summary.trim().toLowerCase() !== report.headline.trim().toLowerCase()) {
-    verdict.append(element("p", "verdict-summary", report.short_summary));
+  const summary = report.verdict_explanation?.summary ?? report.short_summary;
+  if (summary.trim().toLowerCase() !== label.toLowerCase()
+      && summary.trim().toLowerCase() !== report.headline.trim().toLowerCase()) {
+    verdict.append(element("p", "verdict-summary", summary));
   }
   article.append(verdict);
 
@@ -53,13 +54,13 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     for (const source of report.neutral_retrieved_sources) {
       const card = element("article", "evidence-card");
       append(card,
-        element("p", "", `E${source.evidence_id.replace(/^E/, "")} · PMID ${source.pmid} · ${source.passage_section}`),
+        element("p", "", `${source.evidence_id}${source.pmid ? ` · PMID ${source.pmid}` : ""} · ${source.passage_section}`),
         element("h5", "", source.title),
         element("blockquote", "", source.exact_excerpt),
       );
       const safeUrl = safeExternalUrl(source.source_url);
       if (safeUrl) {
-        const link = element("a", "source-link", "View PubMed source ↗");
+        const link = element("a", "source-link", "View original source ↗");
         link.href = safeUrl;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
@@ -108,7 +109,8 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     const list = element("ul", "source-list");
     for (const source of report.sources) {
       const item = element("li");
-      const link = element("a", "source-link", `PMID ${source.pmid}${source.doi ? ` · DOI ${source.doi}` : ""} ↗`);
+      const label = source.pmid ? `PMID ${source.pmid}` : "Original source";
+      const link = element("a", "source-link", `${label}${source.doi ? ` · DOI ${source.doi}` : ""} ↗`);
       const safeUrl = safeExternalUrl(source.url);
       if (safeUrl) {
         link.href = safeUrl;
@@ -138,6 +140,20 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     labeledValue("Production qualified", report.production_qualified ? "Yes" : "No"),
     labeledValue("Analysis ID", analysisId), labeledValue("Claim ID", claimId));
   technical.append(technicalFacts);
+  if (debugEnabled && report.verdict_explanation) {
+    const explanation = report.verdict_explanation;
+    const diagnostics = element("section", "verdict-explanation-details");
+    diagnostics.append(element("h4", "card-title", "Verdict explanation"));
+    const facts = element("dl", "meta-grid");
+    append(facts,
+      labeledValue("Version", explanation.version),
+      labeledValue("Reason category", explanation.reason_category),
+      labeledValue("Established", explanation.established ?? "None"),
+      labeledValue("Unresolved", explanation.unresolved ?? "None"),
+      labeledValue("Evidence IDs", explanation.evidence_ids.join(", ") || "None"));
+    diagnostics.append(facts);
+    technical.append(diagnostics);
+  }
   article.append(technical);
   return article;
 }

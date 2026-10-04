@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
 from app.judging.models import JudgeLabel
 from app.retrieval.models import IntegrityStatus
@@ -77,6 +77,8 @@ class IssueCode(StrEnum):
     CONCLUSION_NOT_JUSTIFIED = "CONCLUSION_NOT_JUSTIFIED"
     INVALID_CONCLUSION_PREMISE = "INVALID_CONCLUSION_PREMISE"
     LEGACY_MAPPING_UNVERIFIED = "LEGACY_MAPPING_UNVERIFIED"
+    OPTIONAL_NUMERIC_DETAIL_INVALID = "OPTIONAL_NUMERIC_DETAIL_INVALID"
+    OPTIONAL_NUMERIC_DETAIL_UNCERTAIN = "OPTIONAL_NUMERIC_DETAIL_UNCERTAIN"
 
 
 FATAL_ISSUES = frozenset({
@@ -124,6 +126,8 @@ class ValidationIssue(FrozenModel):
     source_value: str | None = None
     measure_type: str | None = None
     severity: Literal["fatal", "warning"]
+    numeric_diagnostic: dict[str, object] | None = None
+    conclusion_dependency: bool | None = None
 
 
 class StatementAttribution(FrozenModel):
@@ -131,7 +135,7 @@ class StatementAttribution(FrozenModel):
     evidence_ids: tuple[str, ...]
     status: StatementAttributionStatus
     scope_match: SemanticScope = SemanticScope.UNKNOWN
-    reason: str = Field(min_length=1, max_length=600)
+    reason: str = Field(min_length=1, max_length=1200)
     issues: tuple[ValidationIssue, ...] = ()
     validator_provenance: dict[str, str] = Field(default_factory=dict)
 
@@ -140,7 +144,7 @@ class ConclusionJustification(FrozenModel):
     status: ConclusionJustificationStatus
     based_on_statement_ids: tuple[str, ...]
     evidence_ids: tuple[str, ...]
-    reason: str = Field(min_length=1, max_length=600)
+    reason: str = Field(min_length=1, max_length=1200)
     issues: tuple[ValidationIssue, ...] = ()
     validator_provenance: dict[str, str] = Field(default_factory=dict)
 
@@ -199,6 +203,27 @@ class JudgeValidationResult(FrozenModel):
     statement_attributions: tuple[StatementAttribution, ...] = ()
     conclusion_justification: ConclusionJustification | None = None
     targeted_issues: tuple[ValidationIssue, ...] = ()
+    numeric_findings: tuple[dict[str, object], ...] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
+    numeric_occurrences: tuple[dict[str, object], ...] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
+    semantic_validation: dict[str, object] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
+    # Strict typed audits are parsed by relation_flow/aggregation; JSONB is the
+    # storage boundary. Historical results need neither field.
+    relation_validation: dict[str, object] | None = None
+    conclusion_qualification: dict[str, object] | None = None
+
+    @model_serializer(mode="wrap")
+    def preserve_historical_shape(self, handler: object) -> dict[str, object]:
+        result = handler(self)  # type: ignore[operator]
+        for key in ("relation_validation", "conclusion_qualification"):
+            if result.get(key) is None:
+                result.pop(key, None)
+        return result  # type: ignore[no-any-return]
 
 
 class JudgeValidationRun(FrozenModel):
