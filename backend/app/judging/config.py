@@ -12,6 +12,21 @@ def is_search_enabled_model(model: str) -> bool:
     return bool(re.search(r"(?:search|research|browse)", model, re.I))
 
 
+def judge_request_options(slot: JudgeSlot) -> dict[str, object]:
+    """Send explicit generation settings only for verified Paratera model families."""
+
+    if slot.thinking_enabled is None:
+        return {}
+    if slot.provider != "paratera":
+        raise ValueError("Explicit judge thinking settings require the Paratera provider")
+    model = slot.model.casefold()
+    if model.startswith("qwen"):
+        return {"enable_thinking": slot.thinking_enabled}
+    if model.startswith(("deepseek-", "glm-")):
+        return {"thinking": {"type": "enabled" if slot.thinking_enabled else "disabled"}}
+    raise ValueError(f"Explicit thinking settings are not supported for {slot.model}")
+
+
 def configured_slots(settings: Settings) -> tuple[JudgeSlot, ...]:
     slots: list[JudgeSlot] = []
     search_override_allowed = (
@@ -40,7 +55,9 @@ def configured_slots(settings: Settings) -> tuple[JudgeSlot, ...]:
             slot=number, provider=provider, model=model, model_family=family,
             base_url=base_url,
             api_key=secret.get_secret_value() if secret else None,
+            thinking_enabled=getattr(settings, prefix + "thinking_enabled"),
         ))
+        judge_request_options(slots[-1])
     if search_override_allowed and any(is_search_enabled_model(slot.model) for slot in slots):
         slots = [slot.model_copy(update={
             "search_override_active": True,

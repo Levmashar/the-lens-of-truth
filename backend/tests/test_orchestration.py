@@ -292,6 +292,10 @@ def test_partially_linked_claim_continues_but_missing_pico_stops(
     failed_row = next(row for (kind, _), row in incomplete_session.rows.items()
                       if kind is ClaimAnalysisRunRecord)
     assert failed_row.failure_code == "normalization_incomplete"
+    summaries = asyncio.run(get_analysis_claims(
+        incomplete_run.id, incomplete_session, Settings(app_env="development"))).claims
+    assert summaries[0].result_label == LensVerdict.UNABLE_TO_VERIFY_RELIABLY
+    assert summaries[0].report_run_id is None
 
 
 def test_multiclaim_isolation_and_partial_completion(

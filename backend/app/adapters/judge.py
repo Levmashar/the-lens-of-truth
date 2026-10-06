@@ -17,9 +17,10 @@ from app.adapters.structured_output import (
     strict_chat_schema,
 )
 from app.core.debug_trace import record_model_event
+from app.judging.config import judge_request_options
 from app.judging.models import JudgeDecisionV2, JudgeSlot, ProviderResponse
 from app.judging.prompt import PreparedJudgeInput
-from app.judging.source_units import JudgeContent, JudgeContent23
+from app.judging.source_units import JudgeContent, JudgeContent23, JudgeContent24
 
 logger = logging.getLogger(__name__)
 _SINGLE_JSON_FENCE = re.compile(
@@ -72,10 +73,20 @@ class OpenAICompatibleJudgeProvider:
                 {"role": "user", "content": prepared.user_prompt},
             ],
         }
+        body.update(judge_request_options(slot))
         if prepared.input_snapshot_version == "judge-input-3.0":
             # Probe only until measured adoption gates pass; no change to V2.
             from app.judging.v3 import JudgeContentV3
             output_schema = JudgeContentV3.model_json_schema()
+        elif prepared.input_snapshot_version == "judge-input-2.5":
+            from app.judging.source_units import JudgeContent25
+
+            output_schema = JudgeContent25.model_json_schema()
+            # New calls need findings/rationale only. Local parsing tolerates
+            # optional advisory text if a gateway ignores its output schema.
+            output_schema["properties"].pop("label")
+        elif prepared.input_snapshot_version == "judge-input-2.4":
+            output_schema = JudgeContent24.model_json_schema()
         elif prepared.input_snapshot_version == "judge-input-2.3":
             output_schema = JudgeContent23.model_json_schema()
         else:

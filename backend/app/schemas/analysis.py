@@ -249,6 +249,7 @@ class DebugModelStatus(BaseModel):
 class DebugNumericFinding(BaseModel):
     version: str
     target_id: str
+    source_quantity_id: str | None = Field(default=None, exclude_if=lambda v: v is None)
     material: bool
     source_fidelity: str
     asserted_values: list[str]
@@ -286,6 +287,7 @@ class DebugJudgeRun(BaseModel):
     numeric_findings: list[DebugNumericFinding] = Field(default_factory=list)
     evidence_axes: dict[str, dict[str, str]] = Field(default_factory=dict)
     proposed_label: str | None = None
+    validated_evidence_position: str | None = None
     finding_count: int = 0
     qualification_reason_codes: list[str] = Field(default_factory=list)
     qualification_success: bool = False

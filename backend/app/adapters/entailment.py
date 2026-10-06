@@ -10,6 +10,7 @@ from time import monotonic
 from uuid import uuid4
 
 import httpx
+from pydantic import ValidationError
 
 from app.adapters.structured_output import (
     quota_exhausted,
@@ -17,6 +18,8 @@ from app.adapters.structured_output import (
     strict_chat_schema,
 )
 from app.core.debug_trace import record_model_event
+from app.judging.config import judge_request_options
+from app.judging.models import JudgeSlot
 from app.validation.entailment import PreparedEntailmentInput, parse_entailment_json
 from app.validation.joint import JointResponse, check_response
 from app.validation.joint23 import JointResponse23, check_response23
@@ -31,6 +34,15 @@ from app.validation.semantic import (
 )
 
 
+class JointResponseContractError(ValueError):
+    """Retain the precise rejected checker reply for the append-only audit."""
+
+    def __init__(self, category: str, response_content: str, message: str):
+        super().__init__(message)
+        self.category = category
+        self.response_content = response_content
+
+
 @dataclass(frozen=True)
 class OpenAICompatibleEntailmentValidator:
     provider: str
@@ -38,6 +50,14 @@ class OpenAICompatibleEntailmentValidator:
     base_url: str
     api_key: str | None
     timeout_seconds: float = 20.0
+    thinking_enabled: bool | None = None
+
+    def request_options(self) -> dict[str, object]:
+        """Reuse the verified provider settings without changing evidence checks."""
+        return judge_request_options(JudgeSlot(
+            slot=3, provider=self.provider, model=self.model, model_family="validator",
+            base_url=self.base_url, thinking_enabled=self.thinking_enabled,
+        ))
 
     async def assess_statement(
         self, prepared: PreparedSemanticInput,
@@ -67,11 +87,26 @@ class OpenAICompatibleEntailmentValidator:
 
     async def assess_joint23(self, prepared: PreparedSemanticInput) -> JointResponse23:
         content = await self._semantic_completion(prepared, JointResponse23)
-        if len(content) > 32768:
-            raise ValueError("Axes response exceeds bound")
-        response = JointResponse23.model_validate_json(content, strict=True)
-        check_response23(response, prepared)
-        return response
+        try:
+            if len(content) > 32768:
+                raise ValueError("Axes response exceeds bound")
+            response = JointResponse23.model_validate_json(content, strict=True)
+            from app.validation.joint24 import (
+                CAUSAL_INSTRUCTIONS,
+                INSTRUCTIONS,
+                SCOPE_INSTRUCTIONS,
+                check_response24,
+            )
+
+            if prepared.system_prompt in {INSTRUCTIONS, SCOPE_INSTRUCTIONS, CAUSAL_INSTRUCTIONS}:
+                check_response24(response, prepared)
+            else:
+                check_response23(response, prepared)
+            return response
+        except ValueError as exc:
+            category = "joint_axes_schema_error" if isinstance(exc, ValidationError) else \
+                "source_id_contract_error"
+            raise JointResponseContractError(category, content, str(exc)) from exc
 
     async def _semantic_completion(
         self, prepared: PreparedSemanticInput,
@@ -96,6 +131,7 @@ class OpenAICompatibleEntailmentValidator:
                 {"role": "user", "content": prepared.user_prompt},
             ],
         }
+        body.update(self.request_options())
         if self.provider in {"openai_compatible", "paratera"}:
             body["response_format"] = {
                 "type": "json_schema", "json_schema": {
@@ -186,6 +222,7 @@ class OpenAICompatibleEntailmentValidator:
                 {"role": "user", "content": prepared.user_prompt},
             ],
         }
+        body.update(self.request_options())
         if self.provider in {"openai_compatible", "paratera"}:
             body["response_format"] = {
                 "type": "json_schema",

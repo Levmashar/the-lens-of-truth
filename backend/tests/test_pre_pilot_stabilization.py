@@ -249,7 +249,8 @@ def test_successful_format_retry_retains_safe_failure_accounting():
     provider = FirstMalformed()
     slot = JudgeSlot(slot=1, provider="fixture", model="fixture",
                      model_family="fixture", base_url="https://example.invalid/v1")
-    runs, _ = asyncio.run(JudgeService({"fixture": provider}, axes_development=True).run(
+    runs, _ = asyncio.run(JudgeService({"fixture": provider}, axes_development=True,
+                                      axes_contract="2.3").run(
         uuid4(), pack, (slot,), app_env="development"))
     run = runs[0]
     assert run.outcome_status == "succeeded" and run.attempt_count == 2

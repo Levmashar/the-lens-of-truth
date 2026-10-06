@@ -1,0 +1,579 @@
+{
+  "architecture": "V2.5",
+  "structured_quantities": "V2.4",
+  "query_plan": "1.6",
+  "position": "1.8",
+  "causal_policy": "question-evidence-2.1",
+  "semantic_prompt": "2.7",
+  "judge_prompt": "2.15",
+  "verdict_policy": "1.4",
+  "approved_sources": "1.1",
+  "models": {
+    "extraction": "DeepSeek-V4.1-Flash",
+    "judge_1": "DeepSeek-V4.1-Flash",
+    "judge_2": "Qwen3.5-Plus",
+    "judge_3": "GLM-4.7",
+    "semantic_validator": "Qwen3.8-Flash"
+  },
+  "source_hashes": {
+    "backend/app/validation/position.py": "f5592a41d6705407423d75a265532d1dda92cdc63bf0dcebad5005d27210c3d9",
+    "backend/app/retrieval/causal_policy.py": "a40bbbd99559c4a162a15401e25bb5cbb88edf2e4787d36d95578625e2ffcb54",
+    "backend/app/retrieval/query_planner.py": "18d26fb56d090385f631853efda22144f758fdf43c95f488f6f4727900d9a1b0",
+    "backend/app/retrieval/authoritative_manifest.json": "c180daac1785f13818c25415ddbfeeb88340e0e5355e816eeba5a84c85f49ef0",
+    "backend/app/validation/joint24.py": "ccfec5bd6493e4e8c9cbff14913a83290bc1955d36e982a0bb9e5ddeb08abd30"
+  },
+  "cases": [
+    {
+      "number": 3,
+      "claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+      "analysis_id": "c99943f5-5972-46b4-8023-a26dd4fcae6c",
+      "before_position": "not_enough_evidence",
+      "position": "supported",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "normalized_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "cervical cancer",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+            "intervention_or_exposure": "Persistent high-risk HPV infection"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 39,
+          "selected_documents": 8,
+          "selected_authoritative": 2,
+          "selected_pubmed": 6,
+          "roles": {
+            "direct": 6,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "supported",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 151623
+        }
+      },
+      "question_category": "etiologic_exposure_causality",
+      "positions_version": "validated-evidence-position-1.7",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 4488
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 17366
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 20280
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "claim": "HIV is commonly transmitted by mosquito bites.",
+      "analysis_id": "ca420da0-b379-42de-a2e4-ceaf2a3205e0",
+      "before_position": "not_enough_evidence",
+      "position": "contradicted",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "HIV is commonly transmitted by mosquito bites.",
+          "normalized_claim": "HIV is commonly transmitted by mosquito bites.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "HIV",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "HIV is commonly transmitted by mosquito bites.",
+            "intervention_or_exposure": "mosquito bites"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 24,
+          "selected_documents": 8,
+          "selected_authoritative": 1,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 7,
+            "contextual": 1,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "contradicted"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "contradicted",
+            "contradicted",
+            "contradicted"
+          ],
+          "aggregation_reasons": [
+            "CONTRADICTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 194380
+        }
+      },
+      "question_category": "disease_transmission",
+      "positions_version": "validated-evidence-position-1.7",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 9098
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 27801
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 39563
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "claim": "High blood pressure increases the risk of stroke.",
+      "analysis_id": "c846a29e-c911-467a-af84-08a4fedd5a41",
+      "before_position": "supported",
+      "position": "supported",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "High blood pressure increases the risk of stroke.",
+          "normalized_claim": "High blood pressure increases the risk of stroke.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "stroke",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "High blood pressure increases the risk of stroke.",
+            "intervention_or_exposure": "High blood pressure"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 38,
+          "selected_documents": 8,
+          "selected_authoritative": 1,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 8,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "supported",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 210517
+        }
+      },
+      "question_category": "etiologic_exposure_causality",
+      "positions_version": "validated-evidence-position-1.7",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 6367
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 26879
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 40927
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "claim": "Antibiotics can treat bacterial pneumonia.",
+      "analysis_id": "d671f726-fbd1-41b3-b056-a60de923597e",
+      "before_position": "supported",
+      "position": "not_enough_evidence",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "Antibiotics can treat bacterial pneumonia.",
+          "normalized_claim": "Antibiotics can treat bacterial pneumonia.",
+          "claim_type": "treatment",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "bacterial pneumonia",
+            "timeframe": null,
+            "claim_type": "treatment",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Antibiotics can treat bacterial pneumonia.",
+            "intervention_or_exposure": "Antibiotics"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 31,
+          "selected_documents": 7,
+          "selected_authoritative": 0,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 5,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "INSUFFICIENT_DECISIVE_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 8,
+          "elapsed_ms": 229482
+        }
+      },
+      "question_category": "treatment",
+      "positions_version": "validated-evidence-position-1.7",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 14355
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 83648
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 25596
+        }
+      ]
+    },
+    {
+      "number": 102,
+      "claim": "Daily sunscreen use reduces invasive melanoma risk.",
+      "analysis_id": "96ff7b45-7b1d-44ef-8293-bfc935feab58",
+      "before_position": "supported",
+      "position": "supported",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+          "normalized_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "invasive melanoma risk",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+            "intervention_or_exposure": "Daily sunscreen use"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 30,
+          "selected_documents": 5,
+          "selected_authoritative": 0,
+          "selected_pubmed": 5,
+          "roles": {
+            "direct": 3,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "supported",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 168896
+        }
+      },
+      "question_category": "intervention_causality",
+      "positions_version": "validated-evidence-position-1.7",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 12309
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 26970
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 38446
+        }
+      ]
+    },
+    {
+      "number": 106,
+      "claim": "Antibiotics can treat bacterial pneumonia.",
+      "analysis_id": "8f0d0707-61b0-471a-aad0-65c9343b96d0",
+      "before_position": "supported",
+      "position": "supported",
+      "report_http": 200,
+      "diagnostics": {
+        "extraction": {
+          "raw_claim": "Antibiotics can treat bacterial pneumonia.",
+          "normalized_claim": "Antibiotics can treat bacterial pneumonia.",
+          "claim_type": "treatment",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "bacterial pneumonia",
+            "timeframe": null,
+            "claim_type": "treatment",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Antibiotics can treat bacterial pneumonia.",
+            "intervention_or_exposure": "Antibiotics"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 31,
+          "selected_documents": 7,
+          "selected_authoritative": 0,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 5,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "supported",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 156234
+        }
+      },
+      "question_category": "treatment",
+      "positions_version": "validated-evidence-position-1.8",
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 14579
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 23812
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "original_proposal": null,
+          "advisory_label": null,
+          "latency_ms": 34769
+        }
+      ],
+      "repeat_of_analysis_id": "d671f726-fbd1-41b3-b056-a60de923597e",
+      "first_run_position": "not_enough_evidence"
+    }
+  ],
+  "frozen_diagnostics_file": "C:\\Users\\levma\\AppData\\Local\\Temp\\lens_etiologic_live_frozen_20261006.json",
+  "verification": {
+    "backend": {
+      "passed": 1066,
+      "skipped": 0,
+      "database_tests_enabled": true,
+      "elapsed_seconds": 333.87
+    },
+    "frontend": {
+      "passed": 52,
+      "build": "passed"
+    },
+    "ruff": "passed",
+    "mypy": "passed (176 source files)",
+    "historical_audits": 23,
+    "initial_live_audits": 15,
+    "final_live_audits": 3,
+    "all_audits_exact": true,
+    "initial_live_positions_unchanged_on_final_policy": true,
+    "health_http": 200,
+    "provider_call_starts": 43
+  }
+}

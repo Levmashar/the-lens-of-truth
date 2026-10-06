@@ -47,7 +47,7 @@ def test_unique_parent_is_audited_and_unknown_is_not_repaired() -> None:
     slot = JudgeSlot(slot=1, provider="fixture", model="fixture",
                      model_family="fixture", base_url="https://example.invalid/v1")
     run = asyncio.run(JudgeService(
-        {"fixture": StaticProvider(content)}, axes_development=True,
+        {"fixture": StaticProvider(content)}, axes_development=True, axes_contract="2.3",
     ).run(uuid4(), pack, (slot,), app_env="development"))[0][0]
     assert run.outcome_status == "succeeded" and run.attempt_count == 1
     assert run.response_json is not None
@@ -91,7 +91,8 @@ def test_invalid_or_ambiguous_parent_remains_invalid() -> None:
     for identifier in ("E999", "E1.U999"):
         raw["statements"][0]["source_unit_ids"] = [identifier]
         run = asyncio.run(JudgeService(
-            {"fixture": StaticProvider(json.dumps(raw))}, axes_development=True,
+            {"fixture": StaticProvider(json.dumps(raw))},
+            axes_development=True, axes_contract="2.3",
         ).run(uuid4(), pack, (slot,), app_env="development"))[0][0]
         assert run.outcome_status == "failed"
         assert run.error_category == "invalid_source_unit"
@@ -122,7 +123,7 @@ def test_visible_sibling_of_selected_document_is_citable_only_in_current_develop
     slot = JudgeSlot(slot=1, provider="fixture", model="fixture",
                      model_family="fixture", base_url="https://example.invalid/v1")
     run = asyncio.run(JudgeService(
-        {"fixture": StaticProvider(content)}, axes_development=True,
+        {"fixture": StaticProvider(content)}, axes_development=True, axes_contract="2.3",
     ).run(uuid4(), pack, (slot,), app_env="development"))[0][0]
     assert run.outcome_status == "succeeded"
     assert run.decision is not None

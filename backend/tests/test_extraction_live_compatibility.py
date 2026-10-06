@@ -103,7 +103,7 @@ def test_duplicate_or_invented_spans_are_not_reconciled(
     assert len(requests) == 2
 
 
-def test_debug_trace_is_scoped_bounded_and_disabled() -> None:
+def test_debug_trace_preserves_full_response_is_scoped_and_disabled() -> None:
     first = uuid4()
     second = uuid4()
     event = dict(
@@ -115,5 +115,7 @@ def test_debug_trace_is_scoped_bounded_and_disabled() -> None:
         record_model_event(**event)
     with trace_analysis(second, enabled=False):
         record_model_event(**event)
-    assert len(str(model_events(first)[0]["response_excerpt"])) == 3000
+    assert model_events(first)[0]["response_excerpt"] == event["response_content"]
+    assert model_events(first)[0]["analysis_id"] == str(first)
+    assert model_events(uuid4()) == []
     assert model_events(second) == []

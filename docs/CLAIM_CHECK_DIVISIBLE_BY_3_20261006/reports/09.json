@@ -1,0 +1,273 @@
+{
+  "case_number": 9,
+  "submitted_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+  "sanity_expectation": "Supported",
+  "analysis_id": "1719070a-95b9-4755-b8b3-a5587a827729",
+  "analysis_status": "failed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "bb71cf52-4f0e-48fc-87b8-231622695cd0",
+      "ordinal": 1,
+      "status": "failed",
+      "stage": "normalizing",
+      "completed_stages": [],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "normalizing": {
+          "failed_at": "2026-10-06T11:05:06.308154+00:00",
+          "started_at": "2026-10-06T11:05:06.289730+00:00"
+        }
+      },
+      "failure_code": "normalization_incomplete",
+      "evidence_pack_id": null,
+      "evidence_pack_hash": null,
+      "judge_run_ids": [],
+      "judge_validation_run_ids": [],
+      "verdict_run_id": null,
+      "report_run_id": null,
+      "production_qualified": null,
+      "result_label": "unable_to_verify_reliably",
+      "debug_judge_runs": [],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+          "normalized_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "apoptosis",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": "some leukemia cell lines",
+            "original_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+            "intervention_or_exposure": "Blue light"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": null,
+          "selected_documents": null,
+          "selected_authoritative": 0,
+          "selected_pubmed": 0,
+          "roles": {
+            "direct": 0,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        },
+        "final": {
+          "qualified_judges": 0,
+          "qualified_positions": [],
+          "aggregation_reasons": [],
+          "production_qualified": false,
+          "total_model_calls": 1,
+          "elapsed_ms": 11259
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "1719070a-95b9-4755-b8b3-a5587a827729",
+    "status": "failed",
+    "stage": "failed",
+    "completed_stages": [
+      "extracting"
+    ],
+    "stage_timestamps": {
+      "extracting": {
+        "started_at": "2026-10-06T11:04:55.049543+00:00",
+        "completed_at": "2026-10-06T11:05:06.272270+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:05:06.295192+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 0,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "bb71cf52-4f0e-48fc-87b8-231622695cd0",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 88,
+        "raw_text": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+        "normalized_text": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": "some leukemia cell lines",
+        "intervention_or_exposure": "Blue light",
+        "comparator": null,
+        "outcome": "apoptosis",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.9,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "leukemia",
+            "entity_type": "population",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D007938",
+            "preferred_name": "Leukemia",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04.557.337",
+              "C15.378.508"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "cell lines",
+            "entity_type": "population",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D002460",
+            "preferred_name": "Cell Line",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "A11.251.210"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "Blue light",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D000095743",
+            "preferred_name": "Blue Light",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G01.358.500.505.650.220",
+              "G01.590.540.100",
+              "G01.750.250.650.220",
+              "G01.750.770.578.220"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "apoptosis",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D017209",
+            "preferred_name": "Apoptosis",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G04.146.954.035"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+          "population": "some leukemia cell lines",
+          "intervention_or_exposure": "Blue light",
+          "comparator": null,
+          "outcome": "apoptosis",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "partial",
+        "normalization_quality": {
+          "normalization_coverage": 0.8,
+          "missing_explicit_concepts": [
+            "laboratory"
+          ],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [
+            "explicit_medical_concepts_not_represented"
+          ],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:05:06.322819Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      }
+    ]
+  },
+  "report_responses": []
+}

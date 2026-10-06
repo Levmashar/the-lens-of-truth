@@ -1,0 +1,1168 @@
+{
+  "case_number": 36,
+  "submitted_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+  "sanity_expectation": "NEI",
+  "analysis_id": "0a168fd2-5a98-43f9-82b8-9eea149ae00c",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "3fa29495-f549-4142-a99b-f6e51ed3b6b6",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:21:42.370262+00:00",
+          "completed_at": "2026-10-06T11:22:58.333311+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:21:28.744414+00:00",
+          "completed_at": "2026-10-06T11:21:42.362133+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:22:58.339044+00:00",
+          "completed_at": "2026-10-06T11:23:59.411357+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:23:59.418788+00:00",
+          "completed_at": "2026-10-06T11:24:01.055251+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:21:28.723786+00:00",
+          "completed_at": "2026-10-06T11:21:28.739272+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:24:01.061663+00:00",
+          "completed_at": "2026-10-06T11:24:01.227801+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "d79064bc-a281-49e5-8f64-35187f463792",
+      "evidence_pack_hash": "475e390e3f666f919e8696e00c47842fe07344d31c8501566a6aefa706ae2301",
+      "judge_run_ids": [
+        "854208af-3b5f-4811-94b1-4321225827ac",
+        "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+        "04b5d5f8-1715-4432-94c1-81e2b13bcde2"
+      ],
+      "judge_validation_run_ids": [
+        "95a51452-c4fd-412e-b239-97f358d7d24f",
+        "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+        "67410935-c7a7-451c-972d-ce4cb0ee10a0"
+      ],
+      "verdict_run_id": "e9898cb7-e469-4b10-bd7c-65d02bdd7488",
+      "report_run_id": "3403f57d-0bf3-4ce5-b267-cf1199e361c3",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "854208af-3b5f-4811-94b1-4321225827ac",
+          "validation_run_id": "95a51452-c4fd-412e-b239-97f358d7d24f",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 2,
+          "latency_ms": 35228,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E33.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "69"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E18.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2035"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E18.U1.Q6",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "63"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "insufficient",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1"
+            ],
+            "S2": [
+              "E10"
+            ],
+            "S3": [
+              "E11"
+            ],
+            "S4": [
+              "E14"
+            ],
+            "S5": [
+              "E33",
+              "E18"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 7878,
+          "output_tokens": 1061,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [
+            "schema_or_format_retry"
+          ],
+          "attempt_failure_types": [
+            "schema_violation"
+          ]
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+          "validation_run_id": "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 22134,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E14.U1.Q3",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "50"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E14"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E1.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "85",
+                "90"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E10",
+              "E11"
+            ],
+            "S2": [
+              "E19"
+            ],
+            "S3": [
+              "E14"
+            ],
+            "S4": [
+              "E1"
+            ],
+            "S5": [
+              "E17"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 9437,
+          "output_tokens": 1142,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "04b5d5f8-1715-4432-94c1-81e2b13bcde2",
+          "validation_run_id": "67410935-c7a7-451c-972d-ce4cb0ee10a0",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 18528,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 3,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E10"
+            ],
+            "S2": [
+              "E1"
+            ],
+            "S3": [
+              "E10"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 8148,
+          "output_tokens": 604,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+          "normalized_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "that cancer from developing",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+            "intervention_or_exposure": "A treatment that shrinks an existing tumor"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 29,
+          "selected_documents": 5,
+          "selected_authoritative": 0,
+          "selected_pubmed": 5,
+          "roles": {
+            "direct": 3,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "not_enough_evidence"
+          ],
+          "aggregation_reasons": [
+            "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 9,
+          "elapsed_ms": 223976
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "0a168fd2-5a98-43f9-82b8-9eea149ae00c",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:21:42.376617+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:20:17.252081+00:00",
+        "completed_at": "2026-10-06T11:21:28.706605+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:21:28.750598+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:22:58.344747+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:23:59.425027+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:21:28.731740+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:24:01.065612+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "3fa29495-f549-4142-a99b-f6e51ed3b6b6",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 95,
+        "raw_text": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+        "normalized_text": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "A treatment that shrinks an existing tumor",
+        "comparator": null,
+        "outcome": "that cancer from developing",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.3,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": 0,
+        "resolved_from_span_end": 11,
+        "entities": [
+          {
+            "surface_text": "treatment",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D013812",
+            "preferred_name": "Therapeutics",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E02"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "tumor",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D009369",
+            "preferred_name": "Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "cancer",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D009369",
+            "preferred_name": "Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+          "population": null,
+          "intervention_or_exposure": "A treatment that shrinks an existing tumor",
+          "comparator": null,
+          "outcome": "that cancer from developing",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:24:01.246780Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "3fa29495-f549-4142-a99b-f6e51ed3b6b6",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "e9898cb7-e469-4b10-bd7c-65d02bdd7488",
+        "claim": {
+          "text": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+          "claim_type": "causal"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "reason_category": "population_mismatch",
+          "established": null,
+          "unresolved": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "evidence_ids": [
+            "E1",
+            "E10",
+            "E11",
+            "E14",
+            "E17",
+            "E18",
+            "E19",
+            "E33"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "text": "All qualified assessments found the evidence insufficient for a decisive conclusion."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E19",
+            "pmid": "30304655",
+            "doi": "10.1056/NEJMoa1716614",
+            "title": "Classification and Personalized Prognosis in Myeloproliferative Neoplasms.",
+            "journal": "The New England journal of medicine",
+            "publication_date": "2018-10-11",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Comprehensive genomic characterization identified distinct genetic subgroups and provided a classification of myeloproliferative neoplasms on the basis of causal biologic mechanisms. Integration of genomic data with clinical variables enabled the personalized predictions of patients' outcomes and may support the treatment of patients with myeloproliferative neoplasms. (Funded by the Wellcome Trust and others.).",
+            "excerpt_truncated": false,
+            "passage_sha256": "513be73a01c39c363d773e1c351107356c56a5a09b2378396c024542a0c86afd",
+            "passage_section": "CONCLUSIONS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/30304655/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+              "854208af-3b5f-4811-94b1-4321225827ac"
+            ],
+            "cited_by_validation_run_ids": [
+              "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+              "95a51452-c4fd-412e-b239-97f358d7d24f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:30304655",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E19",
+                "source_unit_id": "E19.U1",
+                "section": "CONCLUSIONS",
+                "exact_text": "Comprehensive genomic characterization identified distinct genetic subgroups and provided a classification of myeloproliferative neoplasms on the basis of causal biologic mechanisms. Integration of genomic data with clinical variables enabled the personalized predictions of patients' outcomes and may support the treatment of patients with myeloproliferative neoplasms. (Funded by the Wellcome Trust and others.).",
+                "truncated": false,
+                "passage_sha256": "513be73a01c39c363d773e1c351107356c56a5a09b2378396c024542a0c86afd"
+              },
+              {
+                "evidence_id": "E17",
+                "source_unit_id": "E17.U1",
+                "section": "BACKGROUND",
+                "exact_text": "Myeloproliferative neoplasms, such as polycythemia vera, essential thrombocythemia, and myelofibrosis, are chronic hematologic cancers with varied progression rates. The genomic characterization of patients with myeloproliferative neoplasms offers the potential for personalized diagnosis, risk stratification, and treatment.",
+                "truncated": false,
+                "passage_sha256": "88d09c3f014ba9e3e866d242cc1605c590d899107346505b7e6681f272ac4cd4"
+              },
+              {
+                "evidence_id": "E33",
+                "source_unit_id": "E33.U1",
+                "section": "METHODS",
+                "exact_text": "We sequenced coding exons from 69 myeloid cancer genes in patients with myeloproliferative neoplasms, comprehensively annotating driver mutations and copy-number changes. We developed a genomic classification for myeloproliferative neoplasms and multistage prognostic models for predicting outcomes in individual patients. Classification and prognostic models were validated in an external cohort.",
+                "truncated": false,
+                "passage_sha256": "7cd42f030c5befe21bdbafab99af3cc98cdc87bbe655f2212a1a439837e80990"
+              },
+              {
+                "evidence_id": "E18",
+                "source_unit_id": "E18.U1",
+                "section": "RESULTS",
+                "exact_text": "A total of 2035 patients were included in the analysis. A total of 33 genes had driver mutations in at least 5 patients, with mutations in JAK2, CALR, or MPL being the sole abnormality in 45% of the patients. The numbers of driver mutations increased with age and advanced disease. Driver mutations, germline polymorphisms, and demographic variables independently predicted whether patients received a diagnosis of essential thrombocythemia as compared with polycythemia vera or a diagnosis of chronic-phase disease as compared with myelofibrosis. We defined eight genomic subgroups that showed distinct clinical phenotypes, including blood counts, risk of leukemic transformation, and event-free survival. Integrating 63 clinical and genomic variables, we created prognostic models capable of generating personally tailored predictions of clinical outcomes in patients with chronic-phase myeloproliferative neoplasms and myelofibrosis. The predicted and observed outcomes correlated well in internal cross-validation of a training cohort and in an independent external cohort. Even within individual categories of existing prognostic schemas, our models substantially improved predictive accuracy.",
+                "truncated": false,
+                "passage_sha256": "c7472b3056b808e1f765539498b29c2bbc967a0493085bb50771d547a89b8528"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "25246049",
+            "doi": "10.1016/j.soc.2014.07.002",
+            "title": "Imaging of pancreatic neoplasms.",
+            "journal": "Surgical oncology clinics of North America",
+            "publication_date": "2014-10-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Ductal adenocarcinoma accounts for 85% to 90% of all solid pancreatic neoplasms, is increasing in incidence, and is the fourth leading cause of cancer-related deaths. There are currently no screening tests available for the detection of ductal adenocarcinoma. The only chance for cure in pancreatic adenocarcinoma is surgery. Imaging has a crucial role in the identification of the primary tumor, vascular variants, identification of metastases, disease response assessment to treatment, and prediction of respectability. Pancreatic neuroendocrine neoplasms can have a distinctive appearance and patt",
+            "excerpt_truncated": true,
+            "passage_sha256": "eb48e4568efba8921fddfa165e1add1eb4b7706400fd7d2a861a918dc66273b0",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/25246049/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "04b5d5f8-1715-4432-94c1-81e2b13bcde2",
+              "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+              "854208af-3b5f-4811-94b1-4321225827ac"
+            ],
+            "cited_by_validation_run_ids": [
+              "67410935-c7a7-451c-972d-ce4cb0ee10a0",
+              "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+              "95a51452-c4fd-412e-b239-97f358d7d24f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:25246049",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Ductal adenocarcinoma accounts for 85% to 90% of all solid pancreatic neoplasms, is increasing in incidence, and is the fourth leading cause of cancer-related deaths. There are currently no screening tests available for the detection of ductal adenocarcinoma. The only chance for cure in pancreatic adenocarcinoma is surgery. Imaging has a crucial role in the identification of the primary tumor, vascular variants, identification of metastases, disease response assessment to treatment, and prediction of respectability. Pancreatic neuroendocrine neoplasms can have a distinctive appearance and pattern of spread, which should be recognized on imaging for appropriate management of these patients.",
+                "truncated": false,
+                "passage_sha256": "eb48e4568efba8921fddfa165e1add1eb4b7706400fd7d2a861a918dc66273b0"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E14",
+            "pmid": "38086335",
+            "doi": "10.1016/j.ccell.2023.11.007",
+            "title": "Druggable growth dependencies and tumor evolution analysis in patient-derived organoids of neuroendocrine neoplasms from multiple body sites.",
+            "journal": "Cancer cell",
+            "publication_date": "2023-12-11",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Neuroendocrine neoplasms (NENs) comprise well-differentiated neuroendocrine tumors (NETs) and poorly differentiated neuroendocrine carcinomas (NECs). Treatment options for patients with NENs are limited, in part due to lack of accurate models. We establish patient-derived tumor organoids (PDTOs) from pulmonary NETs and derive PDTOs from an understudied subtype of NEC, large cell neuroendocrine carcinoma (LCNEC), arising from multiple body sites. PDTOs maintain the gene expression patterns, intra-tumoral heterogeneity, and evolutionary processes of parental tumors. Through hypothesis-driven dru",
+            "excerpt_truncated": true,
+            "passage_sha256": "658f5ad6418c8d294584d7fd16729ce1b7b2be2077fc4511ad5347f6193a9c1e",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/38086335/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+              "854208af-3b5f-4811-94b1-4321225827ac"
+            ],
+            "cited_by_validation_run_ids": [
+              "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+              "95a51452-c4fd-412e-b239-97f358d7d24f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:38086335",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E14",
+                "source_unit_id": "E14.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Neuroendocrine neoplasms (NENs) comprise well-differentiated neuroendocrine tumors (NETs) and poorly differentiated neuroendocrine carcinomas (NECs). Treatment options for patients with NENs are limited, in part due to lack of accurate models. We establish patient-derived tumor organoids (PDTOs) from pulmonary NETs and derive PDTOs from an understudied subtype of NEC, large cell neuroendocrine carcinoma (LCNEC), arising from multiple body sites. PDTOs maintain the gene expression patterns, intra-tumoral heterogeneity, and evolutionary processes of parental tumors. Through hypothesis-driven drug sensitivity analyses, we identify ASCL1 as a potential biomarker for response of LCNEC to treatment with BCL-2 inhibitors. Additionally, we discover a dependency on EGF in pulmonary NET PDTOs. Consistent with these findings, we find that, in an independent cohort, approximately 50% of pulmonary NETs express EGFR. This study identifies an actionable vulnerability for a subset of pulmonary NETs, emphasizing the utility of these PDTO models.",
+                "truncated": false,
+                "passage_sha256": "658f5ad6418c8d294584d7fd16729ce1b7b2be2077fc4511ad5347f6193a9c1e"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E10",
+            "pmid": "30306583",
+            "doi": "10.1002/ijgo.12609",
+            "title": "Cancer of the vulva.",
+            "journal": "International journal of gynaecology and obstetrics: the official organ of the International Federation of Gynaecology and Obstetrics",
+            "publication_date": "2018-10-01",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Vulvar cancer is an uncommon gynecological malignancy primarily affecting postmenopausal women. There is no specific screening and the most effective strategy to reduce vulvar cancer incidence is the opportune treatment of predisposing and preneoplastic lesions associated with its development. While vulvar cancer may be asymptomatic, most women present with vulvar pruritus or pain, or have noticed a lump or ulcer. Therefore, any suspicious vulvar lesion should be biopsied to exclude invasion. Once established, the most common subtype is squamous cell carcinoma. Treatment of vulvar cancer depen",
+            "excerpt_truncated": true,
+            "passage_sha256": "f25e5eecb5cb56431414f357882f23fc368142ec525ec0b1ab87f62b4d4c4e41",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/30306583/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "04b5d5f8-1715-4432-94c1-81e2b13bcde2",
+              "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+              "854208af-3b5f-4811-94b1-4321225827ac"
+            ],
+            "cited_by_validation_run_ids": [
+              "67410935-c7a7-451c-972d-ce4cb0ee10a0",
+              "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+              "95a51452-c4fd-412e-b239-97f358d7d24f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:30306583",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E10",
+                "source_unit_id": "E10.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Vulvar cancer is an uncommon gynecological malignancy primarily affecting postmenopausal women. There is no specific screening and the most effective strategy to reduce vulvar cancer incidence is the opportune treatment of predisposing and preneoplastic lesions associated with its development. While vulvar cancer may be asymptomatic, most women present with vulvar pruritus or pain, or have noticed a lump or ulcer. Therefore, any suspicious vulvar lesion should be biopsied to exclude invasion. Once established, the most common subtype is squamous cell carcinoma. Treatment of vulvar cancer depends primarily on histology and surgical staging. Treatment is predominantly surgical, particularly for squamous cell carcinoma, although concurrent chemoradiation is an effective alternative, particularly for advanced tumors. Management should be individualized, and carried out by a multidisciplinary team in a cancer center experienced in the treatment of these tumors.",
+                "truncated": false,
+                "passage_sha256": "f25e5eecb5cb56431414f357882f23fc368142ec525ec0b1ab87f62b4d4c4e41"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E11",
+            "pmid": "34669204",
+            "doi": "10.1002/ijgo.13881",
+            "title": "Cancer of the vulva: 2021 update.",
+            "journal": "International journal of gynaecology and obstetrics: the official organ of the International Federation of Gynaecology and Obstetrics",
+            "publication_date": "2021-10-01",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Vulvar cancer is an uncommon gynecological malignancy primarily affecting postmenopausal women. There is no specific screening and the most effective strategy to reduce vulvar cancer incidence is the opportune treatment of predisposing and preneoplastic lesions associated with its development. While vulvar cancer may be asymptomatic, most women present with vulvar pruritus or pain, or have noticed a lump or ulcer. Therefore, any suspicious vulvar lesion should be biopsied to exclude invasion. Once established, the most common subtype is squamous cell carcinoma. Treatment of vulvar cancer depen",
+            "excerpt_truncated": true,
+            "passage_sha256": "a48db8c59e298cb6bb148b8f21d90399a07b2e1a08cb59d46bffe9d1c66da84c",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/34669204/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+              "854208af-3b5f-4811-94b1-4321225827ac"
+            ],
+            "cited_by_validation_run_ids": [
+              "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+              "95a51452-c4fd-412e-b239-97f358d7d24f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:34669204",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E11",
+                "source_unit_id": "E11.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Vulvar cancer is an uncommon gynecological malignancy primarily affecting postmenopausal women. There is no specific screening and the most effective strategy to reduce vulvar cancer incidence is the opportune treatment of predisposing and preneoplastic lesions associated with its development. While vulvar cancer may be asymptomatic, most women present with vulvar pruritus or pain, or have noticed a lump or ulcer. Therefore, any suspicious vulvar lesion should be biopsied to exclude invasion. Once established, the most common subtype is squamous cell carcinoma. Treatment of vulvar cancer depends primarily on histology and surgical staging. Treatment is predominantly surgical, particularly for squamous cell carcinoma, although concurrent chemoradiation is an effective alternative, particularly for advanced tumors. Management should be individualized and carried out by a multidisciplinary team in a cancer center experienced in the treatment of these tumors.",
+                "truncated": false,
+                "passage_sha256": "a48db8c59e298cb6bb148b8f21d90399a07b2e1a08cb59d46bffe9d1c66da84c"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 0,
+            "not_enough_evidence": 3
+          },
+          "description": "3 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "relevant_but_insufficient",
+          "validated_citations_shown": 5,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E19",
+            "pmid": "30304655",
+            "doi": "10.1056/NEJMoa1716614",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/30304655/"
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "25246049",
+            "doi": "10.1016/j.soc.2014.07.002",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/25246049/"
+          },
+          {
+            "evidence_id": "E14",
+            "pmid": "38086335",
+            "doi": "10.1016/j.ccell.2023.11.007",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/38086335/"
+          },
+          {
+            "evidence_id": "E10",
+            "pmid": "30306583",
+            "doi": "10.1002/ijgo.12609",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/30306583/"
+          },
+          {
+            "evidence_id": "E11",
+            "pmid": "34669204",
+            "doi": "10.1002/ijgo.13881",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/34669204/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "e9898cb7-e469-4b10-bd7c-65d02bdd7488",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "1d7fce81d4ebecda3484551fa0eceddf0bb73ed373c78a4a79bc2c27adfd1ebb",
+          "evidence_pack_id": "d79064bc-a281-49e5-8f64-35187f463792",
+          "evidence_pack_hash": "475e390e3f666f919e8696e00c47842fe07344d31c8501566a6aefa706ae2301",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "04b5d5f8-1715-4432-94c1-81e2b13bcde2",
+            "20c34ea7-e701-4f00-8d19-1a37ca0be3e1",
+            "854208af-3b5f-4811-94b1-4321225827ac"
+          ],
+          "judge_validation_run_ids": [
+            "67410935-c7a7-451c-972d-ce4cb0ee10a0",
+            "7d447714-e5b3-44c1-b8f5-9cf46113d10b",
+            "95a51452-c4fd-412e-b239-97f358d7d24f"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:24:01.209033Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "7140ecc1b486e53ff5d6a9a69b086135b8bd65c2d6c462353ba1e10891228d09"
+      }
+    }
+  ]
+}

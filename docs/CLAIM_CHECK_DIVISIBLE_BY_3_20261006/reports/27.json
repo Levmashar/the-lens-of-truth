@@ -1,0 +1,1189 @@
+{
+  "case_number": 27,
+  "submitted_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+  "sanity_expectation": "NEI",
+  "analysis_id": "db28f2c1-4e8a-44df-8b29-ff5fef9289cd",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "aadbe5c6-d0ab-45b1-a064-fa98a8ab63a4",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:14:13.962817+00:00",
+          "completed_at": "2026-10-06T11:15:16.836160+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:14:06.227404+00:00",
+          "completed_at": "2026-10-06T11:14:13.956916+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:15:16.841355+00:00",
+          "completed_at": "2026-10-06T11:17:04.503688+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:17:04.509903+00:00",
+          "completed_at": "2026-10-06T11:17:06.768715+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:14:06.208568+00:00",
+          "completed_at": "2026-10-06T11:14:06.222538+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:17:06.771739+00:00",
+          "completed_at": "2026-10-06T11:17:06.980725+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "b19e7209-a1f6-40bd-9eb4-b6f0739d9b8b",
+      "evidence_pack_hash": "26acb4741ad721ae5ac3754bab95dc6e0fb7429487e31311541e601071944247",
+      "judge_run_ids": [
+        "62ee5fa3-cb99-4425-85c1-9672e148e586",
+        "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+        "3a51bcda-e5a0-48e9-aa80-243847b872ee"
+      ],
+      "judge_validation_run_ids": [
+        "da103fcc-4a56-440c-aab9-596d0d284006",
+        "c089c805-8cb5-41b4-8310-dd727d148d1f",
+        "1713b13b-020c-4b50-8e0a-1dd74f5b6c58"
+      ],
+      "verdict_run_id": "521c022f-5160-4bb7-b384-39e96941b006",
+      "report_run_id": "c12e43f5-6f1e-4a34-b98d-3f72bc8b97c9",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "62ee5fa3-cb99-4425-85c1-9672e148e586",
+          "validation_run_id": "da103fcc-4a56-440c-aab9-596d0d284006",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 10214,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E3.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "9"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E3"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E3.U1.Q2",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E3"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "synthesis",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "population",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1"
+            ],
+            "S2": [
+              "E3"
+            ],
+            "S3": [
+              "E4"
+            ],
+            "S4": [
+              "E13",
+              "E21"
+            ],
+            "S5": [
+              "E9"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 10574,
+          "output_tokens": 999,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+          "validation_run_id": "c089c805-8cb5-41b4-8310-dd727d148d1f",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 23155,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "conflicting_results"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_RELATION_UNCERTAIN"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1"
+            ],
+            "S2": [
+              "E3"
+            ],
+            "S3": [
+              "E4"
+            ],
+            "S4": [
+              "E9"
+            ],
+            "S5": [
+              "E1",
+              "E3",
+              "E4"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "conflicting_results",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 12420,
+          "output_tokens": 986,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+          "validation_run_id": "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 29422,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E3.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "9"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E3"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E3.U1.Q2",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E3"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E1.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "91891"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "aligned",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E3"
+            ],
+            "S2": [
+              "E1"
+            ],
+            "S3": [
+              "E4"
+            ],
+            "S4": [
+              "E9"
+            ],
+            "S5": [
+              "E1",
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 10817,
+          "output_tokens": 937,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+          "normalized_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+          "claim_type": "prevention",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "Alzheimer's disease",
+            "timeframe": null,
+            "claim_type": "prevention",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+            "intervention_or_exposure": "Eating dark chocolate"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 13,
+          "selected_documents": 5,
+          "selected_authoritative": 0,
+          "selected_pubmed": 5,
+          "roles": {
+            "direct": 3,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "not_enough_evidence"
+          ],
+          "aggregation_reasons": [
+            "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 195529
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "db28f2c1-4e8a-44df-8b29-ff5fef9289cd",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:14:13.968851+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:13:51.451692+00:00",
+        "completed_at": "2026-10-06T11:14:06.191706+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:14:06.233246+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:15:16.845820+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:17:04.514901+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:14:06.214618+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:17:06.774210+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "aadbe5c6-d0ab-45b1-a064-fa98a8ab63a4",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 51,
+        "raw_text": "Eating dark chocolate prevents Alzheimer's disease.",
+        "normalized_text": "Eating dark chocolate prevents Alzheimer's disease.",
+        "standalone_status": "complete",
+        "claim_type": "prevention",
+        "population": null,
+        "intervention_or_exposure": "Eating dark chocolate",
+        "comparator": null,
+        "outcome": "Alzheimer's disease",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.85,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "Eating",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D004435",
+            "preferred_name": "Eating",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G07.203.650.283",
+              "G10.261.330"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "chocolate",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D000069956",
+            "preferred_name": "Chocolate",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G07.203.300.195",
+              "J02.500.195"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "Alzheimer's disease",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D000544",
+            "preferred_name": "Alzheimer Disease",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C10.228.140.380.100",
+              "C10.574.945.249",
+              "F03.615.400.100"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+          "population": null,
+          "intervention_or_exposure": "Eating dark chocolate",
+          "comparator": null,
+          "outcome": "Alzheimer's disease",
+          "timeframe": null,
+          "claim_type": "prevention"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:17:06.993364Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "aadbe5c6-d0ab-45b1-a064-fa98a8ab63a4",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "521c022f-5160-4bb7-b384-39e96941b006",
+        "claim": {
+          "text": "Eating dark chocolate prevents Alzheimer's disease.",
+          "claim_type": "prevention"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "reason_category": "population_mismatch",
+          "established": null,
+          "unresolved": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "evidence_ids": [
+            "E1",
+            "E13",
+            "E21",
+            "E3",
+            "E4",
+            "E9"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "text": "All qualified assessments found the evidence insufficient for a decisive conclusion."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E4",
+            "pmid": "36918792",
+            "doi": "10.2174/1389201024666230314101654",
+            "title": "An Overview of Dietary Flavonoids as a Nutraceutical Nanoformulation Approach to Life-threatening Diseases.",
+            "journal": "Current pharmaceutical biotechnology",
+            "publication_date": "2023-01-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Obesity, heart disease, diabetes, and cancer are just a few chronic diseases for which proper nutrition has been demonstrated to be a crucial factor in prevention. Flavonoids, found in many fruits and vegetables, are a type of dietary polyphenol with potent antioxidant activity and anti-carcinogenic characteristics. Flavonoids and foods rich in flavonoids have been shown in recent years to have profound effects on cognitive function, aging, and neurodegenerative diseases like Alzheimer's. Foods high in flavonoids, such as green tea, chocolate, blueberries, and other fruits and vegetables, have",
+            "excerpt_truncated": true,
+            "passage_sha256": "cb73c818056d898ef0742021f24b0d6e9e14e8d80004f4464568cc1b59ff2ba0",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/36918792/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+              "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+              "62ee5fa3-cb99-4425-85c1-9672e148e586"
+            ],
+            "cited_by_validation_run_ids": [
+              "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+              "c089c805-8cb5-41b4-8310-dd727d148d1f",
+              "da103fcc-4a56-440c-aab9-596d0d284006"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:36918792",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E4",
+                "source_unit_id": "E4.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Obesity, heart disease, diabetes, and cancer are just a few chronic diseases for which proper nutrition has been demonstrated to be a crucial factor in prevention. Flavonoids, found in many fruits and vegetables, are a type of dietary polyphenol with potent antioxidant activity and anti-carcinogenic characteristics. Flavonoids and foods rich in flavonoids have been shown in recent years to have profound effects on cognitive function, aging, and neurodegenerative diseases like Alzheimer's. Foods high in flavonoids, such as green tea, chocolate, blueberries, and other fruits and vegetables, have ameliorated symptoms of cognitive impairment, Alzheimer's disease, and dementia in several animal models. As a result of their ability to prevent neuronal death generated by neurotoxic chemicals such as free radicals and β-amyloid proteins. Furthermore, flavonoids are also effective in slowing the evolution of clinical signs of neurodegenerative illnesses. In addition, flavonoids can improve lipid profiles by preventing the oxidation of low-density lipoproteins, and these antioxidant capabilities are responsible for their therapeutic impacts. Finally, the potential of flavonoids to induce vasodilation and control apoptotic processes in the endothelium is another way in which they benefit the cardiovascular system. This review aims to offer up-to-date information on categorizing these compounds, their primary methods of action in the human body, and their positive impacts on the management of neurodegenerative diseases, cardiovascular disorders, and other life-threatening diseases.",
+                "truncated": false,
+                "passage_sha256": "cb73c818056d898ef0742021f24b0d6e9e14e8d80004f4464568cc1b59ff2ba0"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E3",
+            "pmid": "35883844",
+            "doi": "10.3390/antiox11071353",
+            "title": "Chocolate and Cocoa-Derived Biomolecules for Brain Cognition during Ageing.",
+            "journal": "Antioxidants (Basel, Switzerland)",
+            "publication_date": "2022-07-12",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Cognitive decline is a common problem in older individuals, often exacerbated by neurocognitive conditions, such as vascular dementia and Alzheimer's disease, which heavily affect people's lives and exert a substantial toll on healthcare systems. Currently, no cure is available, and commonly used treatments are aimed at limiting the progressive loss of cognitive functions. The absence of effective pharmacological treatments for the cognitive decline has led to the search for lifestyle interventions, such as diet and the use of nutraceuticals that can prevent and limit the loss of cognition. Co",
+            "excerpt_truncated": true,
+            "passage_sha256": "f219feeef88b3d0adad954c5c5a595590e278d05fc498b1bf6d255ca60f4c80d",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/35883844/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+              "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+              "62ee5fa3-cb99-4425-85c1-9672e148e586"
+            ],
+            "cited_by_validation_run_ids": [
+              "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+              "c089c805-8cb5-41b4-8310-dd727d148d1f",
+              "da103fcc-4a56-440c-aab9-596d0d284006"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:35883844",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E3",
+                "source_unit_id": "E3.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Cognitive decline is a common problem in older individuals, often exacerbated by neurocognitive conditions, such as vascular dementia and Alzheimer's disease, which heavily affect people's lives and exert a substantial toll on healthcare systems. Currently, no cure is available, and commonly used treatments are aimed at limiting the progressive loss of cognitive functions. The absence of effective pharmacological treatments for the cognitive decline has led to the search for lifestyle interventions, such as diet and the use of nutraceuticals that can prevent and limit the loss of cognition. Cocoa and chocolate are foods derived from cocoa beans, commonly used in the population and with good acceptability. The purpose of this review was to collect current experimental evidence regarding the neuroprotective effect of chocolate and cocoa (or derived molecules) in the elderly. From a systematic review of the literature, 9 observational studies and 10 interventional studies were selected, suggesting that the biomolecules contained in cocoa may offer promising tools for managing cognitive decline, if provided in adequate dosages and duration of treatment. However, the molecular mechanisms of cocoa action on the central nervous system are not completely understood.",
+                "truncated": false,
+                "passage_sha256": "f219feeef88b3d0adad954c5c5a595590e278d05fc498b1bf6d255ca60f4c80d"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E21",
+            "pmid": "10350420",
+            "doi": "10.1093/ageing/28.2.205",
+            "title": "A preliminary study of dietary aluminium intake and risk of Alzheimer's disease.",
+            "journal": "Age and ageing",
+            "publication_date": "1999-03-01",
+            "study_design": "case_control",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "past consumption of foods containing large amounts of aluminium additives differed between people with Alzheimer's disease and controls, suggesting that dietary intake of aluminium may affect the risk of developing this disease. Larger studies are warranted to corroborate or refute these preliminary findings.",
+            "excerpt_truncated": false,
+            "passage_sha256": "0e023fc5cbfd20779c8e3437930d7046afaa09f6d14605d8dcb2dd95939711fa",
+            "passage_section": "CONCLUSION",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/10350420/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "62ee5fa3-cb99-4425-85c1-9672e148e586"
+            ],
+            "cited_by_validation_run_ids": [
+              "da103fcc-4a56-440c-aab9-596d0d284006"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:10350420",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E21",
+                "source_unit_id": "E21.U1",
+                "section": "CONCLUSION",
+                "exact_text": "past consumption of foods containing large amounts of aluminium additives differed between people with Alzheimer's disease and controls, suggesting that dietary intake of aluminium may affect the risk of developing this disease. Larger studies are warranted to corroborate or refute these preliminary findings.",
+                "truncated": false,
+                "passage_sha256": "0e023fc5cbfd20779c8e3437930d7046afaa09f6d14605d8dcb2dd95939711fa"
+              },
+              {
+                "evidence_id": "E13",
+                "source_unit_id": "E13.U1",
+                "section": "RESULTS",
+                "exact_text": "the crude odds ratio for daily intake of foods containing high levels of aluminium was 2.0 and, when adjusted for covariates, was 8.6 (P=0.19). Intake of pancakes, waffles, biscuits, muffins, cornbread and/or corn tortillas differed significantly (P=0.025) between cases and controls. Adjusted odds ratios were also elevated for grain product desserts, American cheese, chocolate pudding or beverages, salt and chewing gum. However, the odds ratio was not elevated for tea consumption.",
+                "truncated": false,
+                "passage_sha256": "c9eea9762ebba7844b8256c757252629ff25d26955ebf92f2404f0a2fb96d4e1"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "34329196",
+            "doi": "10.18632/aging.203302",
+            "title": "Chocolate consumption and all-cause and cause-specific mortality in a US population: a post hoc analysis of the PLCO cancer screening trial.",
+            "journal": "Aging",
+            "publication_date": "2021-07-29",
+            "study_design": "randomized_controlled_trial",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Few studies with mixed results have examined the association between chocolate consumption and mortality. We aimed to examine this association in a US population. A population-based cohort of 91891 participants aged 55 to 74 years was identified. Chocolate consumption was assessed via a food frequency questionnaire. Cox regression was used to estimate risk estimates. After an average follow-up of 13.5 years, 19586 all-cause deaths were documented. Compared with no regular chocolate consumption, the maximally adjusted hazard ratios of all-cause mortality were 0.89 [95% confidence interval (CI) ",
+            "excerpt_truncated": true,
+            "passage_sha256": "b5c8ab93a545a18a5a716a5c9da57bc7af6cc546c8d5748cd32c0860443a2401",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/34329196/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+              "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+              "62ee5fa3-cb99-4425-85c1-9672e148e586"
+            ],
+            "cited_by_validation_run_ids": [
+              "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+              "c089c805-8cb5-41b4-8310-dd727d148d1f",
+              "da103fcc-4a56-440c-aab9-596d0d284006"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:34329196",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "secondary_observational_analysis",
+            "exposure_assignment": "observed",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Few studies with mixed results have examined the association between chocolate consumption and mortality. We aimed to examine this association in a US population. A population-based cohort of 91891 participants aged 55 to 74 years was identified. Chocolate consumption was assessed via a food frequency questionnaire. Cox regression was used to estimate risk estimates. After an average follow-up of 13.5 years, 19586 all-cause deaths were documented. Compared with no regular chocolate consumption, the maximally adjusted hazard ratios of all-cause mortality were 0.89 [95% confidence interval (CI) 0.84-0.94], 0.84 (95% CI 0.79-0.90), 0.86 (95% CI 0.81-0.93), and 0.87 (95% CI 0.82-0.93) for >0-0.5 servings/week, >0.5-1 serving/week, >1-2 servings/week, and >2 servings/week, respectively (Ptrend = 0.009). A somewhat stronger inverse association was observed for mortality from cardiovascular disease and Alzheimer's disease. A nonlinear dose-response pattern was found for all-cause and cardiovascular mortality (all Pnonlinearity < 0.01), with the lowest risk observed at chocolate consumption of 0.7 servings/week and 0.6 servings/week, respectively. The favorable associations with all-cause and cardiovascular mortality were found to be more pronounced in never smokers than in current or former smokers (all Pinteraction < 0.05). In conclusion, chocolate consumption confers reduced risks of mortality from all causes, cardiovascular disease, and Alzheimer's disease in this US population.",
+                "truncated": false,
+                "passage_sha256": "b5c8ab93a545a18a5a716a5c9da57bc7af6cc546c8d5748cd32c0860443a2401"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E9",
+            "pmid": "38508080",
+            "doi": "10.1016/j.biopha.2024.116376",
+            "title": "Mechanistic insights into the potential role of dietary polyphenols and their nanoformulation in the management of Alzheimer's disease.",
+            "journal": "Biomedicine & pharmacotherapy = Biomedecine & pharmacotherapie",
+            "publication_date": "2024-03-19",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Alzheimer's disease (AD) is a very common neurodegenerative disorder associated with memory loss and a progressive decline in cognitive activity. The two major pathophysiological factors responsible for AD are amyloid plaques (comprising amyloid-beta aggregates) and neurofibrillary tangles (consisting of hyperphosphorylated tau protein). Polyphenols, a class of naturally occurring compounds, are immensely beneficial for the treatment or management of various disorders and illnesses. Naturally occurring sources of polyphenols include plants and plant-based foods, such as fruits, herbs, tea, veg",
+            "excerpt_truncated": true,
+            "passage_sha256": "1fcc31886a1d53856445842254013138e449bbd4c989578ba580ffe6ac651266",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/38508080/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+              "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+              "62ee5fa3-cb99-4425-85c1-9672e148e586"
+            ],
+            "cited_by_validation_run_ids": [
+              "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+              "c089c805-8cb5-41b4-8310-dd727d148d1f",
+              "da103fcc-4a56-440c-aab9-596d0d284006"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:38508080",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E9",
+                "source_unit_id": "E9.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Alzheimer's disease (AD) is a very common neurodegenerative disorder associated with memory loss and a progressive decline in cognitive activity. The two major pathophysiological factors responsible for AD are amyloid plaques (comprising amyloid-beta aggregates) and neurofibrillary tangles (consisting of hyperphosphorylated tau protein). Polyphenols, a class of naturally occurring compounds, are immensely beneficial for the treatment or management of various disorders and illnesses. Naturally occurring sources of polyphenols include plants and plant-based foods, such as fruits, herbs, tea, vegetables, coffee, red wine, and dark chocolate. Polyphenols have unique properties, such as being the major source of anti-oxidants and possessing anti-aging and anti-cancerous properties. Currently, dietary polyphenols have become a potential therapeutic approach for the management of AD, depending on various research findings. Dietary polyphenols can be an effective strategy to tackle multifactorial events that occur with AD. For instance, naturally occurring polyphenols have been reported to exhibit neuroprotection by modulating the Aβ biogenesis pathway in AD. Many nanoformulations have been established to enhance the bioavailability of polyphenols, with nanonization being the most promising. This review comprehensively provides mechanistic insights into the neuroprotective potential of dietary polyphenols in treating AD. It also reviews the usability of dietary polyphenol as nanoformulation for AD treatment.",
+                "truncated": false,
+                "passage_sha256": "1fcc31886a1d53856445842254013138e449bbd4c989578ba580ffe6ac651266"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 0,
+            "not_enough_evidence": 3
+          },
+          "description": "3 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "relevant_but_insufficient",
+          "validated_citations_shown": 5,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E4",
+            "pmid": "36918792",
+            "doi": "10.2174/1389201024666230314101654",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/36918792/"
+          },
+          {
+            "evidence_id": "E3",
+            "pmid": "35883844",
+            "doi": "10.3390/antiox11071353",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/35883844/"
+          },
+          {
+            "evidence_id": "E21",
+            "pmid": "10350420",
+            "doi": "10.1093/ageing/28.2.205",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/10350420/"
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "34329196",
+            "doi": "10.18632/aging.203302",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/34329196/"
+          },
+          {
+            "evidence_id": "E9",
+            "pmid": "38508080",
+            "doi": "10.1016/j.biopha.2024.116376",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/38508080/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "521c022f-5160-4bb7-b384-39e96941b006",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "7b432f46540c2218009604d2c264a5f3c8f4204200b7863c1da9d44171cbfc30",
+          "evidence_pack_id": "b19e7209-a1f6-40bd-9eb4-b6f0739d9b8b",
+          "evidence_pack_hash": "26acb4741ad721ae5ac3754bab95dc6e0fb7429487e31311541e601071944247",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "3a51bcda-e5a0-48e9-aa80-243847b872ee",
+            "62a388e7-f3a2-4a07-8047-0d4d48045ca0",
+            "62ee5fa3-cb99-4425-85c1-9672e148e586"
+          ],
+          "judge_validation_run_ids": [
+            "1713b13b-020c-4b50-8e0a-1dd74f5b6c58",
+            "c089c805-8cb5-41b4-8310-dd727d148d1f",
+            "da103fcc-4a56-440c-aab9-596d0d284006"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:17:06.964911Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "b117ced601eb105788a0b5caa85eb1671070ba9f6dda90cad59ae7bd0d434be1"
+      }
+    }
+  ]
+}

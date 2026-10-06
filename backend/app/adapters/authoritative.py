@@ -30,6 +30,7 @@ _ORGANIZATIONS = {
     "NCI": "www.cancer.gov", "CDC": "www.cdc.gov", "WHO": "www.who.int",
     "IARC": "www.iarc.who.int", "NIH/NCCIH": "www.nccih.nih.gov",
 }
+_ADDITIONAL_APPROVED_HOSTS = {"CDC": {"hivrisk.cdc.gov"}}
 
 
 class ApprovedSource(FrozenModel):
@@ -42,14 +43,16 @@ class ApprovedSource(FrozenModel):
     root_attribute: Literal["id", "class", "tag"]
     root_value: str
     last_verified_at: datetime
-    retrieval_method: Literal["html_blocks"]
+    retrieval_method: Literal["html_blocks", "html_lists"]
     independence_group: str
     attribution: str
 
     @model_validator(mode="after")
     def approved_domain(self) -> "ApprovedSource":
         url = urlsplit(self.canonical_url)
-        if (url.scheme != "https" or url.hostname != _ORGANIZATIONS.get(self.organization)
+        hosts = {_ORGANIZATIONS.get(self.organization)} | _ADDITIONAL_APPROVED_HOSTS.get(
+            self.organization, set())
+        if (url.scheme != "https" or url.hostname not in hosts
                 or url.username or url.password or url.port or url.query or url.fragment):
             raise ValueError("Manifest URL is not a canonical approved organization URL")
         return self
@@ -87,6 +90,7 @@ class HtmlBlocks(HTMLParser):
         self.block_tag: str | None = None
         self.heading = "DOCUMENT"
         self.references: set[str] = set()
+        self.list_depth = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
@@ -99,6 +103,21 @@ class HtmlBlocks(HTMLParser):
         if tag not in {"br", "hr", "img", "input", "meta", "link", "wbr"}:
             self.stack.append((tag, inside, skip))
         if not inside or skip:
+            return
+        if self.source.retrieval_method == "html_lists" and tag in {"ul", "ol"}:
+            if not self.list_depth:
+                self.flush()
+                # Preserve a list's preceding relation/negation as part of the
+                # same exact visible-text block, never an isolated route name.
+                if self.blocks and re.search(r"(?:[:]|\bby|\bthrough)\s*$",
+                                             self.blocks[-1].text, re.I):
+                    self.buffer.append(self.blocks.pop().text + " ")
+                self.block_tag = tag
+            self.list_depth += 1
+            return
+        if self.list_depth:
+            if tag == "li":
+                self.buffer.append(" ")
             return
         if tag == "a" and values.get("href"):
             link = urljoin(self.source.canonical_url, values["href"] or "")
@@ -113,7 +132,9 @@ class HtmlBlocks(HTMLParser):
             self.buffer.append(" ")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == self.block_tag:
+        if self.list_depth and tag in {"ul", "ol"}:
+            self.list_depth -= 1
+        if tag == self.block_tag and not self.list_depth:
             self.flush()
         for index in range(len(self.stack) - 1, -1, -1):
             if self.stack[index][0] == tag:
@@ -138,6 +159,7 @@ class HtmlBlocks(HTMLParser):
 def update_date(html: str) -> date | None:
     # Only explicitly marked document dates; never the HTTP Date or fetch date.
     # Site-wide footer dates are not the document's update date.
+    html = re.sub(r"<!--[\s\S]*?-->", "", html)
     html = re.sub(r'<footer\b(?![^>]*article-footer)[\s\S]*?</footer>',
                   "", html, flags=re.I)
     html = re.sub(r"Site Last Updated:[\s\S]{0,100}", "", html, flags=re.I)
@@ -151,7 +173,7 @@ def update_date(html: str) -> date | None:
         match = re.search(pattern, html, re.I)
         if not match:
             continue
-        for fmt in ("%Y-%m-%d", "%B %d, %Y", "%d %B %Y"):
+        for fmt in ("%Y-%m-%d", "%B %d, %Y", "%b %d, %Y", "%d %B %Y"):
             try:
                 return datetime.strptime(match.group(1), fmt).date()
             except ValueError:
@@ -182,7 +204,9 @@ def freeze_html(source: ApprovedSource, html: str, *, now: datetime,
         "source_id": source.source_id, "url": source.canonical_url,
         "title": source.document_title, "purpose": source.document_purpose,
         "updated": str(updated), "sections": [s.model_dump() for s in blocks],
-        "references": sorted(parser.references), "extraction_version": "approved-html-1.0",
+        "references": sorted(parser.references), "extraction_version": (
+            "approved-html-1.1" if source.retrieval_method == "html_lists"
+            else "approved-html-1.0"),
     }, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     pmids = tuple(sorted({m.group(1) for url in parser.references
                           if (m := re.search(
@@ -197,6 +221,8 @@ def freeze_html(source: ApprovedSource, html: str, *, now: datetime,
         underlying_studies_known=bool(pmids), independence_group=source.independence_group,
         attribution=source.attribution,
         retained_block_count=len(blocks),
+        extraction_version="approved-html-1.1" if source.retrieval_method == "html_lists"
+        else "approved-html-1.0",
     )
     return PubMedDocument(
         document_id=f"authoritative:{source.source_id}", pmid="", title=source.document_title,
@@ -271,7 +297,8 @@ class AuthoritativeAdapter:
                     terms |= _words(" ".join(_aliases(claim, "outcome")))
                     indexed = sorted(enumerate(doc.abstract_sections), key=lambda pair: (
                         -int(_matches((pair[1].label or "") + " " + pair[1].text,
-                                      _aliases(claim, "intervention_or_exposure"))),
+                                      _aliases(claim, "intervention_or_exposure"),
+                                      concept_flex=True)),
                         -len(terms & _words(pair[1].text)), pair[0],
                     ))
                     chosen: set[int] = set()

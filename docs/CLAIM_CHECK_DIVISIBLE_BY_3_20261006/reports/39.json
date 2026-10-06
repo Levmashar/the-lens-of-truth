@@ -1,0 +1,255 @@
+{
+  "case_number": 39,
+  "submitted_claim": "This treatment reduces the risk by 40%.",
+  "sanity_expectation": "Unable to Verify Reliably",
+  "analysis_id": "14a13296-7037-44df-8c0f-05423bd2ee70",
+  "analysis_status": "failed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "27cb8e5e-b1c9-44ed-bffa-fbb4691ec10b",
+      "ordinal": 1,
+      "status": "failed",
+      "stage": "normalizing",
+      "completed_stages": [],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "normalizing": {
+          "failed_at": "2026-10-06T11:24:36.403451+00:00",
+          "started_at": "2026-10-06T11:24:36.385416+00:00"
+        }
+      },
+      "failure_code": "normalization_incomplete",
+      "evidence_pack_id": null,
+      "evidence_pack_hash": null,
+      "judge_run_ids": [],
+      "judge_validation_run_ids": [],
+      "verdict_run_id": null,
+      "report_run_id": null,
+      "production_qualified": null,
+      "result_label": "unable_to_verify_reliably",
+      "debug_judge_runs": [],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "This treatment reduces the risk by 40%.",
+          "normalized_claim": null,
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "the risk",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "numeric_effect": {
+              "kind": "percent_change",
+              "unit": "%",
+              "value": "40",
+              "status": "parsed",
+              "raw_text": "by 40%",
+              "direction": "decrease"
+            },
+            "original_claim": "This treatment reduces the risk by 40%.",
+            "intervention_or_exposure": "This treatment"
+          },
+          "numeric_effect": {
+            "kind": "percent_change",
+            "unit": "%",
+            "value": "40",
+            "status": "parsed",
+            "raw_text": "by 40%",
+            "direction": "decrease"
+          }
+        },
+        "retrieval": {
+          "candidates": null,
+          "selected_documents": null,
+          "selected_authoritative": 0,
+          "selected_pubmed": 0,
+          "roles": {
+            "direct": 0,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        },
+        "final": {
+          "qualified_judges": 0,
+          "qualified_positions": [],
+          "aggregation_reasons": [],
+          "production_qualified": false,
+          "total_model_calls": 2,
+          "elapsed_ms": 34994
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "14a13296-7037-44df-8c0f-05423bd2ee70",
+    "status": "failed",
+    "stage": "failed",
+    "completed_stages": [
+      "extracting"
+    ],
+    "stage_timestamps": {
+      "extracting": {
+        "started_at": "2026-10-06T11:24:01.409570+00:00",
+        "completed_at": "2026-10-06T11:24:36.366232+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:24:36.393181+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 0,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "27cb8e5e-b1c9-44ed-bffa-fbb4691ec10b",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 39,
+        "raw_text": "This treatment reduces the risk by 40%.",
+        "normalized_text": null,
+        "standalone_status": "uncertain",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "This treatment",
+        "comparator": null,
+        "outcome": "the risk",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.2,
+        "coreference_uncertain": true,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "treatment",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D013812",
+            "preferred_name": "Therapeutics",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E02"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "risk",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D012306",
+            "preferred_name": "Risk",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E05.318.740.600.800",
+              "G17.680.750",
+              "N05.715.360.750.625.700",
+              "N06.850.520.830.600.800"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "This treatment reduces the risk by 40%.",
+          "population": null,
+          "intervention_or_exposure": "This treatment",
+          "comparator": null,
+          "outcome": "the risk",
+          "timeframe": null,
+          "claim_type": "causal",
+          "numeric_effect": {
+            "raw_text": "by 40%",
+            "status": "parsed",
+            "kind": "percent_change",
+            "value": "40",
+            "unit": "%",
+            "direction": "decrease"
+          }
+        },
+        "normalization_status": "partial",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:24:36.419577Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      }
+    ]
+  },
+  "report_responses": []
+}

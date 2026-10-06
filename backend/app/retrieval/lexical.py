@@ -9,7 +9,7 @@ import re
 
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
 _LAY_VARIANTS: dict[str, tuple[str, ...]] = {
-    "eyesight": ("vision", "sight", "seeing"),
+    "eyesight": ("vision", "visual acuity", "visual function", "sight", "seeing"),
 }
 
 
@@ -23,4 +23,4 @@ def lay_variants(value: str | None) -> tuple[tuple[str, str], ...]:
         (word, variant)
         for word in sorted(words)
         for variant in _LAY_VARIANTS.get(word, ())
-    )[:3]
+    )[:5]

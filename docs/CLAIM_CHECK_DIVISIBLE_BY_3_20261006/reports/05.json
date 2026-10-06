@@ -1,0 +1,2339 @@
+{
+  "case_number": 5,
+  "submitted_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+  "sanity_expectation": "Supported",
+  "analysis_id": "23019e2a-af38-4950-a81d-ca00533fb3bf",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "c581bf8c-25f5-4b94-af9f-e0dfae7446ac",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T10:59:57.233254+00:00",
+          "completed_at": "2026-10-06T11:00:57.623773+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T10:59:43.800384+00:00",
+          "completed_at": "2026-10-06T10:59:57.228404+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:00:57.630158+00:00",
+          "completed_at": "2026-10-06T11:02:02.817550+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:02:02.821450+00:00",
+          "completed_at": "2026-10-06T11:02:05.951145+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T10:59:43.782043+00:00",
+          "completed_at": "2026-10-06T10:59:43.794625+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:02:05.954156+00:00",
+          "completed_at": "2026-10-06T11:02:06.240835+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "ee9758b0-19b7-4dca-bcb7-cd13ce65c06f",
+      "evidence_pack_hash": "6d2f9c118deaa5a0885441924eb1351d6b91e4514ede7657ad26124d5707f155",
+      "judge_run_ids": [
+        "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+        "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+        "817b0e87-7e50-4bed-878b-1d15d934b742"
+      ],
+      "judge_validation_run_ids": [
+        "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+        "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+        "b6046932-0880-4f0a-aef8-60d1a5208298"
+      ],
+      "verdict_run_id": "1d04aeac-cf0c-45ba-afed-9d8a88708102",
+      "report_run_id": "e94b8ca8-5bed-4d9f-bdf2-6435a0db8dd3",
+      "production_qualified": false,
+      "result_label": "supported",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+          "validation_run_id": "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 16337,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "26"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "20"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "31"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "11.25"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "150"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "36"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "27"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "46"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q13",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "53"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E61.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "28"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E61"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "17"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.83"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.78"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "21"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q12",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.74",
+                "0.83"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E81.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "90044"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E81"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "8.4"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2464"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.75"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.67"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.84"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.80"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.69",
+                "0.94"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E82.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "84656"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E82"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E31.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E31"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E31.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "50"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E31"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E58.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "158"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E58"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E58.U1.Q2",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "17059"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E58"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E62",
+              "E61",
+              "E36"
+            ],
+            "S2": [
+              "E68",
+              "E81",
+              "E5"
+            ],
+            "S3": [
+              "E69",
+              "E82",
+              "E70"
+            ],
+            "S4": [
+              "E31"
+            ],
+            "S5": [
+              "E16",
+              "E40",
+              "E15",
+              "E58"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 36795,
+          "output_tokens": 1428,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+          "validation_run_id": "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 20494,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "26"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "150"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "36"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "17"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.83"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.75"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.80"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E31.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E31"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E31.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "50"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E31"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "aligned",
+              "strength": "insufficient",
+              "role": "synthesis",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E62",
+              "E63"
+            ],
+            "S2": [
+              "E68",
+              "E74"
+            ],
+            "S3": [
+              "E69",
+              "E70"
+            ],
+            "S4": [
+              "E31"
+            ],
+            "S5": [
+              "E8",
+              "E61",
+              "E81",
+              "E88"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [
+            {
+              "to": "E62.U1",
+              "from": "E62",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S1"
+            },
+            {
+              "to": "E63.U1",
+              "from": "E63",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S1"
+            },
+            {
+              "to": "E68.U1",
+              "from": "E68",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S2"
+            },
+            {
+              "to": "E74.U1",
+              "from": "E74",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S2"
+            },
+            {
+              "to": "E69.U1",
+              "from": "E69",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S3"
+            },
+            {
+              "to": "E70.U1",
+              "from": "E70",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S3"
+            },
+            {
+              "to": "E31.U1",
+              "from": "E31",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S4"
+            },
+            {
+              "to": "E8.U1",
+              "from": "E8",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S5"
+            },
+            {
+              "to": "E61.U1",
+              "from": "E61",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S5"
+            },
+            {
+              "to": "E81.U1",
+              "from": "E81",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S5"
+            },
+            {
+              "to": "E88.U1",
+              "from": "E88",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S5"
+            }
+          ],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 42217,
+          "output_tokens": 1057,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "817b0e87-7e50-4bed-878b-1d15d934b742",
+          "validation_run_id": "b6046932-0880-4f0a-aef8-60d1a5208298",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 23434,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "26"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "11.25"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E62.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "150"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E62"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.83"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E68.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E68"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.75"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E69.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.80"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E69"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "dose",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E62"
+            ],
+            "S2": [
+              "E68"
+            ],
+            "S3": [
+              "E69"
+            ],
+            "S4": [
+              "E30"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [
+            {
+              "to": "E62.U1",
+              "from": "E62",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S1"
+            },
+            {
+              "to": "E68.U1",
+              "from": "E68",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S2"
+            },
+            {
+              "to": "E69.U1",
+              "from": "E69",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S3"
+            },
+            {
+              "to": "E30.U1",
+              "from": "E30",
+              "rule": "unique-frozen-parent-unit-1.0",
+              "statement_id": "S4"
+            }
+          ],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "dose",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 37107,
+          "output_tokens": 972,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+          "normalized_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "risk of developing type 2 diabetes",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+            "intervention_or_exposure": "Regular physical activity"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 25,
+          "selected_documents": 8,
+          "selected_authoritative": 0,
+          "selected_pubmed": 8,
+          "roles": {
+            "direct": 8,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "not_enough_evidence",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 155590
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "23019e2a-af38-4950-a81d-ca00533fb3bf",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T10:59:57.239744+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T10:59:30.650905+00:00",
+        "completed_at": "2026-10-06T10:59:43.765874+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T10:59:43.807716+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:00:57.635698+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:02:02.824872+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T10:59:43.787778+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:02:05.957312+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "c581bf8c-25f5-4b94-af9f-e0dfae7446ac",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 73,
+        "raw_text": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+        "normalized_text": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "Regular physical activity",
+        "comparator": null,
+        "outcome": "risk of developing type 2 diabetes",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.95,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "physical activity",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D015444",
+            "preferred_name": "Exercise",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G11.427.410.698.277",
+              "I03.350"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "risk",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D012306",
+            "preferred_name": "Risk",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E05.318.740.600.800",
+              "G17.680.750",
+              "N05.715.360.750.625.700",
+              "N06.850.520.830.600.800"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "type 2 diabetes",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D003924",
+            "preferred_name": "Diabetes Mellitus, Type 2",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C18.452.394.750.149",
+              "C19.246.300"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+          "population": null,
+          "intervention_or_exposure": "Regular physical activity",
+          "comparator": null,
+          "outcome": "risk of developing type 2 diabetes",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:02:06.253522Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "c581bf8c-25f5-4b94-af9f-e0dfae7446ac",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "1d04aeac-cf0c-45ba-afed-9d8a88708102",
+        "claim": {
+          "text": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+          "claim_type": "causal"
+        },
+        "verdict": "supported",
+        "verdict_display": "Supported",
+        "headline": "Supported",
+        "short_summary": "Multiple validated assessments found evidence supporting the claim at its stated scope. The conclusion applies to the tested comparison.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "Multiple validated assessments found evidence supporting the claim at its stated scope. The conclusion applies to the tested comparison.",
+          "reason_category": "supported_by_validated_evidence",
+          "established": "Multiple validated assessments found evidence supporting the claim at its stated scope. The conclusion applies to the tested comparison.",
+          "unresolved": null,
+          "evidence_ids": [
+            "E15",
+            "E16",
+            "E30",
+            "E31",
+            "E36",
+            "E40",
+            "E5",
+            "E58",
+            "E61",
+            "E62",
+            "E63",
+            "E68",
+            "E69",
+            "E70",
+            "E74",
+            "E8",
+            "E81",
+            "E82",
+            "E88"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "text": "Multiple independent assessments supported the claim and passed citation validation."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E16",
+            "pmid": "39904457",
+            "doi": "10.1016/j.diabres.2025.112027",
+            "title": "Effects of exercise training and physical activity advice on HbA1c in people with type 2 diabetes: A network meta-analysis of randomized controlled trials.",
+            "journal": "Diabetes research and clinical practice",
+            "publication_date": "2025-02-02",
+            "study_design": "randomized_controlled_trial",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "HIIT was associated with the greatest reduction in HbA1c. Physical activity advice, which is easy to implement, accessible and unsupervised, should also be offered to people with type 2 diabetes to improve glycemic control.",
+            "excerpt_truncated": false,
+            "passage_sha256": "fd08acf4336d23407767688cdd50896ea08474ca83b9dd2963dadd13c8c5ccf0",
+            "passage_section": "CONCLUSIONS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/39904457/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "6c6a9179-322d-4fb6-99a3-6fb2e24290e9"
+            ],
+            "cited_by_validation_run_ids": [
+              "17d648f7-f140-457b-9e0a-6b4397f88cf5"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:39904457",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E16",
+                "source_unit_id": "E16.U1",
+                "section": "CONCLUSIONS",
+                "exact_text": "HIIT was associated with the greatest reduction in HbA1c. Physical activity advice, which is easy to implement, accessible and unsupervised, should also be offered to people with type 2 diabetes to improve glycemic control.",
+                "truncated": false,
+                "passage_sha256": "fd08acf4336d23407767688cdd50896ea08474ca83b9dd2963dadd13c8c5ccf0"
+              },
+              {
+                "evidence_id": "E40",
+                "source_unit_id": "E40.U1",
+                "section": "TITLE",
+                "exact_text": "Effects of exercise training and physical activity advice on HbA1c in people with type 2 diabetes: A network meta-analysis of randomized controlled trials.",
+                "truncated": false,
+                "passage_sha256": "ea972390e125b0c2f01c5ee17596303b862401b1a97395ed556c71c82d926879"
+              },
+              {
+                "evidence_id": "E15",
+                "source_unit_id": "E15.U1",
+                "section": "METHODS",
+                "exact_text": "A network meta-analysis was conducted. Seven databases were searched from inception to May 2024. We included randomized clinical trials of at least 12 weeks' duration evaluating different types of physical exercise and physical activity advice to reduce HbA1c in people with type 2 diabetes.",
+                "truncated": false,
+                "passage_sha256": "cd76fd5d7c924244a786bdfffa13c3ffb540f044bd3dbebb350152908217a978"
+              },
+              {
+                "evidence_id": "E58",
+                "source_unit_id": "E58.U1",
+                "section": "RESULTS",
+                "exact_text": "158 studies (17,059 participants) were included. Compared with the control group, all types of exercise were associated with lower HbA1c: HIIT [-0.61 % (95 % CrI -0.84; -0.37)], CT [-0.58 % (95 % CrI -0.73; -0.42], AT [-0.58 % (95 % CrI -0.70; -0.45)], RT [-0.40 % (95 % CrI -0.59; -0.21)] and physical activity advice [-0.35 % (95 % CrI -0.53; -0.16)]. HIIT was the most effective treatment for HbA1c reduction (SUCRA = 82 %), followed by CT (SUCRA = 77 %), AT (SUCRA = 76 %), RT (SUCRA = 37 %) and physical activity advice (SUCRA = 29 %).",
+                "truncated": false,
+                "passage_sha256": "5fcaa5ceac95d8296246a3a83a9d5cd96cd60dc2aea81f290435d77aea5f7293"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "27747395",
+            "doi": "10.1007/s00125-016-4079-0",
+            "title": "Physical activity and incident type 2 diabetes mellitus: a systematic review and dose-response meta-analysis of prospective cohort studies.",
+            "journal": "Diabetologia",
+            "publication_date": "2016-10-17",
+            "study_design": "meta_analysis",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient",
+              "supporting"
+            ],
+            "exact_excerpt": "Inverse associations between physical activity (PA) and type 2 diabetes mellitus are well known. However, the shape of the dose-response relationship is still uncertain. This review synthesises results from longitudinal studies in general populations and uses non-linear models of the association between PA and incident type 2 diabetes.",
+            "excerpt_truncated": false,
+            "passage_sha256": "e49498c3a56acce669b97bc88dcdfd2a1ee5b21ddbbcbf889f362b93b9e63bd6",
+            "passage_section": "AIMS/HYPOTHESIS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/27747395/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+              "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+              "817b0e87-7e50-4bed-878b-1d15d934b742"
+            ],
+            "cited_by_validation_run_ids": [
+              "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+              "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+              "b6046932-0880-4f0a-aef8-60d1a5208298"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:27747395",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "meta_analysis",
+            "exposure_assignment": "synthesized",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E8",
+                "source_unit_id": "E8.U1",
+                "section": "AIMS/HYPOTHESIS",
+                "exact_text": "Inverse associations between physical activity (PA) and type 2 diabetes mellitus are well known. However, the shape of the dose-response relationship is still uncertain. This review synthesises results from longitudinal studies in general populations and uses non-linear models of the association between PA and incident type 2 diabetes.",
+                "truncated": false,
+                "passage_sha256": "e49498c3a56acce669b97bc88dcdfd2a1ee5b21ddbbcbf889f362b93b9e63bd6"
+              },
+              {
+                "evidence_id": "E62",
+                "source_unit_id": "E62.U1",
+                "section": "RESULTS",
+                "exact_text": "Our results suggest an overall non-linear relationship; using the cubic spline model we found a risk reduction of 26% (95% CI 20%, 31%) for type 2 diabetes among those who achieved 11.25 MET h/week (equivalent to 150 min/week of moderate activity) relative to inactive individuals. Achieving twice this amount of PA was associated with a risk reduction of 36% (95% CI 27%, 46%), with further reductions at higher doses (60 MET h/week, risk reduction of 53%). Results for the MMET h/week dose-response curve were similar for moderate intensity PA, but benefits were greater for higher intensity PA and smaller for lower intensity activity.",
+                "truncated": false,
+                "passage_sha256": "1ceffbaf3c5e92ffb2915c3f5fc6bdac2675a5c65433476d0a8d70d140f69f70"
+              },
+              {
+                "evidence_id": "E63",
+                "source_unit_id": "E63.U1",
+                "section": "CONCLUSIONS/INTERPRETATION",
+                "exact_text": "Higher levels of LTPA were associated with substantially lower incidence of type 2 diabetes in the general population. The relationship between LTPA and type 2 diabetes was curvilinear; the greatest relative benefits are achieved at low levels of activity, but additional benefits can be realised at exposures considerably higher than those prescribed by public health recommendations.",
+                "truncated": false,
+                "passage_sha256": "f7929953e4028de9a4d4f37897b9eaeb530b435f3a9ed465723872d702655c5f"
+              },
+              {
+                "evidence_id": "E61",
+                "source_unit_id": "E61.U1",
+                "section": "METHODS",
+                "exact_text": "A systematic literature search identified 28 prospective studies on leisure-time PA (LTPA) or total PA and risk of type 2 diabetes. PA exposures were converted into metabolic equivalent of task (MET) h/week and marginal MET (MMET) h/week, a measure only considering energy expended above resting metabolic rate. Restricted cubic splines were used to model the exposure-disease relationship.",
+                "truncated": false,
+                "passage_sha256": "aeee0a50080d71c684416e62be64fb7bf48f58818a3b20418ed4682992674748"
+              },
+              {
+                "evidence_id": "E36",
+                "source_unit_id": "E36.U1",
+                "section": "TITLE",
+                "exact_text": "Physical activity and incident type 2 diabetes mellitus: a systematic review and dose-response meta-analysis of prospective cohort studies.",
+                "truncated": false,
+                "passage_sha256": "f46ea06783c144f32050f7230dc74fe1a8dc275bbf17e5e1fd9a46df721e9efa"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E5",
+            "pmid": "38179306",
+            "doi": "10.3389/fendo.2023.1275182",
+            "title": "Device-measured physical activity and type 2 diabetes mellitus risk.",
+            "journal": "Frontiers in endocrinology",
+            "publication_date": "2023-12-18",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "We investigated how device-measured physical activity (PA) volume (PA energy expenditure [PAEE]) and intensity (fraction of PAEE from moderate-to-vigorous PA [FMVPAEE]) were associated with the incidence of type 2 diabetes mellites (T2DM).",
+            "excerpt_truncated": false,
+            "passage_sha256": "ca984d2f3848e90d073e2dccbafc9ee6bde16a447b9ed948a7158501a4817603",
+            "passage_section": "OBJECTIVES",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/38179306/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+              "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+              "817b0e87-7e50-4bed-878b-1d15d934b742"
+            ],
+            "cited_by_validation_run_ids": [
+              "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+              "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+              "b6046932-0880-4f0a-aef8-60d1a5208298"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:38179306",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "prospective_cohort",
+            "exposure_assignment": "observed",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E5",
+                "source_unit_id": "E5.U1",
+                "section": "OBJECTIVES",
+                "exact_text": "We investigated how device-measured physical activity (PA) volume (PA energy expenditure [PAEE]) and intensity (fraction of PAEE from moderate-to-vigorous PA [FMVPAEE]) were associated with the incidence of type 2 diabetes mellites (T2DM).",
+                "truncated": false,
+                "passage_sha256": "ca984d2f3848e90d073e2dccbafc9ee6bde16a447b9ed948a7158501a4817603"
+              },
+              {
+                "evidence_id": "E68",
+                "source_unit_id": "E68.U1",
+                "section": "RESULTS",
+                "exact_text": "Each 1-SD increase in PAEE was associated with a 17% lower risk of T2DM (hazard ratio [HR]: 0.83, 95% confidence interval [CI]: 0.78-0.98). Each 1-SD increase in FMVPAEE was associated with a 21% lower incidence of T2DM (HR: 0.79, 95% CI: 0.74-0.83). Achieving the same PA volume (KJ/kg/day) through vigorous PA (HR: 0.88, 95% CI: 0.85-0.91) was more effective in preventing T2DM than moderate PA (HR: 0.97, 95% CI: 0.96-0.98) and light PA (HR: 0.99, 95% CI: 0.98-1.00).",
+                "truncated": false,
+                "passage_sha256": "ad0cfbe5a9147aa5bed492b5b1f0170ecb759f6421ef3400e8b6470776c4cd5e"
+              },
+              {
+                "evidence_id": "E74",
+                "source_unit_id": "E74.U1",
+                "section": "CONCLUSION",
+                "exact_text": "A higher PA volume is associated with a lower incidence of T2DM. Achieving the same PA volumes through higher-intensity PA is more effective than low-intensity PA in reducing T2DM incidence.",
+                "truncated": false,
+                "passage_sha256": "892f7696e3cb1c6493f04a5b9b6d5574fe129240e1744365be20b8826f3fa30a"
+              },
+              {
+                "evidence_id": "E81",
+                "source_unit_id": "E81.U1",
+                "section": "METHODS",
+                "exact_text": "This population-based prospective cohort study included 90,044 participants. The primary exposures were PAEE and FMVPAEE. The secondary exposures were energy expenditure exerted during light, moderate, and vigorous PA and their fraction of PAEE.",
+                "truncated": false,
+                "passage_sha256": "127fa8184ca3e995ecca1db62e00599571689b5afcb75025d889dfc319d6ba7e"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E31",
+            "pmid": "27350847",
+            "doi": "10.4239/wjd.v7.i12.243",
+            "title": "Daily physical activity and type 2 diabetes: A review.",
+            "journal": "World journal of diabetes",
+            "publication_date": "2016-06-25",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Physical activity improves glycemic control and reduces the risk of cardiovascular disease (CVD) and mortality in patients with type 2 diabetes (T2D). Moderate to vigorous physical activity is recommended to manage T2D; however, patients with T2D can be physically weak, making it difficult to engage in the recommended levels of physical activity. Daily physical activity includes various activities performed during both occupational and leisure time such as walking, gardening, and housework that type 2 diabetic patients should be able to perform without considerable physical burden. This review",
+            "excerpt_truncated": true,
+            "passage_sha256": "60f61bc64a86cb17566b306f49649c40d998d1f7100461aae08cc4b08017ee81",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/27350847/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+              "6c6a9179-322d-4fb6-99a3-6fb2e24290e9"
+            ],
+            "cited_by_validation_run_ids": [
+              "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+              "17d648f7-f140-457b-9e0a-6b4397f88cf5"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:27350847",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E31",
+                "source_unit_id": "E31.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Physical activity improves glycemic control and reduces the risk of cardiovascular disease (CVD) and mortality in patients with type 2 diabetes (T2D). Moderate to vigorous physical activity is recommended to manage T2D; however, patients with T2D can be physically weak, making it difficult to engage in the recommended levels of physical activity. Daily physical activity includes various activities performed during both occupational and leisure time such as walking, gardening, and housework that type 2 diabetic patients should be able to perform without considerable physical burden. This review focuses on the association between daily physical activity and T2D. Walking was the most common form of daily physical activity, with numerous studies demonstrating its beneficial effects on reducing the risk of T2D, CVD, and mortality. Walking for at least 30 min per day was shown to reduce the risk of T2D by approximately 50%. Additionally, walking was associated with a reduction in mortality. In contrast, evidence was extremely limited regarding other daily physical activities such as gardening and housework in patients with T2D. Recent studies have suggested daily physical activity, including non-exercise activity thermogenesis, to be favorably associated with metabolic risks and mortality. However, well-designed longitudinal studies are warranted to elucidate its effects on overall health.",
+                "truncated": false,
+                "passage_sha256": "60f61bc64a86cb17566b306f49649c40d998d1f7100461aae08cc4b08017ee81"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E30",
+            "pmid": "20086386",
+            "doi": "10.3810/psm.2004.01.80",
+            "title": "Physical activity and type 2 diabetes: tailoring exercise to optimize fitness and glycemic control.",
+            "journal": "The Physician and sportsmedicine",
+            "publication_date": "2004-01-01",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Physical activity decreases insulin resistance and can aid in both preventing type 2 diabetes mellitus and managing the disease. Before patients with type 2 diabetes begin an exercise program, they should undergo a preparticipatory clinical assessment and screening for micro- and macrovascular disease. Patients older than 35 and those with additional cardiovascular risk factors, peripheral vascular disease, long-standing disease, or peripheral neuropathy should have an exercise stress test. Adequate glycemic control and selection of appropriate physical activity, such as brisk walking or swimm",
+            "excerpt_truncated": true,
+            "passage_sha256": "120c5dbf39f6664cb0dee599146071330ed80bcc98a47dc3f55fe3f0557b52c2",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/20086386/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "817b0e87-7e50-4bed-878b-1d15d934b742"
+            ],
+            "cited_by_validation_run_ids": [
+              "b6046932-0880-4f0a-aef8-60d1a5208298"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:20086386",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E30",
+                "source_unit_id": "E30.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Physical activity decreases insulin resistance and can aid in both preventing type 2 diabetes mellitus and managing the disease. Before patients with type 2 diabetes begin an exercise program, they should undergo a preparticipatory clinical assessment and screening for micro- and macrovascular disease. Patients older than 35 and those with additional cardiovascular risk factors, peripheral vascular disease, long-standing disease, or peripheral neuropathy should have an exercise stress test. Adequate glycemic control and selection of appropriate physical activity, such as brisk walking or swimming, are essential to avoid associated complications. Patients on diabetes medications should monitor blood glucose levels and adjust their diet to minimize fluctuations in blood glucose during exercise.",
+                "truncated": false,
+                "passage_sha256": "120c5dbf39f6664cb0dee599146071330ed80bcc98a47dc3f55fe3f0557b52c2"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E69",
+            "pmid": "40119320",
+            "doi": "10.1186/s12933-025-02676-x",
+            "title": "Accelerometer-derived \"weekend warrior\" physical activity pattern and incident type 2 diabetes.",
+            "journal": "Cardiovascular diabetology",
+            "publication_date": "2025-03-21",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "During a median follow-up of 8.4 years, 2464 cases of T2D were documented. In multivariable-adjusted models, the weekend warrior pattern (hazard ratio [HR] 0.75; 95% confidence interval [CI] 0.67-0.84) and the regularly active pattern (HR 0.80, 95% CI 0.69-0.94) exhibited a comparable lower risk of T2D compared to physically inactive participants. When stratified by genetic risk score (PRS) of T2D, the weekend warrior pattern was associated with T2D in the higher PRS group (HR 0.78, 95% CI 0.67-0.91), intermediate PRS group (HR 0.78, 95% CI 0.62-0.97) and lowest PRS group (HR 0.59, 95% CI 0.43",
+            "excerpt_truncated": true,
+            "passage_sha256": "09a1adbafebef37f2eae5a2ed458a7ed5dd9422802350e468f6316c4fa0cc88a",
+            "passage_section": "RESULTS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/40119320/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+              "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+              "817b0e87-7e50-4bed-878b-1d15d934b742"
+            ],
+            "cited_by_validation_run_ids": [
+              "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+              "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+              "b6046932-0880-4f0a-aef8-60d1a5208298"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:40119320",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E69",
+                "source_unit_id": "E69.U1",
+                "section": "RESULTS",
+                "exact_text": "During a median follow-up of 8.4 years, 2464 cases of T2D were documented. In multivariable-adjusted models, the weekend warrior pattern (hazard ratio [HR] 0.75; 95% confidence interval [CI] 0.67-0.84) and the regularly active pattern (HR 0.80, 95% CI 0.69-0.94) exhibited a comparable lower risk of T2D compared to physically inactive participants. When stratified by genetic risk score (PRS) of T2D, the weekend warrior pattern was associated with T2D in the higher PRS group (HR 0.78, 95% CI 0.67-0.91), intermediate PRS group (HR 0.78, 95% CI 0.62-0.97) and lowest PRS group (HR 0.59, 95% CI 0.43-0.80).",
+                "truncated": false,
+                "passage_sha256": "09a1adbafebef37f2eae5a2ed458a7ed5dd9422802350e468f6316c4fa0cc88a"
+              },
+              {
+                "evidence_id": "E70",
+                "source_unit_id": "E70.U1",
+                "section": "CONCLUSIONS",
+                "exact_text": "Engaging in the weekend warrior pattern is associated with a similarly lower risk of T2D to the regularly active pattern, even among individuals with high genetic risk. These findings highlight the weekend warrior pattern as a significant and flexible alternative in preventive intervention strategies for T2D, particularly for those unable to maintain daily activity routines.",
+                "truncated": false,
+                "passage_sha256": "d3e8e5fdc26367cd76ee1ac9ff880ec4855f02a26ddbad3d118e9da05ebbb922"
+              },
+              {
+                "evidence_id": "E82",
+                "source_unit_id": "E82.U1",
+                "section": "METHODS",
+                "exact_text": "A total of 84,656 general participants from the UK Biobank with validated accelerometry data and free of T2D was included. Data on PA was collected using the Axivity AX3 wrist-based triaxial accelerometer worn for one week. Participants were categorized into three PA patterns: inactive (< 150 min/week of MVPA), weekend warrior (≥ 150 min/week with ≥ 50% of total MVPA occurring within 1-2 days), and regularly active (≥ 150 min/week but not meeting weekend warrior criteria).",
+                "truncated": false,
+                "passage_sha256": "35bd6ebe26b83f08e1b4d99c234e6a6a5146e2b49e0409ea3df605a6233c1259"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E88",
+            "pmid": "41511492",
+            "doi": "10.2337/dc25-2095",
+            "title": "Associations of Moderate-to-Vigorous Physical Activity Timing With Type 2 Diabetes Incidence in UK Biobank and Prevalent Glycemic Measures in NHANES.",
+            "journal": "Diabetes care",
+            "publication_date": "2026-03-01",
+            "study_design": "cross_sectional",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Regression models were used to assess associations between accelerometer-derived MVPA timing and incident T2D in UK Biobank (UKB) (n = 84,528, prospective), prevalent diabetes, and glycemic measures in the National Health and Nutrition Examination Survey (NHANES) (n = 6,998, cross-sectional).",
+            "excerpt_truncated": false,
+            "passage_sha256": "1d7c6449865518d1ce378a574d3b1b6d4ec6a9ce8de186b2319e9cccd7f1ab4b",
+            "passage_section": "RESEARCH DESIGN AND METHODS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/41511492/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "2c949ffb-6a99-49b0-85ed-0337b9f7a527"
+            ],
+            "cited_by_validation_run_ids": [
+              "488bbfba-95a3-4e2a-8f76-1bd16713fd4f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:41511492",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "cross_sectional",
+            "exposure_assignment": "observed",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E88",
+                "source_unit_id": "E88.U1",
+                "section": "RESEARCH DESIGN AND METHODS",
+                "exact_text": "Regression models were used to assess associations between accelerometer-derived MVPA timing and incident T2D in UK Biobank (UKB) (n = 84,528, prospective), prevalent diabetes, and glycemic measures in the National Health and Nutrition Examination Survey (NHANES) (n = 6,998, cross-sectional).",
+                "truncated": false,
+                "passage_sha256": "1d7c6449865518d1ce378a574d3b1b6d4ec6a9ce8de186b2319e9cccd7f1ab4b"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 2,
+            "contradicted": 0,
+            "not_enough_evidence": 1
+          },
+          "description": "2 qualified assessment(s) supported the claim; 1 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "validated_support",
+          "validated_citations_shown": 7,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E16",
+            "pmid": "39904457",
+            "doi": "10.1016/j.diabres.2025.112027",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/39904457/"
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "27747395",
+            "doi": "10.1007/s00125-016-4079-0",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/27747395/"
+          },
+          {
+            "evidence_id": "E5",
+            "pmid": "38179306",
+            "doi": "10.3389/fendo.2023.1275182",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/38179306/"
+          },
+          {
+            "evidence_id": "E31",
+            "pmid": "27350847",
+            "doi": "10.4239/wjd.v7.i12.243",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/27350847/"
+          },
+          {
+            "evidence_id": "E30",
+            "pmid": "20086386",
+            "doi": "10.3810/psm.2004.01.80",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/20086386/"
+          },
+          {
+            "evidence_id": "E69",
+            "pmid": "40119320",
+            "doi": "10.1186/s12933-025-02676-x",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/40119320/"
+          },
+          {
+            "evidence_id": "E88",
+            "pmid": "41511492",
+            "doi": "10.2337/dc25-2095",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/41511492/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "1d04aeac-cf0c-45ba-afed-9d8a88708102",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "7cfc8e0134c281d1290940f470cc9bad16898c742f55472063fceb93139006ee",
+          "evidence_pack_id": "ee9758b0-19b7-4dca-bcb7-cd13ce65c06f",
+          "evidence_pack_hash": "6d2f9c118deaa5a0885441924eb1351d6b91e4514ede7657ad26124d5707f155",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "2c949ffb-6a99-49b0-85ed-0337b9f7a527",
+            "6c6a9179-322d-4fb6-99a3-6fb2e24290e9",
+            "817b0e87-7e50-4bed-878b-1d15d934b742"
+          ],
+          "judge_validation_run_ids": [
+            "17d648f7-f140-457b-9e0a-6b4397f88cf5",
+            "488bbfba-95a3-4e2a-8f76-1bd16713fd4f",
+            "b6046932-0880-4f0a-aef8-60d1a5208298"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:02:06.227765Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "bc2749131902823899f15c4293bd680a1281a74351ab428b2cfcb4c62c47209a"
+      }
+    }
+  ]
+}

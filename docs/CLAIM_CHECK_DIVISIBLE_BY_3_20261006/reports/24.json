@@ -1,0 +1,843 @@
+{
+  "case_number": 24,
+  "submitted_claim": "Blue light from smartphones causes leukemia.",
+  "sanity_expectation": "NEI",
+  "analysis_id": "6a63a5b5-19f0-4fc0-8d31-0c5d2ba470d1",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "2eb91c1f-5f1c-40ae-85eb-5a9f4b4c4df1",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:12:12.777601+00:00",
+          "completed_at": "2026-10-06T11:12:53.761553+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:12:10.966548+00:00",
+          "completed_at": "2026-10-06T11:12:12.771828+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:12:53.767743+00:00",
+          "completed_at": "2026-10-06T11:13:49.024558+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:13:49.032327+00:00",
+          "completed_at": "2026-10-06T11:13:49.462643+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:12:10.942711+00:00",
+          "completed_at": "2026-10-06T11:12:10.959210+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:13:49.468001+00:00",
+          "completed_at": "2026-10-06T11:13:49.531593+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "a27b1ac0-ed03-4586-928f-185d5884bdcb",
+      "evidence_pack_hash": "9d0690d88fd430b316132ecd15dbcbd060cd2fc16114aa79d144821a469acaf1",
+      "judge_run_ids": [
+        "6a17a66a-16f9-4084-96d7-3555d25ceafb",
+        "e4ef502a-eabd-448e-90b7-0b5ad469a880",
+        "b4cb126d-ef50-487d-9668-ab40af869688"
+      ],
+      "judge_validation_run_ids": [
+        "3eeb0b26-8889-49a7-97a5-50b3c322dd96",
+        "196fe02c-3742-423a-8089-878dd186401f",
+        "386f79ec-a903-4a87-90d9-2969b7930e51"
+      ],
+      "verdict_run_id": "142f442a-fd53-486c-85ad-e723cc3c377d",
+      "report_run_id": "776b6f6d-b52a-429d-aeb4-3e849e843f80",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "6a17a66a-16f9-4084-96d7-3555d25ceafb",
+          "validation_run_id": "3eeb0b26-8889-49a7-97a5-50b3c322dd96",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 9049,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "20"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.23"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E2",
+              "E1"
+            ],
+            "S2": [
+              "E2"
+            ],
+            "S3": [
+              "E2"
+            ],
+            "S4": [
+              "E2"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 2836,
+          "output_tokens": 679,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "e4ef502a-eabd-448e-90b7-0b5ad469a880",
+          "validation_run_id": "196fe02c-3742-423a-8089-878dd186401f",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 13634,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "20"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 3,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E2"
+            ],
+            "S2": [
+              "E2"
+            ],
+            "S3": [
+              "E2"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 3177,
+          "output_tokens": 571,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "b4cb126d-ef50-487d-9668-ab40af869688",
+          "validation_run_id": "386f79ec-a903-4a87-90d9-2969b7930e51",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 18254,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 2,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1",
+              "E2"
+            ],
+            "S2": [
+              "E2"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 2822,
+          "output_tokens": 473,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Blue light from smartphones causes leukemia.",
+          "normalized_claim": "Blue light from smartphones causes leukemia.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "leukemia",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Blue light from smartphones causes leukemia.",
+            "intervention_or_exposure": "Blue light from smartphones"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 1,
+          "selected_documents": 1,
+          "selected_authoritative": 0,
+          "selected_pubmed": 1,
+          "roles": {
+            "direct": 1,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "not_enough_evidence"
+          ],
+          "aggregation_reasons": [
+            "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 102066
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "6a63a5b5-19f0-4fc0-8d31-0c5d2ba470d1",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:12:12.783258+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:12:07.465347+00:00",
+        "completed_at": "2026-10-06T11:12:10.921627+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:12:10.973895+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:12:53.773126+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:13:49.039668+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:12:10.950860+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:13:49.473078+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "2eb91c1f-5f1c-40ae-85eb-5a9f4b4c4df1",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 44,
+        "raw_text": "Blue light from smartphones causes leukemia.",
+        "normalized_text": "Blue light from smartphones causes leukemia.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "Blue light from smartphones",
+        "comparator": null,
+        "outcome": "leukemia",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.9,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "Blue light",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D000095743",
+            "preferred_name": "Blue Light",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "G01.358.500.505.650.220",
+              "G01.590.540.100",
+              "G01.750.250.650.220",
+              "G01.750.770.578.220"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "smartphones",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D000068997",
+            "preferred_name": "Smartphone",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "L01.224.230.260.550.500.750",
+              "L01.462.500.847.698.300.250"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "leukemia",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D007938",
+            "preferred_name": "Leukemia",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04.557.337",
+              "C15.378.508"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Blue light from smartphones causes leukemia.",
+          "population": null,
+          "intervention_or_exposure": "Blue light from smartphones",
+          "comparator": null,
+          "outcome": "leukemia",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:13:49.545961Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "2eb91c1f-5f1c-40ae-85eb-5a9f4b4c4df1",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "142f442a-fd53-486c-85ad-e723cc3c377d",
+        "claim": {
+          "text": "Blue light from smartphones causes leukemia.",
+          "claim_type": "causal"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "reason_category": "population_mismatch",
+          "established": null,
+          "unresolved": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "evidence_ids": [
+            "E1",
+            "E2"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "text": "All qualified assessments found the evidence insufficient for a decisive conclusion."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E2",
+            "pmid": "39794386",
+            "doi": "10.1038/s41598-024-81459-y",
+            "title": "Smartphone based non invasive real time white blood cell counter leveraging blue light and static magnetic field.",
+            "journal": "Scientific reports",
+            "publication_date": "2025-01-10",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "White blood cells (WBCs), also known as leukocytes, are one of the most significant parts of the immune system. They generate antibodies, protect the body from illnesses, and heal wounds. Accurate estimation of WBCs is key for diagnosing cancer, infections, leukemia, lymphoma, and other diseases. However, the widely used Complete Blood Count (CBC) test presents challenges, including prick anxiety, discomfort, and logistical inconvenience to patients. This study introduces a ubiquous White Blood Cell counting system, UbiWhite, a novel smartphone-based, non-invasive system for real-time WBC coun",
+            "excerpt_truncated": true,
+            "passage_sha256": "7930103185113697ff031539da82fa54b3ba5514cc91eae7f19cc42d66d5b26e",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/39794386/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "6a17a66a-16f9-4084-96d7-3555d25ceafb",
+              "b4cb126d-ef50-487d-9668-ab40af869688",
+              "e4ef502a-eabd-448e-90b7-0b5ad469a880"
+            ],
+            "cited_by_validation_run_ids": [
+              "3eeb0b26-8889-49a7-97a5-50b3c322dd96",
+              "386f79ec-a903-4a87-90d9-2969b7930e51",
+              "196fe02c-3742-423a-8089-878dd186401f"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:39794386",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E2",
+                "source_unit_id": "E2.U1",
+                "section": "ABSTRACT",
+                "exact_text": "White blood cells (WBCs), also known as leukocytes, are one of the most significant parts of the immune system. They generate antibodies, protect the body from illnesses, and heal wounds. Accurate estimation of WBCs is key for diagnosing cancer, infections, leukemia, lymphoma, and other diseases. However, the widely used Complete Blood Count (CBC) test presents challenges, including prick anxiety, discomfort, and logistical inconvenience to patients. This study introduces a ubiquous White Blood Cell counting system, UbiWhite, a novel smartphone-based, non-invasive system for real-time WBC counting from fingertip videos. Our system uses optical and magnetic techniques to provide accurate WBC counts without blood extraction. An initial experimentation was carried out on 20 adult participants to verify the system's effectiveness compared to standard CBC tests (IRB #4051). The developed algorithms exhibit 1.04 and 1.23 RMSE, respectively. Our innovation provides an easy, affordable, and instantaneous solution for monitoring WBCs in various healthcare settings, including homes and critical care units. Additionally, it serves as a beacon of hope for low- and middle-income nations, where access to and affordability of traditional lab tests are limited.",
+                "truncated": false,
+                "passage_sha256": "7930103185113697ff031539da82fa54b3ba5514cc91eae7f19cc42d66d5b26e"
+              },
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "TITLE",
+                "exact_text": "Smartphone based non invasive real time white blood cell counter leveraging blue light and static magnetic field.",
+                "truncated": false,
+                "passage_sha256": "df7590a9ac8530f5d6f0e64cbf055f44688f2f2004f16bd3d945bfb5b1615c51"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 0,
+            "not_enough_evidence": 3
+          },
+          "description": "3 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "relevant_but_insufficient",
+          "validated_citations_shown": 1,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E2",
+            "pmid": "39794386",
+            "doi": "10.1038/s41598-024-81459-y",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/39794386/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "142f442a-fd53-486c-85ad-e723cc3c377d",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "343287a882db8c0d7288e985a96ec0fc73127355c2675d070fae2ca217d809de",
+          "evidence_pack_id": "a27b1ac0-ed03-4586-928f-185d5884bdcb",
+          "evidence_pack_hash": "9d0690d88fd430b316132ecd15dbcbd060cd2fc16114aa79d144821a469acaf1",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "6a17a66a-16f9-4084-96d7-3555d25ceafb",
+            "b4cb126d-ef50-487d-9668-ab40af869688",
+            "e4ef502a-eabd-448e-90b7-0b5ad469a880"
+          ],
+          "judge_validation_run_ids": [
+            "196fe02c-3742-423a-8089-878dd186401f",
+            "386f79ec-a903-4a87-90d9-2969b7930e51",
+            "3eeb0b26-8889-49a7-97a5-50b3c322dd96"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:13:49.519911Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "ff90472b456d6d143a6d3be41bd626bb2e01b9a8df727279152ebfc489867a18"
+      }
+    }
+  ]
+}

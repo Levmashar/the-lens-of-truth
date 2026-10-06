@@ -174,6 +174,65 @@ def test_explicit_paratera_validator_is_independent_of_judge_three() -> None:
     assert development_entailment_validator(production, judge) is None
 
 
+@pytest.mark.parametrize("thinking", [None, False])
+def test_validator_thinking_configuration_reaches_both_transport_paths(
+    monkeypatch: pytest.MonkeyPatch, thinking: bool | None,
+) -> None:
+    settings = Settings(
+        _env_file=None, app_env="test", validator_provider="paratera",
+        validator_model="Qwen3.8-Flash", validator_api_key="fixture-key",
+        validator_base_url="https://example.test/v1", validator_thinking_enabled=thinking,
+    )
+    validator = configured_development_validator(settings, timeout_seconds=75)
+    assert validator is not None
+    assert validator.thinking_enabled == thinking
+    original_client = httpx.AsyncClient
+    bodies: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        bodies.append(body)
+        assert body["response_format"]["json_schema"]["strict"] is True
+        assert body["model"] == "Qwen3.8-Flash"
+        assert "tools" not in body
+        if len(bodies) == 1:
+            result = {"statement_id": "S1", "evidence_ids": ["E1"],
+                      "status": "supported_by_sources", "scope_match": "exact",
+                      "reason": "The source accurately describes this finding."}
+        else:
+            result = {"status": "entails_judge_use", "evidence_claim": "Association only.",
+                      "scope_match": "partial", "reason": "No causal test.",
+                      "evidence_id": "E1"}
+        return httpx.Response(200, json={"choices": [{"message": {
+            "content": json.dumps(result),
+        }}]})
+
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: original_client(
+        transport=httpx.MockTransport(handler), **kwargs,
+    ))
+    prepared = prepare_semantic_input(
+        "statement_attribution", {"statement": "X and Y were measured."},
+        judge_run_id="judge", validation_run_id="validation",
+        statement_ids=("S1",), evidence_ids=("E1",),
+    )
+    asyncio.run(validator.assess_statement(prepared))
+    asyncio.run(validator.validate(_prepared()))
+    for body in bodies:
+        if thinking is None:
+            assert "enable_thinking" not in body
+        else:
+            assert body["enable_thinking"] is thinking
+
+
+def test_validator_rejects_unverified_thinking_configuration_before_calling() -> None:
+    with pytest.raises(ValueError, match="thinking"):
+        configured_development_validator(Settings(
+            _env_file=None, validator_provider="openai_compatible",
+            validator_model="openai/gpt-6-luna", validator_base_url="https://example.test/v1",
+            validator_api_key="fixture-key", validator_thinking_enabled=False,
+        ), timeout_seconds=75)
+
+
 def test_joint_transport_deadline_closes_the_calling_debug_event(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

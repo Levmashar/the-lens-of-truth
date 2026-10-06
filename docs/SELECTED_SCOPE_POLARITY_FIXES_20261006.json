@@ -1,0 +1,5129 @@
+{
+  "date": "2026-10-06",
+  "scope": "Five failures plus two controls through frontend HTTP flow; one additional laboratory repeat",
+  "versions": {
+    "architecture": "V2.5 validated evidence position with V2.4 structured quantity references",
+    "judge_input": "judge-input-2.5",
+    "judge_decision": "2.5",
+    "validation_contract": "judge-validation-2.5",
+    "judge_prompt": "judge-2.15-validated-evidence-position-2026-10-05",
+    "semantic_prompt": "joint-evidence-axes-2.6-scope-polarity-2026-10-06",
+    "query_plan": "1.5",
+    "position": "validated-evidence-position-1.6",
+    "source_quantity_catalog": "source-quantity-catalog-1.0",
+    "numeric_fidelity": "numeric-reference-fidelity-2.4",
+    "numeric_comparability": "numeric-reference-comparability-2.4",
+    "verdict_policy": "verdict-policy-1.4"
+  },
+  "models": [
+    {
+      "role": "extraction",
+      "provider": "paratera",
+      "model": "DeepSeek-V4.1-Flash"
+    },
+    {
+      "role": "judge_1",
+      "provider": "paratera",
+      "model": "DeepSeek-V4.1-Flash"
+    },
+    {
+      "role": "judge_2",
+      "provider": "paratera",
+      "model": "Qwen3.5-Plus"
+    },
+    {
+      "role": "judge_3",
+      "provider": "paratera",
+      "model": "GLM-4.7"
+    },
+    {
+      "role": "semantic_validator",
+      "provider": "paratera",
+      "model": "Qwen3.8-Flash"
+    }
+  ],
+  "base_url": "https://llmapi.paratera.com/v1",
+  "validator_thinking_enabled": false,
+  "model_changes": false,
+  "judge_prompt_changes": false,
+  "semantic_prompt_change": true,
+  "tests": {
+    "backend_passed": 1032,
+    "backend_failed": 0,
+    "backend_skipped": 0,
+    "database_tests_enabled": true,
+    "frontend_passed": 52,
+    "frontend_build": "pass",
+    "ruff": "pass",
+    "mypy": "pass"
+  },
+  "live_model_call_starts": 56,
+  "unique_claims": 7,
+  "analysis_submissions": 8,
+  "all_saved_live_audits_exact": true,
+  "audit_checks": [
+    {
+      "number": 3,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 3,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 3,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 6,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 6,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 6,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 9,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "supported",
+      "unchanged": false
+    },
+    {
+      "number": 9,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "supported",
+      "unchanged": false
+    },
+    {
+      "number": 9,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "supported",
+      "unchanged": false
+    },
+    {
+      "number": 12,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "contradicted",
+      "current_position": "contradicted",
+      "unchanged": true
+    },
+    {
+      "number": 12,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "contradicted",
+      "current_position": "contradicted",
+      "unchanged": true
+    },
+    {
+      "number": 109,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 109,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 109,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 15,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 15,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 15,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "not_enough_evidence",
+      "current_position": "not_enough_evidence",
+      "unchanged": true
+    },
+    {
+      "number": 101,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 101,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 101,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 102,
+      "slot": 1,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 102,
+      "slot": 2,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    },
+    {
+      "number": 102,
+      "slot": 3,
+      "audit_exact": true,
+      "saved_position": "supported",
+      "current_position": "supported",
+      "unchanged": true
+    }
+  ],
+  "changed_app_files_since_14_baseline": [
+    "backend/app/adapters/entailment.py",
+    "backend/app/pipeline/completeness.py",
+    "backend/app/pipeline/pico.py",
+    "backend/app/pipeline/setting.py",
+    "backend/app/report/explanation.py",
+    "backend/app/retrieval/models.py",
+    "backend/app/retrieval/query_planner.py",
+    "backend/app/retrieval/ranking.py",
+    "backend/app/retrieval/sufficiency.py",
+    "backend/app/validation/audit25.py",
+    "backend/app/validation/joint24.py",
+    "backend/app/validation/polarity.py",
+    "backend/app/validation/position.py",
+    "backend/app/validation/relation_flow.py",
+    "backend/app/validation/relationship_guards.py",
+    "backend/app/validation/scope.py",
+    "backend/app/verdict/service.py"
+  ],
+  "source_manifest": {
+    "backend/app/__init__.py": "2ca567377345e1cf590e262c08230b822d6dbba35347d3275eb985df09115f4a",
+    "backend/app/adapters/__init__.py": "247a92f31cdd9d648ef2d64994950712bc06cd6daba2f48a1bc4e70ba66121b7",
+    "backend/app/adapters/authoritative.py": "f0a1472d0b857fb322203831086b1b3a801d074403776088af4465d7ee2d4833",
+    "backend/app/adapters/base.py": "2aa75f381d5539c932ed484a8399562d36ac4d87bffb352cee51c2f459c92ba0",
+    "backend/app/adapters/claim_extractor.py": "82168d1ecb743495b2b1a6ab7be53b9e7820be46377383cc15e926cb6c3d95e9",
+    "backend/app/adapters/crossref.py": "7430b2119f8e431675e0cdd15669a2079633b04533e9074805b122169325b6bc",
+    "backend/app/adapters/entailment.py": "b8a5d6e65ed3ec5ccb4cdf4342d521d1e3a3d73e02ef0f85f750d7d9e61d801f",
+    "backend/app/adapters/http.py": "c4c5f4d102ca71ef26898731ff43fd6e4f6d804d1afdbf5133348e7c8710c48e",
+    "backend/app/adapters/judge.py": "29a5cabd033c23d1a8140ae4c0e211f7058c526cba925c92f2fe23009f1edce1",
+    "backend/app/adapters/model_catalog.py": "8b991588d1edb4243bddcbe4e285e8722317a9e0dca1c9390d019dae36a18f86",
+    "backend/app/adapters/ocr.py": "52d73a604f1c0bbf199e7489285a90ed528786d4d57c03f59a78e30ef33dd058",
+    "backend/app/adapters/pubmed.py": "67759cd412c57a9aa3685cf65717c7207d18228108d328e9411df3caf80531d2",
+    "backend/app/adapters/storage.py": "cf9f1c46744afc297e0770a118e8fb3f6642cc65ade595ad407464e4389403ff",
+    "backend/app/adapters/structured_output.py": "d02f30a40f958897f4719d678e51a3564b5eb48d7d368456976a8f8abb956da6",
+    "backend/app/api/__init__.py": "f3e9051a1ef381c097dcafaec3d6f9f6448cdb2100f2af9ef0568a300ccf4d45",
+    "backend/app/api/router.py": "120ec6ed86544d4eeefd37f409076e79625444d431ccff3839febce9659339d9",
+    "backend/app/api/routes/__init__.py": "2ebf06c2b01bde87eefdb861d113fc089b6afb63b3b09383a450e9b1d86db520",
+    "backend/app/api/routes/analyses.py": "0c8d65ee0a66aa249b089a62c260f2dcd6241ce25e876dc13da657b5626f8acd",
+    "backend/app/core/__init__.py": "0501e0081e09b0c8a99b3baad6ecb2a051aef851808f99b69ed5a7a533aa37b4",
+    "backend/app/core/config.py": "44332b4846f85ef738feec791c7b7e715fd7d9615f5b0127f644d62879b8a9c5",
+    "backend/app/core/debug_trace.py": "20f4f38f04af49e47ff8316615810ea0f27dc7f42a06b4dbecc6770e9e4d4061",
+    "backend/app/core/diagnostics.py": "159cf6949429d33d8b64c72c7d45154d3c3433db009edd28d7f9fd5515666dc3",
+    "backend/app/core/errors.py": "40e9349c0933e37ae323d15ce9d2e1263de16d1d9d24ba7c917115d3b1645791",
+    "backend/app/core/logging.py": "54b19453996beda796313a529d75f42e7b4a0c848de9251750ae357fd2ad8762",
+    "backend/app/core/request_context.py": "35aa37d8daba0a02c8bdc9f481a59a3043568f790e9377a5eec92f34a77a6080",
+    "backend/app/db/__init__.py": "2c499ffc323ac32cb796eabc78112271884a2dd9983c239f128bbaad95f4137a",
+    "backend/app/db/base.py": "2f35127adcce02fb2234c0a09d9686a30da53c07d718eb07366dd33e8a703dce",
+    "backend/app/db/session.py": "458f31d5fac36b0fcf18832a66a92b9720a94d89ad70a6501bd1f61970f4c752",
+    "backend/app/dependencies.py": "2499bc723dc9c3571a2544703952f9e6c5988b94ddeb96e043de6ba47815eeac",
+    "backend/app/evaluation/__init__.py": "1d4123fa7c4a8ecaec7ea3ddf5d46049694dd094f20e68197bcd62e07b7aa729",
+    "backend/app/evaluation/artifacts.py": "30bf99cceee6fb6e35c913d9f7db9475f9c5ba16c7aaa6b26a8ddd455d02356a",
+    "backend/app/evaluation/call_budget.py": "ac30865a065db935c457eb3520c952fb972705a64f7bbb1cd8d422f4447fcfad",
+    "backend/app/evaluation/cases.py": "5fe663aea05731cfae24ef7c8c368621353b86857def2bf19c141623d566de47",
+    "backend/app/evaluation/end_to_end.py": "06b83c307ffe8fabc3e3ba921bf12e2b217857526458e7ca6db229a09780e1cd",
+    "backend/app/evaluation/ensemble.py": "88c3ed05aebcb4dc187a1e39a0dfd965c8724bc5a988bcd24878d209dba2b379",
+    "backend/app/evaluation/freeze.py": "7ceed18a9f019a9bf6bc02dba13f8cc1ddc900a061504a78b17a7d2f3f454b8e",
+    "backend/app/evaluation/judge_bakeoff.py": "0c0d89166340ca601751916418bb688bed953b25c6d34584c3868e791ce8cdb0",
+    "backend/app/evaluation/manual_report.py": "8f236b841909b41513196503faac8da77a77d5d47661d9871094e5fb82421bef",
+    "backend/app/evaluation/oracle.py": "0e7b686906f9845f51eebfe40abb4a5924bbf5c3846c4705553e417eb817caaf",
+    "backend/app/evaluation/results.py": "0c2493f62ec17c1ac778b38d06f0323452ae90f3e8032e0a4886804fed1afefc",
+    "backend/app/evaluation/selection.py": "c82cf670800c147cec0bd3267f666ab06a3f85bdf0c6c773e222ec296572a961",
+    "backend/app/evaluation/server.py": "ea8f6fdfb21f9bc56ec7fadae0cc7d3693d1e579a5361b05941b75dd6f1ee6cb",
+    "backend/app/evaluation/slice41.py": "d5a6611da92fb40bdc4c36cd89ecb233c0d9b97d09cd844bdaed0d67bb6511a2",
+    "backend/app/evaluation/slice41_cases.py": "2812fc242e4cebb99f3228e2353ba44d2f0c5d32268c674eae52132c96332b9e",
+    "backend/app/evaluation/slice41_repeat.py": "218c885063d5294be311d9393e615c531a84d2513ae0f1cf24cf975f50c4e098",
+    "backend/app/evaluation/source_suite.py": "7720b465968ec71d2d666d42666a1c66155605de8bc98e6b0bc7cf53aa68911a",
+    "backend/app/evaluation/validated_position.py": "d84642b24739f68a41d5964a2997b2df57dadd8476ffca0fd01b0be406bc5c64",
+    "backend/app/judging/__init__.py": "efd9a6af853fe4044f72dbe42969620f5742b37b4f2b06e48378befb60fd647e",
+    "backend/app/judging/compact23.py": "e7a92f1e74776f4024dbbfeb2cdcf33469e333b28780d8abd8461a79c3147e23",
+    "backend/app/judging/compact24.py": "6b022662bd9dac57b7cf998c6ff901fc8117e3b7dcd80e48d2b88acd788b8182",
+    "backend/app/judging/compact25.py": "af9a58e48eec3189ee47a88f1d4c015aee35c328e057792d9a6e75d5269518c4",
+    "backend/app/judging/config.py": "29ceac4b5e44709b1d0946a59ff9dbaec27d0bccc30403e7856cf0f4732c84f1",
+    "backend/app/judging/models.py": "37ffcc926e41173031219f87162b08b23b6745357fa155d98266b31f50cad18b",
+    "backend/app/judging/persistence.py": "bb9bc7f8bb0eefc337b8a4a3468d65bbbfdaf98515954f47934b38c4f0cdc69a",
+    "backend/app/judging/prompt.py": "e07bd35f4603d945939bcaca293b17a83811b9628a72f474cf84d3021abe07f8",
+    "backend/app/judging/service.py": "9b983d48c86b5ff79419ed373da17ee3662bd615df82e7d01399b7fb9113aad2",
+    "backend/app/judging/smoke.py": "51023ba5795098540bfc265285b7060b40da726fc32a280510ea9e2b81c1e64a",
+    "backend/app/judging/source_quantities.py": "8010bb45dc8547dd51feff71d1188c93e3f6f47a2142a4769d665a921033069a",
+    "backend/app/judging/source_units.py": "0b672630d26b4bd28bb38628bd5ade7a12c2fbc731d298e2778cd9d28ce93a9d",
+    "backend/app/judging/v3.py": "f2976f8db128ad0b9f048e4666b39db348b9b56870ee762b79cb71cc978e5295",
+    "backend/app/main.py": "ded66d17f8f1d26caf061acce122b98db1994c6fcafdc9a581da8611946e904f",
+    "backend/app/maintenance.py": "c00e43438432135fbfe4d36a6f92b0535b6ff6d2ca51eb5505b3d9709e351fc8",
+    "backend/app/medical/__init__.py": "491d8b43c3efd11d84e54fd8a946abf083b0a5bb7711d8000a0701a461517d03",
+    "backend/app/medical/entities.py": "03c3d744cfed2f2085fe53d2c7e412bdf96f34c86f287d0a8f1d279c91739ec7",
+    "backend/app/medical/linker.py": "2367d02c82cad52bccb6132170623e7007efa7ca45413f040dae3437ef52978a",
+    "backend/app/medical/mesh.py": "d80308043e261148af7ad9d4341f4369bf00f7f439cae5a34987a7aa5d3011f9",
+    "backend/app/medical/mesh_import.py": "4e9af28e48c2157248cf23cbaf5888042cb0f34aef19bc59b37d4e3d8ec04be1",
+    "backend/app/medical/renormalize.py": "2ae73287467b2ef6166a1fcdda0a318830855285e037ddc805ac085d31032a16",
+    "backend/app/medical/umls.py": "0a91dfadb09f155959ea689ceed4758526beb1117957ca155f76bd209ec7e40e",
+    "backend/app/models/__init__.py": "75999f3b4b0c59b2af3e3c2f305a85201d5427468438ed2eac84c3d257ad6663",
+    "backend/app/models/analysis_run.py": "96aaeb652665c816df006a813c0871bb55c1c8e7daf79e84950239538f0eb1e4",
+    "backend/app/models/claim.py": "adab96f16ad00df4e64f8e0128547d1b9e8a9e0c9fe2921bf3bf8494b7864de3",
+    "backend/app/models/enums.py": "b3bc696ff35910a23526c23832a9b40a19f8a26d679a12a776068c1afc2e483e",
+    "backend/app/models/evaluation.py": "aa3115a5df6e1af0d78be43dae7f848a4a1d5ee188adab6d24b137bb5fa8c81d",
+    "backend/app/models/evidence.py": "ce342c6fb4118c2eec82251558cd15385af277ab79227363627e57cbfc0da9a9",
+    "backend/app/models/judge_run.py": "e5f836cc6294dc0655e0d5a7be479c16bb6cb1093714138336565a35c234ec1c",
+    "backend/app/models/judge_validation_run.py": "8a468762c9ef4ef9cb1729968ea7b1eb9ea05a0d67245be41e0e2235bbe51e0e",
+    "backend/app/models/report_run.py": "eb37f702c380c709fac10b8867013f6175169aa332e60b3857f5633762494010",
+    "backend/app/models/retrieval.py": "94d5c728eba5e5a0fb08891a7f7022868b1de0a896da92bcb748cee8fbc1142b",
+    "backend/app/models/screenshot_upload.py": "5c31ca89586d8bb828ed7c9f70eae0d9e63be63b7f76b982084d0398258a0a95",
+    "backend/app/models/submission.py": "08b6d3d0f89784f85f1ad986041b3d6f2dcb696c7b83987a6bed68a5da513dff",
+    "backend/app/models/verdict_run.py": "b6908519cd641c4082db0f5779b06cbc2bc31bb79a7391a29fa2fe0dab07feec",
+    "backend/app/orchestration/__init__.py": "6cf7db8ba60e9441be5a3f804309dde68170acd5bbc5eea4d229b76347235e3f",
+    "backend/app/orchestration/service.py": "db2d577c8bed24772d9c99522e7b9a65d772cf7812fa6ff2affa34d4aff52030",
+    "backend/app/orchestration/smoke.py": "16b0886527e666037f257e3f9b91b577c3006fcd4dcb24c47f8fe7367a2d5c43",
+    "backend/app/orchestration/state.py": "0d089fc84c8a8a5076bad40b400cf2267a5c8abd5b652398e17c5759a76110d4",
+    "backend/app/orchestration/worker.py": "441af18379023e07a5fb25189729405bc97abeeb75545a3ef05f6707855b82eb",
+    "backend/app/pipeline/__init__.py": "2abb964b00f56f4b0c39193264bd9d3b808eb3b1e36ee077156f5508febb52bf",
+    "backend/app/pipeline/claim_types.py": "5a02b6064014b484f4690f0e71bc6203528825142952eaf12da246948c4cc807",
+    "backend/app/pipeline/completeness.py": "87c3d50222b48d37d77624b778f6a7ec73ac1604bf433efda51f04d9cab73496",
+    "backend/app/pipeline/numeric_effect.py": "fb7cc7159beff05f59c2dd1e9356a29489bf8387cdc2fd97d8606602e41b1a86",
+    "backend/app/pipeline/pico.py": "0b26c15a1e8dfe6b07f7989c46dab89fdab6fea6fc507f6dd566379ec2329ec8",
+    "backend/app/pipeline/readiness.py": "b6b911e4f24608b424e140c2ab962ee977a2b25912329f6d38212930ef5a88a8",
+    "backend/app/pipeline/setting.py": "826f23c66144029fccad26a8b0a3571461604b06c4c7485065b4ba54a88ce16c",
+    "backend/app/pipeline/standalone.py": "802573649cac2126d6408967897f8f0172c2531bc48bfa781834a7d37f09f7c5",
+    "backend/app/report/__init__.py": "c8b68eb11c1069806bfe7404bb6222596bd96d4a90c52546196243a69e8d297a",
+    "backend/app/report/builder.py": "196e9404906e8726ecc4086b8fd7d3845ecf71186da12aefe3f11e3145717304",
+    "backend/app/report/explanation.py": "fabbae7f869953614e7ded3706fb2aac34e5ebaa75e9941bdca39f94cf9d88ba",
+    "backend/app/report/models.py": "59c9e9896c18d8298e758be1971a6fb01a88e76c58157175e0a99d3e3813ae70",
+    "backend/app/report/persistence.py": "bdd12fb6677b2ac227016b003ae90378b6cc17ef030ee8c63810b20e28445bc1",
+    "backend/app/report/smoke.py": "25e0a6fbc097870bc92b8d2b26cbc52e83f1e3189cc13b522d34324904bbada7",
+    "backend/app/retrieval/__init__.py": "98c1baae9957dcb7f8ec339061bb16918f1dfdc8dd04b6f7369e889df728766c",
+    "backend/app/retrieval/analysis_design.py": "9343bf106b0073ce37a9ad91d8d1aefcb7b151b834b5221df060d932c7094f0d",
+    "backend/app/retrieval/claims.py": "94c0dd5dab066d63c29ea91302aaeb58484b0f6120d7c97082e16bbfee1b6c9c",
+    "backend/app/retrieval/directness.py": "0cfc44834d2d2d4bb0c8787ebe427cd50d5c7867e9c8712a10051730c762b4e5",
+    "backend/app/retrieval/endpoints.py": "28a15f099326718473af0c1156cfdc62b37f8941989415fbd6348a7f45ae07c5",
+    "backend/app/retrieval/errors.py": "eb9bd7f9f5c9659446cdaab787b5a5b8c864eb5b041ec2d9d2e32265f3a50788",
+    "backend/app/retrieval/evidence_pack.py": "90191bcee991442b39b0478e0d8c75e155d73726a89d53ed4d390a3e700c9848",
+    "backend/app/retrieval/evidence_roles.py": "c472ea20ea8c159308d5ff74353269aa2df68f7e464f9a0766983b16ba5386c8",
+    "backend/app/retrieval/integrity.py": "393db52686ee3fc5f1f857e15d6052a70092a192f240d09dbbd8d8e0728be98e",
+    "backend/app/retrieval/lexical.py": "43df1888c45da345557a775adbc7dead1ade0af15e8aac29f9ee96771f5240de",
+    "backend/app/retrieval/models.py": "f9a134aa3b6a8f75bd82e32862069db909a0fbd2b0d2379f7892d1f1430d2606",
+    "backend/app/retrieval/normalize.py": "b9ed90ada1b4976dadf53cde93a281a1df3753ffe4ec05736fcf9d72d8bc4bd3",
+    "backend/app/retrieval/passages.py": "ca02f2815791817a540685ae6005847d9cfb2ee3353486a5202569b3f0a9d9c0",
+    "backend/app/retrieval/persistence.py": "c4ff3d3260581d15e053070c0d194fed5ec1b31e0f62aa58118875d616f63b4e",
+    "backend/app/retrieval/query_planner.py": "7b64b361bbea011b6ff8051fe1d8202b9679036b100c2951c7d6b20e2e9aaf2b",
+    "backend/app/retrieval/ranking.py": "6f62f653b24907a732a6f6889c942158cc8ccef6a9ccf47bacf3e1bfe2e5d46b",
+    "backend/app/retrieval/service.py": "c0bc002f6526c9e0e395dd2cd6cf0d75b710cfec606ef0ef1f7588f9976f3a01",
+    "backend/app/retrieval/smoke.py": "7add5220ee5b790f7e70360b6335dcf076ae2fe6a7d5cbc419d231d7a4e15689",
+    "backend/app/retrieval/study_quality.py": "a229b41ca49cc2cc94786e305c2d3b6fcb20be6219c7d08788d5ed6b6ab1b060",
+    "backend/app/retrieval/sufficiency.py": "721022c73e02c319b295f959df9152ef7d490d83ed5b5d862bae3fd81841c663",
+    "backend/app/schemas/__init__.py": "19292800c82264b79028e010c1a0434af2f055a94453026a054ea03cb7dfc7fa",
+    "backend/app/schemas/analysis.py": "b1b05d95a5119e5f84c57b6fa6b2e081048ab9325936622274bb431bbbdce09b",
+    "backend/app/schemas/retrieval.py": "ffd7ab191ad0d06e6222346e84b9f802c1122dd985f630839394ea2a316d9751",
+    "backend/app/services/__init__.py": "89701d55d2e7c8df6b23ee72f8a078d5f1876f5f944931b94696b798bc83fd54",
+    "backend/app/services/analysis_ingestion.py": "8fdf89b66fd81b3585a34aa02e23fed67093bc031be06cb8434a6af10e5b54dc",
+    "backend/app/services/image_ingestion.py": "64284e2fbbcd057f0744805aef641d7cbeb9e182fdb16137dc371f0b697761cd",
+    "backend/app/services/redaction.py": "bf74cecef431fbcfd8442c1ec183cfbac0dc1364ccb030ea6c41bcb8c360a3b1",
+    "backend/app/validation/__init__.py": "292841fc2293434998743b522bab2eb1e976ca4f7710f8ff1ab3d5a509702a56",
+    "backend/app/validation/assertion_numeric.py": "43ed4ae56f0641d0aebe61f2ae0046251b610d5ed253794041a6552e2c1f1543",
+    "backend/app/validation/audit23.py": "3681ca1b93f27770b004a947717408a86181c744419e8bfe2a45969c34ead0ab",
+    "backend/app/validation/audit24.py": "0cbe276e244f511754c36a9c4915ef049d22944b362f466a181887a27b273833",
+    "backend/app/validation/audit25.py": "2b335a65093138d27340d220f4526b60e835d74676b22dd2d2fefbd4f51cf781",
+    "backend/app/validation/axes.py": "327982f0ed33c26f9ab3d9d760811e054fa56276f0d36753df3702ed1d3fa2a5",
+    "backend/app/validation/entailment.py": "2227b51b655138a069148c80b78bde85765e2f55407fc2500b96b525bf69b6a4",
+    "backend/app/validation/evaluation_budget.py": "1499128571148ff5b744aaad5306d95146a75bd10c25716cba729489caaedeff",
+    "backend/app/validation/joint.py": "28cb74e78d5568b9fc3a76a4dac59649928fc8387c531815b9e02b4385505e23",
+    "backend/app/validation/joint23.py": "3b6742b8b7e238d0a86e3628a43a1185e5b51910ad6fe80d5e94cc8fdba43d1b",
+    "backend/app/validation/joint24.py": "8b5e34c896667f5ea9d828fff95bd0f7ae1dfa6a1029102bd594fb557c56ff49",
+    "backend/app/validation/models.py": "4de7ce18851a7d9b8480abcc9138bd6b0378e5ce920dcc01d787a28ee776c2b0",
+    "backend/app/validation/numeric.py": "92f81a4cc16920139d99b15000aac2b932a14806f9e9319733492864d5324891",
+    "backend/app/validation/numeric23.py": "fa70cee43039191f1c0a56f7bbd8c9f7afe79259a3e60ba41c66834434c39060",
+    "backend/app/validation/numeric24.py": "7de810569aff2d258e96ec207ad62983e02581204e01bb8c06f5d7bc4bf11018",
+    "backend/app/validation/numeric_effects.py": "90025b8ec3dede7e28be1724145776c188d5b9c6810db0adbeaae8a2d412533c",
+    "backend/app/validation/numeric_occurrences.py": "0e84d02838a38110c0e3cde1568cb0a280ca5ec65a5423617bcdcce639be8e45",
+    "backend/app/validation/persistence.py": "c48ed1c522f445982dafaffc381eb860fffd1e9b5b4a56dd5af7e52a5c9f7ca9",
+    "backend/app/validation/polarity.py": "5606fbf133a444f0c83536fb884b59c728ac928c3c026cb83663d53ba45e3c84",
+    "backend/app/validation/position.py": "abbb2278b75c1d4968c20f53916282a1f1ad13e836441fbf42261053b4072355",
+    "backend/app/validation/qualification.py": "d9bcdf01f5c3e15dfb5e15f20889a0d6f98041f8e1f62bb2730a097d4896c3ee",
+    "backend/app/validation/relation_cases.py": "b1cff799ae9c8dc0ff58eeeb2c52eb09346b0bdce84a13feb234d1969b18599f",
+    "backend/app/validation/relation_eval.py": "33aa9c4d4fab1c74c894fef4ae54e19b8b085bc1a60eb68e0aeea2b4a5519912",
+    "backend/app/validation/relation_flow.py": "d286a4c562e3c30aae77274fa3d688ec86c6e737b414bb104e498911fad9c2db",
+    "backend/app/validation/relation_qualification_eval.py": "cb1ab25bef1fd82853d0bbf2bbaaef08c1d8b9d94fbd4fcb603567591aebc4ea",
+    "backend/app/validation/relations.py": "4c031b3f6631eb5c3c0f9c0b1024005c5653839439581eb482c40573c0420193",
+    "backend/app/validation/relationship_guards.py": "d872ae17cd802e1d2e3b8af8cea7280d957bd59c28bb3c4060ff0593cb5d3610",
+    "backend/app/validation/replay.py": "a50c59347db74b36c099d125534c7461f90d83098469269ec9face2a56355342",
+    "backend/app/validation/scope.py": "8a097a83a808850e47845028a1b4916bdaacc4a412e36f1f44a2c3d7a5464f5a",
+    "backend/app/validation/semantic.py": "e2ad1ec9c8dfa9ca0bf54cfdd61f0ed442a3d981f09483a94979286b8b358f8a",
+    "backend/app/validation/semantic_eval.py": "1a322d6d35863f7e5f0ad8187b7f8c0850f50b521f25668b76faa37ea8008cd0",
+    "backend/app/validation/service.py": "ba977ecad4624422f5c14a564eeed4916f3639f36400f74ea1740cfb96d36ebf",
+    "backend/app/validation/slice1_eval.py": "9a590a5ad4b1549998967dcef7fdb057b33608e37a4c00ddf8df516e94e27f95",
+    "backend/app/validation/slice2_frozen_eval.py": "a9a07c7644fbdbdbcb29c58607848a1a55fe978e339d2b18e055e70ee23546c5",
+    "backend/app/validation/slice2_live.py": "7dcde165aea11ac5338354b9a1117f8ad41b344fe92b1a4cb5d4dbcec5435891",
+    "backend/app/validation/slice2_replay.py": "838b14476bf9b44c709709adb9b75c498e9363136d7e0ba9378a187e74b46210",
+    "backend/app/validation/slice3_eval.py": "f4e41c8b1612c86005e63af52ee360eb9a720674dc0ea082eb66d4ab781162be",
+    "backend/app/validation/slice3_replay.py": "c0f4efebda02e86c2873d80e20bca9d937e8e8ab65f4fec8f89a1f056bea75dc",
+    "backend/app/validation/slice3_results.py": "618aab083e00b7c7aa572917bd3a8d9b48ae009fd070049fd6360359e69e8844",
+    "backend/app/validation/smoke.py": "07eb440f553d0af180b7f082a11368a673ea2eae71e039120a72ee8d2f10870e",
+    "backend/app/validation/v2.py": "bbd07211c1317c3cdf8a5f7815737cd6bd27d247a89dd08336e31dfcc1460547",
+    "backend/app/verdict/__init__.py": "d4c395e4c7ebf7c5b06e05277afa303dff854a6eda920f60c38bddf94a1af128",
+    "backend/app/verdict/models.py": "955ca5ace96de36120e76a560cc86ce11b112676e062145484e2fca9f3bf64a7",
+    "backend/app/verdict/persistence.py": "cbb2b1794f4ff3d8f1147402c5eb3617cc98d021d03e622339dd3825636843be",
+    "backend/app/verdict/policy.py": "012a4cb83e8169fa8d4abb869c1370478aa0e804e9475d2179131cffd5d641be",
+    "backend/app/verdict/service.py": "3f2f956c9c7e5659b5c18d809d00961abce1094a9e090194b2d6c72668be1619",
+    "backend/app/verdict/smoke.py": "3e1bee0e101c032a9f592c72368d2f8c9cc2ad3036708906de16ba63e148bc11"
+  },
+  "live_results": [
+    {
+      "number": 3,
+      "claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+      "analysis_id": "97cf639c-b2ac-4113-9b07-a71ec6d30cc2",
+      "before": "NEI",
+      "after": "NEI",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "not_enough_evidence",
+        "not_enough_evidence",
+        "not_enough_evidence"
+      ],
+      "elapsed_ms": 211426,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+        "normalized_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "cervical cancer",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": null,
+          "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "intervention_or_exposure": "Persistent high-risk HPV infection"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "not_enough_evidence"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "f67bd0e7-d994-4c79-a69e-b459e34176d3",
+          "validation_run_id": "0e0b8aab-65a1-4fd5-98d3-b879d0d7a109",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 54517,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E51"
+            ],
+            "S3": [
+              "E9"
+            ],
+            "S4": [
+              "E1"
+            ],
+            "S5": [
+              "E6"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 9561,
+          "output_tokens": 944,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "d2e30fca-ee8a-4661-91f6-77481c1228fa",
+          "validation_run_id": "035bdb7e-338f-49ad-8f5a-f4b03a4eb83b",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 19092,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E52.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.20"
+              ],
+              "source_measure": "risk_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E52"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E51"
+            ],
+            "S2": [
+              "E5"
+            ],
+            "S3": [
+              "E3"
+            ],
+            "S4": [
+              "E9"
+            ],
+            "S5": [
+              "E52"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 11502,
+          "output_tokens": 844,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "c79cbf25-14f6-4922-91e0-8567eaa8747e",
+          "validation_run_id": "482f42ca-6026-49e2-abc9-5881affd0f47",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 27810,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E51"
+            ],
+            "S2": [
+              "E5"
+            ],
+            "S3": [
+              "E5"
+            ],
+            "S4": [
+              "E9"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 9874,
+          "output_tokens": 671,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": 6,
+      "claim": "Antibiotics can treat bacterial pneumonia.",
+      "analysis_id": "9bbcef7f-cfb4-41ec-9a7b-aa883ebd76d3",
+      "before": "NEI",
+      "after": "Supported",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "supported",
+        "supported",
+        "not_enough_evidence"
+      ],
+      "elapsed_ms": 150090,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "Antibiotics can treat bacterial pneumonia.",
+        "normalized_claim": "Antibiotics can treat bacterial pneumonia.",
+        "claim_type": "treatment",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "bacterial pneumonia",
+          "timeframe": null,
+          "claim_type": "treatment",
+          "comparator": null,
+          "population": null,
+          "original_claim": "Antibiotics can treat bacterial pneumonia.",
+          "intervention_or_exposure": "Antibiotics"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "supported"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "b0a3a27b-42c3-46a9-809c-a75103e90970",
+          "validation_run_id": "8edb1539-30d7-4678-9ce4-a2343587e413",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 8652,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E1.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "12"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E1.U1.Q2",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2408"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E1.U1.Q3",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.55"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E1.U1.Q8",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95.5"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "181"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "125"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "28"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "19"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q13",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "32"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E43.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "152"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E43"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E43.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "85"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E43"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E43.U1.Q23",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "50"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E43"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E43.U1.Q30",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "53"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E43"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E43.U1.Q66",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "34"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E43"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E1"
+            ],
+            "S3": [
+              "E7"
+            ],
+            "S4": [
+              "E12",
+              "E11",
+              "E38"
+            ],
+            "S5": [
+              "E43",
+              "E44",
+              "E42"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 24513,
+          "output_tokens": 1229,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "dfde1acb-4677-4861-92ee-afdaa8c1d52a",
+          "validation_run_id": "6d7a6c82-ae91-4296-a27b-1c0fd28b6bdc",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 18616,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E6"
+            ],
+            "S3": [
+              "E10"
+            ],
+            "S4": [
+              "E7"
+            ],
+            "S5": [
+              "E38"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 28300,
+          "output_tokens": 927,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "d1e56ebd-3818-4013-978f-c4507fc8baf4",
+          "validation_run_id": "caabff79-05c8-4fb2-8daf-089d35e5c88f",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 20968,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E12.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "28"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E12.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "19"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E12.U1.Q13",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "32"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "context"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E12",
+              "E38"
+            ],
+            "S3": [
+              "E7"
+            ],
+            "S4": [
+              "E1"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 24911,
+          "output_tokens": 690,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": 9,
+      "claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+      "analysis_id": "21743512-f0f0-42e4-a65a-00d1f6de0902",
+      "before": "Unable",
+      "after": "Supported",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "elapsed_ms": 126953,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+        "normalized_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "apoptosis",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": "some leukemia cell lines",
+          "original_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+          "intervention_or_exposure": "Blue light"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "supported"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "9b4db52b-7bea-465d-afca-20e2377d2b64",
+          "validation_run_id": "e1eb0764-ad4d-4669-8f0c-788e94b1dbfe",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 9613,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E20"
+            ],
+            "S2": [
+              "E26"
+            ],
+            "S3": [
+              "E8"
+            ],
+            "S4": [
+              "E57"
+            ],
+            "S5": [
+              "E6",
+              "E25"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 11575,
+          "output_tokens": 881,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "f5094bb7-f683-4e40-af93-0aa91cdfb019",
+          "validation_run_id": "dc7b7d76-6f9d-4471-97d6-d0011cbe4326",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 20536,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E20"
+            ],
+            "S2": [
+              "E8"
+            ],
+            "S3": [
+              "E57",
+              "E58"
+            ],
+            "S4": [
+              "E6"
+            ],
+            "S5": [
+              "E13"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 13629,
+          "output_tokens": 840,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "f047ef43-7a5c-4955-92c6-9057817e200a",
+          "validation_run_id": "2ec0db68-8686-4df3-96c6-3d25b4399376",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 24160,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E20"
+            ],
+            "S2": [
+              "E8"
+            ],
+            "S3": [
+              "E57",
+              "E58"
+            ],
+            "S4": [
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 11864,
+          "output_tokens": 665,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": 12,
+      "claim": "High blood pressure lowers the risk of stroke.",
+      "analysis_id": "a992cc1a-78e1-4de4-8f5b-a27bc609ac9d",
+      "before": "NEI",
+      "after": "Contradicted",
+      "qualified_judges": 2,
+      "qualified_positions": [
+        "contradicted",
+        "contradicted"
+      ],
+      "elapsed_ms": 199935,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "High blood pressure lowers the risk of stroke.",
+        "normalized_claim": "High blood pressure lowers the risk of stroke.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "stroke",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": null,
+          "original_claim": "High blood pressure lowers the risk of stroke.",
+          "intervention_or_exposure": "High blood pressure"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "2/3 usable",
+        "source_attribution": "2/3",
+        "semantic_classification": "2/3",
+        "judge_qualification": "2/3",
+        "final_aggregation": "contradicted"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "8acc32aa-92ac-49b4-b109-110f2c065c68",
+          "validation_run_id": "fc8357cc-03d3-4d62-8ffb-5bf650fcb6f0",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 9423,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E13.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "3.19"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E13.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.62",
+                "3.88"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E72.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "9082"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E72"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.94"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.38",
+                "3.64"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E25.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "9682"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E25"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E20.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "32"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E20"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E20.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "892"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E20"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E20.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.61"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E20"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E28"
+            ],
+            "S2": [
+              "E13",
+              "E72"
+            ],
+            "S3": [
+              "E10",
+              "E25"
+            ],
+            "S4": [
+              "E20"
+            ],
+            "S5": [
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 16168,
+          "output_tokens": 974,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "fae33121-28eb-44b5-b64e-84b8a3fb5304",
+          "validation_run_id": "f6bfb051-edaf-46d8-8762-2c910f971164",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 20649,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E2.U1.Q1",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "90"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.94"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.38",
+                "3.64"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E13.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "3.19"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E13.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.62",
+                "3.88"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "dose",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E28"
+            ],
+            "S2": [
+              "E2"
+            ],
+            "S3": [
+              "E10"
+            ],
+            "S4": [
+              "E13"
+            ],
+            "S5": [
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "dose",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19261,
+          "output_tokens": 1000,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "2833aa60-be52-48ed-84aa-0e9f2b9ac45c",
+          "validation_run_id": null,
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "failed",
+          "error_category": "timeout",
+          "attempt_count": 2,
+          "latency_ms": 110030,
+          "validation_status": null,
+          "validation_error_category": null,
+          "statement_statuses": {},
+          "conclusion_status": null,
+          "targeted_issue_codes": [],
+          "numeric_findings": [],
+          "evidence_axes": {},
+          "proposed_label": null,
+          "validated_evidence_position": null,
+          "finding_count": 0,
+          "qualification_reason_codes": [],
+          "qualification_success": false,
+          "exclusion_reasons": [
+            "JUDGE_FAILED"
+          ],
+          "source_ids": {},
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {},
+          "input_tokens": null,
+          "output_tokens": null,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": [
+            "timeout"
+          ]
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": 15,
+      "claim": "HIV is commonly transmitted by mosquito bites.",
+      "analysis_id": "4e31ba9b-c27f-41f7-8d4f-dc09b2e12758",
+      "before": "Unable",
+      "after": "NEI",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "not_enough_evidence",
+        "not_enough_evidence",
+        "not_enough_evidence"
+      ],
+      "elapsed_ms": 153517,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "HIV is commonly transmitted by mosquito bites.",
+        "normalized_claim": "HIV is commonly transmitted by mosquito bites.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "HIV",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": null,
+          "original_claim": "HIV is commonly transmitted by mosquito bites.",
+          "intervention_or_exposure": "mosquito bites"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "not_enough_evidence"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "e083922c-8025-4e65-89fe-e4f5cd970632",
+          "validation_run_id": "9b611fcf-7f49-4746-a91b-5f73bc3b61cf",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 10207,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E14.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "69"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E14"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E4"
+            ],
+            "S2": [
+              "E9"
+            ],
+            "S3": [
+              "E3"
+            ],
+            "S4": [
+              "E11"
+            ],
+            "S5": [
+              "E14"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 17148,
+          "output_tokens": 916,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "496b3ccc-74f8-41a6-b1a7-fc96e1a798af",
+          "validation_run_id": "64d34ae6-e5fd-4c29-8d5e-b53ae9729ef2",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 21553,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E14.U1.Q5",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "69"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E14"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E3"
+            ],
+            "S2": [
+              "E4"
+            ],
+            "S3": [
+              "E11"
+            ],
+            "S4": [
+              "E9"
+            ],
+            "S5": [
+              "E14"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19813,
+          "output_tokens": 821,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "bcb5a318-2c06-40dd-9d3e-c65c1248af4b",
+          "validation_run_id": "4a5135e1-123e-4dad-a1cc-1a8e5373f8bb",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 28211,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E14.U1.Q5",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "69"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E14"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E4"
+            ],
+            "S2": [
+              "E9"
+            ],
+            "S3": [
+              "E3"
+            ],
+            "S4": [
+              "E11"
+            ],
+            "S5": [
+              "E14"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 17368,
+          "output_tokens": 822,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": "control",
+      "claim": "Smoking causes lung cancer.",
+      "analysis_id": "14e34ae4-db72-4404-b0e8-a366bcd6815e",
+      "before": "Supported",
+      "after": "Supported",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "elapsed_ms": 143332,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "Smoking causes lung cancer.",
+        "normalized_claim": "Smoking causes lung cancer.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "lung cancer",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": null,
+          "original_claim": "Smoking causes lung cancer.",
+          "intervention_or_exposure": "Smoking"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "supported"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "de8ba3b0-c171-4012-9adb-01a965e39853",
+          "validation_run_id": "1213bb19-d600-4aad-bcde-433c5cb88fdc",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 5588,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E37.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E37"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E53"
+            ],
+            "S2": [
+              "E37"
+            ],
+            "S3": [
+              "E8"
+            ],
+            "S4": [
+              "E31"
+            ],
+            "S5": [
+              "E13"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 18755,
+          "output_tokens": 866,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "aa619532-8efd-475d-b1e7-26b302f14521",
+          "validation_run_id": "1e899bf1-a078-47cf-bb98-6aff87783545",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 21653,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E37.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E37"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E53"
+            ],
+            "S2": [
+              "E37"
+            ],
+            "S3": [
+              "E8"
+            ],
+            "S4": [
+              "E19"
+            ],
+            "S5": [
+              "E31"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 22044,
+          "output_tokens": 966,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "bc7ba8c4-f66d-4e03-a9a1-5febfb7af608",
+          "validation_run_id": "a70713d1-b80c-4975-8001-49cc56c2da9e",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 24245,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E37.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E37"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E26.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E26"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E26.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E26"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E53"
+            ],
+            "S2": [
+              "E37"
+            ],
+            "S3": [
+              "E19"
+            ],
+            "S4": [
+              "E31"
+            ],
+            "S5": [
+              "E26"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19072,
+          "output_tokens": 799,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    },
+    {
+      "number": "control",
+      "claim": "Daily sunscreen use reduces invasive melanoma risk.",
+      "analysis_id": "456a5a1b-81e1-4dba-99e5-8b75db240ef9",
+      "before": "Supported",
+      "after": "Supported",
+      "qualified_judges": 3,
+      "qualified_positions": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "elapsed_ms": 167678,
+      "total_model_calls": 7,
+      "normalization": {
+        "raw_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+        "normalized_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+        "claim_type": "causal",
+        "risk_class": "standard",
+        "pico": {
+          "outcome": "invasive melanoma risk",
+          "timeframe": null,
+          "claim_type": "causal",
+          "comparator": null,
+          "population": null,
+          "original_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+          "intervention_or_exposure": "Daily sunscreen use"
+        },
+        "numeric_effect": null
+      },
+      "waterfall": {
+        "extraction": "PASS",
+        "normalization": "PASS",
+        "retrieval": "PASS",
+        "selection": "PASS",
+        "judge_response": "3/3 usable",
+        "source_attribution": "3/3",
+        "semantic_classification": "3/3",
+        "judge_qualification": "3/3",
+        "final_aggregation": "supported"
+      },
+      "judge_diagnostics": [
+        {
+          "slot": 1,
+          "judge_run_id": "40bad947-09c3-4455-892d-37f0ffdc4423",
+          "validation_run_id": "97da8411-7358-4858-addb-45012d18df7e",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 15442,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.27"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.08",
+                "0.97"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.50"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.24",
+                "1.02"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.051"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E7.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1621"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E7"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E7.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25",
+                "75"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E7"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "23"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79",
+                "1.21"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.83"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.95"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.75",
+                "1.20"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E5.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.66"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "29"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "313717"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10670"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q15",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E2.U1.Q17",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.33"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "imprecise_null"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "synthesis",
+              "scope_basis": "population",
+              "finding_basis": "imprecise_null"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E29",
+              "E7"
+            ],
+            "S2": [
+              "E5",
+              "E6"
+            ],
+            "S3": [
+              "E2"
+            ],
+            "S4": [
+              "E40",
+              "E52"
+            ],
+            "S5": [
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "imprecise_null",
+              "null_precision_reason": "nonsignificance_only"
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "imprecise_null",
+              "null_precision_reason": "no_source_precision_signal"
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 12906,
+          "output_tokens": 1377,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "e8afba38-c954-4610-8656-ba5d096fc9be",
+          "validation_run_id": "300398b9-516d-4626-bc62-1ae9b0db8a00",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 18777,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79",
+                "1.21"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E2.U1.Q15",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E2.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E2.U1.Q17",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.33"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E29.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.27"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E29.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.08",
+                "0.97"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "neutral",
+              "scope": "aligned",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E2"
+            ],
+            "S3": [
+              "E29"
+            ],
+            "S4": [
+              "E7"
+            ],
+            "S5": [
+              "E5",
+              "E6"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 15454,
+          "output_tokens": 970,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "10091be5-ad84-425f-b8b6-803f696e32ad",
+          "validation_run_id": "e34d3177-3e33-4876-b379-178ea0b7844a",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 29120,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.27"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E29.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.08",
+                "0.97"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E29.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.50"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E29.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.24",
+                "1.02"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E29.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.051"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E29"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E5.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E5.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79",
+                "1.21"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q15",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q17",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.33"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "imprecise_null"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "synthesis",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "synthesis",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E29"
+            ],
+            "S2": [
+              "E29"
+            ],
+            "S3": [
+              "E5"
+            ],
+            "S4": [
+              "E2"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "imprecise_null",
+              "null_precision_reason": "no_source_precision_signal"
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 13271,
+          "output_tokens": 868,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "production_qualified": false,
+      "report_http": 200
+    }
+  ],
+  "intermediate_laboratory_run": "aef03776-7435-4e64-bb04-85b5a1280f64",
+  "remaining_limitations": [
+    "HPV: retained cervical-cancer endpoint but no eligible finding-bound causal design; NEI.",
+    "HIV: repaired disease grounding; narrative/mechanistic findings remain design-ineligible; NEI.",
+    "Inverse BP: GLM-4.7 judge timed out; two qualified Contradicted assessments."
+  ]
+}

@@ -1,5 +1,52 @@
 # Architecture
 
+## V2.4 structured numeric transport (current development/test)
+
+`judging/compact24.py` prepares judge-input-2.4 / prompt 2.14; normal production
+preparation stays on its prior contract. `judging/source_quantities.py` derives
+source-quantity-catalog-1.0 from the exact frozen source units, storing IDs,
+unit/evidence identity, half-open offsets, original literal, decimal values,
+measure, unit, binding and normalization reason. Catalog content is covered by
+the judge-input hash. The Evidence Pack is not edited. Overlapping residual
+parser spans cannot reinterpret a typed decimal; unbound numerals remain unknown.
+Any extraction change must version the catalog rather than changing historical
+reconstruction. No arithmetic conversion happens during catalog derivation.
+
+Provider-facing `JudgeContent24` keeps source-attributed findings plus separate
+qualitative propositions, source_unit_ids, source_quantity_ids and dependency
+flags. It omits numeric_details and numeric value fields. Quantity IDs must be
+unique within a statement, exist in the frozen catalog and belong to cited units.
+[] is valid for qualitative findings. Conclusions use statement dependencies
+only, and cannot introduce independent quantities.
+
+`validation/joint24.py` runs deterministic provenance/reference preflight,
+then the same configured joint checker and `JointResponse23` axes schema.
+The label-blind checker receives complete sources, findings and selected backend
+quantities. Source attribution, direction/scope/strength/role, scope/finding basis
+and omitted material evidence remain independent requirements. A valid schema
+or quantity ID cannot substitute for semantic attribution.
+
+`validation/numeric24.py` checks membership/ownership and generates one diagnostic
+per statement/reference under numeric-reference-fidelity-2.4 and
+numeric-reference-comparability-2.4. It never parses judge prose. Even the older
+relation payload's prose-based magnitude alignment is bypassed for this contract.
+Before semantics comparability is explicitly pending; afterward only frozen
+source quantities, backend submitted numeric_effect and audited scope feed the
+existing typed comparison. No refs/unknown/ambiguous arithmetic/noncomparable
+measures or ineligible narrower scope cannot power an exact magnitude vote.
+The existing magnitude_eligible map, qualifier 1.4 and all thresholds stay intact.
+
+`validation/audit24.py` reconstructs the frozen prompt, raw/canonical decision,
+exact joint request/response, quantity diagnostics and qualifier output at verdict
+aggregation. Wrong IDs, ownership, snapshots, hashes or provenance fail closed
+as reference defects; different measures and scope limitations reach semantics.
+New artifacts use existing append-only JSONB. Historical compact23/numeric23/
+joint23/audit23 dispatch and recorded hashes remain; no old rows or reports change.
+V3 is still only an opt-in evaluation probe.
+
+V2.4 removes generated prose from machine-critical numeric source fidelity.
+It does not establish medical correctness or semantic qualification.
+
 ## Pre-pilot stabilization boundary
 
 `pipeline/numeric_effect.py` records the source's numeric notation and can

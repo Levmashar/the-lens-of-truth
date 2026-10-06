@@ -3,6 +3,7 @@
 import re
 from collections import defaultdict
 
+from app.pipeline.setting import laboratory_claim
 from app.retrieval.lexical import lay_variants
 from app.retrieval.models import ClaimSnapshot, EvidencePassage, PubMedDocument, RankedPassage
 from app.retrieval.study_quality import explicit_animal_subject
@@ -84,6 +85,29 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
         else linked
 
 
+def _atomic_aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
+    slot = getattr(claim.pico, role) if claim.pico else None
+    head = re.split(r"\b(?:in|among)\b", slot or "", maxsplit=1, flags=re.I)[0]
+    primary = next((e for e in claim.entities if e.entity_type == role
+                    and e.mesh_id and not e.ambiguous and (e.confidence or 0) >= 0.9
+                    and re.search(rf"(?<!\w){re.escape(e.surface_text)}(?!\w)", head, re.I)), None)
+    if primary is None or len(_words(primary.surface_text)) < 2:
+        return ()
+    return tuple(s for s in (primary.surface_text, primary.preferred_name) if s)
+
+
+def _atomic_coverage(terms: tuple[str, ...], text: str, fallback: float, *,
+                     concept_flex: bool = False) -> float:
+    if not terms:
+        return fallback
+    if concept_flex:
+        from app.retrieval.directness import _matches
+
+        return float(_matches(text, terms, concept_flex=True))
+    return float(any(re.search(r"(?<!\w)" + r"[\W_]+".join(
+        re.escape(w) for w in _WORD.findall(term)) + r"(?!\w)", text, re.I) for term in terms))
+
+
 def rank_passages(
     claim: ClaimSnapshot, documents: tuple[PubMedDocument, ...],
     passages: tuple[EvidencePassage, ...],
@@ -100,15 +124,23 @@ def rank_passages(
     outcome = claim.pico.outcome if claim.pico else None
     exposure_aliases = _aliases(claim, "intervention_or_exposure")
     outcome_aliases = _aliases(claim, "outcome")
+    exposure_atoms = _atomic_aliases(claim, "intervention_or_exposure")
+    outcome_atoms = _atomic_aliases(claim, "outcome")
     ranked: list[tuple[float, str, EvidencePassage, dict[str, float]]] = []
     for passage in passages:
         document = by_id[passage.document_id]
         words = _words(passage.text)
-        exposure_match = _concept_coverage(exposure, exposure_aliases, words)
-        outcome_match = _concept_coverage(outcome, outcome_aliases, words)
+        exposure_match = _atomic_coverage(exposure_atoms, passage.text,
+                                         _concept_coverage(exposure, exposure_aliases, words),
+                                         concept_flex=bool(document.authoritative))
+        outcome_match = _atomic_coverage(outcome_atoms, passage.text,
+                                        _concept_coverage(outcome, outcome_aliases, words),
+                                        concept_flex=bool(document.authoritative))
         mesh_words = _words(" ".join(document.mesh_terms))
-        mesh_exposure = _concept_coverage(exposure, exposure_aliases, mesh_words)
-        mesh_outcome = _concept_coverage(outcome, outcome_aliases, mesh_words)
+        mesh_exposure = _atomic_coverage(exposure_atoms, " ".join(document.mesh_terms),
+                                        _concept_coverage(exposure, exposure_aliases, mesh_words))
+        mesh_outcome = _atomic_coverage(outcome_atoms, " ".join(document.mesh_terms),
+                                       _concept_coverage(outcome, outcome_aliases, mesh_words))
         mesh_overlap = (mesh_exposure + mesh_outcome) / 2
         relation = _RELATION_WORDS.get(claim.claim_type or "", frozenset())
         relation_match = float(bool(words & relation))
@@ -355,7 +387,10 @@ def select_top_evidence(
     ))
     nonhuman = {
         document.document_id for document in documents
-        if document.study_design in {"animal_study", "in_vitro"} and not claim_targets_animals
+        if (document.study_design == "animal_study" and not claim_targets_animals)
+        or (document.study_design == "in_vitro" and not (claim_targets_animals or
+            (claim and laboratory_claim(claim.standalone_text,
+                                        claim.pico.population if claim.pico else None))))
     }
     unfocused = {
         document.document_id for document in documents if not _claim_focused(document)

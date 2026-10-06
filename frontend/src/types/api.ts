@@ -166,11 +166,13 @@ export interface DebugJudgeRun {
   targeted_issue_codes?: string[];
   numeric_findings?: {
     version: string; target_id: string; material: boolean; source_fidelity: string;
+    source_quantity_id?: string;
     asserted_values: string[]; source_measure: string; claim_measure: string;
     comparability: string; numeric_effect: string; semantic_scope_checked: boolean;
     structure_status: string; evidence_ids: string[]; differences: string[]; conversions: string[];
   }[];
   proposed_label?: string | null;
+  validated_evidence_position?: string | null;
   finding_count?: number;
   qualification_reason_codes?: string[];
   qualification_success?: boolean;

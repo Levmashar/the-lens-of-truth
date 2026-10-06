@@ -9,8 +9,13 @@ import httpx
 
 from app.judging.models import JudgeDecisionV2, JudgeRun, JudgeStatement
 from app.pipeline.numeric_effect import numeric_effect
-from app.retrieval.models import EvidencePack
-from app.retrieval.sufficiency import design_fact, question_category
+from app.retrieval.models import EvidencePack, PubMedDocument
+from app.retrieval.sufficiency import (
+    EvidenceDesignFact,
+    design_fact,
+    finding_experiment,
+    question_category,
+)
 from app.validation.assertion_numeric import compare_assertion_numbers, quantities
 from app.validation.models import (
     ConclusionJustification,
@@ -76,28 +81,61 @@ def claim_magnitude_alignment(
 
 
 def build_relation_payload(
-    pack: EvidencePack, statements: tuple[JudgeStatement, ...],
-    *, magnitude_version: str = "legacy",
+    pack: EvidencePack,
+    statements: tuple[JudgeStatement, ...],
+    *,
+    magnitude_version: str = "legacy",
+    finding_design: bool = False,
+    causal_synthesis: bool = False,
+    experimental_binding: bool = False,
+    laboratory_intervention: bool = False,
+    causal_policy: bool = False,
+    causal_disclaimer: bool = False,
 ) -> tuple[dict[str, object], tuple[FindingQualificationInput, ...]]:
     """Backend-owned metadata, reused by the aggregator's audit recheck."""
     passages = {p.evidence_id: p for p in pack.passages}
     documents = {d.document_id: d for d in pack.documents}
+    def fact(document: PubMedDocument, statement: JudgeStatement) -> EvidenceDesignFact:
+        value = design_fact(document, finding_design=finding_design,
+                            causal_synthesis=causal_synthesis)
+        value = finding_experiment(value, document, pack.claim_snapshot, statement.text,
+                                  laboratory_intervention=laboratory_intervention) \
+            if experimental_binding else value
+        if causal_policy:
+            from app.retrieval.causal_policy import assessment_facts
+
+            value = value.model_copy(update=assessment_facts(
+                document, pack.claim_snapshot, statement.qualitative_finding or statement.text,
+                tuple(r.quote for r in statement.evidence_refs
+                      if passages[r.evidence_id].passage.document_id == document.document_id),
+                disclaimer_guard=causal_disclaimer))
+        return value
     metadata: dict[str, list[dict[str, object]]] = {}
     for statement in statements:
         metadata[statement.statement_id] = []
         for ref in statement.evidence_refs:
             ranked = passages[ref.evidence_id]
             document = documents[ranked.passage.document_id]
-            metadata[statement.statement_id].append({
-                "evidence_id": ref.evidence_id, "study_design": document.study_design,
-                "study_design_source": document.study_design_source,
-                "integrity": document.integrity.status,
-                "deterministic_scope": compare_scope(pack.claim_snapshot, document, ranked),
-                "deterministic_relation": compare_relation(pack.claim_snapshot, document, ranked),
-                "applicability_warnings": document.applicability_warnings,
-                **({"evidence_design": design_fact(document).model_dump(mode="json")}
-                   if pack.evidence_pack_version == "1.5" else {}),
-            })
+            metadata[statement.statement_id].append(
+                {
+                    "evidence_id": ref.evidence_id,
+                    "study_design": document.study_design,
+                    "study_design_source": document.study_design_source,
+                    "integrity": document.integrity.status,
+                    "deterministic_scope": compare_scope(pack.claim_snapshot, document, ranked),
+                    "deterministic_relation": compare_relation(
+                        pack.claim_snapshot, document, ranked
+                    ),
+                    "applicability_warnings": document.applicability_warnings,
+                    **(
+                        {
+                            "evidence_design": fact(document, statement).model_dump(mode="json")
+                        }
+                        if pack.evidence_pack_version == "1.5"
+                        else {}
+                    ),
+                }
+            )
     payload: dict[str, object] = {
         "original_claim": pack.claim_snapshot.standalone_text,
         "claim_type": pack.claim_snapshot.claim_type,
@@ -107,22 +145,33 @@ def build_relation_payload(
                                   "kind": s.kind, "frozen_metadata": metadata[s.statement_id]}
                                  for s in statements],
     }
-    findings = tuple(FindingQualificationInput(
-        statement_id=s.statement_id,
-        study_designs=tuple(str(m["study_design"]) for m in metadata[s.statement_id]),
-        deterministic_scopes=tuple(str(m["deterministic_scope"])
-                                   for m in metadata[s.statement_id]),
-        deterministic_relations=tuple(str(m["deterministic_relation"])
-                                      for m in metadata[s.statement_id]),
-        claim_magnitude_alignment=claim_magnitude_alignment(
-            pack.claim_snapshot.standalone_text, s.text, version=magnitude_version,
-        ),
-        integrity_statuses=tuple(str(m["integrity"]) for m in metadata[s.statement_id]),
-        evidence_design_facts=tuple(design_fact(documents[passages[ref.evidence_id].passage.
-                                                       document_id])
-                                    for ref in s.evidence_refs)
-        if pack.evidence_pack_version == "1.5" else (),
-    ) for s in statements)
+    findings = tuple(
+        FindingQualificationInput(
+            statement_id=s.statement_id,
+            study_designs=tuple(str(m["study_design"]) for m in metadata[s.statement_id]),
+            deterministic_scopes=tuple(
+                str(m["deterministic_scope"]) for m in metadata[s.statement_id]
+            ),
+            deterministic_relations=tuple(
+                str(m["deterministic_relation"]) for m in metadata[s.statement_id]
+            ),
+            claim_magnitude_alignment=NumericAlignment.UNCERTAIN
+            if magnitude_version == "structured-quantity-2.4"
+            else claim_magnitude_alignment(
+                pack.claim_snapshot.standalone_text,
+                s.text,
+                version=magnitude_version,
+            ),
+            integrity_statuses=tuple(str(m["integrity"]) for m in metadata[s.statement_id]),
+            evidence_design_facts=tuple(
+                fact(documents[passages[ref.evidence_id].passage.document_id], s)
+                for ref in s.evidence_refs
+            )
+            if pack.evidence_pack_version == "1.5"
+            else (),
+        )
+        for s in statements
+    )
     return payload, findings
 
 

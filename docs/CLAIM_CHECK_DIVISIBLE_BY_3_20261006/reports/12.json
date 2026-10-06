@@ -1,0 +1,1468 @@
+{
+  "case_number": 12,
+  "submitted_claim": "High blood pressure lowers the risk of stroke.",
+  "sanity_expectation": "Contradicted",
+  "analysis_id": "6291b954-d1fd-44a2-8b14-133d4f68d445",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "37a3133d-eaf4-48c5-b4e9-e98f5457c016",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:05:14.283798+00:00",
+          "completed_at": "2026-10-06T11:06:17.460340+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:05:11.405305+00:00",
+          "completed_at": "2026-10-06T11:05:14.275268+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:06:17.469422+00:00",
+          "completed_at": "2026-10-06T11:07:10.580456+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:07:10.585405+00:00",
+          "completed_at": "2026-10-06T11:07:13.359179+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:05:11.383803+00:00",
+          "completed_at": "2026-10-06T11:05:11.397877+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:07:13.363238+00:00",
+          "completed_at": "2026-10-06T11:07:13.635701+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "3309c2e1-3c87-4395-a7cc-e3a185e4d249",
+      "evidence_pack_hash": "09d08336d222b510629756e084269a61723b42b5aa9cb1b04ea6e47d9b8ad34b",
+      "judge_run_ids": [
+        "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+        "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+        "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+      ],
+      "judge_validation_run_ids": [
+        "1d43579a-1100-4c0d-82d3-fc494967ef70",
+        "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+        "1b923829-f363-43ba-abca-5d3332996edd"
+      ],
+      "verdict_run_id": "d9bc4cb7-0334-46e9-9cf7-12244cc3d8a0",
+      "report_run_id": "04b884f5-9e8c-4771-8a96-cd7f48f70d9e",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+          "validation_run_id": "1d43579a-1100-4c0d-82d3-fc494967ef70",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 15098,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E13.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "3.19"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E13.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.62",
+                "3.88"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.94"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E10.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.38",
+                "3.64"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E18.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.61"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E18.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.12",
+                "2.31"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E25"
+            ],
+            "S2": [
+              "E13"
+            ],
+            "S3": [
+              "E10"
+            ],
+            "S4": [
+              "E18"
+            ],
+            "S5": [
+              "E4"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 16339,
+          "output_tokens": 905,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+          "validation_run_id": "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 19242,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E10.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.94"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E10.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.38",
+                "3.64"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E10"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E13.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "3.19"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E13.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.62",
+                "3.88"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "90"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E25"
+            ],
+            "S2": [
+              "E10"
+            ],
+            "S3": [
+              "E13"
+            ],
+            "S4": [
+              "E2"
+            ],
+            "S5": [
+              "E4"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19469,
+          "output_tokens": 1011,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "ff7d19ef-98f5-4290-8c8b-6f433e76bd80",
+          "validation_run_id": "1b923829-f363-43ba-abca-5d3332996edd",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 28732,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E18.U1.Q5",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.61"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E18.U1.Q7",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.71"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E18.U1.Q9",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "2.69"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E18.U1.Q11",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "4.68"
+              ],
+              "source_measure": "odds_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E18"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E13.U1.Q4",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "3.19"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E13.U1.Q10",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "31.7"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E13"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "context"
+            },
+            "S3": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "contextual",
+              "scope_basis": "endpoint",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E4"
+            ],
+            "S2": [
+              "E25"
+            ],
+            "S3": [
+              "E18"
+            ],
+            "S4": [
+              "E13"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 16723,
+          "output_tokens": 849,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "High blood pressure lowers the risk of stroke",
+          "normalized_claim": "High blood pressure lowers the risk of stroke",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "risk of stroke",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "High blood pressure lowers the risk of stroke",
+            "intervention_or_exposure": "High blood pressure"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 28,
+          "selected_documents": 8,
+          "selected_authoritative": 1,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 8,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "contradicted",
+            "contradicted",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "VALIDATED_JUDGE_DISAGREEMENT",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 126371
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "6291b954-d1fd-44a2-8b14-133d4f68d445",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:05:14.290843+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:05:07.264337+00:00",
+        "completed_at": "2026-10-06T11:05:11.367757+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:05:11.414792+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:06:17.475791+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:07:10.588835+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:05:11.390624+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:07:13.368037+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "37a3133d-eaf4-48c5-b4e9-e98f5457c016",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 45,
+        "raw_text": "High blood pressure lowers the risk of stroke",
+        "normalized_text": "High blood pressure lowers the risk of stroke",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "High blood pressure",
+        "comparator": null,
+        "outcome": "risk of stroke",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.95,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "High blood pressure",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D006973",
+            "preferred_name": "Hypertension",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C14.907.489"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "risk",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D012306",
+            "preferred_name": "Risk",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E05.318.740.600.800",
+              "G17.680.750",
+              "N05.715.360.750.625.700",
+              "N06.850.520.830.600.800"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "stroke",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D020521",
+            "preferred_name": "Stroke",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C10.228.140.300.775",
+              "C14.907.253.855"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "High blood pressure lowers the risk of stroke",
+          "population": null,
+          "intervention_or_exposure": "High blood pressure",
+          "comparator": null,
+          "outcome": "risk of stroke",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:07:13.661593Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "37a3133d-eaf4-48c5-b4e9-e98f5457c016",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "d9bc4cb7-0334-46e9-9cf7-12244cc3d8a0",
+        "claim": {
+          "text": "High blood pressure lowers the risk of stroke",
+          "claim_type": "causal"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence measures a different outcome and does not establish the outcome claimed.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence measures a different outcome and does not establish the outcome claimed.",
+          "reason_category": "outcome_mismatch",
+          "established": null,
+          "unresolved": "The evidence measures a different outcome and does not establish the outcome claimed.",
+          "evidence_ids": [
+            "E10",
+            "E13",
+            "E18",
+            "E2",
+            "E25",
+            "E4"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "VALIDATED_JUDGE_DISAGREEMENT",
+            "text": "Validated assessments disagreed about how the evidence should be interpreted."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E25",
+            "pmid": null,
+            "doi": null,
+            "title": "Hypertension",
+            "journal": null,
+            "publication_date": "2025-09-25",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Checking your blood pressure is the best way to know if you have high blood pressure. If hypertension isn’t treated, it can cause other health conditions like kidney disease, heart disease and stroke.",
+            "excerpt_truncated": false,
+            "passage_sha256": "713a5e14d96da1e2b0eba71b1b10b24ad2d04cbd77d2daf6a915b124bc7af0be",
+            "passage_section": "Symptoms",
+            "source_url": "https://www.who.int/news-room/fact-sheets/detail/hypertension",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+              "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+              "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+            ],
+            "cited_by_validation_run_ids": [
+              "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+              "1d43579a-1100-4c0d-82d3-fc494967ef70",
+              "1b923829-f363-43ba-abca-5d3332996edd"
+            ],
+            "limitations": [],
+            "document_id": "authoritative:who-hypertension",
+            "source_kind": "authoritative_public_health",
+            "organization": "WHO",
+            "document_purpose": "fact_sheet",
+            "analysis_design": null,
+            "exposure_assignment": null,
+            "attribution": "Source: World Health Organization.",
+            "currency": "current",
+            "excerpts": [
+              {
+                "evidence_id": "E25",
+                "source_unit_id": "E25.U1",
+                "section": "Symptoms",
+                "exact_text": "Checking your blood pressure is the best way to know if you have high blood pressure. If hypertension isn’t treated, it can cause other health conditions like kidney disease, heart disease and stroke.",
+                "truncated": false,
+                "passage_sha256": "713a5e14d96da1e2b0eba71b1b10b24ad2d04cbd77d2daf6a915b124bc7af0be"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E13",
+            "pmid": "41580679",
+            "doi": "10.1186/s12933-026-03075-6",
+            "title": "Association between the combined c-reactive protein-triglyceride glucose index and hypertension with long-term stroke among cardiovascular-kidney-metabolic syndrome stages 0-3 population: a nationwide prospective cohort study.",
+            "journal": "Cardiovascular diabetology",
+            "publication_date": "2026-01-24",
+            "study_design": "cohort",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Over a median 9-year follow-up, 811 (8.9%) incident stroke cases occurred. A significant dose-response relationship was observed, with the highest CTI-hypertension group exhibiting a fully adjusted hazard ratio of 3.19 (95% CI 2.62-3.88) for stroke compared to the lowest group. The combined CTI-hypertension model demonstrated superior predictive performance (AUC = 0.672) versus hypertension-alone (AUC = 0.661) or CTI-alone (AUC = 0.651) models. WQS analysis identified C-reactive protein (38.8%) and hypertension (31.7%) as the predominant risk factors.",
+            "excerpt_truncated": false,
+            "passage_sha256": "3ff159201e9be5cca193eb2ef2c9ac3f548a6aae0fdb7000ada6884b48615ef8",
+            "passage_section": "RESULTS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/41580679/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+              "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+              "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+            ],
+            "cited_by_validation_run_ids": [
+              "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+              "1d43579a-1100-4c0d-82d3-fc494967ef70",
+              "1b923829-f363-43ba-abca-5d3332996edd"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:41580679",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "prospective_cohort",
+            "exposure_assignment": "observed",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E13",
+                "source_unit_id": "E13.U1",
+                "section": "RESULTS",
+                "exact_text": "Over a median 9-year follow-up, 811 (8.9%) incident stroke cases occurred. A significant dose-response relationship was observed, with the highest CTI-hypertension group exhibiting a fully adjusted hazard ratio of 3.19 (95% CI 2.62-3.88) for stroke compared to the lowest group. The combined CTI-hypertension model demonstrated superior predictive performance (AUC = 0.672) versus hypertension-alone (AUC = 0.661) or CTI-alone (AUC = 0.651) models. WQS analysis identified C-reactive protein (38.8%) and hypertension (31.7%) as the predominant risk factors.",
+                "truncated": false,
+                "passage_sha256": "3ff159201e9be5cca193eb2ef2c9ac3f548a6aae0fdb7000ada6884b48615ef8"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E10",
+            "pmid": "40826075",
+            "doi": "10.1186/s12933-025-02898-z",
+            "title": "Predictive value and robustness of the stress hyperglycemia ratio combined with hypertension for stroke risk: evidence from the CHARLS cohort.",
+            "journal": "Cardiovascular diabetology",
+            "publication_date": "2025-08-18",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "During 81,601 person-years of follow-up, 764 incident stroke cases were documented, with an overall incidence of 9.36 per 1000 person-years. Compared to the reference group (low SHR without hypertension), those with high SHR and hypertension had the highest stroke risk (hazard ratio: 2.94, 95% confidence interval: 2.38-3.64). SHR and hypertension were independently associated with stroke risk, and their combination demonstrated a dose-response relationship. Subgroup analyses confirmed consistent findings across sex and age strata. The combined SHR-hypertension model showed improved discriminat",
+            "excerpt_truncated": true,
+            "passage_sha256": "ce2363056d621276bacb1a1d7f0624b36f57ec397fde4caf4ab5f2e550104e52",
+            "passage_section": "RESULTS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/40826075/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+              "f40bafbb-8d31-47e3-b03d-4f775418afd0"
+            ],
+            "cited_by_validation_run_ids": [
+              "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+              "1d43579a-1100-4c0d-82d3-fc494967ef70"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:40826075",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E10",
+                "source_unit_id": "E10.U1",
+                "section": "RESULTS",
+                "exact_text": "During 81,601 person-years of follow-up, 764 incident stroke cases were documented, with an overall incidence of 9.36 per 1000 person-years. Compared to the reference group (low SHR without hypertension), those with high SHR and hypertension had the highest stroke risk (hazard ratio: 2.94, 95% confidence interval: 2.38-3.64). SHR and hypertension were independently associated with stroke risk, and their combination demonstrated a dose-response relationship. Subgroup analyses confirmed consistent findings across sex and age strata. The combined SHR-hypertension model showed improved discriminative ability (area under the ROC curve: 0.653). Sensitivity analyses confirmed the robustness of the results.",
+                "truncated": false,
+                "passage_sha256": "ce2363056d621276bacb1a1d7f0624b36f57ec397fde4caf4ab5f2e550104e52"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E2",
+            "pmid": "18308869",
+            "doi": "10.1136/hrt.2007.127753",
+            "title": "Epidemiology of stroke and high blood pressure in Africa.",
+            "journal": "Heart (British Cardiac Society)",
+            "publication_date": "2008-02-28",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Stroke and high blood pressure are major causes of death and disability worldwide. Although comprehensive stroke surveillance data for Africa are lacking, the available data show that age-standardised mortality, case fatality and prevalence of disabling stroke in Africa are similar to or higher than those measures in most high-income regions. In Africa, more than 90% of patients with haemorrhagic stroke and more than half with ischaemic stroke are found to have high blood pressure. However, awareness of hypertension and its prevention, treatment and control remain very low in Africa even thoug",
+            "excerpt_truncated": true,
+            "passage_sha256": "719d1fe1ffc5e4c029bc6f52dee3518013e175bfda92e2fc27bd7381d708d01f",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/18308869/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f14f1bd3-eded-45b6-be06-6f80be968dfd"
+            ],
+            "cited_by_validation_run_ids": [
+              "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:18308869",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E2",
+                "source_unit_id": "E2.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Stroke and high blood pressure are major causes of death and disability worldwide. Although comprehensive stroke surveillance data for Africa are lacking, the available data show that age-standardised mortality, case fatality and prevalence of disabling stroke in Africa are similar to or higher than those measures in most high-income regions. In Africa, more than 90% of patients with haemorrhagic stroke and more than half with ischaemic stroke are found to have high blood pressure. However, awareness of hypertension and its prevention, treatment and control remain very low in Africa even though recent surveys show an increasing prevalence of the disease consistent with the nutritional and epidemiological transition in the region. Renewed emphasis on improved surveillance and the prevention and control of high blood pressure and stroke in Africa is needed.",
+                "truncated": false,
+                "passage_sha256": "719d1fe1ffc5e4c029bc6f52dee3518013e175bfda92e2fc27bd7381d708d01f"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E4",
+            "pmid": "31243539",
+            "doi": "10.1007/s00415-019-09443-5",
+            "title": "Targeting blood pressure for stroke prevention: current evidence and unanswered questions.",
+            "journal": "Journal of neurology",
+            "publication_date": "2019-06-26",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "opposing",
+              "supporting"
+            ],
+            "exact_excerpt": "High blood pressure (BP) is the leading modifiable risk factor of stroke worldwide. Although randomized clinical trials have demonstrated the beneficial effect of BP reduction on stroke risk, there are still insufficiently explored issues concerning the optimal personalized management of BP in stroke patients in terms of thresholds to be achieved and drug classes to be prescribed. Few data are available about BP control in specific clinical contexts such as in older patients, in various stroke subtypes, or in association with co-morbidities such as diabetes. In addition, although drug trials b",
+            "excerpt_truncated": true,
+            "passage_sha256": "d0602fed5b64be3a03ac7626f654b697678900065426a60b1b063f0b55f3cd18",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/31243539/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+              "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+              "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+            ],
+            "cited_by_validation_run_ids": [
+              "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+              "1d43579a-1100-4c0d-82d3-fc494967ef70",
+              "1b923829-f363-43ba-abca-5d3332996edd"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:31243539",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E4",
+                "source_unit_id": "E4.U1",
+                "section": "ABSTRACT",
+                "exact_text": "High blood pressure (BP) is the leading modifiable risk factor of stroke worldwide. Although randomized clinical trials have demonstrated the beneficial effect of BP reduction on stroke risk, there are still insufficiently explored issues concerning the optimal personalized management of BP in stroke patients in terms of thresholds to be achieved and drug classes to be prescribed. Few data are available about BP control in specific clinical contexts such as in older patients, in various stroke subtypes, or in association with co-morbidities such as diabetes. In addition, although drug trials based their conclusions on achieved mean BP values, recent findings indicate that aspects such as circadian variations of BP and BP variability should be taken into account as well. This article aims to highlight current knowledge about BP control in stroke prevention and to provide new perspectives to be addressed in future studies so as to guide clinicians in their day-to-day practice.",
+                "truncated": false,
+                "passage_sha256": "d0602fed5b64be3a03ac7626f654b697678900065426a60b1b063f0b55f3cd18"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E18",
+            "pmid": "14662649",
+            "doi": "10.1161/01.HYP.0000105052.65787.35",
+            "title": "High blood pressure in acute stroke and subsequent outcome: a systematic review.",
+            "journal": "Hypertension (Dallas, Tex. : 1979)",
+            "publication_date": "2003-12-08",
+            "study_design": "systematic_review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "High blood pressure (BP) is common in acute stroke and might be associated with a poor outcome, although observational studies have given varying results. In a systematic review, articles were sought that reported both admission BP and outcome (death, death or dependency, death or deterioration, stroke recurrence, and hematoma expansion) in acute stroke. Data were analyzed by the Cochrane Review Manager software and are given as odds ratios (ORs) or weighted mean differences (WMDs) with 95% confidence intervals (CIs). Altogether, 32 studies were identified involving 10 892 patients. When all d",
+            "excerpt_truncated": true,
+            "passage_sha256": "7d014bee3beab01b1d5ec40dd9a465d4bac43456e2231794bb3e21b183721eca",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/14662649/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+              "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+            ],
+            "cited_by_validation_run_ids": [
+              "1d43579a-1100-4c0d-82d3-fc494967ef70",
+              "1b923829-f363-43ba-abca-5d3332996edd"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:14662649",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "systematic_review",
+            "exposure_assignment": "synthesized",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E18",
+                "source_unit_id": "E18.U1",
+                "section": "ABSTRACT",
+                "exact_text": "High blood pressure (BP) is common in acute stroke and might be associated with a poor outcome, although observational studies have given varying results. In a systematic review, articles were sought that reported both admission BP and outcome (death, death or dependency, death or deterioration, stroke recurrence, and hematoma expansion) in acute stroke. Data were analyzed by the Cochrane Review Manager software and are given as odds ratios (ORs) or weighted mean differences (WMDs) with 95% confidence intervals (CIs). Altogether, 32 studies were identified involving 10 892 patients. When all data were included, death was significantly associated with an elevated mean arterial BP ([MABP] OR, 1.61; 95% CI, 1.12 to 2.31) and a high diastolic BP ([DBP] OR, 1.71; 95% CI, 1.33 to 2.48). Combined death or dependency was associated with high systolic BP ([SBP] OR, 2.69; 95% CI, 1.13 to 6.40) and DBP (OR, 4.68; 95% CI, 1.87 to 11.70) in primary intracerebral hemorrhage (PICH). Similarly, high SBP (+11.73 mm Hg; 95% CI, 1.30 to 22.16), MABP (+9.00 mm Hg; 95% CI, 0.92 to 17.08), and DBP (+6.00 mm Hg; 95% CI, 0.19 to 11.81) were associated with death or dependency in ischemic stroke. Combined death or deterioration was associated with a high SBP (OR, 5.57; 95% CI, 1.42 to 21.86) in patients with PICH. In summary, high BP in acute ischemic stroke or PICH is associated with subsequent death, death or dependency, and death or deterioration. Moderate lowering of BP might improve outcome. Acute BP lowering needs to be tested in 1 or more large, randomized trials.",
+                "truncated": false,
+                "passage_sha256": "7d014bee3beab01b1d5ec40dd9a465d4bac43456e2231794bb3e21b183721eca"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 1,
+            "contradicted": 2,
+            "not_enough_evidence": 0
+          },
+          "description": "1 qualified assessment(s) supported the claim; 2 qualified assessment(s) contradicted the claim.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "conflicting",
+          "validated_citations_shown": 6,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E25",
+            "pmid": null,
+            "doi": null,
+            "url": "https://www.who.int/news-room/fact-sheets/detail/hypertension"
+          },
+          {
+            "evidence_id": "E13",
+            "pmid": "41580679",
+            "doi": "10.1186/s12933-026-03075-6",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/41580679/"
+          },
+          {
+            "evidence_id": "E10",
+            "pmid": "40826075",
+            "doi": "10.1186/s12933-025-02898-z",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/40826075/"
+          },
+          {
+            "evidence_id": "E2",
+            "pmid": "18308869",
+            "doi": "10.1136/hrt.2007.127753",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/18308869/"
+          },
+          {
+            "evidence_id": "E4",
+            "pmid": "31243539",
+            "doi": "10.1007/s00415-019-09443-5",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/31243539/"
+          },
+          {
+            "evidence_id": "E18",
+            "pmid": "14662649",
+            "doi": "10.1161/01.HYP.0000105052.65787.35",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/14662649/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "d9bc4cb7-0334-46e9-9cf7-12244cc3d8a0",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "46158979243b37904a0451725a31e4ffcd80a1e7dc399bb5f6e84e7d9831ec33",
+          "evidence_pack_id": "3309c2e1-3c87-4395-a7cc-e3a185e4d249",
+          "evidence_pack_hash": "09d08336d222b510629756e084269a61723b42b5aa9cb1b04ea6e47d9b8ad34b",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "f14f1bd3-eded-45b6-be06-6f80be968dfd",
+            "f40bafbb-8d31-47e3-b03d-4f775418afd0",
+            "ff7d19ef-98f5-4290-8c8b-6f433e76bd80"
+          ],
+          "judge_validation_run_ids": [
+            "0cd71d7f-30e0-4011-8ea7-edf80fdb81ac",
+            "1b923829-f363-43ba-abca-5d3332996edd",
+            "1d43579a-1100-4c0d-82d3-fc494967ef70"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:07:13.617795Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "7b5dc168264b6db2c759a1488e79c8a5199fc35655232baac45dfd0142ff4e32"
+      }
+    }
+  ]
+}

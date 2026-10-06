@@ -120,6 +120,9 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     // standalone proposition that retrieval and judging actually assess.
     append(card, cardTop, element("h3", "claim-text", claim.normalized_text ?? claim.raw_text));
     if (summary?.status === "failed") {
+      if (summary.failure_code === "normalization_incomplete") {
+        card.append(element("h4", "claim-result-label", "Unable to Verify Reliably"));
+      }
       card.append(element("p", "claim-failure", summary.failure_code?.endsWith("_timeout")
         ? "This claim took too long to verify. No report is available."
         : summary.failure_code === "normalization_incomplete"

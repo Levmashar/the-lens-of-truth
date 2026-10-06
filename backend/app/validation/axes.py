@@ -118,6 +118,8 @@ class AxesQualifierInput(FrozenModel):
     exact_claim: str
     source_texts: dict[str, tuple[str, ...]]
     # Set only by numeric-fidelity-comparability-1.0. Absent in historical audits.
+    relationship_context: dict[str, object] | None = Field(
+        default=None, exclude_if=lambda value: value is None)
     magnitude_eligible: dict[str, bool] | None = Field(default=None,
                                                      exclude_if=lambda value: value is None)
 

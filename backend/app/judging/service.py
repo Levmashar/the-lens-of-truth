@@ -16,7 +16,9 @@ from pydantic import ValidationError
 from app.adapters.judge import JudgeProvider, ProviderFailure
 from app.core.diagnostics import sanitize_diagnostic
 from app.judging.compact23 import VERSION as AXES_COMPACT_VERSION
-from app.judging.config import is_search_enabled_model
+from app.judging.compact24 import VERSION as STRUCTURED_COMPACT_VERSION
+from app.judging.compact25 import VERSION as POSITION_COMPACT_VERSION
+from app.judging.config import is_search_enabled_model, judge_request_options
 from app.judging.models import (
     AnyJudgeDecision,
     DisagreementSummary,
@@ -33,6 +35,7 @@ from app.judging.prompt import (
     prepare_compact_v2,
     prepare_judge_input,
 )
+from app.judging.source_quantities import QuantityReferenceError
 from app.judging.source_units import materialize_content, normalize_parent_unit_ids
 from app.retrieval.models import EvidencePack
 from app.validation.models import JudgeValidationRun, ValidationStatus
@@ -72,6 +75,8 @@ class JudgeService:
     breaker: CircuitBreaker = field(default_factory=CircuitBreaker)
     compact_development: bool = False
     axes_development: bool = False
+    # Explicit recorded-version replay only; normal development uses V2.5.
+    axes_contract: Literal["2.3", "2.4", "2.5"] = "2.5"
 
     async def run(
         self, pack_id: UUID, pack: EvidencePack, slots: tuple[JudgeSlot, ...], *,
@@ -107,9 +112,18 @@ class JudgeService:
         if self.axes_development:
             if app_env not in {"development", "test"}:
                 raise ValueError("Axes judge contract is development/test only")
-            from app.judging.compact23 import prepare_compact23
+            from app.judging.compact24 import prepare_compact24
 
-            prepared = prepare_compact23(pack_id, pack)
+            if self.axes_contract == "2.3":
+                from app.judging.compact23 import prepare_compact23
+
+                prepared = prepare_compact23(pack_id, pack)
+            elif self.axes_contract == "2.5":
+                from app.judging.compact25 import prepare_compact25
+
+                prepared = prepare_compact25(pack_id, pack)
+            else:
+                prepared = prepare_compact24(pack_id, pack)
         elif self.compact_development:
             if app_env not in {"development", "test"}:
                 raise ValueError("Compact judge prompt is development/test only")
@@ -178,7 +192,9 @@ class JudgeService:
                                 )
                                 parsed_content = provider_response.content
                                 if (self.axes_development and
-                                        prepared.prompt_version == AXES_COMPACT_VERSION):
+                                        prepared.prompt_version in {
+                                            AXES_COMPACT_VERSION, STRUCTURED_COMPACT_VERSION,
+                                            POSITION_COMPACT_VERSION}):
                                     parsed_content, source_unit_id_normalizations = (
                                         normalize_parent_unit_ids(
                                             parsed_content, prepared.input_snapshot_json,
@@ -187,11 +203,14 @@ class JudgeService:
                                 decision, schema_version_inferred = parse_provider_decision(
                                     parsed_content, prepared.selected_ids,
                                     allow_visible_siblings=(self.axes_development
-                                                            and prepared.prompt_version ==
-                                                            AXES_COMPACT_VERSION),
+                                                            and prepared.prompt_version in {
+                                                                AXES_COMPACT_VERSION,
+                                                                STRUCTURED_COMPACT_VERSION,
+                                                                POSITION_COMPACT_VERSION}),
                                     snapshot=prepared.input_snapshot_json
                                     if prepared.input_snapshot_version in
-                                    {"judge-input-2.1", "judge-input-2.2", "judge-input-2.3"}
+                                    {"judge-input-2.1", "judge-input-2.2", "judge-input-2.3",
+                                     "judge-input-2.4", "judge-input-2.5"}
                                     else None,
                                 )
                                 if not isinstance(decision, JudgeDecisionV2):
@@ -206,7 +225,9 @@ class JudgeService:
                                         raise DecisionFailure("optional_numeric_content",
                                                               retryable=True)
                             response_json = decision.model_dump(mode="json")
-                            if prepared.input_snapshot_version == "judge-input-2.3":
+                            if prepared.input_snapshot_version in {"judge-input-2.3",
+                                                                   "judge-input-2.4",
+                                                                   "judge-input-2.5"}:
                                 response_json["raw_model_content"] = sanitize_diagnostic(
                                     provider_response.content, (slot.api_key or "",),
                                 )
@@ -262,8 +283,13 @@ class JudgeService:
             response_json = ({"rejected_responses": rejected_responses}
                              if rejected_responses else None)
             schema_version_inferred = False
-        if prepared.input_snapshot_version == "judge-input-2.3" and attempt_failures:
+        if (prepared.input_snapshot_version in {"judge-input-2.3", "judge-input-2.4",
+                                               "judge-input-2.5"} and attempt_failures):
             response_json = {**(response_json or {}), "attempt_failures": attempt_failures}
+        if slot.thinking_enabled is not None:
+            response_json = {
+                **(response_json or {}), "generation_options": judge_request_options(slot),
+            }
         if error is None:
             self.breaker.record(slot.slot, success=True)
             if isinstance(decision, JudgeDecisionV2) and len(decision.statements) > 3:
@@ -395,7 +421,9 @@ def parse_provider_decision(
             allowed_ids = selected_ids
             if allow_visible_siblings:
                 raw_visible = snapshot.get("judge_visible_evidence_ids")
-                if (snapshot.get("validation_contract") != "judge-validation-2.3"
+                if (snapshot.get("validation_contract") not in {"judge-validation-2.3",
+                                                               "judge-validation-2.4",
+                                                               "judge-validation-2.5"}
                         or not isinstance(raw_visible, list)
                         or not all(isinstance(identifier, str) for identifier in raw_visible)
                         or not set(selected_ids) <= set(raw_visible)):
@@ -403,6 +431,8 @@ def parse_provider_decision(
                 allowed_ids = tuple(raw_visible)
             _validate_decision_citations(decision, allowed_ids)
             return decision, False
+        except QuantityReferenceError as exc:
+            raise DecisionFailure("invalid_source_quantity", retryable=True) from exc
         except KeyError as exc:
             raise DecisionFailure("invalid_source_unit", retryable=True) from exc
         except ValidationError as exc:
@@ -445,7 +475,7 @@ def parse_decision(content: str, selected_ids: tuple[str, ...]) -> AnyJudgeDecis
         raise DecisionFailure("unsupported_label")
     try:
         decision = (JudgeDecisionV2.model_validate_json(content)
-                    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3"}
+                    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3", "2.4", "2.5"}
                     else JudgeDecision.model_validate_json(content))
     except ValidationError as exc:
         raise DecisionFailure("schema_violation", retryable=True,

@@ -97,6 +97,12 @@ def normalize_pico(
     if values["intervention_or_exposure"] is None:
         values["intervention_or_exposure"] = literal_exposure(candidate.raw_span)
     recovered = literal_outcome(candidate.raw_span, values["intervention_or_exposure"])
+    if values["outcome"] is None:
+        relation = re.search(
+            r"\b(?:cures?|treats?|prevents?|reverses?)\s+(?:the\s+)?"
+            r"(?P<outcome>.+?)(?=\s+(?:in|among|for)\s+|[.!?]|$)", candidate.raw_span, re.I)
+        if relation:
+            values["outcome"] = relation["outcome"].strip()
     if recovered and (values["outcome"] is None or
                       values["outcome"].casefold() in recovered.casefold()):
         values["outcome"] = recovered
@@ -187,8 +193,22 @@ def _grounded_outcome(value: str | None, source: str) -> str | None:
     exact = _grounded_value(value, source)
     if exact is not None or value is None:
         return exact
+    annotated = re.sub(
+        r"\s*\((?:cured|treated|prevented|reversed)\)\s*$", "", value.strip(), flags=re.I)
+    if annotated != value.strip():
+        return _grounded_value(annotated, source)
+    # Extraction may name the endpoint as a disease plus a relation noun while
+    # the source expresses that same relation as a verb. Preserve the literal
+    # disease, never recover an unstated subtype or a different disease.
+    relation = re.fullmatch(r"(.+?)\s+(transmission|infection)", value.strip(), re.I)
+    if relation and re.search(
+        r"\b(?:transmit(?:ted|s)?|infect(?:s|ed|ion)?)\b", source, re.I,
+    ):
+        grounded = _grounded_value(relation[1], source)
+        if grounded is not None:
+            return grounded
     remainder = re.sub(
-        r"^(?:increased|decreased|raised|lowered|reduced|caused|prevented|"
+        r"^(?:cured|treated|reversed|increased|decreased|raised|lowered|reduced|caused|prevented|"
         r"improved|worsened|higher|lower|more|less)\s+",
         "", value.strip(), count=1, flags=re.I,
     )

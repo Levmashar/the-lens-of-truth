@@ -54,7 +54,8 @@ def assess_completeness(
         if pico.outcome is None:
             required.append("outcome")
 
-    matches = _salient_matches(mesh.find_mentions(pico.original_claim))
+    matches = tuple(match for match in _salient_matches(mesh.find_mentions(pico.original_claim))
+                    if not _setting_mention(match, pico))
     slot_values = (
         pico.population, pico.intervention_or_exposure, pico.comparator,
         pico.outcome, pico.timeframe,
@@ -112,3 +113,20 @@ def _salient_matches(matches: tuple[MeshMatch, ...]) -> tuple[MeshMatch, ...]:
 def _contains(haystack: str, needle: str) -> bool:
     pattern = r"\s+".join(re.escape(part) for part in needle.split())
     return bool(re.search(pattern, haystack, flags=re.IGNORECASE))
+
+
+def _setting_mention(match: MeshMatch, pico: NormalizedPico) -> bool:
+    """Setting modifiers are retained in the claim, not mandatory PICO entities.
+
+    Only an explicit setting construction is exempt. A laboratory exposure or
+    outcome, or a population of laboratory workers, still requires coverage.
+    """
+    if any(value and _contains(value, match.surface_text) for value in (
+        pico.population, pico.intervention_or_exposure, pico.comparator, pico.outcome,
+    )):
+        return False
+    return any(span.start() <= match.start and match.end <= span.end() for span in re.finditer(
+        r"\b(?:under|in)\s+(?:controlled\s+)?(?:laboratory|clinical|experimental)"
+        r"\s+(?:conditions|settings?)\b|\bin\s+(?:the\s+)?laboratory\b|\bin vitro\b",
+        pico.original_claim, re.I,
+    ))

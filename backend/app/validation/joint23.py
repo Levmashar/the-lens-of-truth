@@ -247,6 +247,13 @@ def normalized_references23(
     """Versioned child-unit to its exact frozen evidence ID, never a fuzzy lookup."""
     if prepared.system_prompt != INSTRUCTIONS:
         return response, ()
+    return normalize_frozen_references(response, prepared)
+
+
+def normalize_frozen_references(
+    response: JointResponse23, prepared: PreparedSemanticInput,
+) -> tuple[JointResponse23, tuple[dict[str, str], ...]]:
+    """Shared exact child/parent ownership rule, selected by a versioned caller."""
     payload = json.loads(prepared.user_prompt.split("\n", 1)[1])
     units = payload["frozen_snapshot"]["source_units"]
     parents = {unit["unit_id"]: unit["evidence_id"] for unit in units}

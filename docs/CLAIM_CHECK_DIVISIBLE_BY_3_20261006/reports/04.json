@@ -1,0 +1,1264 @@
+{
+  "case_number": 4,
+  "submitted_claim": "Smoking cessation reduces lung cancer risk over time.",
+  "sanity_expectation": "Supported",
+  "analysis_id": "f037ef74-8083-48c3-929e-397bdeb39893",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "322f3f62-5a80-4a60-80ec-f8156ddf776e",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T10:57:02.155383+00:00",
+          "completed_at": "2026-10-06T10:58:14.162379+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T10:56:50.522416+00:00",
+          "completed_at": "2026-10-06T10:57:02.146128+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T10:58:14.169079+00:00",
+          "completed_at": "2026-10-06T10:59:26.017589+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T10:59:26.025362+00:00",
+          "completed_at": "2026-10-06T10:59:30.103380+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T10:56:50.501788+00:00",
+          "completed_at": "2026-10-06T10:56:50.514779+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T10:59:30.112816+00:00",
+          "completed_at": "2026-10-06T10:59:30.506105+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "fefdfdb5-7c20-45b5-8796-25d911958563",
+      "evidence_pack_hash": "955cabffd1e98ee05d5320a4f317c5243f4eec3aff747696d48c703ebd3d3964",
+      "judge_run_ids": [
+        "dad78887-28ac-4a0e-9277-3a9d58f64009",
+        "e49c45e8-0014-41b1-ac4d-c7f4627aac4a",
+        "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3"
+      ],
+      "judge_validation_run_ids": [
+        "9ab3e691-9390-454b-9539-d99618a409d9",
+        "8a83842b-9680-4cbb-bfe5-bde2933621a6",
+        "8d070c90-5720-4b85-ab0f-bbe23fba434d"
+      ],
+      "verdict_run_id": "3d458f0f-18ee-4e0a-9912-373eaa55abf7",
+      "report_run_id": "63569ce2-6901-4c0a-bbac-cf599b788de1",
+      "production_qualified": false,
+      "result_label": "supported",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "dad78887-28ac-4a0e-9277-3a9d58f64009",
+          "validation_run_id": "9ab3e691-9390-454b-9539-d99618a409d9",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 23771,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E12.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "15"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E1.U1.Q15",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.56"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E1.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.24",
+                "1.97"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "active_alternative",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E11"
+            ],
+            "S2": [
+              "E32"
+            ],
+            "S3": [
+              "E12"
+            ],
+            "S4": [
+              "E13"
+            ],
+            "S5": [
+              "E1"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "active_alternative",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19102,
+          "output_tokens": 951,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "e49c45e8-0014-41b1-ac4d-c7f4627aac4a",
+          "validation_run_id": "8a83842b-9680-4cbb-bfe5-bde2933621a6",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 20917,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E12.U1.Q3",
+              "material": false,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "15"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "population",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "active_alternative",
+              "finding_basis": "association"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "endpoint",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E11"
+            ],
+            "S2": [
+              "E12"
+            ],
+            "S3": [
+              "E13"
+            ],
+            "S4": [
+              "E1"
+            ],
+            "S5": [
+              "E32"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "active_alternative",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 22234,
+          "output_tokens": 868,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3",
+          "validation_run_id": "8d070c90-5720-4b85-ab0f-bbe23fba434d",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 27159,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "10"
+              ],
+              "source_measure": "duration",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E11.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E12.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "15"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E12"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E1.U1.Q15",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.56"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E1.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.24",
+                "1.97"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "supported",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E11"
+            ],
+            "S2": [
+              "E32"
+            ],
+            "S3": [
+              "E13"
+            ],
+            "S4": [
+              "E12"
+            ],
+            "S5": [
+              "E1"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 19420,
+          "output_tokens": 858,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Smoking cessation reduces lung cancer risk over time.",
+          "normalized_claim": "Smoking cessation reduces lung cancer risk over time.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "lung cancer risk",
+            "timeframe": "over time",
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Smoking cessation reduces lung cancer risk over time.",
+            "intervention_or_exposure": "Smoking cessation"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 28,
+          "selected_documents": 8,
+          "selected_authoritative": 1,
+          "selected_pubmed": 7,
+          "roles": {
+            "direct": 6,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "supported",
+            "supported",
+            "supported"
+          ],
+          "aggregation_reasons": [
+            "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 174678
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "f037ef74-8083-48c3-929e-397bdeb39893",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T10:57:02.163107+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T10:56:35.828248+00:00",
+        "completed_at": "2026-10-06T10:56:50.484053+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T10:56:50.529671+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T10:58:14.175052+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T10:59:26.036768+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T10:56:50.506888+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T10:59:30.118580+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "322f3f62-5a80-4a60-80ec-f8156ddf776e",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 53,
+        "raw_text": "Smoking cessation reduces lung cancer risk over time.",
+        "normalized_text": "Smoking cessation reduces lung cancer risk over time.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "Smoking cessation",
+        "comparator": null,
+        "outcome": "lung cancer risk",
+        "timeframe": "over time",
+        "risk_class": "standard",
+        "verifiability": 0.9,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "Smoking cessation",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D016540",
+            "preferred_name": "Smoking Cessation",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "F01.145.488.732"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "lung cancer",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D008175",
+            "preferred_name": "Lung Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04.588.894.797.520",
+              "C08.381.540",
+              "C08.785.520"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "risk",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D012306",
+            "preferred_name": "Risk",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "E05.318.740.600.800",
+              "G17.680.750",
+              "N05.715.360.750.625.700",
+              "N06.850.520.830.600.800"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Smoking cessation reduces lung cancer risk over time.",
+          "population": null,
+          "intervention_or_exposure": "Smoking cessation",
+          "comparator": null,
+          "outcome": "lung cancer risk",
+          "timeframe": "over time",
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T10:59:30.518437Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "322f3f62-5a80-4a60-80ec-f8156ddf776e",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "3d458f0f-18ee-4e0a-9912-373eaa55abf7",
+        "claim": {
+          "text": "Smoking cessation reduces lung cancer risk over time.",
+          "claim_type": "causal"
+        },
+        "verdict": "supported",
+        "verdict_display": "Supported",
+        "headline": "Supported",
+        "short_summary": "Multiple validated assessments found evidence supporting the claim at its stated scope.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "Multiple validated assessments found evidence supporting the claim at its stated scope.",
+          "reason_category": "supported_by_validated_evidence",
+          "established": "Multiple validated assessments found evidence supporting the claim at its stated scope.",
+          "unresolved": null,
+          "evidence_ids": [
+            "E1",
+            "E11",
+            "E12",
+            "E13",
+            "E32"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "SUPPORTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "text": "Multiple independent assessments supported the claim and passed citation validation."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E12",
+            "pmid": null,
+            "doi": null,
+            "title": "Cigarette Smoking: Health Risks and How to Quit (PDQ) – Health Professional Version",
+            "journal": null,
+            "publication_date": "2025-02-21",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient",
+              "supporting"
+            ],
+            "exact_excerpt": "In a randomized trial of heavy smokers, the long-term follow-up results demonstrated that compared with the nonintervention group (n = 1,964), those randomly assigned to a smoking cessation intervention (n = 3,923) experienced a 15% reduction in all-cause mortality rates (8.83 vs. 10.38 per 1,000 person-years; P = .03).[22] The smoking cessation intervention consisted of a strong physician message plus 12 group sessions and nicotine gum administered during a 10-week period. Decreases in the risk of lung cancer and other cancers, coronary heart disease, cardiovascular disease, and respiratory d",
+            "excerpt_truncated": true,
+            "passage_sha256": "2bbc0326e495ee796ef4130144cde33a08942c71c3ad02e1e54b335a69020aa6",
+            "passage_section": "Tobacco Use Interventions",
+            "source_url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/quit-smoking-hp-pdq",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3",
+              "dad78887-28ac-4a0e-9277-3a9d58f64009",
+              "e49c45e8-0014-41b1-ac4d-c7f4627aac4a"
+            ],
+            "cited_by_validation_run_ids": [
+              "8d070c90-5720-4b85-ab0f-bbe23fba434d",
+              "9ab3e691-9390-454b-9539-d99618a409d9",
+              "8a83842b-9680-4cbb-bfe5-bde2933621a6"
+            ],
+            "limitations": [],
+            "document_id": "authoritative:nci-smoking-pdq",
+            "source_kind": "authoritative_public_health",
+            "organization": "NCI",
+            "document_purpose": "systematic_evidence_summary",
+            "analysis_design": null,
+            "exposure_assignment": null,
+            "attribution": "PDQ Cigarette Smoking was originally published by the National Cancer Institute.",
+            "currency": "current",
+            "excerpts": [
+              {
+                "evidence_id": "E12",
+                "source_unit_id": "E12.U1",
+                "section": "Tobacco Use Interventions",
+                "exact_text": "In a randomized trial of heavy smokers, the long-term follow-up results demonstrated that compared with the nonintervention group (n = 1,964), those randomly assigned to a smoking cessation intervention (n = 3,923) experienced a 15% reduction in all-cause mortality rates (8.83 vs. 10.38 per 1,000 person-years; P = .03).[22] The smoking cessation intervention consisted of a strong physician message plus 12 group sessions and nicotine gum administered during a 10-week period. Decreases in the risk of lung cancer and other cancers, coronary heart disease, cardiovascular disease, and respiratory disease contributed to the benefit in the patients randomly assigned to the smoking cessation intervention.",
+                "truncated": false,
+                "passage_sha256": "2bbc0326e495ee796ef4130144cde33a08942c71c3ad02e1e54b335a69020aa6"
+              },
+              {
+                "evidence_id": "E11",
+                "source_unit_id": "E11.U1",
+                "section": "Tobacco Use Interventions",
+                "exact_text": "Many health risks related to tobacco smoking can be reduced by smoking cessation. People who quit smoking before age 50 years have up to half the risk of dying within 15 years compared with people who continue to smoke. In addition, the risk of dying is reduced substantially even among people who stop smoking after age 70 years.[19] After 10 years of abstinence from smoking, the risk of lung cancer is 30% to 50% lower than that of continuing smokers, and the risk of oral and esophageal cancer is halved within 5 years of cessation.[19] People who quit smoking also lower their risk of acute myeloid leukemia and cancers of the cervix, stomach, larynx, pancreas, colon and rectum, liver, kidney, and bladder.[16,19-21]",
+                "truncated": false,
+                "passage_sha256": "953a10452c146f20b94b429d394b6019f98ca5b294d16468ef09a2cded57cc66"
+              },
+              {
+                "evidence_id": "E32",
+                "source_unit_id": "E32.U1",
+                "section": "Effects of Smoking Cessation",
+                "exact_text": "Based on solid evidence, cigarette smoking causes cancers of the lung, oral cavity and pharynx, larynx, esophagus, bladder, kidney, pancreas, stomach, uterine cervix, colon and rectum, liver, and acute myeloid leukemia.[2] Smoking avoidance and smoking cessation result in decreased incidence and mortality from cancer.[3]",
+                "truncated": false,
+                "passage_sha256": "b319ab5e871b01e454e592cc63dc8a898f5de41b22081f949f1701045c4278de"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E13",
+            "pmid": "15227861",
+            "doi": null,
+            "title": "Lung cancer.",
+            "journal": "Australian family physician",
+            "publication_date": "2004-05-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "The risk of developing lung cancer increases with increasing cigarette smoking and decreases when smoking is ceased. The development or change in a 'usual' cough should alert the GP to a diagnosis of lung cancer. Any referral to a respiratory specialist must be preceded by informing the patient of the nature of the possible disease, and ensuring that the patient has a realistic understanding of the limited chance of cure. Palliation is required by most patients with the GP playing an important role. Promotion of smoking cessation is the only real strategy available to doctors to reduce morbidi",
+            "excerpt_truncated": true,
+            "passage_sha256": "56262dc092732ef9435f2109b63ffe5e85879616de6ab4783546c24850d40537",
+            "passage_section": "DISCUSSION",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/15227861/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3",
+              "dad78887-28ac-4a0e-9277-3a9d58f64009",
+              "e49c45e8-0014-41b1-ac4d-c7f4627aac4a"
+            ],
+            "cited_by_validation_run_ids": [
+              "8d070c90-5720-4b85-ab0f-bbe23fba434d",
+              "9ab3e691-9390-454b-9539-d99618a409d9",
+              "8a83842b-9680-4cbb-bfe5-bde2933621a6"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:15227861",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E13",
+                "source_unit_id": "E13.U1",
+                "section": "DISCUSSION",
+                "exact_text": "The risk of developing lung cancer increases with increasing cigarette smoking and decreases when smoking is ceased. The development or change in a 'usual' cough should alert the GP to a diagnosis of lung cancer. Any referral to a respiratory specialist must be preceded by informing the patient of the nature of the possible disease, and ensuring that the patient has a realistic understanding of the limited chance of cure. Palliation is required by most patients with the GP playing an important role. Promotion of smoking cessation is the only real strategy available to doctors to reduce morbidity from this disease.",
+                "truncated": false,
+                "passage_sha256": "56262dc092732ef9435f2109b63ffe5e85879616de6ab4783546c24850d40537"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "42260103",
+            "doi": "10.1038/s41591-026-04469-5",
+            "title": "Electronic cigarette use after smoking cessation and lung cancer risk.",
+            "journal": "Nature medicine",
+            "publication_date": "2026-06-08",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Electronic cigarettes (e-cigarettes) have gained popularity as a less harmful alternative to conventional cigarettes, yet their associations with lung cancer risk after smoking cessation remain uncertain. Here we evaluated 4,524,895 adults with a conventional smoking history who participated in the Korean National Health Screening Program in 2018 (baseline), with prior records from 2012-2014. Participants were classified as current smokers, short-term quitters or long-term quitters, and followed up to December 2023. Daily e-cigarette use at baseline was used to define post-cessation e-cigarett",
+            "excerpt_truncated": true,
+            "passage_sha256": "33fdb4014d259c95104164bafb6edffc3aaac07d6639195014239ff3c2946e87",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/42260103/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3",
+              "dad78887-28ac-4a0e-9277-3a9d58f64009",
+              "e49c45e8-0014-41b1-ac4d-c7f4627aac4a"
+            ],
+            "cited_by_validation_run_ids": [
+              "8d070c90-5720-4b85-ab0f-bbe23fba434d",
+              "9ab3e691-9390-454b-9539-d99618a409d9",
+              "8a83842b-9680-4cbb-bfe5-bde2933621a6"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:42260103",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Electronic cigarettes (e-cigarettes) have gained popularity as a less harmful alternative to conventional cigarettes, yet their associations with lung cancer risk after smoking cessation remain uncertain. Here we evaluated 4,524,895 adults with a conventional smoking history who participated in the Korean National Health Screening Program in 2018 (baseline), with prior records from 2012-2014. Participants were classified as current smokers, short-term quitters or long-term quitters, and followed up to December 2023. Daily e-cigarette use at baseline was used to define post-cessation e-cigarette use. Lung cancer incidence and lung cancer-specific death (LCSD) were assessed using multivariable Cox models. Over 24,182,543 person-years, 35,887 lung cancers and 12,807 LCSD events occurred. Compared with complete quitters, e-cigarette use after smoking cessation was associated with higher risks of lung cancer incidence (adjusted hazard ratio (aHR) 1.56, 95% confidence interval (CI) 1.24-1.97) and LCSD (aHR 2.00, 95% CI 1.28-3.15). Associations were directionally consistent in short-term and long-term quitters and were prominent in the high-risk subgroup (incidence: aHR 1.91, 95% CI 1.44-2.53; LCSD: aHR 1.92, 95% CI 1.13-3.24). Although causality cannot be established, these findings suggest that e-cigarette use after smoking cessation may attenuate the benefits of complete cessation for lung cancer prevention.",
+                "truncated": false,
+                "passage_sha256": "33fdb4014d259c95104164bafb6edffc3aaac07d6639195014239ff3c2946e87"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 3,
+            "contradicted": 0,
+            "not_enough_evidence": 0
+          },
+          "description": "3 qualified assessment(s) supported the claim.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "validated_support",
+          "validated_citations_shown": 3,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E12",
+            "pmid": null,
+            "doi": null,
+            "url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/quit-smoking-hp-pdq"
+          },
+          {
+            "evidence_id": "E13",
+            "pmid": "15227861",
+            "doi": null,
+            "url": "https://pubmed.ncbi.nlm.nih.gov/15227861/"
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "42260103",
+            "doi": "10.1038/s41591-026-04469-5",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/42260103/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "3d458f0f-18ee-4e0a-9912-373eaa55abf7",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "53ba4b5a97018f1fc6fc805552b32de0bcf0069034fa14ded94c47b6d6bc84d7",
+          "evidence_pack_id": "fefdfdb5-7c20-45b5-8796-25d911958563",
+          "evidence_pack_hash": "955cabffd1e98ee05d5320a4f317c5243f4eec3aff747696d48c703ebd3d3964",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "5be71398-dde6-48f7-a1fb-0a8dd89ec3e3",
+            "dad78887-28ac-4a0e-9277-3a9d58f64009",
+            "e49c45e8-0014-41b1-ac4d-c7f4627aac4a"
+          ],
+          "judge_validation_run_ids": [
+            "8a83842b-9680-4cbb-bfe5-bde2933621a6",
+            "8d070c90-5720-4b85-ab0f-bbe23fba434d",
+            "9ab3e691-9390-454b-9539-d99618a409d9"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T10:59:30.496251Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "5754e49ed7c7028b2e425661cdfdb259d56d547f29ef24d26b9126578c06c1b5"
+      }
+    }
+  ]
+}

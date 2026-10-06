@@ -1,0 +1,237 @@
+{
+  "case_number": 15,
+  "submitted_claim": "HIV is commonly transmitted by mosquito bites.",
+  "sanity_expectation": "Contradicted",
+  "analysis_id": "478da231-0baa-42e4-b643-a9bc37a3c66b",
+  "analysis_status": "failed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "c5017818-3b44-47c8-8bac-68c09f74d83c",
+      "ordinal": 1,
+      "status": "failed",
+      "stage": "normalizing",
+      "completed_stages": [],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "normalizing": {
+          "failed_at": "2026-10-06T11:07:30.892601+00:00",
+          "started_at": "2026-10-06T11:07:30.877413+00:00"
+        }
+      },
+      "failure_code": "normalization_incomplete",
+      "evidence_pack_id": null,
+      "evidence_pack_hash": null,
+      "judge_run_ids": [],
+      "judge_validation_run_ids": [],
+      "verdict_run_id": null,
+      "report_run_id": null,
+      "production_qualified": null,
+      "result_label": "unable_to_verify_reliably",
+      "debug_judge_runs": [],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "HIV is commonly transmitted by mosquito bites.",
+          "normalized_claim": "HIV is commonly transmitted by mosquito bites.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": null,
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "HIV is commonly transmitted by mosquito bites.",
+            "intervention_or_exposure": "mosquito bites"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": null,
+          "selected_documents": null,
+          "selected_authoritative": 0,
+          "selected_pubmed": 0,
+          "roles": {
+            "direct": 0,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        },
+        "final": {
+          "qualified_judges": 0,
+          "qualified_positions": [],
+          "aggregation_reasons": [],
+          "production_qualified": false,
+          "total_model_calls": 1,
+          "elapsed_ms": 17084
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "478da231-0baa-42e4-b643-a9bc37a3c66b",
+    "status": "failed",
+    "stage": "failed",
+    "completed_stages": [
+      "extracting"
+    ],
+    "stage_timestamps": {
+      "extracting": {
+        "started_at": "2026-10-06T11:07:13.808981+00:00",
+        "completed_at": "2026-10-06T11:07:30.855053+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:07:30.883563+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 0,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "c5017818-3b44-47c8-8bac-68c09f74d83c",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 46,
+        "raw_text": "HIV is commonly transmitted by mosquito bites.",
+        "normalized_text": "HIV is commonly transmitted by mosquito bites.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "mosquito bites",
+        "comparator": null,
+        "outcome": null,
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.9,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "mosquito",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D009033",
+            "preferred_name": "Culicidae",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "B01.050.500.131.617.720.500.500.750.712.500.875"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "bites",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D001733",
+            "preferred_name": "Bites and Stings",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C25.723.127",
+              "C26.176"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "HIV is commonly transmitted by mosquito bites.",
+          "population": null,
+          "intervention_or_exposure": "mosquito bites",
+          "comparator": null,
+          "outcome": null,
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "partial",
+        "normalization_quality": {
+          "normalization_coverage": 0.667,
+          "missing_explicit_concepts": [
+            "HIV"
+          ],
+          "required_slots_missing": [
+            "outcome"
+          ],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [
+            "required_pico_slots_missing",
+            "explicit_medical_concepts_not_represented"
+          ],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:07:30.907301Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      }
+    ]
+  },
+  "report_responses": []
+}

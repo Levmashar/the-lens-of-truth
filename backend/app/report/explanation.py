@@ -48,8 +48,14 @@ def _audited_findings(
         raw = validation.result.conclusion_qualification
         if raw is None or judge is None or not isinstance(judge.decision, JudgeDecisionV2):
             continue
+        from app.validation.position import EvidencePositionAudit
+
+        audit: AxesQualificationAudit | EvidencePositionAudit
         try:
-            audit = AxesQualificationAudit.model_validate(raw)
+            if judge.decision.schema_version == "2.5":
+                audit = EvidencePositionAudit.model_validate(raw)
+            else:
+                audit = AxesQualificationAudit.model_validate(raw)
         except ValidationError:
             # Earlier relation-only audits can still contribute explicit reason codes.
             try:
@@ -64,8 +70,18 @@ def _audited_findings(
         metadata = {f.statement_id: f for f in audit.input.base.findings}
         statements = {s.statement_id: s for s in judge.decision.statements}
         attributions = {a.statement_id: a for a in validation.result.statement_attributions}
-        dependencies = set(judge.decision.conclusion.based_on_statement_ids)
-        for axis in audit.input.assessments:
+        dependencies = (set(statements) if judge.decision.schema_version == "2.5" else
+                        set(judge.decision.conclusion.based_on_statement_ids))
+        axes = audit.input.assessments
+        if (isinstance(audit, EvidencePositionAudit)
+                and audit.version in {"validated-evidence-position-1.5",
+                                      "validated-evidence-position-1.6",
+                                 "validated-evidence-position-1.7",
+                                 "validated-evidence-position-1.8"}):
+            from app.validation.relationship_guards import guarded_axes
+
+            axes, _ = guarded_axes(audit.input)
+        for axis in axes:
             statement = statements.get(axis.statement_id)
             attribution = attributions.get(axis.statement_id)
             fact = metadata.get(axis.statement_id)
@@ -203,6 +219,23 @@ def build_explanation(
                       f"The retrieved evidence does not establish the claimed {notation} "
                       "magnitude at a sufficiently comparable scope, so the specific "
                       "magnitude could not be verified.")
+
+    current_position = any((v.result.conclusion_qualification or {}).get("version")
+                           in {"validated-evidence-position-1.5", "validated-evidence-position-1.6",
+                                 "validated-evidence-position-1.7",
+                                 "validated-evidence-position-1.8"}
+                           for v in validations)
+    # A contextual gap must not hide an audited material conflict/design failure.
+    # Historical report reconstruction retains its original template ordering.
+    if current_position and (verdict.conflicting_decisive_labels
+                             or "CONFLICTING_FINDINGS" in qualifier_reasons):
+        return result(R.CONFLICTING_MATERIAL_EVIDENCE,
+                      "Validated assessments disagreed on the material evidence direction "
+                      "at the claimed scope.", known=None)
+    if current_position and "CAUSAL_DESIGN_INSUFFICIENT" in qualifier_reasons:
+        return result(R.CAUSAL_DESIGN_INSUFFICIENT,
+                      "The retrieved findings concern the claimed relationship, but lack "
+                      "eligible causal designs to establish its evidence position.", known=None)
 
     scope = [f for f in findings if f.axis.scope in {
         "incompatible", "compatible_but_narrower", "broader_or_indirect",

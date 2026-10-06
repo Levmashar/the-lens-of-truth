@@ -60,6 +60,26 @@ export function createDebugProgress(
   analysis: AnalysisProgress, claims: ClaimSummary[], pollError: string | null,
 ): HTMLElement {
   const panel = element("section", "debug-panel");
+  const copyActions = element("div", "debug-copy-actions");
+  const copyButton = element("button", "button button-secondary", "Copy all diagnostics");
+  copyButton.type = "button";
+  const copyStatus = element("p", "debug-notice");
+  copyStatus.setAttribute("role", "status");
+  copyButton.addEventListener("click", async () => {
+    copyButton.disabled = true;
+    copyStatus.textContent = "";
+    try {
+      await navigator.clipboard.writeText(JSON.stringify({
+        analysis, claims, poll_error: pollError,
+      }, null, 2));
+      copyStatus.textContent = "Copied all diagnostics, including raw model responses.";
+    } catch {
+      copyStatus.textContent = "Could not copy diagnostics. Check clipboard permissions and try again.";
+    } finally {
+      copyButton.disabled = false;
+    }
+  });
+  append(copyActions, copyButton, copyStatus);
   const globallySkipped = stages
     .map(([key]) => key)
     .filter((key) => claims.length > 0 && claims.every((claim) =>
@@ -68,6 +88,7 @@ export function createDebugProgress(
   append(panel,
     element("p", "eyebrow", "Development diagnostics"),
     element("h2", "card-title", "Live process status"),
+    copyActions,
     element("p", "debug-notice",
       "Development only. Model response excerpts may repeat submitted text. Requests and provider reasoning are not displayed; do not submit secrets."),
     element("p", "debug-summary",
@@ -115,8 +136,12 @@ export function createDebugProgress(
     } else if (claim.completed_stages.includes("validating")) {
       const audits = (claim.debug_judge_runs ?? []).filter((item) => item.validation_status !== null);
       const accepted = audits.filter((item) => item.validation_status === "validated").length;
-      const rejected = audits.filter((item) => item.validation_status === "invalid" || item.validation_status === "partially_validated").length;
-      const unavailable = audits.filter((item) => item.validation_status === "unable_to_validate").length;
+      const rejected = audits.filter((item) => item.validation_status === "invalid"
+        || item.validation_status === "partially_validated"
+        || (item.validation_status === "unable_to_validate"
+          && item.conclusion_status === "not_justified"
+          && !item.validation_error_category)).length;
+      const unavailable = audits.length - accepted - rejected;
       block.append(element("p", "", audits.length
         ? `Validation: completed, ${accepted} accepted / ${rejected} rejected / ${unavailable} unavailable`
         : "Validation: stage completed; no judge assessment was available to validate"));
@@ -142,10 +167,21 @@ export function createDebugProgress(
       waterfall.open = true;
       waterfall.append(element("summary", "", "Failure waterfall (pipeline status only)"));
       for (const [key, value] of Object.entries(diagnostic.waterfall)) {
-        waterfall.append(element("p", "", `${key.replaceAll("_", " ")}: ${value}`));
+        const validationPending = claim.status === "running"
+          && !claim.completed_stages.includes("validating")
+          && ["source_attribution", "semantic_classification", "judge_qualification"].includes(key);
+        const aggregationPending = key === "final_aggregation" && !claim.verdict_run_id
+          && claim.status !== "failed";
+        const displayed = validationPending ? `${value} completed; pending`
+          : aggregationPending ? "Pending" : value;
+        waterfall.append(element("p", "", `${key.replaceAll("_", " ")}: ${displayed}`));
       }
       block.append(waterfall);
-      block.append(element("p", "", `Final: ${diagnostic.final.qualified_judges}/3 qualified · ${diagnostic.final.qualified_positions.join(", ") || "none"} · ${diagnostic.final.aggregation_reasons.join(", ") || "no aggregation reason"} · production ${diagnostic.final.production_qualified ? "yes" : "no"} · calls ${diagnostic.final.total_model_calls ?? "unavailable"} · ${diagnostic.final.elapsed_ms ?? "unknown"} ms`));
+      if (claim.verdict_run_id) {
+        block.append(element("p", "", `Final: ${diagnostic.final.qualified_judges}/3 qualified · ${diagnostic.final.qualified_positions.join(", ") || "none"} · ${diagnostic.final.aggregation_reasons.join(", ") || "no aggregation reason"} · production ${diagnostic.final.production_qualified ? "yes" : "no"} · calls ${diagnostic.final.total_model_calls ?? "unavailable"} · ${diagnostic.final.elapsed_ms ?? "unknown"} ms`));
+      } else {
+        block.append(element("p", "", `${claim.status === "failed" ? "Stopped before aggregation" : "In progress; final result pending"} · calls ${diagnostic.final.total_model_calls ?? "unavailable"} · ${diagnostic.final.elapsed_ms ?? "unknown"} ms`));
+      }
     }
     for (const judge of claim.debug_judge_runs ?? []) {
       const item = element("div", "debug-judge");
@@ -156,7 +192,7 @@ export function createDebugProgress(
         failureCode(judge.error_category),
         failureCode(judge.validation_error_category),
       );
-      item.append(element("p", "", `Proposal: ${judge.proposed_label ?? "none"} · structured ${judge.outcome_status === "succeeded" ? "yes" : "no"} · findings ${judge.finding_count ?? 0} · qualified ${judge.qualification_success ? "yes" : "no"}`));
+      item.append(element("p", "", `Proposal (advisory): ${judge.proposed_label ?? "none"} · validated evidence position: ${judge.validated_evidence_position ?? "unavailable"} · structured ${judge.outcome_status === "succeeded" ? "yes" : "no"} · findings ${judge.finding_count ?? 0} · qualified ${judge.qualification_success ? "yes" : "no"}`));
       const failureSummary = judgeFailureSummary(judge.error_category,
         judge.validation_error_category, judge.qualification_success);
       if (failureSummary) item.append(element("p", "", failureSummary));

@@ -79,6 +79,7 @@ class IssueCode(StrEnum):
     LEGACY_MAPPING_UNVERIFIED = "LEGACY_MAPPING_UNVERIFIED"
     OPTIONAL_NUMERIC_DETAIL_INVALID = "OPTIONAL_NUMERIC_DETAIL_INVALID"
     OPTIONAL_NUMERIC_DETAIL_UNCERTAIN = "OPTIONAL_NUMERIC_DETAIL_UNCERTAIN"
+    SOURCE_QUANTITY_REFERENCE_INVALID = "SOURCE_QUANTITY_REFERENCE_INVALID"
 
 
 FATAL_ISSUES = frozenset({
@@ -92,6 +93,7 @@ FATAL_ISSUES = frozenset({
     IssueCode.QUOTE_NOT_IN_FROZEN_PASSAGE, IssueCode.STATEMENT_NUMERIC_MISMATCH,
     IssueCode.STATEMENT_ATTRIBUTION_FAILED, IssueCode.CONCLUSION_NOT_JUSTIFIED,
     IssueCode.INVALID_CONCLUSION_PREMISE,
+    IssueCode.SOURCE_QUANTITY_REFERENCE_INVALID,
 })
 
 
@@ -153,7 +155,7 @@ class EntailmentInput(FrozenModel):
     evidence_id: str
     role: Literal["cited", "opposing"]
     exact_claim: str
-    judge_label: JudgeLabel
+    judge_label: JudgeLabel | None
     reasoning_summary: str
     passage: str
     document_title: str
@@ -193,7 +195,7 @@ class JudgeValidationResult(FrozenModel):
     judge_run_id: UUID
     evidence_pack_id: UUID
     evidence_pack_hash: str
-    judge_label: JudgeLabel
+    judge_label: JudgeLabel | None
     citation_validations: tuple[CitationValidation, ...]
     opposing_citation_validations: tuple[CitationValidation, ...]
     validation_status: ValidationStatus
@@ -210,6 +212,9 @@ class JudgeValidationResult(FrozenModel):
         default=None, exclude_if=lambda value: value is None,
     )
     semantic_validation: dict[str, object] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
+    validated_evidence_position: JudgeLabel | None = Field(
         default=None, exclude_if=lambda value: value is None,
     )
     # Strict typed audits are parsed by relation_flow/aggregation; JSONB is the

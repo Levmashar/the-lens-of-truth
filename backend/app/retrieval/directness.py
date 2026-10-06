@@ -26,7 +26,7 @@ _METHODS = frozenset({"METHODS", "METHOD", "DESIGN", "PARTICIPANTS"})
 _CUES: dict[str, re.Pattern[str]] = {
     "causal": re.compile(
         r"\b(?:caus(?:e|es|ed|al|ation)|risk|inciden(?:ce|t)|hazard|odds|"
-        r"predict(?:s|ed|or)?|prospective|cohort|associat\w*)\b", re.I,
+        r"predict(?:s|ed|or)?|prospective|cohort|associat\w*|transmi\w*|spread\w*)\b", re.I,
     ),
     "association": re.compile(
         r"\b(?:associat\w*|correlat\w*|linked to|odds|hazard|inciden\w*|risk)\b", re.I,
@@ -105,7 +105,14 @@ def _aliases(claim: ClaimSnapshot, role: str) -> tuple[str, ...]:
                          len(value.strip()) >= 3}, key=lambda value: (-len(value), value)))
 
 
-def _matches(text: str, aliases: tuple[str, ...]) -> bool:
+def _matches(text: str, aliases: tuple[str, ...], *, concept_flex: bool = False) -> bool:
+    if concept_flex:
+        for alias in aliases:
+            tokens = re.findall(r"[^\W_]+", alias, re.UNICODE)
+            if tokens and all(re.search(
+                r"(?<!\w)" + re.escape(token) + r"(?:s|es)?(?!\w)", text, re.I)
+                for token in tokens):
+                return True
     for alias in aliases:
         tokens = re.findall(r"[^\W_]+", alias, re.UNICODE)
         if not tokens:
@@ -158,6 +165,9 @@ def _direction(
     outcome: tuple[str, ...], *, incidental: bool, excluded: bool,
     exposure_excluded: bool, covariate_only: bool,
 ) -> tuple[RelationshipDirection, tuple[str, ...]]:
+    def matches(text: str, terms: tuple[str, ...]) -> bool:
+        return _matches(text, terms, concept_flex=bool(document.authoritative))
+
     title = document.title
     if any(re.search(r"(?<!\w)" + re.escape(alias) + r"[\W_]+independent\b",
                      title, re.I) for alias in exposure):
@@ -172,28 +182,28 @@ def _direction(
         return "incidental", ("exposure_used_as_adjustment_covariate",)
     if incidental:
         return "incidental", ("core_concept_incidental",)
-    if _POST_CESSATION.search(title) and _matches(title, outcome):
+    if _POST_CESSATION.search(title) and matches(title, outcome):
         return "incidental", ("post_cessation_context_not_claim_exposure",)
-    if (_matches(title, outcome) and _matches(title, exposure)
+    if (matches(title, outcome) and matches(title, exposure)
             and _SCREENING_CESSATION.search(title)
             and re.search(r"\bscreening\b", title, re.I)
             and re.search(r"\bcessation\b", title, re.I)
             and not re.search(r"\b(?:risk|incidence) of lung cancer\b", title, re.I)):
         return "incidental", ("screening_and_cessation_study_question",)
-    if (_matches(title, exposure) and _matches(title, outcome)
+    if (matches(title, exposure) and matches(title, outcome)
             and _post_outcome_frame(title, outcome)):
         return "reverse", ("post_outcome_exposure_measurement",)
-    if (_matches(title, outcome)
+    if (matches(title, outcome)
             and _MANAGEMENT.search(title) and not _RISK_FOCUS.search(title)
             and any(re.search(
                 r"\b(?:in|among|with)\b.{0,45}(?<!\w)" + re.escape(alias) + r"(?!\w)",
                 title, re.I,
             ) for alias in outcome)):
         return "reverse", ("exposure_management_in_outcome_population",)
-    if (_matches(title, outcome) and not _matches(title, exposure)
+    if (matches(title, outcome) and not matches(title, exposure)
             and _SCREENING_CESSATION.search(title)):
         return "incidental", ("outcome_screening_not_exposure_risk",)
-    if _matches(title, outcome) and _matches(title, exposure):
+    if matches(title, outcome) and matches(title, exposure):
         if _REVERSE_CONTEXT.search(title) and _MANAGEMENT.search(title):
             return "reverse", ("post_outcome_management_title",)
         if _SCREENING_CESSATION.search(title) and not _RISK_FOCUS.search(title):
@@ -202,8 +212,11 @@ def _direction(
     if cue is None:
         return "unknown", ()
     for section in document.abstract_sections:
+        if (document.authoritative and matches(section.text, exposure)
+                and matches(section.text, outcome) and cue.search(section.text)):
+            return "aligned", ("both_concepts_with_relation_cue_in_reviewed_block",)
         for sentence in _sentences(section.text):
-            if _matches(sentence, exposure) and _matches(sentence, outcome) and cue.search(
+            if matches(sentence, exposure) and matches(sentence, outcome) and cue.search(
                 sentence
             ):
                 if _post_outcome_frame(sentence, outcome) and _MANAGEMENT.search(sentence):
@@ -211,7 +224,7 @@ def _direction(
                 if _SCREENING_CESSATION.search(sentence) and not _RISK_FOCUS.search(sentence):
                     continue
                 return "aligned", ("both_concepts_with_relation_cue",)
-    if _matches(title, exposure) and _matches(title, outcome) and cue.search(title):
+    if matches(title, exposure) and matches(title, outcome) and cue.search(title):
         return "aligned", ("title_relation_cue",)
     return "unknown", ()
 
@@ -232,17 +245,21 @@ def annotate_directness(
     annotated_documents: list[PubMedDocument] = []
     annotated_passages: dict[str, RankedPassage] = {}
     for document in documents:
+        def matches(text: str, terms: tuple[str, ...], *,
+                    approved: bool = bool(document.authoritative)) -> bool:
+            return _matches(text, terms, concept_flex=approved)
+
         items = by_document.get(document.document_id, [])
-        title_exposure = _matches(document.title, exposure)
-        title_outcome = _matches(document.title, outcome)
+        title_exposure = matches(document.title, exposure)
+        title_outcome = matches(document.title, outcome)
         counts: Counter[str] = Counter()
         substantive_exposure = substantive_outcome = False
         background_exposure = background_outcome = False
         same_section = False
         for item in items:
             section = _section_kind(item.passage.section)
-            has_e = _matches(item.passage.text, exposure)
-            has_o = _matches(item.passage.text, outcome)
+            has_e = matches(item.passage.text, exposure)
+            has_o = matches(item.passage.text, outcome)
             counts["exposure"] += int(has_e)
             counts["outcome"] += int(has_o)
             same_section |= has_e and has_o and section != "TITLE"
@@ -289,8 +306,8 @@ def annotate_directness(
         for item in items:
             passage = item.passage
             section = _section_kind(passage.section)
-            has_e = _matches(passage.text, exposure)
-            has_o = _matches(passage.text, outcome)
+            has_e = matches(passage.text, exposure)
+            has_o = matches(passage.text, outcome)
             same, adjacent = _proximity(passage.text, exposure, outcome)
             cue = _CUES.get(claim.claim_type or "")
             relation_cue = bool(cue and cue.search(passage.text))

@@ -1,0 +1,2576 @@
+{
+  "case_number": 33,
+  "submitted_claim": "Daily multivitamin use prevents all cancers.",
+  "sanity_expectation": "NEI",
+  "analysis_id": "a8d1537e-2c6c-4b72-bb7b-b8d6da23b4b6",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "f50cdee1-1bfc-4a12-a3c9-aa15235dd856",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:17:29.909614+00:00",
+          "completed_at": "2026-10-06T11:18:53.207250+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:17:20.142386+00:00",
+          "completed_at": "2026-10-06T11:17:29.903185+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:18:53.211862+00:00",
+          "completed_at": "2026-10-06T11:20:12.593451+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:20:12.598832+00:00",
+          "completed_at": "2026-10-06T11:20:16.719684+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:17:20.124215+00:00",
+          "completed_at": "2026-10-06T11:17:20.136457+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:20:16.722310+00:00",
+          "completed_at": "2026-10-06T11:20:17.071134+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "41fc9e0c-eb2e-4aed-815f-601aeef4e979",
+      "evidence_pack_hash": "1b30ed99e39d51d3d2ce104db7ec8b49c47278474b26f97f4b0937a466eeb0d7",
+      "judge_run_ids": [
+        "44b06791-6399-42cb-88d8-d61cd88ee981",
+        "dcc8534a-516f-4ba5-b54c-8b0a090a96ee",
+        "63b17eda-f6bf-43da-aa89-ac1b28a11891"
+      ],
+      "judge_validation_run_ids": [
+        "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+        "10748eb4-58d8-405f-9adf-4dd294d4a3c8",
+        "db79dd16-91a7-47df-9bb5-7162d38c8a19"
+      ],
+      "verdict_run_id": "19d08bf0-bcf1-4f0b-80d9-b54a1667a3d6",
+      "report_run_id": "77912ed4-6c51-4a76-864f-b8c1127e9fa5",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "44b06791-6399-42cb-88d8-d61cd88ee981",
+          "validation_run_id": "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 29650,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "0.998"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q12",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q17",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.88",
+                "1.09"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q18",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.76"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q22",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.89"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q23",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.68",
+                "1.17"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q24",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.39"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q28",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.88"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q29",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.77",
+                "1.01"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q30",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.07"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E33.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "14"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E33.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "641"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.97"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "1.09"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.57"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.06"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.79",
+                "1.42"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q9",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.30"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.80",
+                "2.12"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.62"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q12",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.42",
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E6.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "21"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E6"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E6.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "442"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E6"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.02"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.01",
+                "1.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.04"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98",
+                "1.10"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.07"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.96",
+                "1.20"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q13",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.26"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q14",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.02",
+                "1.57"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q20",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.82"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q21",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.73",
+                "0.93"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E8.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "489640"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E8"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "8"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q7",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.998"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q8",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E21.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "29553"
+              ],
+              "source_measure": "event_count",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E21"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "37"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.63"
+              ],
+              "source_measure": "risk_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.43",
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.016"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "mixed",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "broader_or_indirect",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "direct_result"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_RELATION_UNCERTAIN"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1",
+              "E33"
+            ],
+            "S2": [
+              "E11",
+              "E6"
+            ],
+            "S3": [
+              "E22",
+              "E8"
+            ],
+            "S4": [
+              "E2"
+            ],
+            "S5": [
+              "E21",
+              "E55"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 30439,
+          "output_tokens": 1724,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "dcc8534a-516f-4ba5-b54c-8b0a090a96ee",
+          "validation_run_id": "10748eb4-58d8-405f-9adf-4dd294d4a3c8",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 26852,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "0.998"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.97"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "1.09"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.02"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.01",
+                "1.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "8"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E2.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E2"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.63"
+              ],
+              "source_measure": "risk_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S5",
+              "source_quantity_id": "E55.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.43",
+                "0.92"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E55"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "precise_null"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "population",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "mixed",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "synthesis",
+              "scope_basis": "other",
+              "finding_basis": "conflicting_results"
+            },
+            "S5": {
+              "direction": "neutral",
+              "scope": "incompatible",
+              "strength": "insufficient",
+              "role": "background",
+              "scope_basis": "endpoint",
+              "finding_basis": "context"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_RELATION_UNCERTAIN"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1"
+            ],
+            "S2": [
+              "E11",
+              "E30"
+            ],
+            "S3": [
+              "E22"
+            ],
+            "S4": [
+              "E2"
+            ],
+            "S5": [
+              "E55",
+              "E21"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "precise_null",
+              "null_precision_reason": "nonsignificance_only"
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "conflicting_results",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 36004,
+          "output_tokens": 1157,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+          "validation_run_id": "db79dd16-91a7-47df-9bb5-7162d38c8a19",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 26647,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q10",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.92"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q11",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "0.998"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q12",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q16",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.98"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E1.U1.Q22",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.89"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E1"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.97"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q5",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.86",
+                "1.09"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S2",
+              "source_quantity_id": "E11.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.57"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E11"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q2",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.02"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q3",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.01",
+                "1.04"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q13",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.26"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q14",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "1.02",
+                "1.57"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q20",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.82"
+              ],
+              "source_measure": "hazard_ratio",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E22.U1.Q21",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "0.73",
+                "0.93"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E22"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "mixed",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "direct_result"
+            },
+            "S2": {
+              "direction": "neutral",
+              "scope": "compatible_but_narrower",
+              "strength": "insufficient",
+              "role": "direct",
+              "scope_basis": "population",
+              "finding_basis": "imprecise_null"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "broader_or_indirect",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_RELATION_UNCERTAIN"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E1"
+            ],
+            "S2": [
+              "E11"
+            ],
+            "S3": [
+              "E22"
+            ],
+            "S4": [
+              "E2"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "population",
+              "raw_finding_basis": "imprecise_null",
+              "null_precision_reason": "nonsignificance_only"
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "same_exposure_gradient",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 31206,
+          "output_tokens": 1034,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Daily multivitamin use prevents all cancers.",
+          "normalized_claim": "Daily multivitamin use prevents all cancers.",
+          "claim_type": "prevention",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "all cancers",
+            "timeframe": null,
+            "claim_type": "prevention",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Daily multivitamin use prevents all cancers.",
+            "intervention_or_exposure": "Daily multivitamin use"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 17,
+          "selected_documents": 8,
+          "selected_authoritative": 0,
+          "selected_pubmed": 8,
+          "roles": {
+            "direct": 6,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "not_enough_evidence"
+          ],
+          "aggregation_reasons": [
+            "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 180556
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "a8d1537e-2c6c-4b72-bb7b-b8d6da23b4b6",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:17:29.915874+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:17:16.515512+00:00",
+        "completed_at": "2026-10-06T11:17:20.108843+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:17:20.146457+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:18:53.217990+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:20:12.604342+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:17:20.130114+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:20:16.724919+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "f50cdee1-1bfc-4a12-a3c9-aa15235dd856",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 44,
+        "raw_text": "Daily multivitamin use prevents all cancers.",
+        "normalized_text": "Daily multivitamin use prevents all cancers.",
+        "standalone_status": "complete",
+        "claim_type": "prevention",
+        "population": null,
+        "intervention_or_exposure": "Daily multivitamin use",
+        "comparator": null,
+        "outcome": "all cancers",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.9,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "Daily multivitamin use",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": null,
+            "preferred_name": null,
+            "confidence": null,
+            "match_type": "unresolved",
+            "ambiguous": false,
+            "terminology_source": null,
+            "terminology_version": null,
+            "terminology_sha256": null,
+            "tree_numbers": [],
+            "candidates": []
+          },
+          {
+            "surface_text": "cancers",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D009369",
+            "preferred_name": "Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Daily multivitamin use prevents all cancers.",
+          "population": null,
+          "intervention_or_exposure": "Daily multivitamin use",
+          "comparator": null,
+          "outcome": "all cancers",
+          "timeframe": null,
+          "claim_type": "prevention"
+        },
+        "normalization_status": "partially_linked",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:20:17.086812Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "f50cdee1-1bfc-4a12-a3c9-aa15235dd856",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "19d08bf0-bcf1-4f0b-80d9-b54a1667a3d6",
+        "claim": {
+          "text": "Daily multivitamin use prevents all cancers.",
+          "claim_type": "prevention"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "reason_category": "population_mismatch",
+          "established": null,
+          "unresolved": "The evidence concerns a different or restricted population and does not establish the claim for its stated population.",
+          "evidence_ids": [
+            "E1",
+            "E11",
+            "E2",
+            "E21",
+            "E22",
+            "E30",
+            "E33",
+            "E55",
+            "E6",
+            "E8"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "text": "All qualified assessments found the evidence insufficient for a decisive conclusion."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E1",
+            "pmid": "23162860",
+            "doi": "10.1001/jama.2012.14641",
+            "title": "Multivitamins in the prevention of cancer in men: the Physicians' Health Study II randomized controlled trial.",
+            "journal": "JAMA",
+            "publication_date": "2012-11-14",
+            "study_design": "randomized_controlled_trial",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "During a median (interquartile range) follow-up of 11.2 (10.7-13.3) years, there were 2669 men with confirmed cancer, including 1373 cases of prostate cancer and 210 cases of colorectal cancer. Compared with placebo, men taking a daily multivitamin had a statistically significant reduction in the incidence of total cancer (multivitamin and placebo groups, 17.0 and 18.3 events, respectively, per 1000 person-years; hazard ratio [HR], 0.92; 95% CI, 0.86-0.998; P=.04). There was no significant effect of a daily multivitamin on prostate cancer (multivitamin and placebo groups, 9.1 and 9.2 events, r",
+            "excerpt_truncated": true,
+            "passage_sha256": "6e283996c6be327cb493c4f8d9dec76a4572f47de7ed5f36365ecf97afd08004",
+            "passage_section": "RESULTS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/23162860/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "44b06791-6399-42cb-88d8-d61cd88ee981",
+              "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+              "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+            ],
+            "cited_by_validation_run_ids": [
+              "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+              "db79dd16-91a7-47df-9bb5-7162d38c8a19",
+              "10748eb4-58d8-405f-9adf-4dd294d4a3c8"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:23162860",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "RESULTS",
+                "exact_text": "During a median (interquartile range) follow-up of 11.2 (10.7-13.3) years, there were 2669 men with confirmed cancer, including 1373 cases of prostate cancer and 210 cases of colorectal cancer. Compared with placebo, men taking a daily multivitamin had a statistically significant reduction in the incidence of total cancer (multivitamin and placebo groups, 17.0 and 18.3 events, respectively, per 1000 person-years; hazard ratio [HR], 0.92; 95% CI, 0.86-0.998; P=.04). There was no significant effect of a daily multivitamin on prostate cancer (multivitamin and placebo groups, 9.1 and 9.2 events, respectively, per 1000 person-years; HR, 0.98; 95% CI, 0.88-1.09; P=.76), colorectal cancer (multivitamin and placebo groups, 1.2 and 1.4 events, respectively, per 1000 person-years; HR, 0.89; 95% CI, 0.68-1.17; P=.39), or other site-specific cancers. There was no significant difference in the risk of cancer mortality (multivitamin and placebo groups, 4.9 and 5.6 events, respectively, per 1000 person-years; HR, 0.88; 95% CI, 0.77-1.01; P=.07). Daily multivitamin use was associated with a reduction in total cancer among 1312 men with a baseline history of cancer (HR, 0.73; 95% CI, 0.56-0.96; P=.02), but this did not differ significantly from that among 13 329 men initially without cancer (HR, 0.94; 95% CI, 0.87-1.02; P=.15; P for interaction=.07). Conclusion In this large prevention trial of male physicians, daily multivitamin supplementation modestly but significantly reduced the risk of total cancer.",
+                "truncated": false,
+                "passage_sha256": "6e283996c6be327cb493c4f8d9dec76a4572f47de7ed5f36365ecf97afd08004"
+              },
+              {
+                "evidence_id": "E33",
+                "source_unit_id": "E33.U1",
+                "section": "DESIGN, SETTING, AND PARTICIPANTS",
+                "exact_text": "A large-scale, randomized, double-blind, placebo controlled trial (Physicians\" Health Study II) of 14 641 male US physicians initially aged 50 years or older (mean [SD] age, 64.3 [9.2] years), including 1312 men with a history of cancer at randomization, enrolled in a common multivitamin study that began in 1997 with treatment and follow-up through June 1, 2011.",
+                "truncated": false,
+                "passage_sha256": "c0efcfab59d4ab43563c9774eb33676e7a49b4532ec3fcbdcd87ca6084f24110"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E2",
+            "pmid": "25584933",
+            "doi": "10.1080/00325481.2015.993284",
+            "title": "Multivitamin/multimineral supplements for cancer prevention: implications for primary care practice.",
+            "journal": "Postgraduate medicine",
+            "publication_date": "2015-01-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "There is a popular belief that multivitamin and mineral (MVM) supplements can help prevent cancer and other chronic diseases. Studies evaluating the effects of MVM supplements on cancer risk have largely been observational, with considerable methodologic limitations, and with conflicting results. We review evidence from the few available randomized, controlled trials that assessed the effects of supplements containing individual vitamins, a combination of a few select vitamins, or complete MVM supplements, with a focus on the recent Physicians' Health Study II (PHS II). PHS II is a landmark tr",
+            "excerpt_truncated": true,
+            "passage_sha256": "29fad936015833b1bede5207544dbe310efe989a130ab6327e3fe5f3f9d51439",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/25584933/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "44b06791-6399-42cb-88d8-d61cd88ee981",
+              "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+              "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+            ],
+            "cited_by_validation_run_ids": [
+              "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+              "db79dd16-91a7-47df-9bb5-7162d38c8a19",
+              "10748eb4-58d8-405f-9adf-4dd294d4a3c8"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:25584933",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E2",
+                "source_unit_id": "E2.U1",
+                "section": "ABSTRACT",
+                "exact_text": "There is a popular belief that multivitamin and mineral (MVM) supplements can help prevent cancer and other chronic diseases. Studies evaluating the effects of MVM supplements on cancer risk have largely been observational, with considerable methodologic limitations, and with conflicting results. We review evidence from the few available randomized, controlled trials that assessed the effects of supplements containing individual vitamins, a combination of a few select vitamins, or complete MVM supplements, with a focus on the recent Physicians' Health Study II (PHS II). PHS II is a landmark trial that followed generally healthy middle-aged and older men (mean age 64 years) who were randomized to daily MVM supplementation for a mean duration of 11 years. Men taking MVMs experienced a statistically significant 8% reduction in incidence of total cancer (hazard ratio [HR]: 0.92; 95% confidence interval [CI]: 0.86-0.998; p = 0.04). Men with a history of cancer derived an even greater benefit: cancer incidence was 27% lower with MVM supplementation versus placebo in this subgroup (HR: 0.73; 95% CI: 0.56-0.96; p = 0.02). Positive results of PHS II contrast with randomized studies of individual vitamins or small combinations of vitamins, which have largely shown a neutral effect, and in some cases, an adverse effect, on cancer risk. The results of PHS II may have a considerable public health impact, potentially translating to prevention of approximately 68 000 cancers per year if all men were to use similar supplements, and to an even greater benefit with regard to secondary prevention of cancer.",
+                "truncated": false,
+                "passage_sha256": "29fad936015833b1bede5207544dbe310efe989a130ab6327e3fe5f3f9d51439"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "34590122",
+            "doi": "10.1093/jn/nxab322",
+            "title": "Multivitamin Use and Overall and Site-Specific Cancer Risks in the National Institutes of Health-AARP Diet and Health Study.",
+            "journal": "The Journal of nutrition",
+            "publication_date": "2022-01-11",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "We examined 489,640 participants ages 50-71 in the NIH-American Association of Retired Persons (AARP) Diet and Health Study who were enrolled from 1995 to 1998. We linked to 11 state cancer registries in order to identify incident cancers. Multivitamin use was assessed by a baseline questionnaire. Cox proportional hazards regression models of multivitamin use were used to estimate HRs and 95% CIs for cancer risks in men and women, adjusted for potential confounders, including age, BMI, smoking, physical activity, the Healthy Eating Index 2015 score, and use of single-vitamin/-mineral supplemen",
+            "excerpt_truncated": true,
+            "passage_sha256": "76ac8b46190a31c918b26331410db6827e9280395485d2f05bec235390a4f065",
+            "passage_section": "METHODS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/34590122/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "44b06791-6399-42cb-88d8-d61cd88ee981",
+              "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+              "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+            ],
+            "cited_by_validation_run_ids": [
+              "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+              "db79dd16-91a7-47df-9bb5-7162d38c8a19",
+              "10748eb4-58d8-405f-9adf-4dd294d4a3c8"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:34590122",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E8",
+                "source_unit_id": "E8.U1",
+                "section": "METHODS",
+                "exact_text": "We examined 489,640 participants ages 50-71 in the NIH-American Association of Retired Persons (AARP) Diet and Health Study who were enrolled from 1995 to 1998. We linked to 11 state cancer registries in order to identify incident cancers. Multivitamin use was assessed by a baseline questionnaire. Cox proportional hazards regression models of multivitamin use were used to estimate HRs and 95% CIs for cancer risks in men and women, adjusted for potential confounders, including age, BMI, smoking, physical activity, the Healthy Eating Index 2015 score, and use of single-vitamin/-mineral supplements.",
+                "truncated": false,
+                "passage_sha256": "76ac8b46190a31c918b26331410db6827e9280395485d2f05bec235390a4f065"
+              },
+              {
+                "evidence_id": "E22",
+                "source_unit_id": "E22.U1",
+                "section": "RESULTS",
+                "exact_text": "A slightly higher overall cancer risk was observed in men (but not women) who consumed 1 or more multivitamins daily compared to nonusers [HRs, 1.02 (95% CI: 1.01-1.04) and 1.03 (95% CI: 1.00-1.07), respectively; P-trend = 0.002]. The latter reflected higher risks for prostate cancer (HR, 1.04; 95% CI: 0.98-1.10; P-trend = 0.005), lung cancer (HR, 1.07; 95% CI: 0.96-1.20; P-trend = 0.003), and leukemia (HR, 1.26; 95% CI: 1.02-1.57; P-trend = 0.003). Taking more than 1 multivitamin daily was also strongly positively associated with the risk of oropharyngeal cancer in women (HR, 1.53, 95% CI: 1.04-2.24; P-trend < 0.0001). By contrast, daily multivitamin use was inversely associated with the colon cancer risk in both sexes (HR, 0.82; 95% CI: 0.73-0.93; P-trend = 0.0003).",
+                "truncated": false,
+                "passage_sha256": "bf655dde07a744bc84da10e01af7071bfab6526a9b38c0687ec242bd6f035414"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E6",
+            "pmid": "35294969",
+            "doi": "10.1093/ajcn/nqac056",
+            "title": "Multivitamins in the prevention of cancer and cardiovascular disease: the COcoa Supplement and Multivitamin Outcomes Study (COSMOS) randomized clinical trial.",
+            "journal": "The American journal of clinical nutrition",
+            "publication_date": "2022-06-07",
+            "study_design": "randomized_controlled_trial",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "We performed a randomized, double-blind, placebo-controlled, 2-by-2 factorial trial of a daily MVM and cocoa extract for prevention of cancer and cardiovascular disease (CVD) among 21,442 US adults (12,666 women aged ≥65 y and 8776 men aged ≥60 y) free of major CVD and recently diagnosed cancer. The intervention phase was from June 2015 through December 2020. This article reports on the MVM intervention. Participants were randomly assigned to daily MVM or placebo. The primary outcome was total invasive cancer, excluding nonmelanoma skin cancer. Secondary outcomes included major site-specific c",
+            "excerpt_truncated": true,
+            "passage_sha256": "87ef19949a1811ac695a1456808bbd164a0316e42946f1c29083020d129d098d",
+            "passage_section": "METHODS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/35294969/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "44b06791-6399-42cb-88d8-d61cd88ee981",
+              "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+              "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+            ],
+            "cited_by_validation_run_ids": [
+              "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+              "db79dd16-91a7-47df-9bb5-7162d38c8a19",
+              "10748eb4-58d8-405f-9adf-4dd294d4a3c8"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:35294969",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E6",
+                "source_unit_id": "E6.U1",
+                "section": "METHODS",
+                "exact_text": "We performed a randomized, double-blind, placebo-controlled, 2-by-2 factorial trial of a daily MVM and cocoa extract for prevention of cancer and cardiovascular disease (CVD) among 21,442 US adults (12,666 women aged ≥65 y and 8776 men aged ≥60 y) free of major CVD and recently diagnosed cancer. The intervention phase was from June 2015 through December 2020. This article reports on the MVM intervention. Participants were randomly assigned to daily MVM or placebo. The primary outcome was total invasive cancer, excluding nonmelanoma skin cancer. Secondary outcomes included major site-specific cancers, total CVD, all-cause mortality, and total cancer risk among those with a baseline history of cancer.",
+                "truncated": false,
+                "passage_sha256": "87ef19949a1811ac695a1456808bbd164a0316e42946f1c29083020d129d098d"
+              },
+              {
+                "evidence_id": "E11",
+                "source_unit_id": "E11.U1",
+                "section": "RESULTS",
+                "exact_text": "During a median follow-up of 3.6 y, invasive cancer occurred in 518 participants in the MVM group and 535 participants in the placebo group (HR: 0.97; 95% CI: 0.86, 1.09; P = 0.57). We observed no significant effect of a daily MVM on breast cancer (HR: 1.06; 95% CI: 0.79, 1.42) or colorectal cancer (HR: 1.30; 95% CI: 0.80, 2.12). We observed a protective effect of a daily MVM on lung cancer (HR: 0.62; 95% CI: 0.42, 0.92). The composite CVD outcome occurred in 429 participants in the MVM group and 437 participants in the placebo group (HR: 0.98; 95% CI: 0.86, 1.12). MVM use did not significantly affect all-cause mortality (HR: 0.93; 95% CI: 0.81, 1.08). There were no safety concerns.",
+                "truncated": false,
+                "passage_sha256": "467c412015f2b082a771295f9bad912f5b20f263e1c7a9b3a24eadc807cf4ed7"
+              },
+              {
+                "evidence_id": "E30",
+                "source_unit_id": "E30.U1",
+                "section": "CONCLUSIONS",
+                "exact_text": "A daily MVM supplement, compared with placebo, did not significantly reduce the incidence of total cancer among older men and women. Future studies are needed to determine the effects of MVMs on other aging-related outcomes among older adults. This trial is registered at www.clinicaltrials.gov as NCT02422745.",
+                "truncated": false,
+                "passage_sha256": "c5f5973c8d94c550c0b9457e61ffb33039020cb376cedf44a6d67f817fd21bb5"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E21",
+            "pmid": "34525122",
+            "doi": "10.1371/journal.pone.0255322",
+            "title": "Colorectal cancer in the Linxian China Nutrition Intervention Trial: Risk factors and intervention results.",
+            "journal": "PloS one",
+            "publication_date": "2021-09-15",
+            "study_design": "cohort",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "The Linxian General Population Nutrition Intervention Trial (NIT) cohort was established over 30 years ago to test whether daily multivitamin/mineral supplements could reduce the incidence and mortality of esophageal/gastric cardia cancer. The cohort included a total of 29,553 healthy participants 40-69 years old who were randomly assigned to supplements or placebos via a 24 fractional factorial study design. We examined risk factors for the development of CRC as well as the effects of four different nutritional factors (Factor A: retinol, zinc; B: riboflavin, niacin; C: ascorbic acid, molybde",
+            "excerpt_truncated": true,
+            "passage_sha256": "ec52f24077ed1b41ea5ac188d8922058bc68f1208fee7ad406dbad51bb1e7421",
+            "passage_section": "METHODS",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/34525122/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "44b06791-6399-42cb-88d8-d61cd88ee981",
+              "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+            ],
+            "cited_by_validation_run_ids": [
+              "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+              "10748eb4-58d8-405f-9adf-4dd294d4a3c8"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:34525122",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E21",
+                "source_unit_id": "E21.U1",
+                "section": "METHODS",
+                "exact_text": "The Linxian General Population Nutrition Intervention Trial (NIT) cohort was established over 30 years ago to test whether daily multivitamin/mineral supplements could reduce the incidence and mortality of esophageal/gastric cardia cancer. The cohort included a total of 29,553 healthy participants 40-69 years old who were randomly assigned to supplements or placebos via a 24 fractional factorial study design. We examined risk factors for the development of CRC as well as the effects of four different nutritional factors (Factor A: retinol, zinc; B: riboflavin, niacin; C: ascorbic acid, molybdenum; D: selenium, alpha-tocopherol, beta-carotene,) on CRC incidence following 5.25 years of supplementation in this randomized, placebo-controlled intervention trial.",
+                "truncated": false,
+                "passage_sha256": "ec52f24077ed1b41ea5ac188d8922058bc68f1208fee7ad406dbad51bb1e7421"
+              },
+              {
+                "evidence_id": "E55",
+                "source_unit_id": "E55.U1",
+                "section": "RESULTS",
+                "exact_text": "CRC risk increased with age and height as well as piped water usage, family history of CRC, and consumption of foods cooked in oil, eggs, and fresh fruits. No effect on CRC was seen for any of these four intervention factors tested in both genders, but CRC was reduced 37% in females who received Factor D (selenium/alpha-tocopherol/beta-carotene) (RR = 0.63, 95% CI = 0.43-0.92, P = 0.016) compared to females who did not receive Factor D.",
+                "truncated": false,
+                "passage_sha256": "017ed739f903be44d5cd8a5715d92fb2f622964d7c0fba523460fa13d4512f24"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 0,
+            "not_enough_evidence": 3
+          },
+          "description": "3 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "relevant_but_insufficient",
+          "validated_citations_shown": 5,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E1",
+            "pmid": "23162860",
+            "doi": "10.1001/jama.2012.14641",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/23162860/"
+          },
+          {
+            "evidence_id": "E2",
+            "pmid": "25584933",
+            "doi": "10.1080/00325481.2015.993284",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/25584933/"
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "34590122",
+            "doi": "10.1093/jn/nxab322",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/34590122/"
+          },
+          {
+            "evidence_id": "E6",
+            "pmid": "35294969",
+            "doi": "10.1093/ajcn/nqac056",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/35294969/"
+          },
+          {
+            "evidence_id": "E21",
+            "pmid": "34525122",
+            "doi": "10.1371/journal.pone.0255322",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/34525122/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "19d08bf0-bcf1-4f0b-80d9-b54a1667a3d6",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "2c90fe8d310d7e254108987e10027803e83a7cb0391fa1c2bb964e20aa2336e6",
+          "evidence_pack_id": "41fc9e0c-eb2e-4aed-815f-601aeef4e979",
+          "evidence_pack_hash": "1b30ed99e39d51d3d2ce104db7ec8b49c47278474b26f97f4b0937a466eeb0d7",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "44b06791-6399-42cb-88d8-d61cd88ee981",
+            "63b17eda-f6bf-43da-aa89-ac1b28a11891",
+            "dcc8534a-516f-4ba5-b54c-8b0a090a96ee"
+          ],
+          "judge_validation_run_ids": [
+            "10748eb4-58d8-405f-9adf-4dd294d4a3c8",
+            "36e1dd13-1a65-4b99-9cde-932170fd0d21",
+            "db79dd16-91a7-47df-9bb5-7162d38c8a19"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:20:17.057384Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "decb916b01aa4e63e75acd504e71fb3139974986b8b9570a91af5d4c2758bc23"
+      }
+    }
+  ]
+}

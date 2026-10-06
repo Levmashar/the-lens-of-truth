@@ -86,7 +86,8 @@ class NumericClaimComparability(Frozen):
 
 class NumericFinding(Frozen):
     version: Literal["numeric-fidelity-comparability-1.0",
-                     "numeric-fidelity-comparability-1.1"] = "numeric-fidelity-comparability-1.1"
+                     "numeric-fidelity-comparability-1.1",
+                     "numeric-reference-comparability-2.4"] = "numeric-fidelity-comparability-1.1"
     target_id: str
     material: bool
     fidelity: NumericSourceFidelity
@@ -94,6 +95,7 @@ class NumericFinding(Frozen):
     numeric_effect: Literal["supports_magnitude", "opposes_magnitude", "noncomparable",
                             "unresolved"]
     semantic_scope_checked: bool = False
+    source_quantity_id: str | None = Field(default=None, exclude_if=lambda v: v is None)
     structure_status: Literal["structured", "embedded_numeric_assertions",
                               "mixed_measures_in_qualitative_finding"] = "structured"
 
@@ -440,6 +442,17 @@ def compare_to_claim(
         return done("aligned", "literal_source_phrase_verified_but_arithmetic_convention_ambiguous",
                     "unresolved")
     values = tuple(Decimal(v) for v in q.values)
+    if claim.lower_value is not None and claim.upper_value is not None:
+        bounds = (Decimal(claim.lower_value), Decimal(claim.upper_value))
+        if bounds[0] > bounds[1]:
+            return done("uncertain", "claim_range_unordered", "unresolved")
+        if absolute_pair:
+            return done("uncertain", "range_requires_a_direct_comparable_effect", "unresolved")
+        relation = "matching" if values == bounds else "different" if (
+            max(values) < bounds[0] or min(values) > bounds[1]) else "uncertain"
+        effect = "supports_magnitude" if relation == "matching" else (
+            "opposes_magnitude" if relation == "different" else "unresolved")
+        return done("aligned", "verified_range_compared_without_metric_substitution", effect)
     target = Decimal(claim.value) if claim.value else None
     if target is None:
         return done("uncertain", "claim_value_unresolved", "unresolved")

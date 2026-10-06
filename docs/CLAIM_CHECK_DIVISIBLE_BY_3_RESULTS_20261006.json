@@ -1,0 +1,1147 @@
+{
+  "date": "2026-10-06",
+  "complete": true,
+  "cases": [
+    {
+      "number": 3,
+      "claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+      "expectation": "Supported",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": false,
+      "analysis_id": "1072af6b-fab0-4b9c-aa1c-bd4692f25d0c",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 146325,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence measures a different outcome and does not establish the outcome claimed."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+            "population": null,
+            "intervention_or_exposure": "Persistent high-risk HPV infection",
+            "comparator": null,
+            "outcome": "cervical cancer",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "claim": "Antibiotics can treat bacterial pneumonia.",
+      "expectation": "Supported",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": false,
+      "analysis_id": "12745aad-6e21-4e64-a98c-edbb3e8faa04",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 168654,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence concerns a different or restricted population and does not establish the claim for its stated population."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Antibiotics can treat bacterial pneumonia.",
+            "population": null,
+            "intervention_or_exposure": "Antibiotics",
+            "comparator": null,
+            "outcome": "bacterial pneumonia",
+            "timeframe": null,
+            "claim_type": "treatment"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+      "expectation": "Supported",
+      "labels": [
+        "unable_to_verify_reliably"
+      ],
+      "display": "Unable to Verify Reliably",
+      "expectation_match": false,
+      "analysis_id": "1719070a-95b9-4755-b8b3-a5587a827729",
+      "status": "failed",
+      "qualified": [],
+      "elapsed_ms": 12216,
+      "failure": "normalization_incomplete",
+      "reports_saved": 0,
+      "application_summaries": [],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Blue light can induce apoptosis in some leukemia cell lines under laboratory conditions.",
+            "population": "some leukemia cell lines",
+            "intervention_or_exposure": "Blue light",
+            "comparator": null,
+            "outcome": "apoptosis",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "partial",
+          "normalization_quality": {
+            "normalization_coverage": 0.8,
+            "missing_explicit_concepts": [
+              "laboratory"
+            ],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [
+              "explicit_medical_concepts_not_represented"
+            ],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "claim": "High blood pressure lowers the risk of stroke.",
+      "expectation": "Contradicted",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": false,
+      "analysis_id": "6291b954-d1fd-44a2-8b14-133d4f68d445",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 126531,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence measures a different outcome and does not establish the outcome claimed."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "High blood pressure lowers the risk of stroke",
+            "population": null,
+            "intervention_or_exposure": "High blood pressure",
+            "comparator": null,
+            "outcome": "risk of stroke",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "claim": "HIV is commonly transmitted by mosquito bites.",
+      "expectation": "Contradicted",
+      "labels": [
+        "unable_to_verify_reliably"
+      ],
+      "display": "Unable to Verify Reliably",
+      "expectation_match": false,
+      "analysis_id": "478da231-0baa-42e4-b643-a9bc37a3c66b",
+      "status": "failed",
+      "qualified": [],
+      "elapsed_ms": 18321,
+      "failure": "normalization_incomplete",
+      "reports_saved": 0,
+      "application_summaries": [],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "HIV is commonly transmitted by mosquito bites.",
+            "population": null,
+            "intervention_or_exposure": "mosquito bites",
+            "comparator": null,
+            "outcome": null,
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "partial",
+          "normalization_quality": {
+            "normalization_coverage": 0.667,
+            "missing_explicit_concepts": [
+              "HIV"
+            ],
+            "required_slots_missing": [
+              "outcome"
+            ],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [
+              "required_pico_slots_missing",
+              "explicit_medical_concepts_not_represented"
+            ],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "claim": "Smoking protects people from developing lung cancer.",
+      "expectation": "Contradicted",
+      "labels": [
+        "contradicted"
+      ],
+      "display": "Contradicted",
+      "expectation_match": true,
+      "analysis_id": "facd19db-4dba-4590-a892-a079905ed9bb",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 126697,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Validated evidence conflicts with the claim at its stated scope."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "contradicted"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Smoking protects people from developing lung cancer.",
+            "population": "people",
+            "intervention_or_exposure": "Smoking",
+            "comparator": null,
+            "outcome": "developing lung cancer",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "partially_linked",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "claim": "Smoking increases lung cancer risk by exactly 85%.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "b7917d26-297c-401c-94a3-e9bf40bbcd38",
+      "status": "completed",
+      "qualified": [
+        "2/3"
+      ],
+      "elapsed_ms": 148598,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Validated evidence supports the claimed direction of effect. The retrieved evidence does not establish the claimed claimed magnitude magnitude at a sufficiently comparable scope, so the specific magnitude could not be verified."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "2/3",
+          "semantic_classification": "2/3",
+          "judge_qualification": "2/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Smoking increases lung cancer risk by exactly 85%.",
+            "population": null,
+            "intervention_or_exposure": "Smoking",
+            "comparator": null,
+            "outcome": "lung cancer risk",
+            "timeframe": null,
+            "claim_type": "causal",
+            "numeric_effect": {
+              "raw_text": "by exactly 85%",
+              "status": "uncertain",
+              "kind": "unknown",
+              "value": null,
+              "unit": null,
+              "direction": null
+            }
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "claim": "Blue light from smartphones causes leukemia.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "6a63a5b5-19f0-4fc0-8d31-0c5d2ba470d1",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 103973,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence concerns a different or restricted population and does not establish the claim for its stated population."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Blue light from smartphones causes leukemia.",
+            "population": null,
+            "intervention_or_exposure": "Blue light from smartphones",
+            "comparator": null,
+            "outcome": "leukemia",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "claim": "Eating dark chocolate prevents Alzheimer's disease.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "db28f2c1-4e8a-44df-8b29-ff5fef9289cd",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 195819,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence concerns a different or restricted population and does not establish the claim for its stated population."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Eating dark chocolate prevents Alzheimer's disease.",
+            "population": null,
+            "intervention_or_exposure": "Eating dark chocolate",
+            "comparator": null,
+            "outcome": "Alzheimer's disease",
+            "timeframe": null,
+            "claim_type": "prevention"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "claim": "Sleeping nine hours every night prevents cancer.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "f954bd36-4810-40f9-83f3-d1d9dc5947e6",
+      "status": "completed",
+      "qualified": [
+        "0/3"
+      ],
+      "elapsed_ms": 9238,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The available validated findings do not provide enough direct evidence to establish or rule out the claim at its stated scope."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "FAIL",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Sleeping nine hours every night prevents cancer.",
+            "population": null,
+            "intervention_or_exposure": "Sleeping nine hours every night",
+            "comparator": null,
+            "outcome": "cancer",
+            "timeframe": "every night",
+            "claim_type": "causal"
+          },
+          "normalization_status": "partially_linked",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "claim": "Daily multivitamin use prevents all cancers.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "a8d1537e-2c6c-4b72-bb7b-b8d6da23b4b6",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 180718,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence concerns a different or restricted population and does not establish the claim for its stated population."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Daily multivitamin use prevents all cancers.",
+            "population": null,
+            "intervention_or_exposure": "Daily multivitamin use",
+            "comparator": null,
+            "outcome": "all cancers",
+            "timeframe": null,
+            "claim_type": "prevention"
+          },
+          "normalization_status": "partially_linked",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+      "expectation": "NEI",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": true,
+      "analysis_id": "0a168fd2-5a98-43f9-82b8-9eea149ae00c",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 224139,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence concerns a different or restricted population and does not establish the claim for its stated population."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "A treatment that shrinks an existing tumor proves that it prevents that cancer from developing.",
+            "population": null,
+            "intervention_or_exposure": "A treatment that shrinks an existing tumor",
+            "comparator": null,
+            "outcome": "that cancer from developing",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "claim": "This treatment reduces the risk by 40%.",
+      "expectation": "Unable to Verify Reliably",
+      "labels": [
+        "unable_to_verify_reliably"
+      ],
+      "display": "Unable to Verify Reliably",
+      "expectation_match": true,
+      "analysis_id": "14a13296-7037-44df-8c0f-05423bd2ee70",
+      "status": "failed",
+      "qualified": [],
+      "elapsed_ms": 36571,
+      "failure": "normalization_incomplete",
+      "reports_saved": 0,
+      "application_summaries": [],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "FAIL",
+          "retrieval": "UNKNOWN",
+          "selection": "UNKNOWN",
+          "judge_response": "0/3 usable",
+          "source_attribution": "0/3",
+          "semantic_classification": "0/3",
+          "judge_qualification": "0/3",
+          "final_aggregation": "UNKNOWN"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "This treatment reduces the risk by 40%.",
+            "population": null,
+            "intervention_or_exposure": "This treatment",
+            "comparator": null,
+            "outcome": "the risk",
+            "timeframe": null,
+            "claim_type": "causal",
+            "numeric_effect": {
+              "raw_text": "by 40%",
+              "status": "parsed",
+              "kind": "percent_change",
+              "value": "40",
+              "unit": "%",
+              "direction": "decrease"
+            }
+          },
+          "normalization_status": "partial",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    }
+  ],
+  "selected_case_numbers": [
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39
+  ],
+  "excluded_started_before_filter": [
+    1,
+    2,
+    4,
+    5
+  ],
+  "baseline_source_manifest_sha256": "c804ff9ac8bbc7d3fd8c4e318b7765787eca048d9517e7bf0f0ffcbefc72015b",
+  "baseline_source_changes": [],
+  "versions": {
+    "architecture": "V2.5 validated evidence position with V2.4 structured quantity references",
+    "judge_input": "judge-input-2.5",
+    "judge_decision": "2.5",
+    "validation_contract": "judge-validation-2.5",
+    "judge_prompt": "judge-2.15-validated-evidence-position-2026-10-05",
+    "semantic_prompt": "joint-evidence-axes-2.5-structured-numeric-2026-10-04",
+    "query_plan": "1.4",
+    "position": "validated-evidence-position-1.4",
+    "source_quantity_catalog": "source-quantity-catalog-1.0",
+    "numeric_fidelity": "numeric-reference-fidelity-2.4",
+    "numeric_comparability": "numeric-reference-comparability-2.4",
+    "verdict_policy": "verdict-policy-1.4"
+  },
+  "models": [
+    {
+      "role": "extraction",
+      "provider": "paratera",
+      "model": "DeepSeek-V4.1-Flash"
+    },
+    {
+      "role": "judge_1",
+      "provider": "paratera",
+      "model": "DeepSeek-V4.1-Flash"
+    },
+    {
+      "role": "judge_2",
+      "provider": "paratera",
+      "model": "Qwen3.5-Plus"
+    },
+    {
+      "role": "judge_3",
+      "provider": "paratera",
+      "model": "GLM-4.7"
+    },
+    {
+      "role": "semantic_validator",
+      "provider": "paratera",
+      "model": "Qwen3.8-Flash"
+    }
+  ],
+  "api_flow": "frontend HTTP API; client=web; lang=auto; sequential; no direct worker invocation",
+  "engineering_expectation_matches": 8,
+  "reports_served": 10,
+  "normalization_failures": [
+    9,
+    15,
+    39
+  ],
+  "model_call_starts_observed": 70,
+  "all_model_call_starts_including_prior_scope": 98,
+  "model_call_accounting_note": "Counts come from frontend debug calling events. They are observed request starts, not a provider billing statement.",
+  "additional_first_five_results": [
+    {
+      "number": 1,
+      "claim": "Cigarette smoking causes lung cancer.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "5724dd45-2624-491a-a4f5-98c183d9cc5a",
+      "status": "completed",
+      "qualified": [
+        "2/3"
+      ],
+      "elapsed_ms": 218755,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Multiple validated assessments found evidence supporting the claim at its stated scope."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "2/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "2/3",
+          "final_aggregation": "supported"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Cigarette smoking causes lung cancer.",
+            "population": null,
+            "intervention_or_exposure": "Cigarette smoking",
+            "comparator": null,
+            "outcome": "lung cancer",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "claim": "High blood pressure increases the risk of stroke.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "f12de5c3-0fce-4953-9d1b-46d2f9a00706",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 169536,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Multiple validated assessments found evidence supporting the claim at its stated scope."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "High blood pressure increases the risk of stroke.",
+            "population": null,
+            "intervention_or_exposure": "High blood pressure",
+            "comparator": null,
+            "outcome": "stroke",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+      "expectation": "Supported",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": false,
+      "analysis_id": "1072af6b-fab0-4b9c-aa1c-bd4692f25d0c",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 146325,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "The evidence measures a different outcome and does not establish the outcome claimed."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+            "population": null,
+            "intervention_or_exposure": "Persistent high-risk HPV infection",
+            "comparator": null,
+            "outcome": "cervical cancer",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "claim": "Smoking cessation reduces lung cancer risk over time.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "f037ef74-8083-48c3-929e-397bdeb39893",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 174820,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Multiple validated assessments found evidence supporting the claim at its stated scope."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Smoking cessation reduces lung cancer risk over time.",
+            "population": null,
+            "intervention_or_exposure": "Smoking cessation",
+            "comparator": null,
+            "outcome": "lung cancer risk",
+            "timeframe": "over time",
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "23019e2a-af38-4950-a81d-ca00533fb3bf",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 155723,
+      "failure": "",
+      "reports_saved": 1,
+      "application_summaries": [
+        "Multiple validated assessments found evidence supporting the claim at its stated scope. The conclusion applies to the tested comparison."
+      ],
+      "waterfalls": [
+        {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "supported"
+        }
+      ],
+      "normalization_details": [
+        {
+          "pico": {
+            "original_claim": "Regular physical activity reduces the risk of developing type 2 diabetes.",
+            "population": null,
+            "intervention_or_exposure": "Regular physical activity",
+            "comparator": null,
+            "outcome": "risk of developing type 2 diabetes",
+            "timeframe": null,
+            "claim_type": "causal"
+          },
+          "normalization_status": "normalized",
+          "normalization_quality": {
+            "normalization_coverage": 1.0,
+            "missing_explicit_concepts": [],
+            "required_slots_missing": [],
+            "ambiguous_concepts": [],
+            "normalization_warnings": [],
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+          }
+        }
+      ]
+    }
+  ],
+  "combined_case_numbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39
+  ],
+  "combined_unique_cases": 17,
+  "combined_expectation_matches": 12,
+  "combined_reports_served": 14,
+  "first_five_addition_note": "Saved original full frontend-path runs; no new submissions/model calls. Claim 3 is included in both views but counted once."
+}

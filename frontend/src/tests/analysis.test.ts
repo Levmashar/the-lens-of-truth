@@ -54,6 +54,41 @@ function mockResponses(analysis: ReturnType<typeof progress>, claims = summaries
 }
 
 describe("analysis page", () => {
+  it("keeps unfinished validation and aggregation visibly pending", () => {
+    const node = createDebugProgress(progress({ status: "running", debug_enabled: true }), [
+      claimSummary({ status: "running", stage: "validating",
+        completed_stages: ["normalizing", "retrieving", "judging"],
+        verdict_run_id: null, report_run_id: null, debug_diagnostics: {
+          extraction: null,
+          retrieval: { candidates: 10, selected_documents: 4, selected_authoritative: 0,
+            selected_pubmed: 4, roles: {} },
+          waterfall: { source_attribution: "0/3", semantic_classification: "0/3",
+            judge_qualification: "0/3", final_aggregation: "UNKNOWN" },
+          final: { qualified_judges: 0, qualified_positions: [], aggregation_reasons: [],
+            production_qualified: false, total_model_calls: 7, elapsed_ms: 127793 },
+        } }),
+    ], null);
+    expect(node.textContent).toContain("source attribution: 0/3 completed; pending");
+    expect(node.textContent).toContain("semantic classification: 0/3 completed; pending");
+    expect(node.textContent).toContain("final aggregation: Pending");
+    expect(node.textContent).toContain("In progress; final result pending");
+    expect(node.textContent).not.toContain("Final: 0/3");
+    expect(node.textContent).not.toContain("UNKNOWN");
+  });
+
+  it("distinguishes a rejected conclusion from a validator transport failure", () => {
+    const base = { provider: "fixture", model: "fixture", model_family: "fixture",
+      outcome_status: "succeeded", error_category: null, attempt_count: 1, latency_ms: 10,
+      validation_status: "unable_to_validate" };
+    const node = createDebugProgress(progress({ debug_enabled: true }), [claimSummary({
+      debug_judge_runs: [
+        { ...base, slot: 1, validation_error_category: null, conclusion_status: "not_justified" },
+        { ...base, slot: 3, validation_error_category: "timeout", conclusion_status: null },
+      ],
+    })], null);
+    expect(node.textContent).toContain("Validation: completed, 0 accepted / 1 rejected / 1 unavailable");
+  });
+
   it("shows a compact failure waterfall and keeps raw responses collapsed", () => {
     const node = createDebugProgress(progress({ debug_enabled: true, debug_events: [{
       role: "judge_1", provider: "fixture", model: "fixture", attempt: 1,
@@ -155,6 +190,7 @@ describe("analysis page", () => {
     ]));
     const node = mount();
     await vi.waitFor(() => expect(node.textContent).toContain("complete exposure and outcome"));
+    expect(node.textContent).toContain("Unable to Verify Reliably");
     expect(node.textContent).not.toContain("Not Enough Evidence");
   });
 
@@ -265,6 +301,20 @@ describe("analysis page", () => {
     expect(node.textContent).toContain("Strength: strong");
     expect(node.textContent).toContain("Role: direct");
     expect(node.querySelector("details.debug-evidence-axes")?.hasAttribute("open")).toBe(false);
+  });
+
+  it("shows the advisory proposal separately from the backend evidence position", () => {
+    const checked = claimSummary({ debug_judge_runs: [{
+      slot: 1, provider: "fixture", model: "fixture", model_family: "fixture",
+      outcome_status: "succeeded", error_category: null, attempt_count: 1, latency_ms: 10,
+      validation_status: "validated", validation_error_category: null,
+      proposed_label: "contradicted", validated_evidence_position: "supported",
+      qualification_success: true,
+    }] });
+    const node = createDebugProgress(progress({ debug_enabled: true }), [checked], null);
+    expect(node.textContent).toContain("Proposal (advisory): contradicted");
+    expect(node.textContent).toContain("validated evidence position: supported");
+    expect(node.textContent).toContain("qualified yes");
   });
 
   it("groups repeated numeric issues and exposes audited development ID conversion", () => {

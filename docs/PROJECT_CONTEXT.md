@@ -1,5 +1,218 @@
 # Project Context
 
+## Claim-type causal evidence follow-up (2026-10-06)
+
+Current build: V2.5, V2.4 structured quantities, query-plan 1.6, validated
+position 1.8, question-evidence policy 2.1, semantic prompt 2.7, judge prompt
+2.15, verdict policy 1.4 and approved-source manifest 1.1. Models unchanged:
+Paratera DeepSeek-V4.1-Flash extraction/J1, provisional Qwen3.5-Plus J2,
+GLM-4.7 J3 and Qwen3.8-Flash validator with thinking disabled.
+
+Diagnostics confirmed intervention-style eligibility and missing reviewed-source
+coverage for etiologic/transmission questions. Add generic question taxonomy and
+finding-bound reviewed causal/transmission assessment or converging empirical
+routes. Context, speculation, omitted routes and mechanism alone remain
+insufficient. Treatment/prevention eligibility, quantitative and endpoint
+safeguards, public labels and production gates remain unchanged.
+
+Fresh HPV is Supported and HIV/mosquito transmission Contradicted, each three
+matching positions. BP/sunscreen remain Supported; antibiotics final-build
+repeat is Supported, following a first NEI with scope/comparator limitations.
+Preserve that observed variability. Initial 1.7/2.0 live records reconstruct
+exactly on final source; final 1.8/2.1 is deployed. Full backend 1,066 tests,
+frontend 52/build and Ruff/mypy pass. Earlier snapshots below are historical.
+See [source diagnosis, full results and exact versions](CLAIM_TYPE_CAUSAL_EVIDENCE_RESULTS_20261006.md).
+
+## Historical selected setting, scope and polarity fixes (2026-10-06)
+
+At that snapshot the development build was V2.5 with V2.4 structured quantities: query-plan
+1.5, validated position 1.6, semantic prompt 2.6 (scope/polarity clarification),
+unchanged judge prompt 2.15 and verdict policy 1.4. Models/configuration are
+unchanged: Paratera DeepSeek-V4.1-Flash extraction/J1, Qwen3.5-Plus provisional J2,
+GLM-4.7 J3, Qwen3.8-Flash validator with thinking disabled. The 1.4 freeze below
+is retained as a historical snapshot, not the current source manifest.
+
+Setting-only terms no longer block medical normalization; exact disease objects
+survive transmission annotations. Explicit cellular questions retain in-vitro
+experiments without conferring clinical causal eligibility. Finding-bound actual
+trial assignments and existential treatment scope fix antibiotics capability;
+source-grounded literal polarity fixes the inverse blood-pressure disagreement.
+Raw model axes and historical positions 1.0-1.5 remain reconstructable.
+
+Seven requested full frontend-path reruns completed plus one laboratory repeat:
+antibiotics Supported, laboratory apoptosis Supported, inverse BP Contradicted;
+smoking/sunscreen controls Supported. HPV remains NEI (no endpoint loss; selected
+causal findings lack eligible design). HIV now normalizes/completes but remains
+NEI under the current causal-design policy. These remaining limitations are not
+asserted fixed. Inverse BP qualified 2/3 after a GLM judge deadline failure.
+Full backend suite: 1,032 passed with database tests and no skips; frontend 52
+passed/build passed; Ruff/mypy passed. See [results and exact versions](SELECTED_SCOPE_POLARITY_FIXES_20261006.md).
+
+## Selected live frontend-path tests (2026-10-06)
+
+The user narrowed the 40-case request during execution to numbers divisible by
+3. All 13 selected cases completed through the real HTTP frontend flow: ten
+reports served with HTTP 200; three incomplete-normalization outcomes exposed
+operational Unable. Eight labels matched the engineering expectations. Open
+mismatches: HPV/cervical cancer (3), antibiotics/bacterial pneumonia (6), laboratory
+blue-light/apoptosis (9), inverse hypertension/stroke (12), and HIV/mosquito bites
+(15). The laboratory coverage audit flags `laboratory`; the HIV outcome became null.
+
+No source/config/model/prompt/policy changes or extra model probes occurred.
+The frozen baseline source hashes remain identical; V2.5, query-plan 1.4 and
+position 1.4 retain their versions. See [each report and exact diagnostics](CLAIM_CHECK_DIVISIBLE_BY_3_RESULTS_20261006.md).
+
+## Historical frozen development reliability baseline (2026-10-06)
+
+Current baseline: V2.5 backend validated evidence position with unchanged V2.4
+structured quantity references; judge-input/decision/validation 2.5; judge prompt
+2.15; joint semantic prompt 2.5; query-plan 1.4; position 1.4; verdict policy 1.4.
+All 990 backend tests pass with PostgreSQL tests enabled (no skips); all 52
+frontend tests and build, Ruff and mypy pass. The two unrelated test failures
+are fixed without changing runtime behavior. A shared parser flag is now named
+`discard_verifiability_labels`; Miri remains only an actual provider/adapter.
+
+Fresh final-build blue-light/leukemia and carrots/eyesight analyses both return
+NEI. Blue light qualifies 3/3; carrots qualifies 2/3 because Qwen omitted required
+numeric_dependency fields in both attempts. No medical/result regression;
+Qwen schema repeatability remains an explicit operational limitation. Frozen as
+a development baseline, not an all-model or production reliability certification.
+Models remain all Paratera: DeepSeek-V4.1-Flash extraction/J1, Qwen3.5-Plus J2
+(provisional), GLM-4.7 J3, Qwen3.8-Flash validator with thinking disabled.
+Base `https://llmapi.paratera.com/v1`. No medical logic/model/prompt change.
+See [exact build hashes, versions and live results](RELIABILITY_BASELINE_20261006.md).
+
+## Manual tests 11-15 reliability fixes (2026-10-05)
+
+Position 1.4 records source-owned comparability guards and affirmative completed
+randomized-result synthesis in reviews without relabeling the document as an RCT.
+The raw validator axes remain auditable; unrelated causes, omissions, ecological
+trends and existing-disease treatment/diagnosis cannot supply material opposition
+to an onset claim. Literal relation annotations no longer erase disease outcomes;
+incomplete normalization exposes operational Unable rather than a null label.
+
+Query-plan 1.4 preserves linked phrase atoms and additional exposure entities
+(e.g. the source of a light exposure). MeSH supplies canonical recall; lexical
+queries retain stated phrases to avoid crowding out direct evidence. Search-only
+eyesight variants remain distinct from medical normalization. Source selection
+rules/limits, quantities, thresholds, prompts, public labels and production gates
+are unchanged. Position 1.0 through 1.3 and historical V2.4 stay reconstructable.
+
+Seven requested full live analyses completed, plus one BP repeat: BP/stroke now
+Supported (3/3); BP/lung cancer, carrots, magnet cure and blue light/leukemia NEI
+(3/3); smoking causation Supported (3/3); sunscreen Supported (2/3, DeepSeek J1
+transport deadline). There were 57 real requests under a 64-request cap. Final
+guard refinements preserve all 23 successful saved live positions. Models remain
+DeepSeek-V4.1-Flash extraction/J1, Qwen3.5-Plus J2, GLM-4.7 J3, Qwen3.8-Flash
+validator, all Paratera. No model/prompt changes or model bakeoff occurred.
+See [roots, live IDs, iteration and limitations](MANUAL_TESTS_11_15_FIXES_20261005.md).
+
+## Latest ten-case reliability fixes (2026-10-05)
+
+The two integrity failures came from undated contextual IARC/NCCIH pages, not
+failed integrity of the independent material research. New position version 1.2
+scopes unknown-context checks to participating evidence while retaining unknown
+material, retraction and concern blocks. It separates a retrieval document role
+from an aligned, source-validated finding's role when frozen review methods
+explicitly establish randomized-trial synthesis; final causal aggregation uses
+the same audited facts. Both bounds of explicit fold/RR ranges are normalized
+and compared without choosing an ambiguous times-higher convention.
+
+The checker transport now invokes the matching V2.4/V2.5 reference check instead
+of rejecting exact frozen unit IDs at the older-contract boundary. Failed replies
+retain precise exceptions/raw content and cannot be mistaken for a successful
+position audit. The exact old smoking exception was lost; its saved replay passed.
+Historical 1.0/1.1 position audits and V2.4 replay remain reconstructable.
+
+All six requested real backend analyses completed with 3/3 qualified assessments:
+smoking +85% NEI, lifelong 20-to-40-fold smoking NEI (source arithmetic ambiguity),
+exercise vitamin-C incidence Supported, adult vitamin-C duration Supported,
+smoking causation Supported, and daily sunscreen invasive melanoma Supported.
+An additional final-build exercise run was Supported with 3/3. There were 52 paid
+requests including retries/diagnostic, below the 56-request cap. Models remain
+DeepSeek-V4.1-Flash extraction/J1, Qwen3.5-Plus J2, GLM-4.7 J3, Qwen3.8-Flash
+validator, all Paratera. No retrieval/selection, prompt instructions, thresholds,
+public labels or production gates changed. See
+[roots, live IDs, latencies and limitations](MANUAL_RELIABILITY_FIXES_20261005.md).
+
+## Bounded live validator follow-up (2026-10-05)
+
+Sixteen paid full-input checker calls evaluated Qwen3.8-Flash and AIMLAPI GPT-6
+Luna on the existing four engineering cases. Local validator switches provisionally
+from ERNIE to Paratera Qwen3.8-Flash with thinking disabled: schema/IDs valid and
+expected backend positions on all four. Qwen missed a saved review-attribution
+error that Luna caught; no claim of complete semantic reliability is made. Luna
+profiles failed deadline or vitamin-C checks and were not adopted. Other models,
+prompts, policy and production gates remain unchanged. The latest sunscreen RCT
+also had a genuine Crossref deadline/integrity failure; all 24 DOI checks succeeded
+on normal live recheck and were cached. Local total Crossref transport budget is
+60 seconds; concurrency/integrity enforcement unchanged. See
+[paid results and limitations](LIVE_VALIDATOR_ACCEPTANCE_20261005.md).
+
+## Validated evidence position V2.5 (2026-10-05)
+
+New development/test runs use `judge-input-2.5`, decision `2.5` and
+`judge-validation-2.5`; judge prompt 2.15 requests findings and rationale without
+requiring a final label. Optional advisory text is preserved for diagnostics only.
+The independent joint checker and V2.4 frozen unit/quantity catalog, numeric
+fidelity and magnitude-comparability rules remain unchanged.
+
+`validated-evidence-position-1.0` deterministically derives Supported,
+Contradicted or NEI from all source-validated findings, guarded semantic axes,
+relationship-level design facts, scope, integrity, null and magnitude eligibility.
+It reuses the qualifier gates while evaluating possible positions independently
+of the model proposal. An aligned randomized direct result can establish
+materiality with strength=supporting; design never supplies direction. Only
+eligible material directions can establish conflict. Incomplete/source-invalid
+assessments remain unavailable, never an evidence shortage. CAUSAL_DESIGN_INSUFFICIENT
+now denotes an actual design failure in new position audits.
+
+Aggregation, causal sufficiency checks, reports and debug diagnostics consume the
+backend position. New append-only JSONB audits preserve raw axes, guarded relations,
+materiality promotions and the derived position; aggregation reconstructs them.
+Historical V2.4 requests/parsers/audits/results retain their recorded semantics.
+No historical row is rewritten. Production gates and public labels remain unchanged.
+
+Four saved engineering cases replay without provider calls: smoking +85% NEI,
+inverse smoking Contradicted, sunscreen Supported (including original NEI and
+Contradicted proposals), vitamin C Contradicted. These are engineering checks,
+not clinical validation or evidence of live-model repeatability. No models,
+retrieval/selection or aggregation thresholds changed. See
+[offline results](VALIDATED_EVIDENCE_POSITION_RESULTS.md).
+
+## Structured numeric evidence references V2.4 (2026-10-04)
+
+New normal development/test runs use `judge-input-2.4` / decision `2.4` /
+`judge-validation-2.4`, judge prompt 2.14 and one joint axes prompt 2.5.
+The source-attributed V2 findings and independent configured semantic checker
+remain. V3 remains evaluation-only; models, retrieval/selection, semantic axes,
+qualifier 1.4, verdict thresholds and production gates are unchanged.
+
+`source-quantity-catalog-1.0` derives deterministic IDs, exact source literals,
+half-open unit offsets, typed decimal values/measures and bindings from frozen
+source units. The catalog belongs to the hashed judge-input snapshot, not the
+Evidence Pack. Each statement selects `source_quantity_ids` (possibly empty);
+the provider schema has no `numeric_details` or numeric value fields. A reference
+must exist and belong to a cited unit. Corrupt identities/provenance fail closed.
+
+`numeric-reference-fidelity-2.4` and `numeric-reference-comparability-2.4` never
+parse generated statement/finding/conclusion wording. After semantic scope,
+backend quantities and the submitted `numeric_effect` feed the existing typed
+comparison and magnitude eligibility map. No refs cannot establish an exact
+magnitude; unknown, ambiguous, different-measure and ineligible narrower figures
+reach semantics but cannot power a magnitude vote. Conclusions inherit statements
+through `based_on_statement_ids`, with no independent numeric premises.
+
+Historical 2.3 prompts/parsers/audits retain their recorded versions and shapes.
+Old rows/reports are not rewritten; append-only JSONB needs no migration.
+70 new offline controls cover wording invariance, duplicate elimination, typed
+comparisons, semantic gates, tampering, worker routing, debug and replay.
+See [V2.4 results and manual acceptance](STRUCTURED_NUMERIC_REFERENCES_RESULTS.md).
+No paid model calls were made. Live acceptance remains for the user to run.
+
+V2.4 removes generated prose from machine-critical numeric source fidelity.
+It does not establish medical correctness or semantic qualification.
+
 ## Bounded numeric-parser follow-up (2026-10-03)
 
 Current development numerical validation is numeric-materiality-1.3, with

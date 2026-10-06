@@ -1,5 +1,28 @@
 # API Specification
 
+## V2.4 structured quantity reference diagnostics (development only)
+
+New normal development/test decisions and validations use 2.4. On
+`GET /v1/analyses/{analysis_id}/claims`, each V2.4
+`debug_judge_runs[].numeric_findings[]` uses version
+`numeric-reference-comparability-2.4` and adds `source_quantity_id`, for example
+`E2.U1.Q1`. `asserted_values` is retained for API compatibility and now contains
+backend-owned frozen values, not parsed generated prose. There is one entry per
+statement/reference, regardless of repeated model prose. Raw axes continue to
+appear under `evidence_axes`. Older summaries omit the absent quantity ID.
+
+Before a semantic assessment, comparability is pending/uncertain and
+`semantic_scope_checked=false`. Afterward the existing measure/scope/numeric
+effect fields describe deterministic qualification. Verified references do not
+imply comparable magnitude, valid source attribution or medical correctness.
+`reference_preflight_failure` identifies corrupt source/catalog/input/provenance
+or quantity references; it does not describe a valid different-measure estimate.
+
+The full source-quantity-catalog-1.0 belongs to frozen judge-input-2.4 JSONB;
+the debug API still returns only its compact allowlist, without full source text.
+No public verdict/report labels or report schema changed. Historical audits,
+responses, reports and hashes are not rewritten.
+
 ## Numeric fidelity/comparability development diagnostics
 
 With development debug enabled, each `debug_judge_runs` row from
@@ -986,3 +1009,12 @@ The conclusion remains backend-qualified separately. Missing material evidence
 sets validation unavailable and cannot qualify a verdict. These diagnostics are
 development-only; normal users receive safe error/report text, not raw prompts.
 No new production validator approval or model identity certification is implied.
+
+
+### Incomplete normalization public result (2026-10-05)
+
+A failed claim with `failure_code=normalization_incomplete` exposes
+`result_label=unable_to_verify_reliably` in its analysis claim summary. Its
+technical status remains `failed`, and report/verdict/evidence IDs are absent
+unless independently created. This operational label does not fabricate a
+medical report or bypass production qualification of successful assessments.

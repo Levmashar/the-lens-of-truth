@@ -16,7 +16,7 @@ def isolate_model_configuration(monkeypatch: pytest.MonkeyPatch) -> None:
     Individual tests can still configure providers with monkeypatch or Settings.
     """
     for name in tuple(os.environ):
-        if name.startswith(("JUDGE_", "CLAIM_EXTRACTOR_")):
+        if name.startswith(("JUDGE_", "CLAIM_EXTRACTOR_", "VALIDATOR_")):
             monkeypatch.delenv(name)
     monkeypatch.setenv("AUTHORITATIVE_ENABLED", "false")
 

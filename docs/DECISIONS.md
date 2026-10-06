@@ -1,5 +1,236 @@
 # Architecture Decisions
 
+## ADR-058 - Claim-type causal evidence and reviewed route assessments
+
+**Decision (2026-10-06):** Separate etiologic exposure/disease-transmission
+questions from manipulation/treatment/prevention using question semantics and
+linked ontology categories, without disease-specific policy branches.
+
+Permit explicit source-validated, current reviewed causal/transmission assessments
+or suitably converging empirical evidence for natural exposures and transmission.
+Require finding-bound exposure/endpoint/relation, integrity and semantic scope;
+retain causal disclaimers, quantitative, null and endpoint safeguards. Authority
+alone, omission, opinion, mechanism alone and belief surveys are insufficient.
+Independent cohort/case-control convergence needs temporality; an eligible
+explicit causal assessment may auditably override incidental association wording.
+
+Keep established intervention/treatment/prevention eligibility unchanged in
+question-evidence-2.1. Preserve historical intermediate question-evidence-2.0
+behavior, whose tighter synthesis requirement was rejected by regression tests.
+Write position 1.8 with exact 1.0-1.7 reconstruction. Semantic prompt 2.7 explains
+these distinctions; judge prompt/models/thresholds/public labels/gates unchanged.
+Query-plan 1.6 extends only the bounded design query; reviewed manifest 1.1 adds
+actual NCI and CDC documents. Source selection quotas and weights are unchanged.
+
+Live HPV/HIV positions resolve to Supported/Contradicted (3 matching assessments
+each), BP/sunscreen remain Supported, and antibiotics final-build repeat is
+Supported following an initial scope/comparator NEI. This is not a guarantee of
+future model consistency. Full backend 1,066/frontend 52/build and Ruff/mypy pass.
+See [auditable evidence and run history](CLAIM_TYPE_CAUSAL_EVIDENCE_RESULTS_20261006.md).
+
+## ADR-057 - Setting-aware scope and source-grounded literal polarity
+
+**Decision (2026-10-06):** Keep V2.5, source selection, structured quantities,
+thresholds/public labels/production gates and models. Normalize exact disease
+objects from relation annotations; do not require setting-only words as core
+medical entities. Explicit cell-experiment questions may use actual attributed
+laboratory interventions, without inventing controls or clinical eligibility.
+Primary assignment facts cannot come from reviews/plans/speculation or be borrowed
+for an unrelated measured exposure in a trial.
+
+For existential treatment capability, an unspecified population permits validated
+compatible narrower population evidence; explicit/universal qualifiers remain
+guarded. A literal polarity correction requires unambiguous matching exposure,
+endpoint and direction in the claim, finding and source. Preserve raw model axes
+and audit the override. Ambiguous/null/mixed effects and lowering-the-exposure
+statements cannot supply this deterministic correction.
+
+Write position 1.6, retaining exact 1.0-1.5 reconstruction. Query-plan 1.5 adds
+one design-focused variant only when bounded query capacity permits. Semantic
+prompt 2.6 clarifies polarity/capability/cellular scope; judge prompt unchanged.
+Report actual causal/conflict reasons before incidental scope warnings.
+
+Full backend suite passes 1,032 with no skips; frontend passes 52/build. Seven
+requested full live cases plus a laboratory repeat establish antibiotics/lab
+Supported and inverse BP Contradicted, with both controls Supported. HPV and HIV
+still return NEI for evidence/design limitations; no policy exception is used to
+force their expected labels. See [exact results](SELECTED_SCOPE_POLARITY_FIXES_20261006.md).
+
+## ADR-056 - Freeze the final 1.4 development reliability baseline
+
+**Decision (2026-10-06):** After test-isolation/full-response expectation cleanup,
+freeze V2.5 validated evidence position with V2.4 structured references, query-plan
+1.4 and position 1.4 as the current development baseline. The deployed full suite
+passes 990/990 including PostgreSQL; frontend passes 52/52. Fresh blue-light and
+carrots analyses retain NEI with 3/3 and 2/3 qualifications respectively.
+
+**Limit:** Qwen3.5-Plus's carrots replies twice omitted required S3/S4
+numeric_dependency fields and remain excluded, without schema repair. Reduced
+qualification is recorded even though the medical result remains unchanged.
+No medical logic, models, prompts or production gates changed. Model repeatability
+and production qualification are not inferred from this freeze. Actual Miri
+provider identifiers remain; the shared parser flag now describes its behavior.
+See [exact baseline hashes and versions](RELIABILITY_BASELINE_20261006.md).
+
+## ADR-055 - Source-owned comparability guards and completed trial synthesis
+
+**Decision (2026-10-05):** Fix the generic failures in manual tests 11-15 within
+backend validated evidence position, without a model/prompt change or bakeoff.
+A review's explicit completed randomized result is a frozen source fact, not a
+new label for the document. An attributed aligned direct/synthesis finding can
+use that fact for eligibility/materiality; aggregation reconstructs the same
+facts. Trial-name mentions, future/nonrandomized trials and prestige alone do
+not qualify. Direction and clinical scope still require validation.
+
+Project invalid opposition (alternative causes, omitted causes, unrelated
+population/time trends) to context. Distinguish existing-disease treatment,
+cell killing, progression and diagnostic processes from disease onset. Preserve
+raw axes, source terms, statement text and reason-coded overrides in the audit.
+Do not mistake an incident-diagnosis outcome or mortality wording alone for
+these invalid contexts. Write position 1.4 and retain exact 1.3 behavior plus
+1.0/1.1/1.2 reconstruction. New facts remain confined to V2.5; V2.4 stays strict.
+
+Normalize literal disease objects when extraction adds a relation annotation.
+When a genuine incomplete normalization stops processing, expose operational
+Unable without synthesizing medical artifacts. Preserve linked phrase meaning
+and additional exposure entities in all bounded query families. Keep canonical
+MeSH recall separate from literal lexical recall. Retrieval source selection
+rules, quantitative references, thresholds and production gates remain intact.
+
+Seven requested live cases completed with 57 real requests including retries and
+a BP repeat. Final guard replay preserves every successful live position; the
+sunscreen DeepSeek deadline exclusion remains visible. No production qualification
+is asserted. See [results and code scope](MANUAL_TESTS_11_15_FIXES_20261005.md).
+
+## ADR-054 - Scope integrity to participating findings and retain review trial facts
+
+**Decision (2026-10-05):** Fix the latest ten-case failures generically within
+validated-position qualification. Keep unknown material integrity, retraction,
+concern, semantic direction/scope, numeric references and causal safeguards.
+Unknown currency of excluded context cannot veto separate verified material
+research. Record raw facts and ignored statement IDs rather than calling an
+undated context page current or valid.
+
+Freeze affirmative randomized-trial methods as an optional synthesis fact for
+new checker inputs. A source-validated aligned direct/synthesis finding can be
+direct even when retrieval classified the whole review as context. Preserve the
+review design and synthesized exposure assignment. Final causal aggregation uses
+these same reconstructed finding facts; objective trial methods can establish
+materiality with strength=supporting. No direction comes from design alone.
+
+Write position 1.2 and preserve recorded 1.0/1.1 reconstruction. Preserve absent
+numeric bounds in old serialization; capture and evaluate new explicit fold/RR
+ranges without altering source-quantity catalogs or ambiguous-source conventions.
+Select the correct structured checker contract before reference enforcement.
+Persist exact rejected replies/exceptions and keep failed checks unavailable.
+The original lost smoking exception cannot be asserted from a successful replay.
+
+All six requested full live analyses and the additional final-build exercise
+case qualified 3/3 assessments, within 52 paid requests. No models, retrieval,
+source selection, prompt instructions, verdict thresholds, public labels or
+production gates changed. See [live results](MANUAL_RELIABILITY_FIXES_20261005.md).
+
+## ADR-053 — Provisional live checker replacement and bounded integrity timeout
+
+**Decision (2026-10-05):** Following 16 authorized full-input paid checker calls,
+use Paratera Qwen3.8-Flash with enable_thinking=false as the local development
+validator. Reuse verified provider generation options, reject unsupported
+overrides and retain strict local schema/ID enforcement. Default settings remain
+unchanged when the new optional setting is unset. All judge/extraction models,
+V2.5 contracts, prompts, quantity references and policy/gates are preserved.
+
+Qwen matched all four expected engineering positions with valid schema/IDs, but
+missed a cross-review attribution defect that Luna correctly rejected. Adoption
+is provisional; positions alone do not establish semantic accuracy. Tested Luna
+profiles failed a deadline or vitamin-C checks and are not activated.
+
+The latest sunscreen RCT's unknown integrity came from Crossref's global deadline,
+not randomized-design metadata. All available DOI checks genuinely succeeded on
+normal live recheck and populated the existing success cache. Local total timeout
+increases from 30 to 60 seconds without exceeding Crossref concurrency three or
+relaxing integrity guards. Historical snapshots/results remain unchanged. See
+[actual calls, limitations and verification](LIVE_VALIDATOR_ACCEPTANCE_20261005.md).
+
+## ADR-052 - Derive a backend-owned validated evidence position
+
+**Decision (2026-10-05):** New development/test contract V2.5 requests
+source-attributed findings with unchanged V2.4 unit/quantity references, rationale,
+conclusion dependencies and uncertainty reasons. The provider schema does not
+request a final label. The local new-contract parser tolerates optional advisory
+label text, records it exactly and never converts it into a vote. Historical
+contracts continue to require their original valid enum; invalid old labels are
+never silently normalized.
+
+After source attribution and the unchanged independent semantic axes checker,
+`validated-evidence-position-1.0` derives a position from all validated findings,
+including findings omitted from the judge's conclusion dependencies. Reuse
+qualifier source/integrity/design/risk and numeric guards while testing positions
+independently. All checks are deterministic, versioned and auditable. Source,
+transport/schema, missing-material-evidence or integrity failures are unavailable
+assessments, not NEI. Both eligible material directions mean conflict/NEI; only
+contextual/weak/imprecise findings mean NEI. No imprecise null manufactures opposition.
+
+Aligned direct randomized intervention results and applicable direct review/causal
+assessments may establish materiality when axes say supporting, provided objective
+relationship facts and existing scope/numeric/integrity gates pass. Design cannot
+establish semantic direction. Parent RCT labels do not randomize observed exposures.
+CAUSAL_DESIGN_INSUFFICIENT denotes actual ineligible design, not merely low strength.
+
+Aggregation and causal sufficiency checks use audited positions/material findings;
+reports use guarded finding relations. Save raw axes, mapped relations, promotions,
+inputs/output and position in append-only JSONB; reconstruct at aggregation. No
+migration, backfill or historical V2.4 replay change. Retrieval, selection, numeric
+catalog/fidelity, models, production gates, public labels and vote thresholds remain.
+
+**Acceptance:** Only saved responses/checkers from the four requested engineering
+claims, plus adversarial controls on those same frozen cases. No provider calls or
+new full analyses. See [results](VALIDATED_EVIDENCE_POSITION_RESULTS.md).
+
+## ADR-051 — Transport source quantities by frozen references in development V2.4
+
+**Decision:** create `judge-input-2.4` / decision 2.4 /
+`judge-validation-2.4`. Derive `source-quantity-catalog-1.0` from exact frozen
+source units; hash it with the input snapshot without changing the Evidence Pack.
+Each item retains source identity, literal, half-open offsets, exact decimal
+values, typed measure/unit/binding and normalization reason. Extraction changes
+require a new catalog version and recorded-version reconstruction.
+
+**Transport:** retain source-attributed descriptions, separate qualitative
+findings and conclusion statement dependencies. Replace provider-facing
+`numeric_details` with `source_quantity_ids`, allowing []. References must exist
+and belong to the statement's cited units. No provider-owned numeric values,
+conversions or conclusion quantity fields. Historical 2.3 stays unchanged.
+
+**Numeric path:** source fidelity is reference membership/ownership plus frozen
+unit, catalog, Pack, snapshot, prompt and raw/canonical response integrity.
+Never parse generated text/finding/conclusion numbers for V2.4 numeric fidelity
+or claim magnitude alignment. One statement/reference produces one diagnostic,
+regardless of repeated prose. New numeric contracts are
+`numeric-reference-fidelity-2.4` / `numeric-reference-comparability-2.4`.
+Preserve numeric-materiality 1.0–1.3 and numeric-fidelity-comparability 1.0–1.1.
+
+**Qualification:** keep one configured joint non-voting checker and its current
+attribution, direction, scope, strength, role, finding/scope basis and omitted
+material evidence schema. Supply selected backend quantities. Only after scope
+assessment compare those quantities with backend submitted `numeric_effect`.
+Reuse qualifier 1.4 and `magnitude_eligible`: no refs/unknown/ambiguous arithmetic,
+PAF/OR/HR versus RR, percentage points versus relative percent and incompatible
+or ineligible narrower scope cannot power exact magnitude. Such evidence facts
+are not preflight operational failures, forced NEI or flipped judge labels.
+
+**Why retain V2:** V3 bake-off controls showed false null-direction and narrow-dose
+materiality classifications despite schema compliance. Unit-only classification
+is not adopted. Production gates, models, retrieval, source selection, semantic
+axes and vote thresholds remain unchanged. Persist new audits append-only and
+reconstruct full requests/results at aggregation; no historical backfill.
+
+**Acceptance:** offline plumbing/safety only; no paid calls. See
+[results](STRUCTURED_NUMERIC_REFERENCES_RESULTS.md) for software checks and the
+user's pending normal smoking-85 live test. Semantic correctness is unmeasured.
+
+V2.4 removes generated prose from machine-critical numeric source fidelity.
+It does not establish medical correctness or semantic qualification.
+
 ## ADR-050 — Version occurrence-local numeric roles and skipped checks
 
 **Decision:** Retain fidelity/comparability separation with numeric-materiality-1.3

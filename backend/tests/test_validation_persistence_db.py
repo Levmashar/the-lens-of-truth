@@ -25,14 +25,40 @@ pytestmark = pytest.mark.skipif(os.getenv("RUN_DB_TESTS") != "1",
 
 
 @pytest.mark.parametrize("relation_contract",
-                         [False, True, "axes", "numeric_axes", "numeric_blocked"])
+                         [False, True, "axes", "numeric_axes", "numeric_blocked", "structured",
+                          "position"])
 def test_repeat_validation_appends_and_update_is_blocked(
     monkeypatch: pytest.MonkeyPatch, relation_contract: bool | str,
 ) -> None:
     pack = fixture_pack()
     judge = judge_for(pack)
     validator = None
-    if relation_contract in {"axes", "numeric_axes", "numeric_blocked"}:
+    if relation_contract == "position":
+        import hashlib
+
+        from app.retrieval.evidence_pack import canonical_pack_bytes
+        from tests.test_validated_evidence_position import SavedChecker, position_contract, saved
+
+        original, pack, response = saved("sunscreen")
+        # New transaction-local identities; never reuse or rewrite captured rows.
+        claim_id = uuid4()
+        snapshot = pack.claim_snapshot.model_copy(update={"claim_id": claim_id})
+        digest = hashlib.sha256(canonical_pack_bytes(
+            snapshot, pack.query_plan, pack.documents, pack.passages,
+            pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
+        )).hexdigest()
+        pack = pack.model_copy(update={"claim_id": claim_id, "claim_snapshot": snapshot,
+                                       "snapshot_hash": digest})
+        original = original.model_copy(update={"claim_id": claim_id, "judge_run_id": uuid4(),
+            "evidence_pack_id": uuid4(), "evidence_pack_hash": digest})
+        judge = position_contract(original, pack, advisory="contradicted")
+        validator = SavedChecker(response)
+    elif relation_contract == "structured":
+        from tests.test_structured_numeric_references import OfflineChecker, structured_fixture
+
+        judge, pack, response = structured_fixture()
+        validator = OfflineChecker(response)
+    elif relation_contract in {"axes", "numeric_axes", "numeric_blocked"}:
         from app.evaluation.slice41_cases import CASES, probe_judge
         from tests.test_reliability_slice4_1 import FixtureValidator
 
@@ -103,7 +129,36 @@ def test_repeat_validation_appends_and_update_is_blocked(
             assert len(rows) == 2
             assert {row.id for row in rows} == {first.id, second.id}
             assert all(row.evidence_pack_hash == pack.snapshot_hash for row in rows)
-            if relation_contract in {"axes", "numeric_axes"}:
+            if relation_contract == "position":
+                from app.models.judge_run import JudgeRunRecord
+                from app.validation.audit25 import audit_matches25
+                from app.verdict.persistence import _judge, _validation
+
+                stored_judge = session.get(JudgeRunRecord, judge.judge_run_id)
+                session.refresh(stored_judge)
+                assert stored_judge.decision_json["advisory_label"] == "contradicted"
+                assert all(row.result_json["validated_evidence_position"] == "supported"
+                           for row in rows)
+                assert all(row.validation_version == "judge-validation-2.5" for row in rows)
+                assert all(audit_matches25(_judge(stored_judge), _validation(row), pack,
+                                          "standard") for row in rows)
+            elif relation_contract == "structured":
+                from app.models.judge_run import JudgeRunRecord
+                from app.validation.audit24 import audit_matches24
+                from app.verdict.persistence import _judge, _validation
+
+                stored_judge = session.get(JudgeRunRecord, judge.judge_run_id)
+                session.refresh(stored_judge)
+                assert all(audit_matches24(_judge(stored_judge), _validation(row), pack,
+                                          "standard") for row in rows)
+                assert all(row.validation_version == "judge-validation-2.4" for row in rows)
+                assert all(len(row.result_json["numeric_findings"]) == 3 for row in rows)
+                assert all(n["source_quantity_id"].startswith("E1.U1.Q") for row in rows
+                           for n in row.result_json["numeric_findings"])
+                assert all("numeric_occurrences" not in row.result_json for row in rows)
+                assert stored_judge.input_snapshot_json["source_quantity_catalog"]["version"] == (
+                    "source-quantity-catalog-1.0")
+            elif relation_contract in {"axes", "numeric_axes"}:
                 from app.models.judge_run import JudgeRunRecord
                 from app.validation.audit23 import audit_matches23
                 from app.verdict.persistence import _judge, _validation

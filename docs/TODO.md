@@ -1,5 +1,141 @@
 # Delivery Roadmap
 
+## 2026-10-06 claim-type causal evidence follow-up
+
+- [x] Confirm HPV/HIV failures through frozen taxonomy/design/source diagnostics
+- [x] Add generic etiologic/transmission eligibility with finding-bound safeguards
+- [x] Review/freeze/select explicit NCI causal and CDC route-exclusion assessments
+- [x] Preserve negative list introductions and visible abbreviated document dates
+- [x] Preserve existing intervention/treatment/prevention eligibility
+- [x] Preserve historical audits; version final position 1.8 and causal policy 2.1
+- [x] Run two targets and three controls through the frontend HTTP flow
+- [x] Repeat antibiotics once on final build; retain first NEI in the report
+- [x] Full backend 1,066, frontend 52/build, Ruff/mypy pass; backend restarted
+- [ ] Monitor antibiotics scope/comparator response variability without relaxing gates
+
+Current query-plan 1.6, semantic prompt 2.7; models unchanged.
+See [complete diagnosis and results](CLAIM_TYPE_CAUSAL_EVIDENCE_RESULTS_20261006.md).
+
+## 2026-10-06 selected scope/polarity follow-up
+
+- [x] Replay original selected frozen inputs and preserve historical audit behavior
+- [x] Treat explicit setting phrases separately from core PICO medical concepts
+- [x] Recover exact disease objects from transmission/infection annotations
+- [x] Bind source-stated experimental assignment to the attributed finding
+- [x] Distinguish laboratory intervention eligibility from clinical causation
+- [x] Respect existential treatment capability without universal population inference
+- [x] Audit unambiguous source-grounded polarity corrections; preserve raw axes
+- [x] Add bounded design recall and prioritize actual report qualification reasons
+- [x] Complete five requested cases/two controls plus one laboratory repeat
+- [x] Run complete backend suite: 1,032 passed; frontend 52/build, Ruff/mypy pass
+- [x] HPV causal coverage/design follow-up resolved generically in the claim-type
+      policy above; endpoint normalization was already correct
+- [x] HIV transmission follow-up resolved through generic policy and reviewed
+      explicit route-exclusion evidence; belief surveys remain contextual
+- [ ] Monitor GLM deadline repeatability; inverse BP qualified 2/3 in this batch
+
+See [full before/after results](SELECTED_SCOPE_POLARITY_FIXES_20261006.md).
+Historical snapshot: query-plan 1.5/position 1.6; semantic prompt 2.6, models unchanged.
+
+## 2026-10-06 selected frontend-path live tests
+
+- [x] Run the 13 requested multiples of three through actual frontend HTTP endpoints
+- [x] Save ten served reports and three operational normalization-failure records
+- [x] Report all results without model/prompt/logic changes or extra paid probes
+- [x] Verify frozen baseline source hashes unchanged; record 8/13 expectation matches
+- [x] Investigate HPV/cervical endpoint gap (3), antibiotics/pneumonia scope gap (6)
+      and inverse hypertension/stroke disagreement (12) before broader acceptance
+- [x] Investigate laboratory-context coverage failure (9) and HIV outcome loss (15)
+- [ ] Investigate smoking exact-85% validator unavailability (21); 2/3 qualified
+
+See [full selected results](CLAIM_CHECK_DIVISIBLE_BY_3_RESULTS_20261006.md).
+These are observed engineering outcomes, not clinical validation.
+
+## 2026-10-06 reliability baseline cleanup and freeze
+
+- [x] Isolate Miri/default settings test from local dotenv/provider environment
+- [x] Verify full debug responses with scoped/disabled capture
+- [x] Rename shared parser flag by behavior; preserve actual provider identifiers
+- [x] Run full deployed backend suite with PostgreSQL enabled: 990 passed, no skips
+- [x] Run frontend suite/build: 52 passed; Ruff/mypy pass
+- [x] Fresh query-plan/position 1.4 blue-light and carrots full paid runs: both NEI
+- [x] Freeze development baseline with exact versions, active models and source/image hashes
+- [ ] Qwen3.5-Plus remains provisional: carrots omitted S3/S4 numeric_dependency
+      on both attempts; 2/3 qualified vs previous 3/3, no medical/result regression
+- [ ] Existing production qualification and longer-run model repeatability remain open
+
+See [current baseline](RELIABILITY_BASELINE_20261006.md); 14 paid requests, no
+medical/model/prompt changes. Development freeze does not imply production approval.
+
+## 2026-10-05 manual tests 11-15
+
+- [x] Trace review trial-synthesis design loss and use audited completed-result facts
+- [x] Preserve literal disease after cures/treats/prevents/reverses and relation annotations
+- [x] Show operational Unable for genuinely incomplete normalization without fake reports
+- [x] Guard alternative-cause/omission/ecological opposition and post-disease endpoints
+- [x] Preserve multiword entities and source qualifiers in retrieval; inspect eyesight recall
+- [x] Retain canonical MeSH recall without broadening the lexical source phrase
+- [x] Run seven full paid analyses plus corrected BP repeat, 57 requests below cap 64
+- [x] Reconstruct 33 old and 23 new audits; preserve 23 positions under final 1.4 replay
+- [x] Preserve V2.4 metadata contract and four-case advisory-label independence
+- [ ] Monitor DeepSeek transport repeatability: sunscreen J1 exhausted its bounded deadline
+- [x] Isolate the Miri-default test from local provider configuration; update old debug
+      truncation expectation without reintroducing response cutoff
+
+
+## 2026-10-05 latest ten-case reliability fixes
+
+- [x] Identify exact undated IARC/NCCIH context causing global integrity failures
+- [x] Keep material integrity/retraction/concern gates; audit unused-context exclusions
+- [x] Preserve explicit fold/RR bounds, endpoints and literal notation
+- [x] Admit aligned validated trial-synthesis findings using frozen randomized methods
+- [x] Use reconstructed finding design in final causal aggregation and materiality
+- [x] Fix matching-contract reference dispatch and retain exact failed checker replies
+- [x] Reconstruct historical position 1.0/1.1 and unchanged V2.4 audits
+- [x] Run all six requested live cases plus final-build exercise repeat, 52 paid requests
+- [x] Verify generic adversarial regressions and append-only PostgreSQL persistence
+- [ ] Establish longer-run semantic repeatability and independent medical acceptance;
+      these seven live analyses do not establish production qualification
+
+## 2026-10-05 bounded live validator follow-up
+
+- [x] Make 16 bounded real checker calls on complete existing four-case inputs
+- [x] Compare configured backend request bodies with paid request bodies exactly
+- [x] Adopt Qwen3.8-Flash provisionally with tested thinking-disabled transport
+- [x] Diagnose and genuinely recheck/cache Crossref DOI integrity deadline failures
+- [ ] Resolve known review-attribution false acceptance and establish repeatability;
+      correct four-case positions alone do not establish full semantic accuracy
+- [ ] Fresh user end-to-end acceptance; no paid full-analysis rerun in this round
+
+## 2026-10-05 validated evidence position
+
+- [x] Add V2.5 findings/rationale contract with optional non-voting advisory text
+- [x] Derive position deterministically after attribution, axes and existing guards
+- [x] Use backend relationship design facts for randomized direct-result materiality
+- [x] Keep imprecise nulls and narrower subgroup findings from material conflict
+- [x] Distinguish design insufficiency from semantic materiality gaps
+- [x] Aggregate/report backend positions; preserve raw proposals and audit reconstruction
+- [x] Replay four existing frozen cases without paid calls or historical row updates
+- [x] Verify append-only PostgreSQL persistence and historical V2.4 compatibility
+- [ ] Separately establish live semantic reliability and independent medical acceptance;
+      frozen replay alone does not qualify production or demonstrate repeatability
+
+## 2026-10-04 structured numeric references V2.4
+
+- [x] Freeze deterministic source-quantity-catalog-1.0 in new judge-input-2.4
+- [x] Add decision/provider schema 2.4 quantity references; keep 2.3 replay
+- [x] Remove generated prose from numeric fidelity and magnitude reconstruction
+- [x] Validate IDs/ownership/Pack/input/catalog/prompt/raw response integrity
+- [x] Run the existing independent joint checker with selected catalog objects
+- [x] Apply typed comparability only after semantic scope and reuse qualifier 1.4
+- [x] Block exact magnitude for no refs, unknown, ambiguous or noncomparable premises
+- [x] Cover smoking metamorphic and Luna repetition regressions; no English patches
+- [x] Reconstruct V2.4 audits/reports and persist/replay append-only JSONB
+- [x] Keep models, retrieval, selection, production policy and thresholds unchanged
+- [x] Run offline backend/PostgreSQL/frontend/static/build checks; restart services
+- [ ] User manual normal smoking-85 live acceptance, using the results document
+- [ ] Establish semantic correctness/repeatability independently; no V3 adoption
+
 ## 2026-10-03 bounded numeric-parser follow-up
 
 - [x] Reproduce exact failures before edits; record actual read-only retained replay

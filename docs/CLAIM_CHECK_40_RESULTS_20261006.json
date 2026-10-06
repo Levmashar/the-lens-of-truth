@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-06",
+  "complete": false,
+  "cases": [
+    {
+      "number": 1,
+      "claim": "Cigarette smoking causes lung cancer.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "5724dd45-2624-491a-a4f5-98c183d9cc5a",
+      "status": "completed",
+      "qualified": [
+        "2/3"
+      ],
+      "elapsed_ms": 218755,
+      "failure": "",
+      "reports_saved": 1
+    },
+    {
+      "number": 2,
+      "claim": "High blood pressure increases the risk of stroke.",
+      "expectation": "Supported",
+      "labels": [
+        "supported"
+      ],
+      "display": "Supported",
+      "expectation_match": true,
+      "analysis_id": "f12de5c3-0fce-4953-9d1b-46d2f9a00706",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 169536,
+      "failure": "",
+      "reports_saved": 1
+    },
+    {
+      "number": 3,
+      "claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+      "expectation": "Supported",
+      "labels": [
+        "not_enough_evidence"
+      ],
+      "display": "Not Enough Evidence",
+      "expectation_match": false,
+      "analysis_id": "1072af6b-fab0-4b9c-aa1c-bd4692f25d0c",
+      "status": "completed",
+      "qualified": [
+        "3/3"
+      ],
+      "elapsed_ms": 146325,
+      "failure": "",
+      "reports_saved": 1
+    }
+  ]
+}

@@ -296,18 +296,38 @@ def _cards(
                     or input_snapshot_hash(judge.input_snapshot_json)
                     != prepared.input_snapshot_hash):
                 raise ValueError("Judge-visible input snapshot is invalid")
+            position_contract = judge.decision.schema_version == "2.5"
+            position_axes = {}
+            if position_contract:
+                from app.validation.position import EvidencePositionAudit
+
+                position_audit = EvidencePositionAudit.model_validate(
+                    validation.result.conclusion_qualification)
+                position_axes = {r.statement_id: r for r in position_audit.guarded_relations}
             attributed = {item.statement_id: item
                           for item in validation.result.statement_attributions}
             for statement in judge.decision.statements:
-                if statement.statement_id not in conclusion.based_on_statement_ids:
+                if (not position_contract
+                        and statement.statement_id not in conclusion.based_on_statement_ids):
                     continue
                 item = attributed.get(statement.statement_id)
                 if item is None or item.status != StatementAttributionStatus.SUPPORTED_BY_SOURCES:
                     continue
                 for ref in statement.evidence_refs:
-                    if ref.evidence_id not in prepared.selected_ids:
+                    visible_ids = (
+                        prepared.input_snapshot_json.get("judge_visible_evidence_ids", [])
+                                   if position_contract else prepared.selected_ids)
+                    if (not isinstance(visible_ids, (list, tuple))
+                            or ref.evidence_id not in visible_ids):
                         raise ValueError("Validated statement cited nonvisible evidence")
-                    role = _role(judge.decision.label, "cited")
+                    if position_contract:
+                        relation = position_axes[statement.statement_id].relation
+                        role = (EvidenceRole.SUPPORTING if relation == "supports_claim" else
+                                EvidenceRole.OPPOSING if relation == "contradicts_claim" else
+                                EvidenceRole.RELEVANT_BUT_INSUFFICIENT)
+                    else:
+                        assert judge.decision.label is not None
+                        role = _role(judge.decision.label, "cited")
                     uses.setdefault(ref.evidence_id, []).append(
                         (role, judge.judge_run_id, validation.id)
                     )

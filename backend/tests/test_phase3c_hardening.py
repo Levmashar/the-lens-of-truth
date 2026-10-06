@@ -104,10 +104,15 @@ def test_vitamin_c_outcome_and_missing_outcome_regression() -> None:
 
     omitted = _candidate(source, "prevention", "Vitamin C", None)
     status, quality = _status(omitted)
+    assert status == "normalized"
+    assert not quality.missing_explicit_concepts
+    assert not quality.required_slots_missing
+    assert quality.normalization_coverage == 1.0
+
+    incomplete = _candidate("Vitamin C prevents.", "prevention", "Vitamin C", None)
+    status, quality = _status(incomplete)
     assert status == "partial"
-    assert quality.missing_explicit_concepts == ("common cold",)
     assert quality.required_slots_missing == ("outcome",)
-    assert quality.normalization_coverage == 0.5
 
 
 def test_soy_coordinated_subject_is_source_grounded_for_both_claims() -> None:

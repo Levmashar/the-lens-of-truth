@@ -97,10 +97,15 @@ class JudgeStatement(BaseModel):
     qualitative_finding: str | None = Field(default=None, min_length=5, max_length=600)
     numeric_details: tuple[str, ...] = Field(default=(), max_length=4)
     numeric_dependency: bool | None = None
+    source_quantity_ids: tuple[str, ...] | None = None
 
     @model_serializer(mode="wrap")
     def preserve_legacy_shape(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
         result = handler(self)
+        if self.source_quantity_ids is None:
+            result.pop("source_quantity_ids", None)
+        else:
+            result.pop("numeric_details", None)
         if not self.source_unit_ids:
             result.pop("source_unit_ids", None)
         if self.qualitative_finding is None:
@@ -138,25 +143,42 @@ class JudgeDecisionV2(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
 
-    schema_version: Literal["2.0", "2.1", "2.2", "2.3"]
-    label: JudgeLabel
+    schema_version: Literal["2.0", "2.1", "2.2", "2.3", "2.4", "2.5"]
+    label: JudgeLabel | None
+    advisory_label: str | None = Field(default=None, exclude_if=lambda v: v is None)
     statements: tuple[JudgeStatement, ...] = Field(min_length=1, max_length=8)
     conclusion: JudgeConclusion
     uncertainty_reasons: tuple[UncertaintyReason, ...] = ()
 
     @model_validator(mode="after")
     def valid_references(self) -> "JudgeDecisionV2":
+        if self.schema_version == "2.5":
+            if self.label is not None:
+                raise ValueError("2.5 has no voting model label")
+        elif self.label is None or "advisory_label" in self.model_fields_set:
+            raise ValueError("Historical contracts require a valid label")
         ids = [statement.statement_id for statement in self.statements]
         if len(ids) != len(set(ids)):
             raise ValueError("duplicate statement ID")
         used = self.conclusion.based_on_statement_ids
         if len(used) != len(set(used)) or not set(used) <= set(ids):
             raise ValueError("conclusion references unknown or duplicate statement")
-        if self.schema_version in {"2.1", "2.2", "2.3"} and any(
+        if self.schema_version in {"2.1", "2.2", "2.3", "2.4", "2.5"} and any(
             not s.source_unit_ids for s in self.statements
         ):
             raise ValueError("Backend source units required for unit decisions")
-        if self.schema_version == "2.3":
+        if self.schema_version not in {"2.4", "2.5"} and any(
+            "source_quantity_ids" in s.model_fields_set for s in self.statements
+        ):
+            raise ValueError("Historical contracts cannot carry quantity references")
+        if self.schema_version in {"2.4", "2.5"} and any(
+            s.source_quantity_ids is None or s.numeric_details
+            or len(s.source_quantity_ids) > 32
+            or len(s.source_quantity_ids) != len(set(s.source_quantity_ids))
+            for s in self.statements
+        ):
+            raise ValueError("2.4 requires distinct quantity references and no numeric_details")
+        if self.schema_version in {"2.3", "2.4", "2.5"}:
             if len(self.statements) > 5 or any(
                 s.qualitative_finding is None or s.numeric_dependency is None
                 or any(not detail or len(detail) > 600 for detail in s.numeric_details)
@@ -196,7 +218,7 @@ def parse_stored_decision(data: dict[str, object]) -> AnyJudgeDecision:
     # model_validate(dict) correctly rejects Python lists and raw enum strings.
     # JSONB is decoded to a dict by SQLAlchemy, so restore JSON parsing here.
     encoded = json.dumps(data)
-    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3"}:
+    if data.get("schema_version") in {"2.0", "2.1", "2.2", "2.3", "2.4", "2.5"}:
         return JudgeDecisionV2.model_validate_json(encoded)
     return JudgeDecision.model_validate_json(encoded)
 
@@ -213,6 +235,7 @@ class JudgeSlot(BaseModel):
     search_override_active: bool = False
     search_guard_bypassed: bool = False
     request_json_schema: bool = True
+    thinking_enabled: bool | None = None
 
 
 class ProviderResponse(BaseModel):
@@ -296,13 +319,15 @@ def describe_disagreement(runs: tuple[JudgeRun, ...]) -> DisagreementSummary:
     """Describe observed labels only; never aggregate a medical verdict."""
 
     counts = {label: 0 for label in JudgeLabel}
-    labels = [run.decision.label for run in runs if run.decision is not None]
+    labels = [run.decision.label for run in runs if run.decision is not None
+              and run.decision.label is not None]
     for label in labels:
         counts[label] += 1
     pairs = [(left, right) for index, left in enumerate(labels)
              for right in labels[index + 1:]]
     return DisagreementSummary(
-        successful_judges=len(labels), total_judges=len(runs), label_counts=counts,
+        successful_judges=sum(run.decision is not None for run in runs),
+        total_judges=len(runs), label_counts=counts,
         unanimous=len(set(labels)) == 1 if len(labels) >= 2 else None,
         pairwise_agreement=(sum(a == b for a, b in pairs) / len(pairs)) if pairs else None,
     )

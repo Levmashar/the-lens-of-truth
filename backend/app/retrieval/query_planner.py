@@ -3,6 +3,7 @@
 import re
 
 from app.medical.entities import MedicalEntity
+from app.pipeline.setting import laboratory_claim
 from app.retrieval.lexical import lay_variants
 from app.retrieval.models import ClaimSnapshot, QueryPlan, RetrievalQuery
 
@@ -61,6 +62,30 @@ def _lexical_terms(value: str) -> str:
     return " AND ".join(f'"{word}"[Title/Abstract]' for word in words)
 
 
+def _confident(entity: MedicalEntity | None) -> bool:
+    return bool(entity and entity.mesh_id and entity.match_type in {"exact", "synonym"}
+                and not entity.ambiguous and entity.preferred_name
+                and (entity.confidence or 0) >= 0.9)
+
+
+def _entity_terms(entity: MedicalEntity | None, literal: str, *, aliases: bool = False) -> str:
+    if not _confident(entity):
+        return _lexical_terms(literal)
+    assert entity is not None
+    # A linked multiword concept is an atom, not unrelated bag-of-word matches.
+    labels = tuple(dict.fromkeys((entity.surface_text, entity.preferred_name)
+                                 if aliases else (entity.surface_text,)))
+    return "(" + " OR ".join(f'"{label}"[Title/Abstract]' for label in labels if label) + ")"
+
+
+def _exposure_qualifiers(claim: ClaimSnapshot, primary: MedicalEntity | None,
+                         head: str) -> tuple[MedicalEntity, ...]:
+    return tuple(e for e in claim.entities if e != primary and _confident(e)
+                 and e.entity_type == "intervention_or_exposure" and _lexical_terms(e.surface_text)
+                 and re.search(rf"(?<!\w){re.escape(e.surface_text)}(?!\w)", head, re.I)
+                 and not (primary and e.surface_text.casefold() in primary.surface_text.casefold()))
+
+
 def _outcome_search_text(value: str) -> str:
     """Remove only a leading effect verb from retrieval wording, never PICO."""
 
@@ -81,6 +106,7 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
     exposure_head = re.split(r"\b(?:in|among)\b", exposure or "", maxsplit=1, flags=re.I)[0]
     exposure_term = exposure_entity.surface_text if exposure_entity else exposure_head
     outcome_term = outcome_entity.surface_text if outcome_entity else outcome
+    qualifiers = _exposure_qualifiers(claim, exposure_entity, exposure_head)
     queries: list[RetrievalQuery] = []
     warnings: list[str] = []
 
@@ -93,20 +119,26 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
         queries.append(RetrievalQuery(
             query_id="Q1", family="mesh",
             query=(f'"{exposure_entity.preferred_name}"[MeSH Terms] AND '
-                   f'"{outcome_entity.preferred_name}"[MeSH Terms]'),
-            source_fields=("entities.intervention_or_exposure.mesh_id", "entities.outcome.mesh_id"),
+                   f'"{outcome_entity.preferred_name}"[MeSH Terms]' + "".join(
+                       f' AND "{e.preferred_name}"[MeSH Terms]' for e in qualifiers)),
+            source_fields=("entities.intervention_or_exposure.mesh_id", "entities.outcome.mesh_id",
+                           *(("entities.intervention_or_exposure.qualifiers",)
+                             if qualifiers else ())),
             relation_semantics=claim.claim_type,
         ))
 
     if exposure_term and outcome_term:
-        left = _lexical_terms(exposure_term)
-        right = _lexical_terms(_outcome_search_text(outcome_term))
+        broaden = not any(q.family == "mesh" for q in queries)
+        left = " AND ".join((_entity_terms(exposure_entity, exposure_term, aliases=broaden), *(
+            _entity_terms(e, e.surface_text, aliases=True) for e in qualifiers)))
+        right = _entity_terms(outcome_entity, _outcome_search_text(outcome_term), aliases=broaden)
         if left and right:
             lexical = f"({left}) AND ({right})"
             lexical_sources = (
                 "entities.intervention_or_exposure.surface_text" if exposure_entity
                 else "pico.intervention_or_exposure",
                 "entities.outcome.surface_text" if outcome_entity else "pico.outcome",
+                *(("entities.intervention_or_exposure.qualifiers",) if qualifiers else ()),
             )
             queries.append(RetrievalQuery(
                 query_id=f"Q{len(queries) + 1}", family="lexical", query=lexical,
@@ -171,14 +203,16 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                 # PubMed's official Automatic Term Mapping can recover a
                 # source term absent from Title/Abstract. A confident two-
                 # concept MeSH query already supplies this broader recall.
-                automatic = f"({' '.join(_tokens(exposure_term))}) AND " \
+                automatic_left = left.replace("[Title/Abstract]", "") if _confident(
+                    exposure_entity) else ' '.join(_tokens(exposure_term))
+                automatic = f"({automatic_left}) AND " \
                             f"({' '.join(_tokens(_outcome_search_text(outcome_term)))})"
                 queries.append(RetrievalQuery(
                     query_id=f"Q{len(queries) + 1}", family="automatic", query=automatic,
                     source_fields=(*lexical_sources, "pubmed_automatic_term_mapping"),
                     relation_semantics=claim.claim_type,
                 ))
-                variants = lay_variants(outcome_term)
+                variants = lay_variants(outcome_term)[:3]
                 if variants:
                     # Search-only variants are explicit in query provenance.
                     # The exact outcome remains unchanged in PICO and report.
@@ -202,4 +236,26 @@ def plan_pubmed_queries(claim: ClaimSnapshot) -> QueryPlan:
                 source_fields=("raw_text",), relation_semantics=claim.claim_type,
             ))
         warnings.append("structured_terms_incomplete")
-    return QueryPlan(claim_type=claim.claim_type, queries=tuple(queries), warnings=tuple(warnings))
+    # Bounded relevance-only search can fill every slot with narrative reviews.
+    # Preserve its recall, and add one design-focused query for questions whose
+    # causal eligibility requires trials/syntheses. No source gets a verdict boost.
+    if (queries and len(queries) < 4 and claim.claim_type in {"causal", "treatment", "prevention"}
+            and not laboratory_claim(claim.standalone_text, pico.population if pico else None)):
+        anchor = next((q for q in queries if q.family == "mesh"), queries[0])
+        from app.retrieval.sufficiency import question_category
+
+        etiologic = question_category(claim, causal_policy=True) in {
+            "etiologic_exposure_causality", "disease_transmission"}
+        observational = (' OR "Observational Study"[Publication Type] OR '
+                         '"Cohort Studies"[MeSH Terms] OR "Case-Control Studies"[MeSH Terms]'
+                         if etiologic else "")
+        queries.append(RetrievalQuery(
+            query_id=f"Q{len(queries) + 1}", family="relation",
+            query=f'({anchor.query}) AND ("Systematic Review"[Publication Type] OR '
+                  '"Meta-Analysis"[Publication Type] OR '
+                  f'"Randomized Controlled Trial"[Publication Type]{observational})',
+            source_fields=(*anchor.source_fields, "question_design_recall"),
+            relation_semantics=claim.claim_type,
+        ))
+    return QueryPlan(version="1.6", claim_type=claim.claim_type,
+                     queries=tuple(queries), warnings=tuple(warnings))

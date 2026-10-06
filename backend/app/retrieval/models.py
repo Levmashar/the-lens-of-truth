@@ -42,7 +42,7 @@ class RetrievalQuery(FrozenModel):
 
 
 class QueryPlan(FrozenModel):
-    version: Literal["1.0", "1.1", "1.2"] = "1.2"
+    version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"] = "1.2"
     source: Literal["pubmed"] = "pubmed"
     claim_type: ClaimType | None = None
     queries: tuple[RetrievalQuery, ...]
@@ -126,6 +126,7 @@ DocumentPurpose = Literal[
     "causal_assessment", "systematic_evidence_summary", "clinical_guideline",
     "public_health_guidance", "patient_information", "fact_sheet", "research_report",
     "press_release", "other",
+    "transmission_assessment",
 ]
 
 

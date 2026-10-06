@@ -283,7 +283,7 @@ class MiriClaimExtractor(HttpAdapterBase):
         }
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         return await _extract_with_retry(
-            self, request_body, headers, source_text=text, normalize_miri_labels=True
+            self, request_body, headers, source_text=text, discard_verifiability_labels=True
         )
 
 
@@ -299,7 +299,7 @@ async def _extract_with_retry(
     headers: dict[str, str],
     *,
     source_text: str,
-    normalize_miri_labels: bool = False,
+    discard_verifiability_labels: bool = False,
     reconcile_offsets: bool = False,
 ) -> ClaimExtractionPayload:
     """Enforce per-attempt and total deadlines with at most one safe retry."""
@@ -348,7 +348,7 @@ async def _extract_with_retry(
                             response.raise_for_status()
                         response_content = _completion_content(response)
                         payload = _parse_response(
-                            response, normalize_miri_labels=normalize_miri_labels
+                            response, discard_verifiability_labels=discard_verifiability_labels
                         )
                         if reconcile_offsets:
                             payload = _reconcile_unique_offsets(payload, source_text)
@@ -564,7 +564,7 @@ def _reconcile_unique_offsets(
 
 
 def _parse_response(
-    response: httpx.Response, *, normalize_miri_labels: bool
+    response: httpx.Response, *, discard_verifiability_labels: bool
 ) -> ClaimExtractionPayload:
     try:
         body = response.json()
@@ -579,12 +579,12 @@ def _parse_response(
     if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
         raise _ResponseFailure("unsupported_structured_response")
     return _parse_claim_payload(
-        choice["message"].get("content"), normalize_miri_labels=normalize_miri_labels
+        choice["message"].get("content"), discard_verifiability_labels=discard_verifiability_labels
     )
 
 
 def _parse_claim_payload(
-    content: object, *, normalize_miri_labels: bool = False
+    content: object, *, discard_verifiability_labels: bool = False
 ) -> ClaimExtractionPayload:
     """Accept a single JSON object, optionally wrapped in one JSON code fence."""
 
@@ -602,7 +602,7 @@ def _parse_claim_payload(
         parsed = json.loads(stripped)
     except json.JSONDecodeError as exc:
         raise _ResponseFailure("invalid_json") from exc
-    if normalize_miri_labels and isinstance(parsed, dict):
+    if discard_verifiability_labels and isinstance(parsed, dict):
         claims = parsed.get("claims")
         if isinstance(claims, list):
             for claim in claims:

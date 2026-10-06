@@ -269,7 +269,7 @@ def carrot_claim() -> ClaimSnapshot:
 def test_carrot_query_uses_food_and_records_retrieval_only_lay_variants() -> None:
     snapshot = carrot_claim()
     plan = plan_pubmed_queries(snapshot)
-    assert plan.version == "1.2"
+    assert plan.version == "1.6"
     assert "mesh" not in [query.family for query in plan.queries]
     assert plan.queries[0].query == (
         '("carrots"[Title/Abstract]) AND ("eyesight"[Title/Abstract])'
@@ -280,7 +280,7 @@ def test_carrot_query_uses_food_and_records_retrieval_only_lay_variants() -> Non
     assert automatic.query == "(carrots) AND (eyesight)"
     variant = next(query for query in plan.queries if query.family == "lay_variant")
     assert '"vision"[Title/Abstract]' in variant.query
-    assert '"seeing"[Title/Abstract]' in variant.query
+    assert '"visual acuity"[Title/Abstract]' in variant.query
     assert "retrieval_lay_variant:eyesight" in variant.source_fields
     assert snapshot.pico is not None and snapshot.pico.outcome == "Improves eyesight"
 

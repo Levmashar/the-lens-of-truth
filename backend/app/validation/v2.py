@@ -60,7 +60,7 @@ async def validate_v2(
         raise ValueError("V2 validation requires a V2 decision")
     started_at, start = datetime.now(UTC), monotonic()
     validation_id = uuid4()
-    unit_contract = decision.schema_version in {"2.1", "2.2", "2.3"}
+    unit_contract = decision.schema_version in {"2.1", "2.2", "2.3", "2.4", "2.5"}
     relation_contract = decision.schema_version == "2.2"
     validation_version = f"judge-validation-{decision.schema_version}"
     prepared = prepare_judge_input(
@@ -78,7 +78,8 @@ async def validate_v2(
     if unit_contract and snapshot_valid:
         try:
             rematerialized = materialize_content(json.dumps({
-                "label": decision.label,
+                "label": decision.advisory_label if decision.schema_version == "2.5"
+                else decision.label,
                 "statements": [{k: v for k, v in s.model_dump(mode="json").items()
                                 if k != "evidence_refs"}
                                for s in decision.statements],
@@ -92,9 +93,13 @@ async def validate_v2(
     document_map = {item.document_id: item for item in pack.documents}
     visible = set(prepared.selected_ids) if snapshot_valid else set()
     from app.judging.compact23 import VERSION as AXES_COMPACT_VERSION
+    from app.judging.compact24 import VERSION as STRUCTURED_COMPACT_VERSION
+    from app.judging.compact25 import VERSION as POSITION_COMPACT_VERSION
 
-    if (snapshot_valid and decision.schema_version == "2.3"
-            and judge.prompt_version == AXES_COMPACT_VERSION):
+    if (snapshot_valid and (decision.schema_version, judge.prompt_version) in {
+        ("2.3", AXES_COMPACT_VERSION), ("2.4", STRUCTURED_COMPACT_VERSION),
+        ("2.5", POSITION_COMPACT_VERSION),
+    }):
         # The current development prompt exposes complete sections of selected
         # documents. Their exact frozen child units are citable; other Pack
         # passages remain excluded. Historical prompt contracts stay unchanged.
@@ -151,7 +156,7 @@ async def validate_v2(
                     if document.authoritative else None}
                    if pack.evidence_pack_version == "1.5" else {}),
             })
-        if not issues and unit_contract and decision.schema_version != "2.3":
+        if not issues and unit_contract and decision.schema_version not in {"2.3", "2.4", "2.5"}:
             check = compare_assertion_numbers(
                 statement.text, tuple(quotes),
                                               user_claim=pack.claim_snapshot.standalone_text)
@@ -303,7 +308,7 @@ async def validate_v2(
                     issues=(_issue(IssueCode.INVALID_CONCLUSION_PREMISE, "conclusion",
                                    conclusion_ids),),
                 )
-            elif (decision.label.value != "not_enough_evidence"
+            elif (decision.label is not None and decision.label.value != "not_enough_evidence"
                   and any(item.scope_match == SemanticScope.MISMATCH
                           for item in dependencies)):
                 conclusion = ConclusionJustification(
@@ -381,7 +386,7 @@ async def validate_v2(
         )
 
     targeted = tuple(issue for item in attributions for issue in item.issues) + conclusion.issues
-    if unit_contract and attributions and decision.schema_version != "2.3":
+    if unit_contract and attributions and decision.schema_version not in {"2.3", "2.4", "2.5"}:
         dependency_ids = set(decision.conclusion.based_on_statement_ids)
         source_texts = tuple(ref.quote for statement in decision.statements
                              if statement.statement_id in dependency_ids

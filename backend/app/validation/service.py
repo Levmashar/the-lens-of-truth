@@ -54,6 +54,15 @@ class ValidationService:
         if judge.decision is None or judge.outcome_status != "succeeded":
             raise ValueError("Only successful, strictly parsed judge runs can be validated")
         if isinstance(judge.decision, JudgeDecisionV2):
+            if judge.decision.schema_version in {"2.4", "2.5"}:
+                from typing import cast
+
+                from app.validation.joint23 import JointValidator23
+                from app.validation.joint24 import validate_joint24
+
+                checker24 = (cast(JointValidator23, self.semantic_validator)
+                             if hasattr(self.semantic_validator, "assess_joint23") else None)
+                return await validate_joint24(judge, pack, checker24, risk_class=risk_class)
             if judge.decision.schema_version == "2.3":
                 from typing import cast
 

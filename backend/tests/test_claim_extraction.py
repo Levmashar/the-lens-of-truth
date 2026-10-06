@@ -275,8 +275,11 @@ def test_miri_adapter_uses_optional_bearer_key(monkeypatch: pytest.MonkeyPatch) 
 
 
 def test_miri_configuration_defaults_to_chatgpt_auto() -> None:
+    # Test provider defaults independently of the developer's active .env.
     settings = Settings(
+        _env_file=None,
         app_env="test",
+        claim_extractor_provider="miri",
         claim_extractor_base_url="http://gateway.example/v1",
     )
 

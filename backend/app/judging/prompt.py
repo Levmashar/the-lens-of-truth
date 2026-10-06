@@ -235,7 +235,7 @@ def prepare_judge_input(
     """Reject malformed/changed packs before contacting any model."""
 
     if version not in {"judge-input-2.0", "judge-input-2.1", INPUT_SNAPSHOT_VERSION,
-                       "judge-input-2.3"}:
+                       "judge-input-2.3", "judge-input-2.4", "judge-input-2.5"}:
         raise ValueError("Unsupported frozen judge input version")
     if pack.evidence_pack_version not in JUDGE_READY_PACK_VERSIONS:
         raise ValueError("Unsupported Evidence Pack version for judging")
@@ -351,7 +351,8 @@ def prepare_judge_input(
         },
         "document_bundles": evidence,
     }
-    if version in {"judge-input-2.1", INPUT_SNAPSHOT_VERSION, "judge-input-2.3"}:
+    if version in {"judge-input-2.1", INPUT_SNAPSHOT_VERSION, "judge-input-2.3",
+                   "judge-input-2.4", "judge-input-2.5"}:
         # Whole sections keep decimals, intervals and necessary negations intact.
         data["source_units"] = [
             {"unit_id": f"{identifier}.U1", "evidence_id": identifier,
@@ -369,6 +370,11 @@ def prepare_judge_input(
         data["validation_contract"] = "judge-validation-2.2"
     if version == "judge-input-2.3":
         data["validation_contract"] = "judge-validation-2.3"
+    if version in {"judge-input-2.4", "judge-input-2.5"}:
+        from app.judging.source_quantities import derive_catalog
+
+        data["validation_contract"] = version.replace("judge-input", "judge-validation")
+        data["source_quantity_catalog"] = derive_catalog(data["source_units"])
     input_hash = input_snapshot_hash(data)
     user_prompt = "CLAIM DATA AND EVIDENCE DATA (untrusted JSON):\n" + json.dumps(
         data, sort_keys=True, ensure_ascii=False, separators=(",", ":"),

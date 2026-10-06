@@ -1,0 +1,1165 @@
+{
+  "case_number": 18,
+  "submitted_claim": "Smoking protects people from developing lung cancer.",
+  "sanity_expectation": "Contradicted",
+  "analysis_id": "facd19db-4dba-4590-a892-a079905ed9bb",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "51c87fc4-815c-4e08-954c-39efb99b14d5",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T11:07:49.730287+00:00",
+          "completed_at": "2026-10-06T11:08:31.441473+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T11:07:35.280644+00:00",
+          "completed_at": "2026-10-06T11:07:49.722053+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T11:08:31.447716+00:00",
+          "completed_at": "2026-10-06T11:09:34.514487+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T11:09:34.520791+00:00",
+          "completed_at": "2026-10-06T11:09:38.318562+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T11:07:35.260302+00:00",
+          "completed_at": "2026-10-06T11:07:35.274424+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T11:09:38.323172+00:00",
+          "completed_at": "2026-10-06T11:09:38.691422+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "e4aa3ac1-91fc-4e6e-8417-6358472640a7",
+      "evidence_pack_hash": "837522df53120185693837e59b06b49a773e4a048871dbd271dc9eef70291caa",
+      "judge_run_ids": [
+        "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+        "af7aebcb-cfd9-4e57-b350-94753c828ea5",
+        "5ef296f9-3840-45c3-9fa2-7589ee9a1531"
+      ],
+      "judge_validation_run_ids": [
+        "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+        "f1502654-0a69-4b1e-8e99-349150fb0e50",
+        "47e8bdfd-61d7-40e2-ad48-a9cee40946b3"
+      ],
+      "verdict_run_id": "d73ba868-725a-47d2-9fe8-7ac960c24c07",
+      "report_run_id": "7bdb6ec5-5261-40c9-99fb-e65d52558be0",
+      "production_qualified": false,
+      "result_label": "contradicted",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+          "validation_run_id": "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 6161,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E33.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S3",
+              "source_quantity_id": "E23.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E23"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "direct_result"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E33"
+            ],
+            "S2": [
+              "E46"
+            ],
+            "S3": [
+              "E23"
+            ],
+            "S4": [
+              "E16"
+            ],
+            "S5": [
+              "E27"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 17334,
+          "output_tokens": 828,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "af7aebcb-cfd9-4e57-b350-94753c828ea5",
+          "validation_run_id": "f1502654-0a69-4b1e-8e99-349150fb0e50",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 17648,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E33.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            },
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S4",
+              "source_quantity_id": "E23.U1.Q6",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "30",
+                "50"
+              ],
+              "source_measure": "percent_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E23"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "exposure_gradient",
+              "finding_basis": "direct_result"
+            },
+            "S5": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E33"
+            ],
+            "S2": [
+              "E46"
+            ],
+            "S3": [
+              "E8"
+            ],
+            "S4": [
+              "E23"
+            ],
+            "S5": [
+              "E27"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "exposure_gradient",
+              "raw_finding_basis": "direct_result",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 20348,
+          "output_tokens": 782,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "5ef296f9-3840-45c3-9fa2-7589ee9a1531",
+          "validation_run_id": "47e8bdfd-61d7-40e2-ad48-a9cee40946b3",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 17746,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E33.U1.Q4",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "25"
+              ],
+              "source_measure": "fold_change",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E33"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "decisive",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "opposes_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "contradicted",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "MATERIAL_CONTRADICTION"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E33"
+            ],
+            "S2": [
+              "E46"
+            ],
+            "S3": [
+              "E16"
+            ],
+            "S4": [
+              "E27"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "dose_gradient",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 17639,
+          "output_tokens": 638,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Smoking protects people from developing lung cancer.",
+          "normalized_claim": "Smoking protects people from developing lung cancer.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "developing lung cancer",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": "people",
+            "original_claim": "Smoking protects people from developing lung cancer.",
+            "intervention_or_exposure": "Smoking"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 32,
+          "selected_documents": 8,
+          "selected_authoritative": 2,
+          "selected_pubmed": 6,
+          "roles": {
+            "direct": 8,
+            "contextual": 0,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "contradicted"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "contradicted",
+            "contradicted",
+            "contradicted"
+          ],
+          "aggregation_reasons": [
+            "CONTRADICTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 126559
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "facd19db-4dba-4590-a892-a079905ed9bb",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T11:07:49.737620+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T11:07:32.132597+00:00",
+        "completed_at": "2026-10-06T11:07:35.242936+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T11:07:35.287764+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T11:08:31.454789+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T11:09:34.526118+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T11:07:35.266676+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T11:09:38.328456+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "51c87fc4-815c-4e08-954c-39efb99b14d5",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 52,
+        "raw_text": "Smoking protects people from developing lung cancer.",
+        "normalized_text": "Smoking protects people from developing lung cancer.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": "people",
+        "intervention_or_exposure": "Smoking",
+        "comparator": null,
+        "outcome": "developing lung cancer",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.95,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "people",
+            "entity_type": "population",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": null,
+            "preferred_name": null,
+            "confidence": null,
+            "match_type": "unresolved",
+            "ambiguous": false,
+            "terminology_source": null,
+            "terminology_version": null,
+            "terminology_sha256": null,
+            "tree_numbers": [],
+            "candidates": []
+          },
+          {
+            "surface_text": "Smoking",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D012907",
+            "preferred_name": "Smoking",
+            "confidence": 1.0,
+            "match_type": "exact",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "F01.145.805"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "lung cancer",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D008175",
+            "preferred_name": "Lung Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04.588.894.797.520",
+              "C08.381.540",
+              "C08.785.520"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Smoking protects people from developing lung cancer.",
+          "population": "people",
+          "intervention_or_exposure": "Smoking",
+          "comparator": null,
+          "outcome": "developing lung cancer",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "partially_linked",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T11:09:38.705888Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "51c87fc4-815c-4e08-954c-39efb99b14d5",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "d73ba868-725a-47d2-9fe8-7ac960c24c07",
+        "claim": {
+          "text": "Smoking protects people from developing lung cancer.",
+          "claim_type": "causal"
+        },
+        "verdict": "contradicted",
+        "verdict_display": "Contradicted",
+        "headline": "Contradicted",
+        "short_summary": "Validated evidence conflicts with the claim at its stated scope.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "Validated evidence conflicts with the claim at its stated scope.",
+          "reason_category": "contradicted_by_validated_evidence",
+          "established": "Validated evidence conflicts with the claim at its stated scope.",
+          "unresolved": null,
+          "evidence_ids": [
+            "E16",
+            "E23",
+            "E27",
+            "E33",
+            "E46",
+            "E8"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "CONTRADICTED_BY_MULTIPLE_VALIDATED_JUDGES",
+            "text": "Multiple independent assessments conflicted with the claim and passed citation validation."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E23",
+            "pmid": null,
+            "doi": null,
+            "title": "Cigarette Smoking: Health Risks and How to Quit (PDQ) – Health Professional Version",
+            "journal": null,
+            "publication_date": "2025-02-21",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient",
+              "opposing"
+            ],
+            "exact_excerpt": "Many health risks related to tobacco smoking can be reduced by smoking cessation. People who quit smoking before age 50 years have up to half the risk of dying within 15 years compared with people who continue to smoke. In addition, the risk of dying is reduced substantially even among people who stop smoking after age 70 years.[19] After 10 years of abstinence from smoking, the risk of lung cancer is 30% to 50% lower than that of continuing smokers, and the risk of oral and esophageal cancer is halved within 5 years of cessation.[19] People who quit smoking also lower their risk of acute myel",
+            "excerpt_truncated": true,
+            "passage_sha256": "953a10452c146f20b94b429d394b6019f98ca5b294d16468ef09a2cded57cc66",
+            "passage_section": "Tobacco Use Interventions",
+            "source_url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/quit-smoking-hp-pdq",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+              "af7aebcb-cfd9-4e57-b350-94753c828ea5",
+              "5ef296f9-3840-45c3-9fa2-7589ee9a1531"
+            ],
+            "cited_by_validation_run_ids": [
+              "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+              "f1502654-0a69-4b1e-8e99-349150fb0e50",
+              "47e8bdfd-61d7-40e2-ad48-a9cee40946b3"
+            ],
+            "limitations": [],
+            "document_id": "authoritative:nci-smoking-pdq",
+            "source_kind": "authoritative_public_health",
+            "organization": "NCI",
+            "document_purpose": "systematic_evidence_summary",
+            "analysis_design": null,
+            "exposure_assignment": null,
+            "attribution": "PDQ Cigarette Smoking was originally published by the National Cancer Institute.",
+            "currency": "current",
+            "excerpts": [
+              {
+                "evidence_id": "E23",
+                "source_unit_id": "E23.U1",
+                "section": "Tobacco Use Interventions",
+                "exact_text": "Many health risks related to tobacco smoking can be reduced by smoking cessation. People who quit smoking before age 50 years have up to half the risk of dying within 15 years compared with people who continue to smoke. In addition, the risk of dying is reduced substantially even among people who stop smoking after age 70 years.[19] After 10 years of abstinence from smoking, the risk of lung cancer is 30% to 50% lower than that of continuing smokers, and the risk of oral and esophageal cancer is halved within 5 years of cessation.[19] People who quit smoking also lower their risk of acute myeloid leukemia and cancers of the cervix, stomach, larynx, pancreas, colon and rectum, liver, kidney, and bladder.[16,19-21]",
+                "truncated": false,
+                "passage_sha256": "953a10452c146f20b94b429d394b6019f98ca5b294d16468ef09a2cded57cc66"
+              },
+              {
+                "evidence_id": "E46",
+                "source_unit_id": "E46.U1",
+                "section": "Effects of Smoking Cessation",
+                "exact_text": "Based on solid evidence, cigarette smoking causes cancers of the lung, oral cavity and pharynx, larynx, esophagus, bladder, kidney, pancreas, stomach, uterine cervix, colon and rectum, liver, and acute myeloid leukemia.[2] Smoking avoidance and smoking cessation result in decreased incidence and mortality from cancer.[3]",
+                "truncated": false,
+                "passage_sha256": "b319ab5e871b01e454e592cc63dc8a898f5de41b22081f949f1701045c4278de"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E33",
+            "pmid": null,
+            "doi": null,
+            "title": "Health Effects of Cigarettes: Cancer",
+            "journal": null,
+            "publication_date": "2024-09-17",
+            "study_design": "unknown",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Lung cancer is the leading cause of cancer death in men and women in the United States. Cigarette smoking or secondhand smoke exposure cause nearly 9 out of 10 lung cancer deaths. 5 People who smoke increase their risk of developing lung cancer by about 25 times that of people who don’t smoke.5 People who smoke have a greater risk for lung cancer today than they did in 1964, even though they smoke fewer cigarettes. 5 One reason for this may be changes in how cigarettes are made. Another reason may be changes in the chemicals cigarettes contain. 5",
+            "excerpt_truncated": false,
+            "passage_sha256": "4eaecc985f409ddcea2ce7cfd97a69eca44a03eb3e3a31276f19314161a2444d",
+            "passage_section": "Smoking and cancer",
+            "source_url": "https://www.cdc.gov/tobacco/about/cigarettes-and-cancer.html",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+              "5ef296f9-3840-45c3-9fa2-7589ee9a1531",
+              "af7aebcb-cfd9-4e57-b350-94753c828ea5"
+            ],
+            "cited_by_validation_run_ids": [
+              "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+              "47e8bdfd-61d7-40e2-ad48-a9cee40946b3",
+              "f1502654-0a69-4b1e-8e99-349150fb0e50"
+            ],
+            "limitations": [],
+            "document_id": "authoritative:cdc-cigarettes-cancer",
+            "source_kind": "authoritative_public_health",
+            "organization": "CDC",
+            "document_purpose": "fact_sheet",
+            "analysis_design": null,
+            "exposure_assignment": null,
+            "attribution": "Source: CDC.",
+            "currency": "current",
+            "excerpts": [
+              {
+                "evidence_id": "E33",
+                "source_unit_id": "E33.U1",
+                "section": "Smoking and cancer",
+                "exact_text": "Lung cancer is the leading cause of cancer death in men and women in the United States. Cigarette smoking or secondhand smoke exposure cause nearly 9 out of 10 lung cancer deaths. 5 People who smoke increase their risk of developing lung cancer by about 25 times that of people who don’t smoke.5 People who smoke have a greater risk for lung cancer today than they did in 1964, even though they smoke fewer cigarettes. 5 One reason for this may be changes in how cigarettes are made. Another reason may be changes in the chemicals cigarettes contain. 5",
+                "truncated": false,
+                "passage_sha256": "4eaecc985f409ddcea2ce7cfd97a69eca44a03eb3e3a31276f19314161a2444d"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "10582131",
+            "doi": "10.1093/annonc/10.suppl_5.s3",
+            "title": "The epidemiology of lung cancer.",
+            "journal": "Annals of oncology : official journal of the European Society for Medical Oncology",
+            "publication_date": "1999-01-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Lung cancer is the most frequent cancer worldwide, accounting for about 12% of all new cancer diagnoses in the two sexes combined. During the 1950s and 1960s clear evidence emerged that smoking was the cause of striking lung cancer increases. Risk of lung cancer increases approximately with the fourth power of duration of smoking and the square of the number of cigarettes smoked daily. Between 1990 and 1994, lung cancer mortality rates showed first decreases in the US and several European countries, including Italy, in men although not in women. Marked shifts are, however, taking place in the ",
+            "excerpt_truncated": true,
+            "passage_sha256": "dbe28a5acf1591f633e0bb305086f92e2ff26484dc590bbccf076772479fa49a",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/10582131/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "af7aebcb-cfd9-4e57-b350-94753c828ea5"
+            ],
+            "cited_by_validation_run_ids": [
+              "f1502654-0a69-4b1e-8e99-349150fb0e50"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:10582131",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E8",
+                "source_unit_id": "E8.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Lung cancer is the most frequent cancer worldwide, accounting for about 12% of all new cancer diagnoses in the two sexes combined. During the 1950s and 1960s clear evidence emerged that smoking was the cause of striking lung cancer increases. Risk of lung cancer increases approximately with the fourth power of duration of smoking and the square of the number of cigarettes smoked daily. Between 1990 and 1994, lung cancer mortality rates showed first decreases in the US and several European countries, including Italy, in men although not in women. Marked shifts are, however, taking place in the incidence of different histologic types. Adenocarcinoma, which had always been the predominant type in women and non-smokers, is increasingly associated with tobacco smoking. Since the 1950s steady rises in the incidence of adenocarcinoma of the lung have been observed in many developed countries. Increases are similar in the two sexes and have followed a clear cohort pattern, paralleling changes in smoking habits and cigarette design more than diagnostic advances. Low-yield filter cigarettes tend to be inhaled more deeply than high-yield cigarettes in order to satisfy a craving for nicotine. The peripheral part of the lung, where most adenocarcinomas arise, is thus exposed to a disproportionately higher amount of smoke carcinogens. The hazards of light and ultra-light cigarettes tend to be underestimated, whereas the only safe cigarette is the non-smoked one.",
+                "truncated": false,
+                "passage_sha256": "dbe28a5acf1591f633e0bb305086f92e2ff26484dc590bbccf076772479fa49a"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E16",
+            "pmid": "8416770",
+            "doi": "10.1378/chest.103.1_supplement.20s",
+            "title": "The epidemiology of lung cancer.",
+            "journal": "Chest",
+            "publication_date": "1993-01-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Lung cancer rates and mortality have risen in epidemic proportions in the United States and other industrialized nations during the 20th century. Case-control and cohort studies performed in the 1950s and 1960s firmly established cigarette smoking as the single greatest risk factor for lung cancer. In the United States, overall lung cancer mortality rates in men and women rose progressively from the 1950s. Fortunately, lung cancer incidence and mortality are now declining in middle-aged men. Smoking has significantly increased lung cancer rates among women and is on the rise in developing coun",
+            "excerpt_truncated": true,
+            "passage_sha256": "0bda30d35f8d2033f8b715bff4fbaa25521ec6dc768c2704ff6f12457c97086d",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/8416770/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+              "5ef296f9-3840-45c3-9fa2-7589ee9a1531"
+            ],
+            "cited_by_validation_run_ids": [
+              "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+              "47e8bdfd-61d7-40e2-ad48-a9cee40946b3"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:8416770",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E16",
+                "source_unit_id": "E16.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Lung cancer rates and mortality have risen in epidemic proportions in the United States and other industrialized nations during the 20th century. Case-control and cohort studies performed in the 1950s and 1960s firmly established cigarette smoking as the single greatest risk factor for lung cancer. In the United States, overall lung cancer mortality rates in men and women rose progressively from the 1950s. Fortunately, lung cancer incidence and mortality are now declining in middle-aged men. Smoking has significantly increased lung cancer rates among women and is on the rise in developing countries. Environmental agents found in the home and workplace, including radon and asbestos, have also been shown to increase lung cancer risk in both smokers and nonsmokers. Government regulations have helped curtail quantities of these and other atmospheric carcinogens. Efforts to reduce lung cancer risk must be continued and their scope expanded in order to have a global impact on the incidence and mortality of this fatal malignancy.",
+                "truncated": false,
+                "passage_sha256": "0bda30d35f8d2033f8b715bff4fbaa25521ec6dc768c2704ff6f12457c97086d"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E27",
+            "pmid": "37479810",
+            "doi": "10.1038/s41571-023-00798-3",
+            "title": "The global burden of lung cancer: current status and future trends.",
+            "journal": "Nature reviews. Clinical oncology",
+            "publication_date": "2023-07-21",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Lung cancer is the leading cause of cancer-related death worldwide. However, lung cancer incidence and mortality rates differ substantially across the world, reflecting varying patterns of tobacco smoking, exposure to environmental risk factors and genetics. Tobacco smoking is the leading risk factor for lung cancer. Lung cancer incidence largely reflects trends in smoking patterns, which generally vary by sex and economic development. For this reason, tobacco control campaigns are a central part of global strategies designed to reduce lung cancer mortality. Environmental and occupational lung",
+            "excerpt_truncated": true,
+            "passage_sha256": "f431006a9583ce439599e5603d1b079602b1fc89866285a2519d2a4a8096629b",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/37479810/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+              "5ef296f9-3840-45c3-9fa2-7589ee9a1531",
+              "af7aebcb-cfd9-4e57-b350-94753c828ea5"
+            ],
+            "cited_by_validation_run_ids": [
+              "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+              "47e8bdfd-61d7-40e2-ad48-a9cee40946b3",
+              "f1502654-0a69-4b1e-8e99-349150fb0e50"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:37479810",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E27",
+                "source_unit_id": "E27.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Lung cancer is the leading cause of cancer-related death worldwide. However, lung cancer incidence and mortality rates differ substantially across the world, reflecting varying patterns of tobacco smoking, exposure to environmental risk factors and genetics. Tobacco smoking is the leading risk factor for lung cancer. Lung cancer incidence largely reflects trends in smoking patterns, which generally vary by sex and economic development. For this reason, tobacco control campaigns are a central part of global strategies designed to reduce lung cancer mortality. Environmental and occupational lung cancer risk factors, such as unprocessed biomass fuels, asbestos, arsenic and radon, can also contribute to lung cancer incidence in certain parts of the world. Over the past decade, large-cohort clinical studies have established that low-dose CT screening reduces lung cancer mortality, largely owing to increased diagnosis and treatment at earlier disease stages. These data have led to recommendations that individuals with a high risk of lung cancer undergo screening in several economically developed countries and increased implementation of screening worldwide. In this Review, we provide an overview of the global epidemiology of lung cancer. Lung cancer risk factors and global risk reduction efforts are also discussed. Finally, we summarize lung cancer screening policies and their implementation worldwide.",
+                "truncated": false,
+                "passage_sha256": "f431006a9583ce439599e5603d1b079602b1fc89866285a2519d2a4a8096629b"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 3,
+            "not_enough_evidence": 0
+          },
+          "description": "3 qualified assessment(s) contradicted the claim.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "validated_contradiction",
+          "validated_citations_shown": 5,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E23",
+            "pmid": null,
+            "doi": null,
+            "url": "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/quit-smoking-hp-pdq"
+          },
+          {
+            "evidence_id": "E33",
+            "pmid": null,
+            "doi": null,
+            "url": "https://www.cdc.gov/tobacco/about/cigarettes-and-cancer.html"
+          },
+          {
+            "evidence_id": "E8",
+            "pmid": "10582131",
+            "doi": "10.1093/annonc/10.suppl_5.s3",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/10582131/"
+          },
+          {
+            "evidence_id": "E16",
+            "pmid": "8416770",
+            "doi": "10.1378/chest.103.1_supplement.20s",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/8416770/"
+          },
+          {
+            "evidence_id": "E27",
+            "pmid": "37479810",
+            "doi": "10.1038/s41571-023-00798-3",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/37479810/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "d73ba868-725a-47d2-9fe8-7ac960c24c07",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "a7e2a7d7f6cb6cae19f7d260322d2ca9bd89f4a287334350290f9da38f520a5f",
+          "evidence_pack_id": "e4aa3ac1-91fc-4e6e-8417-6358472640a7",
+          "evidence_pack_hash": "837522df53120185693837e59b06b49a773e4a048871dbd271dc9eef70291caa",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "0f7bb332-4184-4136-b6fd-1851fa5300dd",
+            "5ef296f9-3840-45c3-9fa2-7589ee9a1531",
+            "af7aebcb-cfd9-4e57-b350-94753c828ea5"
+          ],
+          "judge_validation_run_ids": [
+            "47e8bdfd-61d7-40e2-ad48-a9cee40946b3",
+            "bafe90f4-2c86-46fb-9de7-e3e0bd8b2885",
+            "f1502654-0a69-4b1e-8e99-349150fb0e50"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T11:09:38.677351Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "66dff3aab02fdda6c140b75e435eca1ad35173b8d45ba2e3ddcf588b960c529e"
+      }
+    }
+  ]
+}

@@ -10,7 +10,6 @@ from uuid import UUID
 
 _MAX_ANALYSES = 50
 _MAX_EVENTS = 80
-_MAX_RESPONSE_CHARS = 3000
 _TTL_SECONDS = 3600
 _active_analysis: ContextVar[UUID | None] = ContextVar("debug_analysis", default=None)
 _active_claim: ContextVar[UUID | None] = ContextVar("debug_claim", default=None)
@@ -87,8 +86,7 @@ def record_model_event(
     events.append(ModelDebugEvent(
         role=role, provider=provider, model=model, attempt=attempt, status=status,
         failure_type=failure_type, http_status=http_status, elapsed_ms=elapsed_ms,
-        response_excerpt=(response_content[:_MAX_RESPONSE_CHARS]
-                          if response_content is not None else None),
+        response_excerpt=response_content,
         analysis_id=str(analysis_id),
         claim_id=str(_active_claim.get()) if _active_claim.get() else None,
         judge_run_id=judge_run_id, statement_ids=statement_ids,

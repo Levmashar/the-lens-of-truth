@@ -457,7 +457,9 @@ async def get_analysis_claims(
             result_label=(LensVerdict(verdict.verdict) if verdict and (
                 settings.app_env not in {"staging", "production"}
                 or verdict.production_qualified
-            ) else None),
+            ) else LensVerdict.UNABLE_TO_VERIFY_RELIABLY
+                if row.status == "failed" and row.failure_code == "normalization_incomplete"
+                else None),
             debug_judge_runs=(
                 _debug_judge_runs(session, row) if settings.debug_enabled else None
             ),
@@ -497,7 +499,9 @@ def _debug_judge_runs(
         except ValueError:
             validation_result = None
         axes: dict[str, dict[str, str]] = {}
-        if validation_result and validation_result.validation_version == "judge-validation-2.3":
+        if validation_result and validation_result.validation_version in {
+            "judge-validation-2.3", "judge-validation-2.4", "judge-validation-2.5",
+        }:
             from app.validation.joint23 import JointResponse23
 
             try:
@@ -534,6 +538,7 @@ def _debug_judge_runs(
             numeric = NumericFinding.model_validate(raw)
             compact = DebugNumericFinding(
                 version=numeric.version, target_id=numeric.target_id, material=numeric.material,
+                source_quantity_id=numeric.source_quantity_id,
                 source_fidelity=numeric.fidelity.status,
                 asserted_values=list(numeric.fidelity.asserted.values),
                 source_measure=(numeric.fidelity.source.kind if numeric.fidelity.source else
@@ -571,7 +576,10 @@ def _debug_judge_runs(
                                   if validation_result else []),
             evidence_axes=axes,
             numeric_findings=numeric_summaries,
-            proposed_label=(str(decision["label"]) if decision.get("label") else None),
+            proposed_label=(str(decision.get("advisory_label") or decision.get("label"))
+                            if decision.get("advisory_label") or decision.get("label") else None),
+            validated_evidence_position=(validation_result.validated_evidence_position
+                                         if validation_result else None),
             finding_count=len(statement_rows),
             qualification_reason_codes=([str(v) for v in reason_values]
                                         if isinstance(reason_values, list) else []),
@@ -597,8 +605,13 @@ def _debug_judge_runs(
                 *( ["schema_or_format_retry"] if any(kind in {
                     "schema_violation", "malformed_json", "empty_response",
                     "response_format_unsupported"} for kind in attempt_failure_types) else [] ),
-                *( ["source_id_error"] if "invalid_source_unit" in attempt_failure_types
+                *( ["source_id_error"] if any(kind in {"invalid_source_unit",
+                                                     "invalid_source_quantity"}
+                                             for kind in attempt_failure_types)
                     else [] ),
+                *( ["source_id_error"] if validation_result and any(
+                    item.issue_code == "SOURCE_QUANTITY_REFERENCE_INVALID"
+                    for item in validation_result.targeted_issues) else [] ),
                 *( ["source_id_error"] if validation and validation.error_category ==
                     "source_id_contract_error" else [] ),
                 *( ["unsupported_finding"] if validation_result and any(
@@ -676,7 +689,8 @@ def _debug_claim_diagnostics(
             "final_aggregation": verdict.verdict if verdict else "UNKNOWN",
         },
         "final": {"qualified_judges": len(qualified),
-                  "qualified_positions": [j.proposed_label for j in qualified],
+                  "qualified_positions": [j.validated_evidence_position or j.proposed_label
+                                          for j in qualified],
                   "aggregation_reasons": verdict.reason_codes if verdict else [],
                   "production_qualified": verdict.production_qualified if verdict else False,
                   "total_model_calls": (sum(e.get("status") == "calling" for e in run_events)

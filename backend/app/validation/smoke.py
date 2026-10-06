@@ -64,7 +64,8 @@ async def smoke(judge_run_id: UUID) -> None:
     with SessionLocal() as session:
         persist_validation_run(session, audit)
     print(f"JUDGE RUN\nid: {judge.judge_run_id}\nmodel: {judge.model}")
-    print(f"label: {judge.decision.label.value if judge.decision else 'none'}")
+    label = judge.decision.label if judge.decision else None
+    print(f"label: {label.value if label else 'none'}")
     print(f"pack hash: {judge.evidence_pack_hash}")
     if judge.search_guard_bypassed or not judge.search_isolation_verified:
         print("DEVELOPMENT-ONLY: search isolation/model identity unverified; "

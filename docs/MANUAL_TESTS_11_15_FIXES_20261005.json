@@ -1,0 +1,671 @@
+{
+  "date": "2026-10-05",
+  "paid_call_cap": 64,
+  "paid_calls": 57,
+  "paid_models": {
+    "DeepSeek-V4.1-Flash": 18,
+    "Qwen3.5-Plus": 8,
+    "GLM-4.7": 8,
+    "Qwen3.8-Flash": 23
+  },
+  "returned_total_tokens": 850107,
+  "token_note": "Returned usage only; timed-out requests may have additional unreported provider usage. No price estimate.",
+  "position_version": "validated-evidence-position-1.4",
+  "query_plan_version": "1.4",
+  "historical_audits_reconstructed": 33,
+  "new_live_audits_reconstructed_and_replayed": 23,
+  "initial_bp_run": {
+    "analysis_id": "aa6448b2-e842-4f0f-892e-c58866f585f7",
+    "result": "not_enough_evidence",
+    "cause": "Canonical synonym OR expansion displaced the explicit randomized-result review; corrected by preserving the source phrase in lexical queries."
+  },
+  "results": [
+    {
+      "claim": "High blood pressure increases the risk of stroke.",
+      "before": {
+        "analysis_id": "fdb11fc3-1287-471c-8892-f5dc26716c92",
+        "label": "not_enough_evidence",
+        "status": "completed"
+      },
+      "analysis_id": "c7f33931-41a6-466e-ae34-2770d386cb11",
+      "status": "completed",
+      "after": "supported",
+      "elapsed_ms": 133093,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.4",
+      "pico": {
+        "outcome": "stroke",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "High blood pressure increases the risk of stroke.",
+        "intervention_or_exposure": "High blood pressure"
+      },
+      "selected_source_titles": [
+        "Hypertension",
+        "High blood pressure in acute stroke and subsequent outcome: a systematic review.",
+        "High blood pressure in acute ischemic stroke and underlying disorders.",
+        "Epidemiology of stroke and high blood pressure in Africa.",
+        "Targeting blood pressure for stroke prevention: current evidence and unanswered questions.",
+        "Blood Pressure Management for Ischemic Stroke in the First 24 Hours.",
+        "Predictive value and robustness of the stress hyperglycemia ratio combined with hypertension for stroke risk: evidence from the CHARLS cohort.",
+        "Association between the combined c-reactive protein-triglyceride glucose index and hypertension with long-term stroke among cardiovascular-kidney-metabolic syndrome stages 0-3 population: a nationwide prospective cohort study."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 9606,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {
+            "S5": [
+              {
+                "document_id": "pubmed:31243539",
+                "analysis_design": "causal_evidence_synthesis",
+                "exposure_assignment": "unknown",
+                "source_kind": "pubmed",
+                "document_purpose": null,
+                "role": "direct",
+                "integrity": "valid",
+                "currency": null,
+                "independence_group": "pubmed:31243539",
+                "underlying_pmids": [],
+                "completed_randomized_result_synthesis": true
+              }
+            ]
+          }
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 17834,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {
+            "S5": [
+              {
+                "document_id": "pubmed:31243539",
+                "analysis_design": "causal_evidence_synthesis",
+                "exposure_assignment": "unknown",
+                "source_kind": "pubmed",
+                "document_purpose": null,
+                "role": "direct",
+                "integrity": "valid",
+                "currency": null,
+                "independence_group": "pubmed:31243539",
+                "underlying_pmids": [],
+                "completed_randomized_result_synthesis": true
+              }
+            ]
+          }
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 31410,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {
+            "S2": [
+              {
+                "document_id": "pubmed:31243539",
+                "analysis_design": "causal_evidence_synthesis",
+                "exposure_assignment": "unknown",
+                "source_kind": "pubmed",
+                "document_purpose": null,
+                "role": "direct",
+                "integrity": "valid",
+                "currency": null,
+                "independence_group": "pubmed:31243539",
+                "underlying_pmids": [],
+                "completed_randomized_result_synthesis": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "claim": "High blood pressure causes lung cancer.",
+      "before": {
+        "analysis_id": "2694f594-ff11-4c34-b72b-6a08bb4df0ec",
+        "label": "not_enough_evidence",
+        "status": "completed"
+      },
+      "analysis_id": "809b2176-ef01-42e7-b421-5c67db214a0f",
+      "status": "completed",
+      "after": "not_enough_evidence",
+      "elapsed_ms": 159018,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "lung cancer",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "High blood pressure causes lung cancer.",
+        "intervention_or_exposure": "High blood pressure"
+      },
+      "selected_source_titles": [
+        "[Comorbidities in COPD].",
+        "Combined pulmonary fibrosis and emphysema: an increasingly recognized condition.",
+        "Managing comorbidities in idiopathic pulmonary fibrosis.",
+        "Pulmonary complications of type 1 neurofibromatosis.",
+        "Idiopathic pulmonary fibrosis: Clinical behavior and aging associated comorbidities.",
+        "Diagnosing complications and co-morbidities of fibrotic interstitial lung disease.",
+        "Combined Pulmonary Fibrosis and Emphysema (CPFE) Clinical Features and Management.",
+        "Decoding the complexity: mechanistic insights into comorbidities in idiopathic pulmonary fibrosis."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 13690,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 18528,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 30506,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        }
+      ]
+    },
+    {
+      "claim": "Carrots improve eyesight.",
+      "before": {
+        "analysis_id": "16a913ac-49a4-4530-a81b-26d9d6720cac",
+        "label": "not_enough_evidence",
+        "status": "completed"
+      },
+      "analysis_id": "38c77573-c523-4328-9dbc-5bad48a86d59",
+      "status": "completed",
+      "after": "not_enough_evidence",
+      "elapsed_ms": 118147,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "eyesight",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "Carrots improve eyesight.",
+        "intervention_or_exposure": "Carrots"
+      },
+      "selected_source_titles": [
+        "Carrots, carotene and seeing in the dark."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 5496,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 14833,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 36126,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        }
+      ]
+    },
+    {
+      "claim": "Sleeping with a magnet under your pillow cures diabetes.",
+      "before": {
+        "analysis_id": "3110f622-e4d0-4d05-b467-561e9ce34305",
+        "label": null,
+        "status": "failed"
+      },
+      "analysis_id": "6bd26325-107e-4898-8bbf-65b81d2b2606",
+      "status": "completed",
+      "after": "not_enough_evidence",
+      "elapsed_ms": 168343,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "diabetes",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "Sleeping with a magnet under your pillow cures diabetes",
+        "intervention_or_exposure": "Sleeping with a magnet under your pillow"
+      },
+      "selected_source_titles": [
+        "Magnets applied to acupuncture points as therapy - a literature review.",
+        "Glycaemic control of Type 2 diabetes in older patients visiting general practitioners: An examination of electronic medical records to identify risk factors for poor control.",
+        "First-in-Human Side-to-Side Magnetic Compression Duodeno-ileostomy with the Magnet Anastomosis System.",
+        "Type 2 Diabetes Mellitus Impairs the Reverse Transendothelial Migration Capacity (rTEM) of Inflammatory CD14+CD16- Monocytes: Novel Mechanism for Enhanced Subendothelial Monocyte Accumulation in Diabetes.",
+        "Dentate nucleus dilated perivascular spaces on magnetic resonance imaging in hypertensive arteriopathy.",
+        "Prevalence and natural course of MRI-diagnosed dilated main pancreatic duct: A longitudinal, population-based prospective cohort study with a ten-year follow-up."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 12112,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 14567,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 27292,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        }
+      ]
+    },
+    {
+      "claim": "Blue light from smartphones causes leukemia.",
+      "before": {
+        "analysis_id": "25d83cd6-f33c-4cc8-b991-40650a482e3c",
+        "label": "not_enough_evidence",
+        "status": "completed"
+      },
+      "analysis_id": "4420f5b3-9f8d-4d0a-ab87-a360dfd36ba8",
+      "status": "completed",
+      "after": "not_enough_evidence",
+      "elapsed_ms": 93653,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "leukemia",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "Blue light from smartphones causes leukemia",
+        "intervention_or_exposure": "Blue light from smartphones"
+      },
+      "selected_source_titles": [
+        "Smartphone based non invasive real time white blood cell counter leveraging blue light and static magnetic field."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 18295,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {
+            "S1": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ],
+            "S2": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ],
+            "S3": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ]
+          },
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 11356,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {
+            "S1": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ],
+            "S2": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ],
+            "S3": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ]
+          },
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 12238,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "not_enough_evidence",
+          "final_guard_replay_position": "not_enough_evidence",
+          "reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "semantic_guards": {
+            "S1": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ],
+            "S2": [
+              "DISEASE_STAGE_ENDPOINT_MISMATCH"
+            ]
+          },
+          "finding_design_overrides": {}
+        }
+      ]
+    },
+    {
+      "claim": "Smoking causes lung cancer.",
+      "before": {
+        "analysis_id": "a56e4986-6d1f-4532-91ef-4eea832110e0",
+        "label": "supported",
+        "status": "completed"
+      },
+      "analysis_id": "604230ec-bc2f-4f8a-9af1-89f415b326e9",
+      "status": "completed",
+      "after": "supported",
+      "elapsed_ms": 136313,
+      "qualified_judges": 3,
+      "excluded_judges": 0,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "lung cancer",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "Smoking causes lung cancer.",
+        "intervention_or_exposure": "Smoking"
+      },
+      "selected_source_titles": [
+        "Health Effects of Cigarettes: Cancer",
+        "Cigarette Smoking: Health Risks and How to Quit (PDQ) – Health Professional Version",
+        "Bidi smoking and lung cancer.",
+        "The effect of smoking on lung cancer: ethnic differences and the smoking paradox.",
+        "Tobacco Smoking Rewires Cell Metabolism by Inducing GAPDH Succinylation to Promote Lung Cancer Progression.",
+        "Lung cancer."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 13517,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 20603,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 29615,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        }
+      ]
+    },
+    {
+      "claim": "Daily sunscreen use reduces invasive melanoma risk.",
+      "before": {
+        "analysis_id": "5c224d0d-77d0-4f86-a6c7-2570e4dbe761",
+        "label": "supported",
+        "status": "completed"
+      },
+      "analysis_id": "7e4be04a-21e4-4527-9c42-9038ff56ea31",
+      "status": "completed",
+      "after": "supported",
+      "elapsed_ms": 286831,
+      "qualified_judges": 2,
+      "excluded_judges": 1,
+      "production_qualified": false,
+      "query_plan_version": "1.3",
+      "pico": {
+        "outcome": "invasive melanoma risk",
+        "timeframe": null,
+        "claim_type": "causal",
+        "comparator": null,
+        "population": null,
+        "original_claim": "Daily sunscreen use reduces invasive melanoma risk.",
+        "intervention_or_exposure": "Daily sunscreen use"
+      },
+      "selected_source_titles": [
+        "Melanoma chemoprevention.",
+        "Predictors of skin cancer in commercial airline pilots.",
+        "Reduced melanoma after regular sunscreen use: randomized trial follow-up.",
+        "Use of sunscreen and risk of melanoma and non-melanoma skin cancer: a systematic review and meta-analysis.",
+        "Malignant Melanoma: The Relationship Between Sunscreen Use and Cancer Risk - A Systematic Review and Meta-analysis."
+      ],
+      "judges": [
+        {
+          "slot": 1,
+          "model": "DeepSeek-V4.1-Flash",
+          "outcome": "failed",
+          "error_category": "timeout",
+          "latency_ms": 110093,
+          "attempt_count": 2,
+          "original_model_proposal": null,
+          "live_position": null,
+          "final_guard_replay_position": null,
+          "reason_codes": null,
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 2,
+          "model": "Qwen3.5-Plus",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 18274,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        },
+        {
+          "slot": 3,
+          "model": "GLM-4.7",
+          "outcome": "succeeded",
+          "error_category": null,
+          "latency_ms": 35713,
+          "attempt_count": 1,
+          "original_model_proposal": null,
+          "live_position": "supported",
+          "final_guard_replay_position": "supported",
+          "reason_codes": [
+            "MATERIAL_SUPPORT"
+          ],
+          "semantic_guards": {},
+          "finding_design_overrides": {}
+        }
+      ]
+    }
+  ]
+}

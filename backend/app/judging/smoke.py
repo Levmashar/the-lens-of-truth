@@ -71,7 +71,7 @@ async def smoke(pack_id: UUID) -> None:
               f"search_isolation_verified: {run.search_isolation_verified}")
         print(f"status: {run.outcome_status}\nlatency_ms: {run.latency_ms}")
         if run.decision:
-            print(f"label: {run.decision.label.value}")
+            print(f"label: {run.decision.label.value if run.decision.label else "advisory-only"}")
             if isinstance(run.decision, JudgeDecisionV2):
                 for statement in run.decision.statements:
                     ids = ", ".join(ref.evidence_id for ref in statement.evidence_refs)

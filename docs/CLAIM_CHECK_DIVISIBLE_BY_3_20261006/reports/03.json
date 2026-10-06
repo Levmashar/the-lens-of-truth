@@ -1,0 +1,1105 @@
+{
+  "case_number": 3,
+  "submitted_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+  "sanity_expectation": "Supported",
+  "analysis_id": "1072af6b-fab0-4b9c-aa1c-bd4692f25d0c",
+  "analysis_status": "completed",
+  "failure_code": null,
+  "claim_summaries": [
+    {
+      "claim_id": "4b2ff0d2-d647-4d0d-9a8a-ed3754094f44",
+      "ordinal": 1,
+      "status": "completed",
+      "stage": "building_report",
+      "completed_stages": [
+        "normalizing",
+        "retrieving",
+        "judging",
+        "validating",
+        "aggregating",
+        "building_report"
+      ],
+      "skipped_stages": [],
+      "stage_timestamps": {
+        "judging": {
+          "started_at": "2026-10-06T10:54:40.206894+00:00",
+          "completed_at": "2026-10-06T10:55:29.885005+00:00"
+        },
+        "retrieving": {
+          "started_at": "2026-10-06T10:54:27.915090+00:00",
+          "completed_at": "2026-10-06T10:54:40.199775+00:00"
+        },
+        "validating": {
+          "started_at": "2026-10-06T10:55:29.891944+00:00",
+          "completed_at": "2026-10-06T10:56:33.156382+00:00"
+        },
+        "aggregating": {
+          "started_at": "2026-10-06T10:56:33.165496+00:00",
+          "completed_at": "2026-10-06T10:56:35.497534+00:00"
+        },
+        "normalizing": {
+          "started_at": "2026-10-06T10:54:27.891065+00:00",
+          "completed_at": "2026-10-06T10:54:27.907111+00:00"
+        },
+        "building_report": {
+          "started_at": "2026-10-06T10:56:35.503484+00:00",
+          "completed_at": "2026-10-06T10:56:35.700878+00:00"
+        }
+      },
+      "failure_code": null,
+      "evidence_pack_id": "36df5640-834f-44c5-af1d-c23e7ae22648",
+      "evidence_pack_hash": "98eb871c7b4df60619977c82b30b87c3b77c9b82973d6238dbee5829d6d3da75",
+      "judge_run_ids": [
+        "d40da630-cfbb-402d-9053-faa0a7e202a8",
+        "60975f54-a13c-4056-b928-911324dac721",
+        "431222a7-b788-4d28-9664-4b3903b758eb"
+      ],
+      "judge_validation_run_ids": [
+        "9b106bd4-f5f9-49eb-85f9-d0df24552bd2",
+        "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+        "e534b055-e40e-4452-8d2d-a17dde9edf14"
+      ],
+      "verdict_run_id": "58b32f94-566c-4f2f-aa81-6f718636eef7",
+      "report_run_id": "0b0b2dba-ed6b-4e45-a66f-4024cb935edc",
+      "production_qualified": false,
+      "result_label": "not_enough_evidence",
+      "debug_judge_runs": [
+        {
+          "slot": 1,
+          "judge_run_id": "d40da630-cfbb-402d-9053-faa0a7e202a8",
+          "validation_run_id": "9b106bd4-f5f9-49eb-85f9-d0df24552bd2",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "DeepSeek-V4.1-Flash",
+          "model_family": "deepseek",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 10818,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "weak",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "association"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "CAUSAL_DESIGN_INSUFFICIENT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E12"
+            ],
+            "S3": [
+              "E1"
+            ],
+            "S4": [
+              "E8"
+            ],
+            "S5": [
+              "E3"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 7967,
+          "output_tokens": 956,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 2,
+          "judge_run_id": "60975f54-a13c-4056-b928-911324dac721",
+          "validation_run_id": "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "Qwen3.5-Plus",
+          "model_family": "qwen",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 19110,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources",
+            "S5": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "synthesis",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "same_question",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "broader_or_indirect",
+              "strength": "weak",
+              "role": "mechanistic",
+              "scope_basis": "other",
+              "finding_basis": "context"
+            },
+            "S5": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "strong",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 5,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E5"
+            ],
+            "S3": [
+              "E12"
+            ],
+            "S4": [
+              "E1"
+            ],
+            "S5": [
+              "E8"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "context",
+              "null_precision_reason": null
+            },
+            "S5": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 9545,
+          "output_tokens": 846,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        },
+        {
+          "slot": 3,
+          "judge_run_id": "431222a7-b788-4d28-9664-4b3903b758eb",
+          "validation_run_id": "e534b055-e40e-4452-8d2d-a17dde9edf14",
+          "revision_of_judge_run_id": null,
+          "semantic_revision_number": 0,
+          "provider": "paratera",
+          "model": "GLM-4.7",
+          "model_family": "glm",
+          "outcome_status": "succeeded",
+          "error_category": null,
+          "attempt_count": 1,
+          "latency_ms": 19657,
+          "validation_status": "validated",
+          "validation_error_category": null,
+          "statement_statuses": {
+            "S1": "supported_by_sources",
+            "S2": "supported_by_sources",
+            "S3": "supported_by_sources",
+            "S4": "supported_by_sources"
+          },
+          "conclusion_status": "justified",
+          "targeted_issue_codes": [],
+          "numeric_findings": [
+            {
+              "version": "numeric-reference-comparability-2.4",
+              "target_id": "S1",
+              "source_quantity_id": "E5.U1.Q1",
+              "material": true,
+              "source_fidelity": "verified",
+              "asserted_values": [
+                "95"
+              ],
+              "source_measure": "unknown",
+              "claim_measure": "unknown",
+              "comparability": "uncertain",
+              "numeric_effect": "unresolved",
+              "semantic_scope_checked": true,
+              "structure_status": "structured",
+              "evidence_ids": [
+                "E5"
+              ],
+              "differences": [],
+              "conversions": []
+            }
+          ],
+          "evidence_axes": {
+            "S1": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "contextual",
+              "scope_basis": "other",
+              "finding_basis": "association"
+            },
+            "S2": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "strong",
+              "role": "direct",
+              "scope_basis": "endpoint",
+              "finding_basis": "causal_assessment"
+            },
+            "S3": {
+              "direction": "supports_claim",
+              "scope": "compatible_but_narrower",
+              "strength": "supporting",
+              "role": "background",
+              "scope_basis": "other",
+              "finding_basis": "association"
+            },
+            "S4": {
+              "direction": "supports_claim",
+              "scope": "aligned",
+              "strength": "supporting",
+              "role": "mechanistic",
+              "scope_basis": "same_question",
+              "finding_basis": "causal_assessment"
+            }
+          },
+          "proposed_label": null,
+          "validated_evidence_position": "not_enough_evidence",
+          "finding_count": 4,
+          "qualification_reason_codes": [
+            "ONLY_INSUFFICIENT_OR_CONTEXT"
+          ],
+          "qualification_success": true,
+          "exclusion_reasons": [],
+          "source_ids": {
+            "S1": [
+              "E5"
+            ],
+            "S2": [
+              "E5"
+            ],
+            "S3": [
+              "E12"
+            ],
+            "S4": [
+              "E8"
+            ]
+          },
+          "id_normalizations": [],
+          "judge_unit_id_normalizations": [],
+          "null_diagnostics": {
+            "S1": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S2": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "endpoint",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            },
+            "S3": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "other",
+              "raw_finding_basis": "association",
+              "null_precision_reason": null
+            },
+            "S4": {
+              "gradient_kind": "unknown",
+              "raw_scope_basis": "same_question",
+              "raw_finding_basis": "causal_assessment",
+              "null_precision_reason": null
+            }
+          },
+          "input_tokens": 8233,
+          "output_tokens": 683,
+          "model_identity_verified": false,
+          "model_family_verified": false,
+          "failure_categories": [],
+          "attempt_failure_types": []
+        }
+      ],
+      "debug_diagnostics": {
+        "extraction": {
+          "raw_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "normalized_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "claim_type": "causal",
+          "risk_class": "standard",
+          "pico": {
+            "outcome": "cervical cancer",
+            "timeframe": null,
+            "claim_type": "causal",
+            "comparator": null,
+            "population": null,
+            "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+            "intervention_or_exposure": "Persistent high-risk HPV infection"
+          },
+          "numeric_effect": null
+        },
+        "retrieval": {
+          "candidates": 27,
+          "selected_documents": 6,
+          "selected_authoritative": 0,
+          "selected_pubmed": 6,
+          "roles": {
+            "direct": 4,
+            "contextual": 2,
+            "incompatible": 0
+          }
+        },
+        "waterfall": {
+          "extraction": "PASS",
+          "normalization": "PASS",
+          "retrieval": "PASS",
+          "selection": "PASS",
+          "judge_response": "3/3 usable",
+          "source_attribution": "3/3",
+          "semantic_classification": "3/3",
+          "judge_qualification": "3/3",
+          "final_aggregation": "not_enough_evidence"
+        },
+        "final": {
+          "qualified_judges": 3,
+          "qualified_positions": [
+            "not_enough_evidence",
+            "not_enough_evidence",
+            "not_enough_evidence"
+          ],
+          "aggregation_reasons": [
+            "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "EVALUATION_ONLY"
+          ],
+          "production_qualified": false,
+          "total_model_calls": 7,
+          "elapsed_ms": 146207
+        }
+      }
+    }
+  ],
+  "analysis_detail": {
+    "analysis_id": "1072af6b-fab0-4b9c-aa1c-bd4692f25d0c",
+    "status": "completed",
+    "stage": "completed",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-06T10:54:40.214800+00:00"
+      },
+      "extracting": {
+        "started_at": "2026-10-06T10:54:09.493746+00:00",
+        "completed_at": "2026-10-06T10:54:27.868366+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-06T10:54:27.921417+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-06T10:55:29.897149+00:00"
+      },
+      "aggregating": {
+        "started_at": "2026-10-06T10:56:33.172198+00:00"
+      },
+      "normalizing": {
+        "started_at": "2026-10-06T10:54:27.898598+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-06T10:56:35.507017+00:00"
+      }
+    },
+    "claim_count": 1,
+    "completed_claims": 1,
+    "failure_code": null,
+    "language": "auto",
+    "input_type": "text",
+    "claims": [
+      {
+        "claim_id": "4b2ff0d2-d647-4d0d-9a8a-ed3754094f44",
+        "ordinal": 1,
+        "span_start": 0,
+        "span_end": 61,
+        "raw_text": "Persistent high-risk HPV infection can cause cervical cancer.",
+        "normalized_text": "Persistent high-risk HPV infection can cause cervical cancer.",
+        "standalone_status": "complete",
+        "claim_type": "causal",
+        "population": null,
+        "intervention_or_exposure": "Persistent high-risk HPV infection",
+        "comparator": null,
+        "outcome": "cervical cancer",
+        "timeframe": null,
+        "risk_class": "standard",
+        "verifiability": 0.95,
+        "coreference_uncertain": false,
+        "resolved_from_span_start": null,
+        "resolved_from_span_end": null,
+        "entities": [
+          {
+            "surface_text": "HPV infection",
+            "entity_type": "intervention_or_exposure",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D030361",
+            "preferred_name": "Papillomavirus Infections",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C01.221.812.640.700",
+              "C01.778.640.700",
+              "C01.925.256.650",
+              "C01.925.813.700",
+              "C01.925.928.725",
+              "C12.100.937.640.700",
+              "C23.550.291.531.937.640.500"
+            ],
+            "candidates": []
+          },
+          {
+            "surface_text": "cervical cancer",
+            "entity_type": "outcome",
+            "umls_cui": null,
+            "umls_version": null,
+            "mesh_id": "D002583",
+            "preferred_name": "Uterine Cervical Neoplasms",
+            "confidence": 0.95,
+            "match_type": "synonym",
+            "ambiguous": false,
+            "terminology_source": "mesh",
+            "terminology_version": "2026",
+            "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+            "tree_numbers": [
+              "C04.588.945.418.948.850",
+              "C12.050.351.500.852.593.131",
+              "C12.050.351.500.852.762.850",
+              "C12.050.351.937.418.875.850",
+              "C12.100.250.852.593.131",
+              "C12.100.250.852.762.850",
+              "C12.900.418.875.850"
+            ],
+            "candidates": []
+          }
+        ],
+        "pico": {
+          "original_claim": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "population": null,
+          "intervention_or_exposure": "Persistent high-risk HPV infection",
+          "comparator": null,
+          "outcome": "cervical cancer",
+          "timeframe": null,
+          "claim_type": "causal"
+        },
+        "normalization_status": "normalized",
+        "normalization_quality": {
+          "normalization_coverage": 1.0,
+          "missing_explicit_concepts": [],
+          "required_slots_missing": [],
+          "ambiguous_concepts": [],
+          "normalization_warnings": [],
+          "terminology_version": "2026",
+          "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+        }
+      }
+    ],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-06T10:56:35.709470Z",
+    "debug_enabled": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ]
+  },
+  "report_responses": [
+    {
+      "claim_id": "4b2ff0d2-d647-4d0d-9a8a-ed3754094f44",
+      "http_status": 200,
+      "body": {
+        "report_version": "1.3",
+        "verdict_run_id": "58b32f94-566c-4f2f-aa81-6f718636eef7",
+        "claim": {
+          "text": "Persistent high-risk HPV infection can cause cervical cancer.",
+          "claim_type": "causal"
+        },
+        "verdict": "not_enough_evidence",
+        "verdict_display": "Not Enough Evidence",
+        "headline": "Not Enough Evidence",
+        "short_summary": "The evidence measures a different outcome and does not establish the outcome claimed.",
+        "verdict_explanation": {
+          "version": "1.0",
+          "summary": "The evidence measures a different outcome and does not establish the outcome claimed.",
+          "reason_category": "outcome_mismatch",
+          "established": null,
+          "unresolved": "The evidence measures a different outcome and does not establish the outcome claimed.",
+          "evidence_ids": [
+            "E1",
+            "E12",
+            "E3",
+            "E5",
+            "E8"
+          ]
+        },
+        "why_this_result": [
+          {
+            "code": "ALL_JUDGES_NOT_ENOUGH_EVIDENCE",
+            "text": "All qualified assessments found the evidence insufficient for a decisive conclusion."
+          },
+          {
+            "code": "EVALUATION_ONLY",
+            "text": "This run is for development or evaluation, not a production medical result."
+          }
+        ],
+        "key_evidence": [
+          {
+            "evidence_id": "E8",
+            "pmid": "40808954",
+            "doi": "10.3389/fimmu.2025.1645019",
+            "title": "HPV infection and the immune microenvironment in cervical cancer.",
+            "journal": "Frontiers in immunology",
+            "publication_date": "2025-07-30",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Cervical cancer remains a leading cause of cancer-related mortality in women, particularly in low-resource settings, despite advances in treatment modalities. The tumor immune microenvironment (TME) plays a pivotal role in cervical cancer pathogenesis, progression, and therapeutic response, driven largely by persistent HPV infection and subsequent immune evasion mechanisms. Clinical evidence supports the efficacy of pembrolizumab in PD-L1-positive recurrent/metastatic disease, while combinatorial strategies show promise in overcoming resistance. However, challenges persist, including biomarker",
+            "excerpt_truncated": true,
+            "passage_sha256": "d622b656a1104b1ff6b0618e3dea0d7227a1978bff59d39badf52ac1837bc684",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/40808954/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "431222a7-b788-4d28-9664-4b3903b758eb",
+              "60975f54-a13c-4056-b928-911324dac721",
+              "d40da630-cfbb-402d-9053-faa0a7e202a8"
+            ],
+            "cited_by_validation_run_ids": [
+              "e534b055-e40e-4452-8d2d-a17dde9edf14",
+              "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+              "9b106bd4-f5f9-49eb-85f9-d0df24552bd2"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:40808954",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E8",
+                "source_unit_id": "E8.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Cervical cancer remains a leading cause of cancer-related mortality in women, particularly in low-resource settings, despite advances in treatment modalities. The tumor immune microenvironment (TME) plays a pivotal role in cervical cancer pathogenesis, progression, and therapeutic response, driven largely by persistent HPV infection and subsequent immune evasion mechanisms. Clinical evidence supports the efficacy of pembrolizumab in PD-L1-positive recurrent/metastatic disease, while combinatorial strategies show promise in overcoming resistance. However, challenges persist, including biomarker identification and management of immune-related adverse events. This review elucidates the dynamic interplay between HPV-mediated immune suppression and the TME, highlighting the roles of tumor-associated macrophages (TAMs), regulatory T cells (Tregs), myeloid-derived suppressor cells (MDSCs), and exhausted lymphocyte subsets in fostering an immunosuppressive milieu. Overall, this review integrates current advances in tumor immunology and immunotherapy, providing a comprehensive framework for developing precision-based strategies to improve outcomes in cervical cancer.",
+                "truncated": false,
+                "passage_sha256": "d622b656a1104b1ff6b0618e3dea0d7227a1978bff59d39badf52ac1837bc684"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "39121703",
+            "doi": "10.1016/j.micres.2024.127857",
+            "title": "Cervicovaginal microbiome, high-risk HPV infection and cervical cancer: Mechanisms and therapeutic potential.",
+            "journal": "Microbiological research",
+            "publication_date": "2024-07-26",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "The microbiota in the female genital tract is an intricate assembly of diverse aerobic, anaerobic, and microaerophilic microorganisms, which share the space within the reproductive tract and engage in complex interactions. Microbiome dysbiosis may disrupt the symbiotic relationship between the host and microorganisms and play a pivotal role in the pathogenesis of various diseases, including its involvement in the establishment of human papillomavirus (HPV)-associated cervical cancer (CC). Interventions to restore microbiota homeostasis (e.g., probiotics) and bacterial-vector HPV therapeutic va",
+            "excerpt_truncated": true,
+            "passage_sha256": "b99ade79625535fe9a8342d0d15bf0b24e241059964c36394e6d289afd0e3d12",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/39121703/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "60975f54-a13c-4056-b928-911324dac721",
+              "d40da630-cfbb-402d-9053-faa0a7e202a8"
+            ],
+            "cited_by_validation_run_ids": [
+              "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+              "9b106bd4-f5f9-49eb-85f9-d0df24552bd2"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:39121703",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E1",
+                "source_unit_id": "E1.U1",
+                "section": "ABSTRACT",
+                "exact_text": "The microbiota in the female genital tract is an intricate assembly of diverse aerobic, anaerobic, and microaerophilic microorganisms, which share the space within the reproductive tract and engage in complex interactions. Microbiome dysbiosis may disrupt the symbiotic relationship between the host and microorganisms and play a pivotal role in the pathogenesis of various diseases, including its involvement in the establishment of human papillomavirus (HPV)-associated cervical cancer (CC). Interventions to restore microbiota homeostasis (e.g., probiotics) and bacterial-vector HPV therapeutic vaccines have been reported to be potentially effective in clearing HPV infection and ameliorating cytological abnormalities. In this review, we place emphasis on elucidating the alterations within the cervical-vaginal microbiota as well as the intratumoral microbiota in the context of high-risk HPV (HR-HPV) infection and its subsequent progression to cervical intraepithelial neoplasia/CC. Furthermore, we explore the mechanisms by which these microbial communities exert potential pathogenic or protective effects, including modulating genital inflammation and immune responses, affecting HR-HPV oncogene expression and oncoprotein production, regulating oxidative stress and deoxyribonucleic acid (DNA) damage, and inducing metabolic rewiring. Lastly, we summarize the latest evidence in human trials regarding the efficacy of probiotics, prebiotics and probiotic-vector HPV therapeutic vaccines. This review aims to foster a deeper understanding of the role of the microbiota in HR-HPV infection-related cervix cancer development, and further provide a theoretical basis for the development of preventive and therapeutic strategies based on microbial modulation.",
+                "truncated": false,
+                "passage_sha256": "b99ade79625535fe9a8342d0d15bf0b24e241059964c36394e6d289afd0e3d12"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E3",
+            "pmid": "24686336",
+            "doi": "10.1097/GRF.0000000000000027",
+            "title": "Primary strategies for HPV infection and cervical cancer prevention.",
+            "journal": "Clinical obstetrics and gynecology",
+            "publication_date": "2014-06-01",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Counseling messages for tobacco cessation, condom use, circumcision, and selective choice in the number of sexual partners can help reduce the risk of cervical cancer. Other sexual behavioral and reproductive risk factors for cervical cancer are a younger age at first intercourse and at first full-term pregnancy as well as increasing duration of combined hormonal oral contraceptive use. Micronutrients and supplements can reduce the risk of human papillomavirus infection, persistence, progression, and regression. Some human papillomavirus infections can be prevented by vaccination. Cervical can",
+            "excerpt_truncated": true,
+            "passage_sha256": "326a633de1ed1f3ce66651213b40bc34e6c5bd9b22d5db8dfab4c2d4dab8a087",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/24686336/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "d40da630-cfbb-402d-9053-faa0a7e202a8"
+            ],
+            "cited_by_validation_run_ids": [
+              "9b106bd4-f5f9-49eb-85f9-d0df24552bd2"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:24686336",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E3",
+                "source_unit_id": "E3.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Counseling messages for tobacco cessation, condom use, circumcision, and selective choice in the number of sexual partners can help reduce the risk of cervical cancer. Other sexual behavioral and reproductive risk factors for cervical cancer are a younger age at first intercourse and at first full-term pregnancy as well as increasing duration of combined hormonal oral contraceptive use. Micronutrients and supplements can reduce the risk of human papillomavirus infection, persistence, progression, and regression. Some human papillomavirus infections can be prevented by vaccination. Cervical cancer is best prevented by screening.",
+                "truncated": false,
+                "passage_sha256": "326a633de1ed1f3ce66651213b40bc34e6c5bd9b22d5db8dfab4c2d4dab8a087"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E5",
+            "pmid": "37294390",
+            "doi": "10.1007/s10147-023-02337-7",
+            "title": "Carcinogenesis and management of human papillomavirus-associated cervical cancer.",
+            "journal": "International journal of clinical oncology",
+            "publication_date": "2023-06-09",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Approximately 95% of cervical cancer are caused by human papillomavirus (HPV) infection. Although it is estimated that HPV-associated cervical cancer will decrease with the widespread use of HPV vaccine, it may take time for HPV-associated cervical cancer to be eliminated. For the appropriate management of HPV-associated cervical cancer, it is important to understand the detailed mechanisms of cervical cancer development. First, the cellular origin of most cervical cancers is thought to be cells in the squamocolumnar junction (SCJ) of the uterine cervix. Therefore, it is important to understan",
+            "excerpt_truncated": true,
+            "passage_sha256": "da2c4108a951420175b287c07b99c6e0fc5eb03b2ef4a871b314b7cadf787f07",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/37294390/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "431222a7-b788-4d28-9664-4b3903b758eb",
+              "60975f54-a13c-4056-b928-911324dac721",
+              "d40da630-cfbb-402d-9053-faa0a7e202a8"
+            ],
+            "cited_by_validation_run_ids": [
+              "e534b055-e40e-4452-8d2d-a17dde9edf14",
+              "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+              "9b106bd4-f5f9-49eb-85f9-d0df24552bd2"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:37294390",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E5",
+                "source_unit_id": "E5.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Approximately 95% of cervical cancer are caused by human papillomavirus (HPV) infection. Although it is estimated that HPV-associated cervical cancer will decrease with the widespread use of HPV vaccine, it may take time for HPV-associated cervical cancer to be eliminated. For the appropriate management of HPV-associated cervical cancer, it is important to understand the detailed mechanisms of cervical cancer development. First, the cellular origin of most cervical cancers is thought to be cells in the squamocolumnar junction (SCJ) of the uterine cervix. Therefore, it is important to understand the characteristics of SCJ for cervical cancer screening and treatment. Second, cervical cancer is caused by high risk HPV (HR-HPV) infection, however, the manner of progression to cervical cancer differs depending on the type of HR-HPV: HPV16 is characterized by a stepwise carcinogenesis, HPV18 is difficult to detect in precancerous lesions, and HPV52, 58 tends to remain in the state of cervical intraepithelial neoplasia (CIN). Third, in addition to the type of HPV, the involvement of the human immune response is also important in the progression and regression of cervical cancer. In this review, we demonstrate the carcinogenesis mechanism of HPV-associated cervical cancer, management of CIN, and the current treatment of CIN and cervical cancer.",
+                "truncated": false,
+                "passage_sha256": "da2c4108a951420175b287c07b99c6e0fc5eb03b2ef4a871b314b7cadf787f07"
+              }
+            ]
+          },
+          {
+            "evidence_id": "E12",
+            "pmid": "38543693",
+            "doi": "10.3390/v16030327",
+            "title": "HPV and Cervical Cancer: Molecular and Immunological Aspects, Epidemiology and Effect of Vaccination in Latin American Women.",
+            "journal": "Viruses",
+            "publication_date": "2024-02-21",
+            "study_design": "review",
+            "integrity_status": "valid",
+            "evidence_roles": [
+              "relevant_but_insufficient"
+            ],
+            "exact_excerpt": "Cervical cancer is primarily caused by Human Papillomavirus (HPV) infection and remains a significant public health concern, particularly in Latin American regions. This comprehensive narrative review addresses the relationship between Human Papillomavirus (HPV) and cervical cancer, focusing on Latin American women. It explores molecular and immunological aspects of HPV infection, its role in cervical cancer development, and the epidemiology in this region, highlighting the prevalence and diversity of HPV genotypes. The impact of vaccination initiatives on cervical cancer rates in Latin Americ",
+            "excerpt_truncated": true,
+            "passage_sha256": "277a30b988cb274e790570e4d04d4c8df1732feb85e3b86daa73aa88282cf4f5",
+            "passage_section": "ABSTRACT",
+            "source_url": "https://pubmed.ncbi.nlm.nih.gov/38543693/",
+            "citation_validated": true,
+            "cited_by_judge_run_ids": [
+              "431222a7-b788-4d28-9664-4b3903b758eb",
+              "60975f54-a13c-4056-b928-911324dac721",
+              "d40da630-cfbb-402d-9053-faa0a7e202a8"
+            ],
+            "cited_by_validation_run_ids": [
+              "e534b055-e40e-4452-8d2d-a17dde9edf14",
+              "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+              "9b106bd4-f5f9-49eb-85f9-d0df24552bd2"
+            ],
+            "limitations": [],
+            "document_id": "pubmed:38543693",
+            "source_kind": "pubmed",
+            "organization": null,
+            "document_purpose": null,
+            "analysis_design": "unknown",
+            "exposure_assignment": "unknown",
+            "attribution": null,
+            "currency": null,
+            "excerpts": [
+              {
+                "evidence_id": "E12",
+                "source_unit_id": "E12.U1",
+                "section": "ABSTRACT",
+                "exact_text": "Cervical cancer is primarily caused by Human Papillomavirus (HPV) infection and remains a significant public health concern, particularly in Latin American regions. This comprehensive narrative review addresses the relationship between Human Papillomavirus (HPV) and cervical cancer, focusing on Latin American women. It explores molecular and immunological aspects of HPV infection, its role in cervical cancer development, and the epidemiology in this region, highlighting the prevalence and diversity of HPV genotypes. The impact of vaccination initiatives on cervical cancer rates in Latin America is critically evaluated. The advent of HPV vaccines has presented a significant tool in combating the burden of this malignancy, with notable successes observed in various countries, the latter due to their impact on immune responses. The review synthesizes current knowledge, emphasizes the importance of continued research and strategies for cervical cancer prevention, and underscores the need for ongoing efforts in this field.",
+                "truncated": false,
+                "passage_sha256": "277a30b988cb274e790570e4d04d4c8df1732feb85e3b86daa73aa88282cf4f5"
+              }
+            ]
+          }
+        ],
+        "neutral_retrieved_sources": [],
+        "evidence_limitations": [],
+        "judge_summary": {
+          "qualified": 3,
+          "excluded": 0,
+          "validated_label_counts": {
+            "supported": 0,
+            "contradicted": 0,
+            "not_enough_evidence": 3
+          },
+          "description": "3 qualified assessment(s) found the evidence insufficient.",
+          "excluded_assessments": []
+        },
+        "verification_status": {
+          "evidence_state": "relevant_but_insufficient",
+          "validated_citations_shown": 5,
+          "production_qualified": false,
+          "development_notice": "Development/evaluation result — production evidence-isolation or model qualification requirements were not satisfied. Do not use as a trusted medical report."
+        },
+        "sources": [
+          {
+            "evidence_id": "E8",
+            "pmid": "40808954",
+            "doi": "10.3389/fimmu.2025.1645019",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/40808954/"
+          },
+          {
+            "evidence_id": "E1",
+            "pmid": "39121703",
+            "doi": "10.1016/j.micres.2024.127857",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/39121703/"
+          },
+          {
+            "evidence_id": "E3",
+            "pmid": "24686336",
+            "doi": "10.1097/GRF.0000000000000027",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/24686336/"
+          },
+          {
+            "evidence_id": "E5",
+            "pmid": "37294390",
+            "doi": "10.1007/s10147-023-02337-7",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/37294390/"
+          },
+          {
+            "evidence_id": "E12",
+            "pmid": "38543693",
+            "doi": "10.3390/v16030327",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/38543693/"
+          }
+        ],
+        "safety_notice": "This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.",
+        "production_qualified": false,
+        "provenance": {
+          "report_version": "1.3",
+          "verdict_run_id": "58b32f94-566c-4f2f-aa81-6f718636eef7",
+          "verdict_policy_version": "verdict-policy-1.4",
+          "verdict_semantic_hash": "b43b9d23e1e10f1fd2d6b727fb526ff9a07006b5e431c54722f9b78ab317bab5",
+          "evidence_pack_id": "36df5640-834f-44c5-af1d-c23e7ae22648",
+          "evidence_pack_hash": "98eb871c7b4df60619977c82b30b87c3b77c9b82973d6238dbee5829d6d3da75",
+          "evidence_pack_version": "1.5",
+          "judge_run_ids": [
+            "431222a7-b788-4d28-9664-4b3903b758eb",
+            "60975f54-a13c-4056-b928-911324dac721",
+            "d40da630-cfbb-402d-9053-faa0a7e202a8"
+          ],
+          "judge_validation_run_ids": [
+            "9b106bd4-f5f9-49eb-85f9-d0df24552bd2",
+            "abcd061f-cc3d-47df-831c-45d0fe79c25e",
+            "e534b055-e40e-4452-8d2d-a17dde9edf14"
+          ],
+          "report_builder_version": "report-builder-1.5",
+          "generated_at": "2026-10-06T10:56:35.691363Z",
+          "production_qualified": false
+        },
+        "semantic_hash": "87900bf1aa329c269f4be9d4f2fceb8bcf71c8d76a30bebafd4a8022f4d2c618"
+      }
+    }
+  ]
+}

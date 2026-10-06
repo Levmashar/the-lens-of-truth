@@ -50,12 +50,15 @@ def configured_development_validator(
     assert settings.validator_base_url and settings.validator_api_key
     if is_search_enabled_model(settings.validator_model):
         raise ValueError("Search-enabled validator model mode is not permitted")
-    return OpenAICompatibleEntailmentValidator(
+    validator = OpenAICompatibleEntailmentValidator(
         provider=settings.validator_provider, model=settings.validator_model,
         base_url=settings.validator_base_url,
         api_key=settings.validator_api_key.get_secret_value(),
         timeout_seconds=timeout_seconds,
+        thinking_enabled=settings.validator_thinking_enabled,
     )
+    validator.request_options()
+    return validator
 
 
 def development_entailment_validator(
@@ -164,6 +167,12 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
                         api_key=slot.api_key, timeout_seconds=75,
                     )
             if checker is not None:
+                if judge.decision and judge.decision.schema_version in {"2.4", "2.5"}:
+                    from app.validation.joint24 import validate_joint24
+
+                    return await validate_joint24(
+                        judge, pack, checker, risk_class=risk_class, timeout_seconds=75,
+                    )
                 if judge.decision and judge.decision.schema_version == "2.3":
                     from app.validation.joint23 import validate_joint23
 

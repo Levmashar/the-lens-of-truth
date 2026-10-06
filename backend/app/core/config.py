@@ -123,6 +123,9 @@ class Settings(BaseSettings):
         default=None, validation_alias="JUDGE_1_PROVIDER"
     )
     judge_1_model: str | None = Field(default=None, validation_alias="JUDGE_1_MODEL")
+    judge_1_thinking_enabled: bool | None = Field(
+        default=None, validation_alias="JUDGE_1_THINKING_ENABLED"
+    )
     judge_1_model_family: str | None = Field(
         default=None, validation_alias="JUDGE_1_MODEL_FAMILY"
     )
@@ -132,6 +135,9 @@ class Settings(BaseSettings):
         default=None, validation_alias="JUDGE_2_PROVIDER"
     )
     judge_2_model: str | None = Field(default=None, validation_alias="JUDGE_2_MODEL")
+    judge_2_thinking_enabled: bool | None = Field(
+        default=None, validation_alias="JUDGE_2_THINKING_ENABLED"
+    )
     judge_2_model_family: str | None = Field(
         default=None, validation_alias="JUDGE_2_MODEL_FAMILY"
     )
@@ -141,6 +147,9 @@ class Settings(BaseSettings):
         default=None, validation_alias="JUDGE_3_PROVIDER"
     )
     judge_3_model: str | None = Field(default=None, validation_alias="JUDGE_3_MODEL")
+    judge_3_thinking_enabled: bool | None = Field(
+        default=None, validation_alias="JUDGE_3_THINKING_ENABLED"
+    )
     judge_3_model_family: str | None = Field(
         default=None, validation_alias="JUDGE_3_MODEL_FAMILY"
     )
@@ -150,6 +159,9 @@ class Settings(BaseSettings):
         default=None, validation_alias="VALIDATOR_PROVIDER"
     )
     validator_model: str | None = Field(default=None, validation_alias="VALIDATOR_MODEL")
+    validator_thinking_enabled: bool | None = Field(
+        default=None, validation_alias="VALIDATOR_THINKING_ENABLED"
+    )
     validator_base_url: str | None = Field(default=None, validation_alias="VALIDATOR_BASE_URL")
     validator_api_key: SecretStr | None = Field(default=None, validation_alias="VALIDATOR_API_KEY")
     judge_attempt_timeout_seconds: float = Field(

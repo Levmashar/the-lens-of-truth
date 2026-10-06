@@ -3,6 +3,7 @@
 import re
 
 from app.pipeline.claim_types import ClaimType
+from app.pipeline.setting import laboratory_claim
 from app.retrieval.models import ClaimSnapshot, PubMedDocument, RankedPassage
 from app.validation.models import RelationAlignment, ScopeAlignment
 from app.validation.numeric import extract_quantities
@@ -76,11 +77,13 @@ def compare_scope(
             return ScopeAlignment.MISMATCH
         if _PREGNANT.search(population) and not _PREGNANT.search(source):
             return ScopeAlignment.PARTIAL
-    if _HUMAN.search(claim_text) and (document.study_design in {"animal_study", "in_vitro"}
+    lab = laboratory_claim(claim_text, population)
+    if not lab and _HUMAN.search(claim_text) and (
+            document.study_design in {"animal_study", "in_vitro"}
                                       or (_ANIMAL.search(source) and not _HUMAN.search(source))
                                       or (_VITRO.search(source) and not _HUMAN.search(source))):
         return ScopeAlignment.MISMATCH
-    if document.study_design in {"animal_study", "in_vitro"}:
+    if document.study_design == "animal_study" or (document.study_design == "in_vitro" and not lab):
         return ScopeAlignment.PARTIAL
     claim_type = claim.claim_type or (claim.pico.claim_type if claim.pico else None)
     if (claim_type == ClaimType.PREVENTION and _TREAT.search(passage_text)

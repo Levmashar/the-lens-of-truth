@@ -52,7 +52,7 @@ class FindingQualificationInput(FrozenModel):
 
 
 class ConclusionQualifierInput(FrozenModel):
-    proposed_label: JudgeLabel
+    proposed_label: JudgeLabel | None
     claim_type: ClaimType | None
     risk_class: str
     findings: tuple[FindingQualificationInput, ...]
@@ -60,7 +60,9 @@ class ConclusionQualifierInput(FrozenModel):
     based_on_statement_ids: tuple[str, ...]
     defects: tuple[ValidationIssue, ...] = ()
     required_findings_available: bool = True
-    evidence_policy: Literal["legacy-1.0", "question-evidence-1.0"] = "legacy-1.0"
+    evidence_policy: Literal["legacy-1.0", "question-evidence-1.0", "question-evidence-2.0",
+                                "question-evidence-2.1"] \
+        = "legacy-1.0"
     question_category: QuestionCategory = "other"
 
 
@@ -121,7 +123,8 @@ def qualify_conclusion(data: ConclusionQualifierInput) -> ConclusionQualificatio
     magnitude_blocked: list[str] = []
     for item in data.relations:
         finding = by_id[item.statement_id]
-        if (data.evidence_policy == "question-evidence-1.0"
+        if (data.evidence_policy in {"question-evidence-1.0", "question-evidence-2.0",
+                                "question-evidence-2.1"}
                 and finding.evidence_design_facts
                 and not any(f.role == "direct" for f in finding.evidence_design_facts)):
             contextual.append(item.statement_id)
@@ -166,8 +169,12 @@ def qualify_conclusion(data: ConclusionQualifierInput) -> ConclusionQualificatio
     causal = data.claim_type in CAUSAL_TYPES
 
     def design_sufficient(ids: list[str]) -> bool:
-        if data.evidence_policy == "question-evidence-1.0":
-            return any(design_eligible(data.question_category, fact)
+        if data.evidence_policy in {"question-evidence-1.0", "question-evidence-2.0",
+                                "question-evidence-2.1"}:
+            peers = tuple(f for identifier in ids
+                          for f in by_id[identifier].evidence_design_facts)
+            return any(design_eligible(data.question_category, fact,
+                                      policy=data.evidence_policy, peers=peers)
                        for identifier in ids
                        for fact in by_id[identifier].evidence_design_facts)
         return not causal or any(
