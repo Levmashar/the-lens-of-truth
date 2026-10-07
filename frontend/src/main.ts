@@ -1,6 +1,6 @@
-import { setHealthStatus } from "./pages/home";
 import { createHomePage } from "./pages/home";
 import { createAnalysisPage } from "./pages/analysis";
+import { createBrandLogo, createThemeToggle } from "./components/themeToggle";
 import { append, clear, element } from "./utils/dom";
 import { currentRoute, navigate } from "./utils/routing";
 import "./styles/reset.css";
@@ -9,6 +9,7 @@ import "./styles/global.css";
 import "./styles/layout.css";
 import "./styles/home.css";
 import "./styles/analysis.css";
+import "./styles/progress.css";
 import "./styles/components.css";
 import "./styles/responsive.css";
 
@@ -20,7 +21,7 @@ const headerContent = element("div", "header-content content-width");
 const brand = element("button", "brand");
 brand.type = "button";
 brand.setAttribute("aria-label", "The Lens of Truth, home");
-append(brand, element("span", "brand-mark", "L"), element("span", "brand-name", "The Lens of Truth"));
+brand.append(createBrandLogo());
 brand.addEventListener("click", () => navigate("/"));
 const headerRight = element("div", "header-right");
 const methodLink = element("a", "header-link", "How it works");
@@ -32,8 +33,8 @@ methodLink.addEventListener("click", (event) => {
     document.getElementById("method")?.scrollIntoView();
   }
 });
-const health = element("span", "service-status", "Checking service…");
-append(headerRight, methodLink, health);
+const theme = createThemeToggle();
+headerRight.append(methodLink, theme.node);
 append(headerContent, brand, headerRight);
 header.append(headerContent);
 const main = element("main", "site-main");
@@ -41,15 +42,17 @@ main.id = "main-content";
 const footer = element("footer", "site-footer");
 const footContent = element("div", "footer-content content-width");
 append(footContent, element("span", "", "The Lens of Truth"),
-  element("span", "", "Evidence-led. Transparent about uncertainty."));
+  element("span", "", "Health claims, checked against research."));
 footer.append(footContent);
 root.append(header, main, footer);
 
-const healthController = new AbortController();
-void setHealthStatus(health, healthController.signal);
 let disposePage: (() => void) | null = null;
+let renderedPath: string | null = null;
 
 function renderRoute(): void {
+  // Native citation anchors must scroll within the existing report, not reload it.
+  if (renderedPath === window.location.pathname) return;
+  renderedPath = window.location.pathname;
   disposePage?.();
   clear(main);
   const route = currentRoute();

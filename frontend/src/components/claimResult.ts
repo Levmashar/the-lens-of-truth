@@ -1,16 +1,23 @@
-import type { LensReport } from "../types/report";
+import type { LensReport, ReportReadingGuide } from "../types/report";
 import { createEvidenceCard } from "./evidenceCard";
 import { append, element, labeledValue, safeExternalUrl } from "../utils/dom";
 import { readableToken, verdictLabels } from "../utils/format";
+import { showDevelopmentUi } from "../utils/uiMode";
 
-export function createClaimResult(report: LensReport, analysisId: string, claimId: string, debugEnabled = false): HTMLElement {
+export function createClaimResult(report: LensReport, analysisId: string, claimId: string,
+  debugEnabled = false, readingGuide?: ReportReadingGuide): HTMLElement {
   const article = element("article", "report-card");
   article.dataset.verdict = report.verdict;
+  const guide = readingGuide?.verdict_run_id === report.verdict_run_id
+    && readingGuide.report_semantic_hash === report.semantic_hash ? readingGuide : undefined;
+  const developmentUi = showDevelopmentUi();
 
   if (!report.production_qualified) {
     const notice = element("aside", "qualification-notice");
-    append(notice, element("h4", "notice-title", "Development / evaluation result"),
-      element("p", "", report.verification_status.development_notice ?? "This result is not production qualified."));
+    append(notice, element("h4", "notice-title", developmentUi ? "Development / evaluation result" : "Verification status"),
+      element("p", "", developmentUi
+        ? report.verification_status.development_notice ?? "This result is not production qualified."
+        : "This report has not yet met the checks required for public release."));
     article.append(notice);
   }
 
@@ -26,6 +33,32 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
       && summary.trim().toLowerCase() !== report.headline.trim().toLowerCase()) {
     verdict.append(element("p", "verdict-summary", summary));
   }
+  if (report.verdict === "not_enough_evidence") {
+    const explanation = report.verdict_explanation;
+    if (explanation?.established || explanation?.unresolved) {
+      const details = element("dl", "evidence-clarity");
+      if (explanation.established) details.append(labeledValue("What the evidence tells us", explanation.established));
+      if (explanation.unresolved) details.append(labeledValue("What remains unclear", explanation.unresolved));
+      verdict.append(details);
+    }
+  }
+  if (guide?.findings.length) {
+    const findings = element("section", "case-explanation");
+    findings.append(element("h4", "meaning-title", "What the checked sources found"));
+    for (const finding of guide.findings) {
+      const paragraph = element("p", "case-finding", finding.text);
+      const citations = element("span", "finding-citations");
+      for (const evidenceId of finding.evidence_ids) {
+        const link = element("a", "finding-citation", evidenceId);
+        link.href = `#source-${claimId}-${evidenceId}`;
+        link.setAttribute("aria-label", `Read source ${evidenceId}`);
+        citations.append(link);
+      }
+      append(paragraph, document.createTextNode(" "), citations);
+      findings.append(paragraph);
+    }
+    verdict.append(findings);
+  }
   article.append(verdict);
 
   const why = element("section", "report-section");
@@ -39,7 +72,7 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   append(evidence, element("h4", "card-title", "Key evidence"));
   if (report.key_evidence.length) {
     const cards = element("div", "evidence-grid");
-    for (const source of report.key_evidence) cards.append(createEvidenceCard(source));
+    for (const source of report.key_evidence) cards.append(createEvidenceCard(source, guide?.highlights, claimId));
     evidence.append(cards);
   } else evidence.append(element("p", "muted-copy", "No source excerpts qualified for display in this report."));
   article.append(evidence);
@@ -154,6 +187,6 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     diagnostics.append(facts);
     technical.append(diagnostics);
   }
-  article.append(technical);
+  if (developmentUi) article.append(technical);
   return article;
 }

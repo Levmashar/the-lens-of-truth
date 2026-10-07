@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Evidence-based medical information verification system."
+      content="Check health claims against scientific research, with clear explanations and sources you can read."
     />
     <title>The Lens of Truth</title>
+    <meta name="theme-color" content="#f7f8fc" />
+    <script>
+      (() => {
+        let saved;
+        try { saved = localStorage.getItem("lens-theme"); } catch {}
+        document.documentElement.dataset.theme = saved === "light" || saved === "dark"
+          ? saved : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

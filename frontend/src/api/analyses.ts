@@ -1,6 +1,6 @@
 import { apiRequest } from "./client";
 import type { AnalysisClaimsResponse, AnalysisInput, AnalysisProgress, AnalysisStarted, HealthResponse, ScreenshotUpload } from "../types/api";
-import type { LensReport } from "../types/report";
+import type { LensReport, ReportReadingGuide } from "../types/report";
 
 export const PRIVACY_NOTICE_VERSION = "2026-09-01";
 
@@ -36,6 +36,13 @@ export function getClaims(id: string, signal?: AbortSignal): Promise<AnalysisCla
 export function getClaimReport(id: string, claimId: string, signal?: AbortSignal): Promise<LensReport> {
   return apiRequest<LensReport>(
     `/v1/analyses/${encodeURIComponent(id)}/claims/${encodeURIComponent(claimId)}/report`,
+    { signal },
+  );
+}
+
+export function getReportReadingGuide(id: string, claimId: string, signal?: AbortSignal): Promise<ReportReadingGuide> {
+  return apiRequest<ReportReadingGuide>(
+    `/v1/analyses/${encodeURIComponent(id)}/claims/${encodeURIComponent(claimId)}/report/reading-guide`,
     { signal },
   );
 }

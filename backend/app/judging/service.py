@@ -15,6 +15,11 @@ from pydantic import ValidationError
 
 from app.adapters.judge import JudgeProvider, ProviderFailure
 from app.core.diagnostics import sanitize_diagnostic
+from app.judging.citation_errors import (
+    CitationReferenceError,
+    SourceUnitReferenceError,
+    citation_error_details,
+)
 from app.judging.compact23 import VERSION as AXES_COMPACT_VERSION
 from app.judging.compact24 import VERSION as STRUCTURED_COMPACT_VERSION
 from app.judging.compact25 import VERSION as POSITION_COMPACT_VERSION
@@ -26,6 +31,7 @@ from app.judging.models import (
     JudgeDecisionV2,
     JudgeRun,
     JudgeSlot,
+    JudgeStatement,
     decision_evidence_ids,
     describe_disagreement,
 )
@@ -41,6 +47,7 @@ from app.retrieval.models import EvidencePack
 from app.validation.models import JudgeValidationRun, ValidationStatus
 
 logger = logging.getLogger(__name__)
+CITATION_PREFLIGHT_VERSION = "evidence-citation-preflight-1.1"
 
 
 @dataclass
@@ -225,6 +232,10 @@ class JudgeService:
                                         raise DecisionFailure("optional_numeric_content",
                                                               retryable=True)
                             response_json = decision.model_dump(mode="json")
+                            if prepared.input_snapshot_version == "judge-input-2.5":
+                                response_json["citation_preflight_version"] = (
+                                    CITATION_PREFLIGHT_VERSION
+                                )
                             if prepared.input_snapshot_version in {"judge-input-2.3",
                                                                    "judge-input-2.4",
                                                                    "judge-input-2.5"}:
@@ -251,6 +262,14 @@ class JudgeService:
                             rejected_responses.append({
                                 "attempt": attempts, "category": exc.category,
                                 "schema_errors": exc.schema_errors,
+                                "citation_errors": sanitize_diagnostic(
+                                    exc.citation_errors, (slot.api_key or "",),
+                                ),
+                                "exception_type": exc.exception_type,
+                                "exception_message": sanitize_diagnostic(
+                                    exc.exception_message, (slot.api_key or "",),
+                                ),
+                                "citation_preflight_version": CITATION_PREFLIGHT_VERSION,
                                 "content": sanitize_diagnostic(
                                     provider_response.content, (slot.api_key or "",),
                                 )[:32768]
@@ -388,10 +407,16 @@ class JudgeService:
 
 class DecisionFailure(Exception):
     def __init__(self, category: str, *, retryable: bool = False,
-                 schema_errors: tuple[dict[str, object], ...] = ()) -> None:
+                 schema_errors: tuple[dict[str, object], ...] = (),
+                 citation_errors: tuple[dict[str, object], ...] = (),
+                 exception_type: str | None = None,
+                 exception_message: str | None = None) -> None:
         self.category = category
         self.retryable = retryable
         self.schema_errors = schema_errors
+        self.citation_errors = citation_errors
+        self.exception_type = exception_type
+        self.exception_message = exception_message or category
         super().__init__(category)
 
 
@@ -429,17 +454,24 @@ def parse_provider_decision(
                         or not set(selected_ids) <= set(raw_visible)):
                     raise ValueError("Invalid frozen judge-visible evidence set")
                 allowed_ids = tuple(raw_visible)
-            _validate_decision_citations(decision, allowed_ids)
+            _validate_decision_citations(decision, allowed_ids, snapshot=snapshot)
             return decision, False
         except QuantityReferenceError as exc:
-            raise DecisionFailure("invalid_source_quantity", retryable=True) from exc
+            raise _reference_failure("invalid_source_quantity", exc) from exc
+        except SourceUnitReferenceError as exc:
+            raise _reference_failure("invalid_source_unit", exc) from exc
+        except CitationReferenceError as exc:
+            raise _reference_failure("schema_violation", exc) from exc
         except KeyError as exc:
-            raise DecisionFailure("invalid_source_unit", retryable=True) from exc
+            raise _reference_failure("invalid_source_unit", exc) from exc
         except ValidationError as exc:
             raise DecisionFailure("schema_violation", retryable=True,
-                                  schema_errors=_schema_errors(exc)) from exc
+                                  schema_errors=_schema_errors(exc),
+                                  exception_type=type(exc).__name__,
+                                  exception_message="Judge schema invalid; see field errors."
+                                  ) from exc
         except ValueError as exc:
-            raise DecisionFailure("schema_violation", retryable=True) from exc
+            raise _reference_failure("schema_violation", exc) from exc
     try:
         return parse_decision(content, selected_ids), False
     except DecisionFailure as exc:
@@ -484,7 +516,23 @@ def parse_decision(content: str, selected_ids: tuple[str, ...]) -> AnyJudgeDecis
     return decision
 
 
-def _validate_decision_citations(decision: AnyJudgeDecision, selected_ids: tuple[str, ...]) -> None:
+def _reference_failure(category: str, exc: BaseException) -> DecisionFailure:
+    detail = citation_error_details(exc)
+    return DecisionFailure(
+        category, retryable=True, citation_errors=(detail,) if detail else (),
+        exception_type=type(exc).__name__, exception_message=str(exc),
+    )
+
+
+def _validate_decision_citations(
+    decision: AnyJudgeDecision, selected_ids: tuple[str, ...], *,
+    snapshot: dict[str, object] | None = None,
+) -> None:
+    if (snapshot is not None and snapshot.get("validation_contract") == "judge-validation-2.5"
+            and isinstance(decision, JudgeDecisionV2) and decision.schema_version == "2.5"):
+        _validate_source_bound_prose(decision, selected_ids)
+        return
+    # Historical/free-text contracts keep their original acceptance rules.
     allowed = set(selected_ids)
     cited = set(decision_evidence_ids(decision))
     prose = (" ".join(statement.text for statement in decision.statements)
@@ -495,6 +543,97 @@ def _validate_decision_citations(decision: AnyJudgeDecision, selected_ids: tuple
         raise DecisionFailure("invalid_evidence_citation", retryable=True)
     if re.search(r"\b(?:PMID|DOI)\s*[:#]?\s*\S+", prose, re.I):
         raise DecisionFailure("invalid_evidence_citation", retryable=True)
+
+
+_PROSE_REFERENCE = re.compile(r"\bE\d+(?:\.U\d+(?:\.Q\d+)?)?\b")
+_CITATION_PREFIX = re.compile(
+    r"\b(?:evidence|source|study|passage|reference|citation|document|unit|quantity|see|cites?|"
+    r"according to|reported in|reported by|shown in)\s*(?:id\s*)?[:#]?\s*$", re.I,
+)
+_CITATION_SUFFIX = re.compile(
+    r"^(?:['’]s\s+(?:results?|findings?|conclusions?|abstract|study)\b|"
+    r"\s+(?:reports?|states?|shows?|found|concludes?|supports?|contradicts?|indicates?|"
+    r"demonstrated|establishes?|results?|findings?)\b)", re.I,
+)
+
+
+def _explicit_prose_reference(text: str, match: re.Match[str]) -> bool:
+    if "." in match.group():
+        return True
+    before, after = text[:match.start()], text[match.end():]
+    in_brackets = before.rfind("[") > before.rfind("]") and "]" in after
+    from_source = re.search(r"(?:^|[.!?]\s+)from\s+$", before, re.I)
+    prefix = _CITATION_PREFIX.search(before)
+    # "To study E2 concentrations" uses study as a verb. "According to study
+    # E2" is a citation, so the surrounding grammar must stay distinct.
+    verb_study = re.search(r"\b(?:to|we|they|can|could|will|would|should|may)\s+study\s*$",
+                           before, re.I) and not re.search(r"according\s+to\s+study\s*$",
+                                                          before, re.I)
+    if verb_study and prefix and prefix.group().strip().casefold() == "study":
+        prefix = None
+    return bool(in_brackets or from_source or prefix
+                or _CITATION_SUFFIX.search(after))
+
+
+def _validate_source_bound_prose(decision: JudgeDecisionV2, allowed_ids: tuple[str, ...]) -> None:
+    """Disambiguate source vocabulary without inventing or aliasing a citation.
+
+    Bare E-number terms can be scientific names when present in the same finding's
+    actual frozen quotes. Explicit citation syntax never receives this exemption.
+    Units/quantities remain exact local references; conclusions inherit only their
+    declared statement dependencies. No disease-specific vocabulary is used.
+    """
+    allowed = set(allowed_ids)
+    for statement in decision.statements:
+        for ref in statement.evidence_refs:
+            if ref.evidence_id not in allowed:
+                _prose_failure(statement.statement_id, "evidence_refs.evidence_id",
+                               ref.evidence_id, allowed_ids,
+                               "Evidence is outside the judge-visible set.")
+
+    def check(text: str, field_name: str, statement_id: str | None,
+              statements: tuple[JudgeStatement, ...]) -> None:
+        evidence = tuple(dict.fromkeys(ref.evidence_id for s in statements
+                                      for ref in s.evidence_refs))
+        units = tuple(dict.fromkeys(u for s in statements for u in s.source_unit_ids))
+        quantities = tuple(dict.fromkeys(q for s in statements
+                                        for q in s.source_quantity_ids or ()))
+        vocabulary = {m.group() for s in statements for ref in s.evidence_refs
+                      for m in _PROSE_REFERENCE.finditer(ref.quote) if "." not in m.group()}
+        for match in _PROSE_REFERENCE.finditer(text):
+            identifier = match.group()
+            if (identifier in vocabulary and not _explicit_prose_reference(text, match)):
+                continue
+            expected = (quantities if ".Q" in identifier else units
+                        if ".U" in identifier else evidence)
+            if identifier not in expected:
+                _prose_failure(statement_id, field_name, identifier, expected,
+                               "Prose cites a reference not owned by this finding or conclusion.")
+        external = re.search(r"\b(?:PMID|DOI)\s*[:#]?\s*\S+", text, re.I)
+        if external:
+            _prose_failure(statement_id, field_name, external.group()[:256], evidence,
+                           "Raw publication identifiers are not accepted as judge citations.")
+
+    for statement in decision.statements:
+        check(statement.text, "text", statement.statement_id, (statement,))
+        check(statement.qualitative_finding or "", "qualitative_finding", statement.statement_id,
+              (statement,))
+    dependencies = tuple(s for s in decision.statements
+                         if s.statement_id in decision.conclusion.based_on_statement_ids)
+    check(decision.conclusion.justification, "conclusion.justification", None, dependencies)
+    check(decision.conclusion.qualitative_justification or "",
+          "conclusion.qualitative_justification", None, dependencies)
+
+
+def _prose_failure(statement_id: str | None, field_name: str, identifier: str,
+                   allowed_ids: tuple[str, ...], message: str) -> None:
+    cause = CitationReferenceError(
+        message, statement_id=statement_id, reference_field=field_name,
+        offending_id=identifier, expected_allowed_ids=allowed_ids,
+        source_unit_id=identifier.split(".Q")[0] if ".U" in identifier else None,
+        evidence_id=identifier.split(".")[0] if identifier.startswith("E") else None,
+    )
+    raise _reference_failure("invalid_evidence_citation", cause) from cause
 
 
 def _schema_errors(exc: ValidationError) -> tuple[dict[str, object], ...]:

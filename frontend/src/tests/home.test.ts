@@ -27,7 +27,8 @@ const flush = async (): Promise<void> => { await Promise.resolve(); await Promis
 describe("submission page", () => {
   it("renders product copy, text mode, and required consent", () => {
     const node = mount();
-    expect(node.textContent).toContain("Check health claims against scientific evidence.");
+    expect(node.textContent).toContain("Heard a health claim?");
+    expect(node.textContent).not.toMatch(/Start a verification|Service connected|Evidence-based medical information verification/);
     expect(node.querySelector("textarea")).not.toBeNull();
     expect((node.querySelector("[type=submit]") as HTMLButtonElement).disabled).toBe(true);
     expect((node.querySelector("[name=consent]") as HTMLInputElement).checked).toBe(false);

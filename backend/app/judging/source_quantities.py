@@ -5,13 +5,14 @@ import re
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.judging.citation_errors import CitationReferenceError
 from app.judging.source_units import SourceUnit
 from app.validation.numeric_effects import Measure, NumericQuantity, parse_quantities
 
 VERSION = "source-quantity-catalog-1.0"
 
 
-class QuantityReferenceError(ValueError):
+class QuantityReferenceError(CitationReferenceError):
     """Model-selected reference defect, distinct from ambiguous source evidence."""
 
 
@@ -101,11 +102,28 @@ def catalog_items(snapshot: dict[str, object]) -> dict[str, SourceQuantity]:
 
 def check_quantity_refs(ids: tuple[str, ...], unit_ids: tuple[str, ...],
                         catalog: dict[str, SourceQuantity]) -> None:
+    allowed = tuple(identifier for identifier, quantity in catalog.items()
+                    if quantity.source_unit_id in unit_ids)
     if len(ids) != len(set(ids)):
-        raise QuantityReferenceError("Duplicate source quantity reference")
+        duplicate = next(identifier for index, identifier in enumerate(ids)
+                         if identifier in ids[:index])
+        raise QuantityReferenceError(
+            "Duplicate source quantity reference", reference_field="source_quantity_ids",
+            offending_id=duplicate, expected_allowed_ids=allowed,
+            expected_unit_ids=unit_ids,
+        )
     for identifier in ids:
         quantity = catalog.get(identifier)
         if quantity is None:
-            raise QuantityReferenceError("Unknown source quantity reference")
+            raise QuantityReferenceError(
+                "Unknown source quantity reference", reference_field="source_quantity_ids",
+                offending_id=identifier, expected_allowed_ids=allowed,
+                expected_unit_ids=unit_ids,
+            )
         if quantity.source_unit_id not in unit_ids:
-            raise QuantityReferenceError("Source quantity belongs to an uncited unit")
+            raise QuantityReferenceError(
+                "Source quantity belongs to an uncited unit",
+                reference_field="source_quantity_ids", offending_id=identifier,
+                expected_allowed_ids=allowed, source_unit_id=quantity.source_unit_id,
+                evidence_id=quantity.evidence_id, expected_unit_ids=unit_ids,
+            )

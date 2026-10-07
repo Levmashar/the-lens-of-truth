@@ -1,0 +1,957 @@
+{
+    "original_analysis_id":  "0dd023b0-bffb-4c60-863a-37dce0e04437",
+    "claim":  "Soy regular usage increases estrogen levels in male body.",
+    "citation_preflight_version":  "evidence-citation-preflight-1.1",
+    "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+    "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+    "selected_evidence_ids":  [
+                                  "E7",
+                                  "E15",
+                                  "E9"
+                              ],
+    "judge_visible_evidence_ids":  [
+                                       "E7",
+                                       "E46",
+                                       "E15",
+                                       "E35",
+                                       "E9",
+                                       "E51"
+                                   ],
+    "allowed_units":  [
+                          {
+                              "unit_id":  "E7.U1",
+                              "evidence_id":  "E7",
+                              "document_id":  "pubmed:33383165",
+                              "section":  "ABSTRACT",
+                              "passage_sha256":  "fc0c151201eef3704f88637927bf7ec0e485f0dac756e4ea3c61fd141a1b6efa",
+                              "document_sha256":  "7ffe6d402a765081df7ab3c1563430f26a44848ea4e15d57f37666271b154770"
+                          },
+                          {
+                              "unit_id":  "E46.U1",
+                              "evidence_id":  "E46",
+                              "document_id":  "pubmed:33383165",
+                              "section":  "TITLE",
+                              "passage_sha256":  "8cdcb4e85e42bd92468de7e98b9df5e1956f41767da97e55957ca1d979ad2622",
+                              "document_sha256":  "7ffe6d402a765081df7ab3c1563430f26a44848ea4e15d57f37666271b154770"
+                          },
+                          {
+                              "unit_id":  "E15.U1",
+                              "evidence_id":  "E15",
+                              "document_id":  "pubmed:11603644",
+                              "section":  "ABSTRACT",
+                              "passage_sha256":  "fc96c392bd7466d4b92fee65eeb113487d21c2c7f247cde9d7e6ed89ee6691c8",
+                              "document_sha256":  "f6de64b73df119910cda94f25984190fe4c5201282c1c8314d5c41d94b2bb9a4"
+                          },
+                          {
+                              "unit_id":  "E35.U1",
+                              "evidence_id":  "E35",
+                              "document_id":  "pubmed:11603644",
+                              "section":  "TITLE",
+                              "passage_sha256":  "2d4f1a62d3d293137e06918b7e61670d34541cfe8eb193aa5bb578fb56ef6984",
+                              "document_sha256":  "f6de64b73df119910cda94f25984190fe4c5201282c1c8314d5c41d94b2bb9a4"
+                          },
+                          {
+                              "unit_id":  "E9.U1",
+                              "evidence_id":  "E9",
+                              "document_id":  "pubmed:14628433",
+                              "section":  "ABSTRACT",
+                              "passage_sha256":  "9a9813b5735786687fdfccf45886e532c908de7b039362e5f6a8f17c2142ab5a",
+                              "document_sha256":  "8bce54e75c7c339a44eb18ad73c3b08b19d9e7b9cfa8e3f3e5a975d914d69131"
+                          },
+                          {
+                              "unit_id":  "E51.U1",
+                              "evidence_id":  "E51",
+                              "document_id":  "pubmed:14628433",
+                              "section":  "TITLE",
+                              "passage_sha256":  "ba5eb21bf413ce6ff79f01805c129676835a6ed0be2b44899ec9af43a0ab3023",
+                              "document_sha256":  "8bce54e75c7c339a44eb18ad73c3b08b19d9e7b9cfa8e3f3e5a975d914d69131"
+                          }
+                      ],
+    "quantity_catalog_version":  "source-quantity-catalog-1.0",
+    "quantity_ownership":  [
+                               {
+                                   "quantity_id":  "E7.U1.Q1",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q2",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q3",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q4",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q5",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q6",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q7",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q8",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q9",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q10",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q11",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q12",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q13",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q14",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q15",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q16",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q17",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q18",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               },
+                               {
+                                   "quantity_id":  "E7.U1.Q19",
+                                   "source_unit_id":  "E7.U1",
+                                   "evidence_id":  "E7"
+                               }
+                           ],
+    "saved_replays":  [
+                          {
+                              "slot":  1,
+                              "model":  "DeepSeek-V4.1-Flash",
+                              "attempt":  1,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S1",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  "S2",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "6de146a1f638801da5adac842a4191eef4a28e7d93d8fd24cbdfe2dd71b37f8a",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1",
+                                                                                        "E46.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+                                                                                            "E7.U1.Q10",
+                                                                                            "E7.U1.Q15",
+                                                                                            "E7.U1.Q16"
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S4",
+                                                                "source_unit_ids":  [
+                                                                                        "E15.U1",
+                                                                                        "E35.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S5",
+                                                                "source_unit_ids":  [
+                                                                                        "E9.U1",
+                                                                                        "E51.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          },
+                          {
+                              "slot":  1,
+                              "model":  "DeepSeek-V4.1-Flash",
+                              "attempt":  2,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S1",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "f898119debaf601e15feba968f25f6dfcd78bf020b875bad0d53222421dc0e2e",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+                                                                                            "E7.U1.Q10",
+                                                                                            "E7.U1.Q15",
+                                                                                            "E7.U1.Q16"
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E46.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S4",
+                                                                "source_unit_ids":  [
+                                                                                        "E15.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S5",
+                                                                "source_unit_ids":  [
+                                                                                        "E9.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          },
+                          {
+                              "slot":  2,
+                              "model":  "Qwen3.5-Plus",
+                              "attempt":  1,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S1",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  null,
+                                                                     "field":  "conclusion.justification",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "3a014cb0e4ea13d47764cd29f1b8541b818d175ac452833dd7c53ad9214b0ac2",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+                                                                                            "E7.U1.Q10",
+                                                                                            "E7.U1.Q15"
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S4",
+                                                                "source_unit_ids":  [
+                                                                                        "E15.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          },
+                          {
+                              "slot":  2,
+                              "model":  "Qwen3.5-Plus",
+                              "attempt":  2,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S3",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  null,
+                                                                     "field":  "conclusion.justification",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "0e348a9f192f6b70f9b51a243b7762c52e1c63be0d4db9bf1809e5979a4a80c0",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S4",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          },
+                          {
+                              "slot":  3,
+                              "model":  "GLM-4.7",
+                              "attempt":  1,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S2",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  "S3",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  null,
+                                                                     "field":  "conclusion.justification",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "2c8a1570302a3fc909c852ee22d96adc09bf586d5e660e4b18b70ad8abfc70ae",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+                                                                                            "E7.U1.Q10"
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          },
+                          {
+                              "slot":  3,
+                              "model":  "GLM-4.7",
+                              "attempt":  2,
+                              "before":  "invalid_evidence_citation",
+                              "after":  "citation_valid",
+                              "advisory_label":  null,
+                              "parent_normalizations":  [
+
+                                                        ],
+                              "old_exception_type":  "DecisionFailure",
+                              "old_exception_message":  "invalid_evidence_citation",
+                              "old_offending_prose_tokens":  [
+                                                                 {
+                                                                     "statement_id":  "S2",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  "S3",
+                                                                     "field":  "text",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 },
+                                                                 {
+                                                                     "statement_id":  null,
+                                                                     "field":  "conclusion.justification",
+                                                                     "tokens":  [
+                                                                                    "E1",
+                                                                                    "E2"
+                                                                                ]
+                                                                 }
+                                                             ],
+                              "allowed_evidence_ids":  [
+                                                           "E7",
+                                                           "E46",
+                                                           "E15",
+                                                           "E35",
+                                                           "E9",
+                                                           "E51"
+                                                       ],
+                              "allowed_unit_ids":  [
+                                                       "E7.U1",
+                                                       "E46.U1",
+                                                       "E15.U1",
+                                                       "E35.U1",
+                                                       "E9.U1",
+                                                       "E51.U1"
+                                                   ],
+                              "allowed_quantity_ids":  [
+                                                           "E7.U1.Q1",
+                                                           "E7.U1.Q2",
+                                                           "E7.U1.Q3",
+                                                           "E7.U1.Q4",
+                                                           "E7.U1.Q5",
+                                                           "E7.U1.Q6",
+                                                           "E7.U1.Q7",
+                                                           "E7.U1.Q8",
+                                                           "E7.U1.Q9",
+                                                           "E7.U1.Q10",
+                                                           "E7.U1.Q11",
+                                                           "E7.U1.Q12",
+                                                           "E7.U1.Q13",
+                                                           "E7.U1.Q14",
+                                                           "E7.U1.Q15",
+                                                           "E7.U1.Q16",
+                                                           "E7.U1.Q17",
+                                                           "E7.U1.Q18",
+                                                           "E7.U1.Q19"
+                                                       ],
+                              "response_sha256":  "5292be068e57d6791316ba40d77162c94220c5dfbfe152a4382755e8cb38abd0",
+                              "input_snapshot_hash":  "9b0e522e22d244b3bbcf5c27f76c40ac11bd09a8d9ca8e361b5bb7f59dc917a8",
+                              "prompt_hash":  "d2d47f03fea42f73bed3620471869356d798918d17dbe90b9cff4d1a10db8b2e",
+                              "structured_statements":  [
+                                                            {
+                                                                "statement_id":  "S1",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+                                                                                            "E7.U1.Q10"
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S2",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            },
+                                                            {
+                                                                "statement_id":  "S3",
+                                                                "source_unit_ids":  [
+                                                                                        "E7.U1"
+                                                                                    ],
+                                                                "source_quantity_ids":  [
+
+                                                                                        ]
+                                                            }
+                                                        ]
+                          }
+                      ],
+    "live":  {
+                 "analysis_id":  "baaf532a-c58a-455a-a752-e40140764842",
+                 "result_label":  "not_enough_evidence",
+                 "report_http":  200,
+                 "usable_judges":  3,
+                 "qualified_judges":  3,
+                 "semantic_calls":  3,
+                 "paid_model_calls":  7,
+                 "citation_retries":  0,
+                 "duration_ms":  177613,
+                 "judge_latency_ms":  [
+                                          19149,
+                                          44665,
+                                          21697
+                                      ],
+                 "validator_latency_ms":  [
+                                              46306,
+                                              13738,
+                                              15988
+                                          ],
+                 "remaining_guard":  "CLAIMED_EXPOSURE_NOT_ESTABLISHED",
+                 "position_reason":  "ONLY_INSUFFICIENT_OR_CONTEXT",
+                 "report_reason":  "population_mismatch",
+                 "report_reason_misleading":  true,
+                 "final_source_audit_checks":  [
+                                                   {
+                                                       "analysis_id":  "baaf532a-c58a-455a-a752-e40140764842",
+                                                       "slot":  1,
+                                                       "judge_run_id":  "5ebe771a-9623-4e8d-b605-03bc86adcb56",
+                                                       "risk_class":  "standard",
+                                                       "citation_valid":  true,
+                                                       "persisted_decision_matches":  true,
+                                                       "schema_version_inferred":  false,
+                                                       "normalizations_match":  true,
+                                                       "semantic_audit_matches25":  true,
+                                                       "validated_evidence_position":  "not_enough_evidence",
+                                                       "pass":  true
+                                                   },
+                                                   {
+                                                       "analysis_id":  "baaf532a-c58a-455a-a752-e40140764842",
+                                                       "slot":  2,
+                                                       "judge_run_id":  "8d734804-36be-46cf-baec-8ed78fb556a5",
+                                                       "risk_class":  "standard",
+                                                       "citation_valid":  true,
+                                                       "persisted_decision_matches":  true,
+                                                       "schema_version_inferred":  false,
+                                                       "normalizations_match":  true,
+                                                       "semantic_audit_matches25":  true,
+                                                       "validated_evidence_position":  "not_enough_evidence",
+                                                       "pass":  true
+                                                   },
+                                                   {
+                                                       "analysis_id":  "baaf532a-c58a-455a-a752-e40140764842",
+                                                       "slot":  3,
+                                                       "judge_run_id":  "5fc848f8-b439-4ce3-ab05-78f5e6caba6e",
+                                                       "risk_class":  "standard",
+                                                       "citation_valid":  true,
+                                                       "persisted_decision_matches":  true,
+                                                       "schema_version_inferred":  false,
+                                                       "normalizations_match":  true,
+                                                       "semantic_audit_matches25":  true,
+                                                       "validated_evidence_position":  "not_enough_evidence",
+                                                       "pass":  true
+                                                   }
+                                               ]
+             },
+    "versions":  {
+                     "architecture":  "V2.5",
+                     "validation_contract":  "2.5",
+                     "structured_quantities":  "V2.4",
+                     "query_plan":  "1.6",
+                     "validated_position":  "1.8",
+                     "question_evidence_policy":  "2.1",
+                     "semantic_prompt":  "2.7",
+                     "judge_prompt":  "2.15",
+                     "verdict_policy":  "1.4",
+                     "approved_source_manifest":  "1.1"
+                 },
+    "models":  {
+                   "provider":  "paratera",
+                   "extraction":  "DeepSeek-V4.1-Flash",
+                   "judge_1":  "DeepSeek-V4.1-Flash",
+                   "judge_2":  "Qwen3.5-Plus",
+                   "judge_3":  "GLM-4.7",
+                   "semantic_validator":  "Qwen3.8-Flash",
+                   "validator_thinking":  false
+               },
+    "backend_image_config_digest":  "sha256:c289ab222f31bbe46a5564d5d91429c887bac464e4145caee0b41150a490a47a",
+    "production_ready":  false,
+    "final_source_sha256":  {
+                                "backend/app/judging/service.py":  "2243fa4423dcd96b34dbb5b2f028a3baf42a20f320b201dc8a4af9a851b7b692",
+                                "backend/app/judging/source_units.py":  "4d5464271efa81d1074071e7c86af79fbbd97f8acd5851ef91243a176e8a08ac",
+                                "backend/app/judging/source_quantities.py":  "c8f0cabc65deb679970e6b6f71886f185fdcc3641c6a9e7c52f6fd443e63fd2f",
+                                "backend/app/judging/citation_errors.py":  "620416f2a6446398d73c10acb530fa262b95462a4c93cac1ab15905e53ff4850",
+                                "backend/tests/test_citation_preflight_generic.py":  "6e6aaae8f58ed9b00e7457e4dfe2a6f6ed4474e1c6973d61790113a84250ade0",
+                                "backend/tests/fixtures/citation_preflight_frozen_20261006.json.gz":  "df0cc57d1bb8863921752d3138cee0f00cfc433ac7352e8f0e422d6696a1a1f2"
+                            },
+    "verification":  {
+                         "backend_passed":  1154,
+                         "backend_failed":  0,
+                         "backend_skipped":  0,
+                         "database_tests_enabled":  true,
+                         "backend_duration_seconds":  565.54,
+                         "dependency_deprecation_warnings":  2,
+                         "new_citation_regressions":  88,
+                         "frontend_passed":  56,
+                         "frontend_build_passed":  true,
+                         "ruff_passed":  true,
+                         "mypy_passed":  true,
+                         "mypy_source_files":  177,
+                         "frozen_original_replays_passed":  6,
+                         "final_source_live_audits_passed":  3,
+                         "running_backend_source_hashes_match":  true,
+                         "post_restart_health_http":  200,
+                         "post_restart_saved_report_http":  200,
+                         "post_restart_analysis_status":  "completed"
+                     }
+}

@@ -1,5 +1,70 @@
 # Project Context
 
+## Gradual frontend refinement (2026-10-06, second pass)
+
+Smaller supplied logo stays left-aligned and vertically centered in the header;
+stage-aware animated lens and compact seven-stage
+rail replace the loading checklist. Polling preserves animation nodes and real
+backend stage state; preceding milestones fill even when the completion list lags,
+with smoothly filling connectors. Reduced motion remains supported. Remove the repeated NEI
+boilerplate. A read-only `report-reading-guide-1.0` projects saved, source-validated
+model findings with citation anchors, after exact V2.5 audit reconstruction.
+Highlight literal attribution quotes or a source's explicitly stated conclusion;
+preserve the entire source passage underneath. No new AI calls or medical votes.
+
+Production frontend builds omit development/debug/technical chrome; DEBUG_MODE
+is false. Unqualified reports retain a plain public-release status notice.
+APP_ENV remains development: strict production still rejects V2.5 reports, and
+the runtime-mode preference remains unanswered. Existing production gates,
+medical logic, models, prompts, query-plan and report hashes are unchanged.
+
+Frontend 64/build, 13 final reading-guide regressions, existing report/API checks
+and Ruff/mypy pass. Rebuilt/restarted both services while idle. Real saved report
+and reading guide return HTTP 200 with three case findings and one exact owned
+source conclusion; saved report hash unchanged. Browser visual QA was unavailable
+because neither an in-app browser nor Chrome automation is enabled in this session.
+See [changes and verification](FRONTEND_REFINEMENTS_20261006.md).
+
+## Source-bound citation preflight repair (2026-10-06)
+
+Current citation preflight is `evidence-citation-preflight-1.1`. Analysis
+`0dd023b0-bffb-4c60-863a-37dce0e04437` failed all six judge attempts because bare
+scientific E1/E2 tokens in the frozen hormone abstract were treated as evidence
+citations. All six saved structured replies now pass exact frozen replay.
+Disambiguation uses each finding's own source quotations; explicit citations,
+unit/quantity ownership, hashes and historical contracts remain strict.
+Rejected attempts now record statement/field, offending ID, allowed IDs and
+precise exception. No model, prompt or medical-policy change.
+
+Fresh full frontend-path analysis `baaf532a-c58a-455a-a752-e40140764842` completed:
+3/3 first-attempt judges, 3/3 semantic checks, all 12 findings attributed,
+3/3 qualified, report HTTP 200, final NEI. Seven paid calls. Final-source saved
+decision and semantic audits reconstruct exactly for all three judges. Backend
+rebuilt/restarted; final database-enabled backend 1,154 tests, frontend 56/build
+and Ruff/mypy pass. Health and saved report remain HTTP 200 after verification.
+
+The live run exposes separate unresolved exposure grounding (“Soy regular usage”)
+and a misleading population explanation. These are open follow-ups, not a claim
+of medical or production readiness. Existing development production gates remain.
+All V2.5/query-plan 1.6/position 1.8/policy 2.1 and active model versions below
+are unchanged. See [exact failure trace, tests and live result](CITATION_PREFLIGHT_RELIABILITY_FIX_20261006.md).
+
+## Frontend appearance and clarity (2026-10-06)
+
+Use the supplied light/dark lettering logos, a blue theme and an accessible
+light/dark switch that follows the system initially and persists a user choice.
+Simplify the claim-entry copy and remove the service-status badge. Loading uses
+actual backend stages with persistent animation nodes, descriptive stage text,
+and reduced-motion support. NEI keeps its saved backend summary and adds a
+plain-language explanation plus saved established/unresolved details when present.
+
+Frontend-only: medical logic, models, public labels, production gates and debug
+menu behavior are unchanged. Frontend 56 tests and production build pass;
+browser checks cover both themes, saved preference, screenshot mode, 320/390px
+layout, a real saved NEI report, polling continuity and reduced motion. No paid
+model calls. Frontend Docker image rebuilt/restarted; backend versions below
+remain current.
+
 ## Claim-type causal evidence follow-up (2026-10-06)
 
 Current build: V2.5, V2.4 structured quantities, query-plan 1.6, validated

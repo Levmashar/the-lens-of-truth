@@ -8,7 +8,7 @@ export function createPrivacyConsent(onChange: () => void): { node: HTMLElement;
   input.name = "consent";
   input.addEventListener("change", onChange);
   const text = element("span", "consent-copy",
-    "I understand this content will be processed for verification. Uploaded images are temporarily retained under the privacy notice; I will not include unnecessary personal information.");
+    "I agree to have this content checked. Images are kept temporarily under the privacy notice, and I will leave out unnecessary personal information.");
   const version = element("small", "consent-version", `Privacy notice version ${PRIVACY_NOTICE_VERSION}`);
   text.append(version);
   append(label, input, text);

@@ -1,13 +1,14 @@
-import { getAnalysis, getClaimReport, getClaims } from "../api/analyses";
+import { getAnalysis, getClaimReport, getClaims, getReportReadingGuide } from "../api/analyses";
 import { ApiError, errorMessage } from "../api/errors";
 import { createClaimResult } from "../components/claimResult";
 import { createDebugProgress } from "../components/debugProgress";
-import { createProgress, stageLabel } from "../components/progress";
+import { createProgress, stageLabel, updateProgress } from "../components/progress";
 import type { AnalysisClaim, AnalysisProgress, ClaimSummary } from "../types/api";
-import type { LensReport } from "../types/report";
+import type { LensReport, ReportReadingGuide } from "../types/report";
 import { append, clear, element } from "../utils/dom";
 import { Poller } from "../utils/polling";
 import { navigate } from "../utils/routing";
+import { showDevelopmentUi } from "../utils/uiMode";
 
 const terminal = new Set(["completed", "partially_completed", "failed", "claims_extracted"]);
 
@@ -37,21 +38,25 @@ function analysisFailureCopy(analysis: AnalysisProgress): [string, string] {
 export function createAnalysisPage(id: string): { node: HTMLElement; dispose: () => void } {
   const page = element("div", "analysis-page content-width");
   const top = element("section", "analysis-heading");
-  append(top, element("h1", "page-title", "Evidence, claim by claim"));
+  append(top, element("h1", "page-title", "Your claim check"));
   const status = element("p", "connection-note");
   status.setAttribute("role", "status");
   const stageAnnouncement = element("p", "sr-only");
   stageAnnouncement.setAttribute("role", "status");
   stageAnnouncement.setAttribute("aria-live", "polite");
   const body = element("div", "analysis-body");
+  const progressHost = element("div", "progress-host");
+  progressHost.hidden = true;
+  let progressNode: HTMLElement | null = null;
   const back = element("button", "button button-secondary", "Check another claim");
   back.type = "button";
   back.addEventListener("click", () => navigate("/"));
-  append(page, top, status, stageAnnouncement, body, back);
+  append(page, top, status, stageAnnouncement, progressHost, body, back);
 
   let analysis: AnalysisProgress | null = null;
   let claims: ClaimSummary[] = [];
   const reports = new Map<string, LensReport>();
+  const readingGuides = new Map<string, ReportReadingGuide>();
   const reportErrors = new Map<string, string>();
   const reportLoading = new Set<string>();
   const reportControllers = new Map<string, AbortController>();
@@ -65,6 +70,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     if (disposed) return;
     clear(body);
     if (permanentError) {
+      progressHost.hidden = true;
       const error = element("section", "error-state");
       append(error, element("h2", "card-title", "Analysis unavailable"),
         element("p", "", permanentError));
@@ -80,7 +86,14 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     }
 
     const isTerminal = terminal.has(analysis.status);
-    if (!isTerminal) body.append(createProgress(analysis));
+    page.dataset.state = isTerminal ? "finished" : "running";
+    progressHost.hidden = isTerminal;
+    if (!isTerminal) {
+      if (!progressNode) {
+        progressNode = createProgress(analysis);
+        progressHost.append(progressNode);
+      } else updateProgress(progressNode, analysis);
+    }
     if (analysis.status === "failed" && analysis.claims.length === 0) {
       const failure = element("section", "error-state");
       const [title, message] = analysisFailureCopy(analysis);
@@ -106,7 +119,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       for (const claim of analysis.claims) list.append(createClaimCard(claim));
       body.append(list);
     }
-    if (analysis.debug_enabled) body.append(createDebugProgress(analysis, claims, pollError));
+    if (analysis.debug_enabled && showDevelopmentUi()) body.append(createDebugProgress(analysis, claims, pollError));
   }
 
   function createClaimCard(claim: AnalysisClaim): HTMLElement {
@@ -130,7 +143,8 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
         : "This claim could not be completed reliably. No report is available."));
     } else if (summary?.status === "completed") {
       const report = reports.get(claim.claim_id);
-      if (report) card.append(createClaimResult(report, id, claim.claim_id, analysis?.debug_enabled));
+      if (report) card.append(createClaimResult(report, id, claim.claim_id,
+        analysis?.debug_enabled, readingGuides.get(claim.claim_id)));
       else if (reportErrors.has(claim.claim_id)) card.append(element("p", "report-error", reportErrors.get(claim.claim_id)));
       else card.append(element("div", "skeleton skeleton-report"));
     } else {
@@ -146,8 +160,19 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       reportLoading.add(claim.claim_id);
       const controller = new AbortController();
       reportControllers.set(claim.claim_id, controller);
-      void getClaimReport(id, claim.claim_id, controller.signal).then((report) => {
-        if (!disposed) reports.set(claim.claim_id, report);
+      void getClaimReport(id, claim.claim_id, controller.signal).then(async (report) => {
+        if (disposed) return;
+        reports.set(claim.claim_id, report);
+        render();
+        try {
+          const guide = await getReportReadingGuide(id, claim.claim_id, controller.signal);
+          if (!disposed && guide.verdict_run_id === report.verdict_run_id
+              && guide.report_semantic_hash === report.semantic_hash) {
+            readingGuides.set(claim.claim_id, guide);
+          }
+        } catch {
+          // Older servers and an unavailable reading guide do not hide a saved report.
+        }
       }).catch((error: unknown) => {
         if (!disposed && !controller.signal.aborted) reportErrors.set(claim.claim_id, errorMessage(error));
       }).finally(() => {

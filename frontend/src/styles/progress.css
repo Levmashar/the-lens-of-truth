@@ -1,0 +1,45 @@
+.progress-card { position: relative; background: transparent; border: 0; box-shadow: none; padding: var(--space-6) 0 var(--space-8); text-align: center; }
+.progress-intro { display: grid; justify-items: center; gap: var(--space-6); }
+.progress-copy { min-width: 0; max-width: 610px; }
+.progress-phase { color: var(--accent); font-size: .71rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 650; margin-bottom: .85rem; }
+.progress-title { font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 600; line-height: 1.2; margin-bottom: .85rem; }
+.progress-description { color: var(--text-muted); font-size: .96rem; max-width: 48ch; margin-inline: auto; line-height: 1.7; }
+.loading-lens { position: relative; width: 190px; height: 190px; display: grid; place-items: center; isolation: isolate; }
+.lens-halo { position: absolute; inset: 18px; background: var(--accent-soft); border-radius: 50%; filter: blur(18px); opacity: .75; animation: lens-breathe 4s ease-in-out infinite; }
+.lens-orbit { position: absolute; inset: 4px; border: 1px solid var(--quote-border); border-top-color: var(--accent); border-radius: 50%; animation: lens-turn 12s linear infinite; }
+.lens-orbit::after { content: ""; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; position: absolute; top: 22px; right: 22px; box-shadow: 0 0 0 5px var(--accent-soft); }
+.lens-orbit-inner { inset: 27px; border: 1px dashed var(--quote-border); opacity: .65; animation: lens-turn 20s linear infinite reverse; }
+.lens-orbit-inner::after { width: 4px; height: 4px; top: 18px; right: 18px; box-shadow: none; }
+.lens-core { position: relative; display: grid; place-items: center; width: 92px; height: 92px; border: 1px solid var(--quote-border); border-radius: 28px; background: var(--surface); overflow: hidden; box-shadow: 0 10px 30px var(--accent-soft); animation: lens-float 4s ease-in-out infinite; }
+.lens-sheet { width: 37px; height: 46px; border: 1.5px solid var(--accent); border-radius: 5px; padding: 9px 6px; display: flex; flex-direction: column; gap: 5px; }
+.lens-line { height: 2px; background: var(--accent); opacity: .55; border-radius: 3px; transform-origin: left; animation: lens-read 3s ease-in-out infinite; }
+.lens-line:nth-child(2) { animation-delay: .2s; }
+.lens-line:nth-child(3) { width: 75%; animation-delay: .4s; }
+.lens-line:nth-child(4) { width: 55%; animation-delay: .6s; }
+.lens-scan { position: absolute; width: 100%; height: 1px; top: 20%; background: var(--accent); opacity: .45; box-shadow: 0 -5px 18px 5px var(--accent-soft); animation: lens-sweep 3s ease-in-out infinite; }
+.lens-spark { position: absolute; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; left: calc(28px + var(--spark-index) * 64px); top: calc(135px - var(--spark-index) * 49px); animation: lens-signal 3s ease-in-out infinite; animation-delay: calc(var(--spark-index) * .65s); }
+.progress-card[data-stage="retrieving"] .lens-core { border-radius: 50%; }
+.progress-card[data-stage="judging"] .lens-line { animation-name: lens-compare; }
+.progress-card[data-stage="validating"] .lens-sheet { border-width: 2px; }
+.progress-card[data-stage="aggregating"] .lens-orbit-inner { animation-duration: 8s; }
+.progress-card[data-stage="building_report"] .lens-scan { animation-duration: 1.8s; }
+.stepper { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); list-style: none; padding: 0; width: min(100%, 640px); margin: var(--space-10) auto 0; }
+.step { position: relative; display: grid; justify-items: center; gap: .8rem; color: var(--text-muted); font-size: .72rem; transition: color 450ms ease; }
+.step:not(:last-child)::before, .step:not(:last-child)::after { content: ""; position: absolute; left: calc(50% + 10px); right: calc(-50% + 10px); top: 3.5px; height: 2px; border-radius: 2px; }
+.step:not(:last-child)::before { background: var(--border); }
+.step:not(:last-child)::after { background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 700ms cubic-bezier(.22, 1, .36, 1); }
+.step-marker { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--border); transition: background 500ms ease, box-shadow 500ms ease; }
+.step[data-state="complete"] .step-marker { background: var(--accent); }
+.step[data-state="complete"]::after { transform: scaleX(1); }
+.step[data-state="active"] { color: var(--accent); font-weight: 650; }
+.step[data-state="active"] .step-marker { background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); animation: step-breathe 2.6s ease-in-out infinite; }
+.progress-reassurance { color: var(--text-muted); font-size: .78rem; margin-top: var(--space-8); }
+.analysis-page[data-state="running"] .analysis-heading { text-align: center; max-width: none; margin-bottom: var(--space-3); }
+.analysis-page[data-state="running"] .page-title { font-size: 1rem; font-weight: 500; color: var(--text-muted); }
+@keyframes lens-breathe { 50% { transform: scale(.88); opacity: .45; } }
+@keyframes lens-float { 50% { transform: translateY(-5px); } }
+@keyframes lens-read { 0%, 100% { transform: scaleX(.6); opacity: .3; } 45%, 65% { transform: scaleX(1); opacity: .8; } }
+@keyframes lens-compare { 50% { transform: translateX(2px) scaleX(.75); } }
+@keyframes lens-sweep { 0%, 100% { transform: translateY(0); opacity: 0; } 25% { opacity: .5; } 70% { transform: translateY(55px); opacity: .5; } }
+@keyframes lens-signal { 0%, 100% { opacity: .15; transform: scale(.65); } 50% { opacity: .8; transform: scale(1); } }
+@keyframes step-breathe { 50% { box-shadow: 0 0 0 8px var(--accent-soft); } }

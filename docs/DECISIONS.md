@@ -1,5 +1,26 @@
 # Architecture Decisions
 
+## ADR-059 - Disambiguate source vocabulary without aliasing citations
+
+**Decision (2026-10-06):** Repair the V2.5 prose preflight namespace collision
+using each finding's own exact materialized frozen quotations. Bare scientific
+E-number vocabulary present in those quotations is not itself an evidence
+citation. Explicit citation grammar/brackets and unit/quantity IDs remain exact
+local references. Conclusions inherit only declared statement dependencies.
+Historical contracts through V2.4 retain their original acceptance rules.
+
+Keep unit/quantity ownership, catalog/hash reconstruction, duplicate and ambiguous
+parent checks. No claim-specific vocabulary, ID aliases, model/prompt change or
+medical-policy relaxation. Version citation preflight independently as 1.1;
+record sanitized offending statement/field/ID, expected IDs and exact exception
+on each rejected attempt without rewriting old failed analyses.
+
+All six original soy-run replies replay citation-valid; one fresh full run reaches
+three validators and three qualified NEI positions. Final-source saved audits
+reconstruct exactly. Separate exposure grounding and misleading report-reason
+priority remain open; this operational repair is not production certification.
+See [trace, regression evidence and live result](CITATION_PREFLIGHT_RELIABILITY_FIX_20261006.md).
+
 ## ADR-058 - Claim-type causal evidence and reviewed route assessments
 
 **Decision (2026-10-06):** Separate etiologic exposure/disease-transmission

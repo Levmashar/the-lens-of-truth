@@ -1,4 +1,4 @@
-import { getHealth, startAnalysis, uploadScreenshot } from "../api/analyses";
+import { startAnalysis, uploadScreenshot } from "../api/analyses";
 import { ApiError, errorMessage } from "../api/errors";
 import { createClaimInput } from "../components/claimInput";
 import { createPrivacyConsent } from "../components/privacyConsent";
@@ -8,27 +8,24 @@ import { SubmissionAttempt } from "../utils/idempotency";
 import { navigate } from "../utils/routing";
 
 type Mode = "text" | "screenshot";
-const example = "Frequent sunscreen use causes invasive melanoma.";
+const example = "Daily sunscreen use reduces invasive melanoma risk.";
 
 export function createHomePage(): { node: HTMLElement; dispose: () => void } {
   const page = element("div", "home-page");
   const hero = element("section", "hero content-width");
   append(hero,
-    element("p", "eyebrow", "Evidence-based medical information verification"),
-    element("h1", "hero-title", "Check health claims against scientific evidence."),
-    element("p", "hero-copy", "Paste a health claim or upload a screenshot to check it against scientific evidence."),
+    element("h1", "hero-title", "Heard a health claim?\nLet's check it."),
+    element("p", "hero-copy", "See what the research says, with sources you can explore."),
   );
 
   const form = element("form", "verification-card");
   form.noValidate = true;
-  const intro = element("div", "form-intro");
-  append(intro, element("p", "eyebrow", "Start a verification"),
-    element("h2", "section-title", "What would you like to check?"));
+  form.setAttribute("aria-label", "Check a health claim");
   const tabs = element("div", "mode-switch");
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Input type");
-  const textTab = element("button", "mode-tab", "Paste text");
-  const imageTab = element("button", "mode-tab", "Upload screenshot");
+  const textTab = element("button", "mode-tab", "Write or paste");
+  const imageTab = element("button", "mode-tab", "Screenshot");
   textTab.type = imageTab.type = "button";
   textTab.setAttribute("role", "tab");
   imageTab.setAttribute("role", "tab");
@@ -52,25 +49,22 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
     claim.input.dispatchEvent(new Event("input", { bubbles: true }));
     claim.input.focus();
   });
-  const helper = element("p", "form-helper", "Please avoid names, medical record numbers, or other personal details.");
+  const helper = element("p", "form-helper", "Leave out names and other personal details.");
   const error = element("p", "form-error");
   error.setAttribute("role", "alert");
   error.hidden = true;
-  const submit = element("button", "button button-primary", "Verify Information");
+  const submit = element("button", "button button-primary", "Check this claim");
   submit.type = "submit";
   const actions = element("div", "form-actions");
   actions.append(submit);
   append(tabs, textTab, imageTab);
-  append(form, intro, tabs, panel, exampleButton, helper, consent.node, error, actions);
+  append(form, tabs, panel, exampleButton, helper, consent.node, error, actions);
   const how = element("section", "how-section content-width");
-  append(how, element("p", "eyebrow", "The method"),
-    element("h2", "section-title", "From a claim to a traceable report"));
+  append(how, element("h2", "section-title", "A clearer answer. A trail of evidence."));
   const steps = [
-    ["01", "Identify", "Separate checkable medical claims."],
-    ["02", "Understand", "Preserve meaning and identify medical concepts."],
-    ["03", "Retrieve", "Search the scientific literature and check source integrity."],
-    ["04", "Assess", "Compare each claim with the same frozen evidence and validate citations."],
-    ["05", "Report", "Explain the result, limitations, and uncertainty."],
+    ["01", "Find the research", "We identify the claim and look for relevant scientific evidence."],
+    ["02", "Check the details", "We compare the findings and check that the sources back them up."],
+    ["03", "Explain the answer", "You get a clear result, its limits, and the original sources."],
   ];
   const grid = element("div", "method-grid");
   for (const [number, title, copy] of steps) {
@@ -79,7 +73,6 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
     grid.append(step);
   }
   how.append(grid);
-  how.append(element("p", "method-attribution", "Medical terminology, when configured, uses MeSH from the U.S. National Library of Medicine. A terminology match is not medical evidence."));
   page.append(hero, form, how);
 
   let mode: Mode = "text";
@@ -127,7 +120,8 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
       return;
     }
     submitting = true;
-    submit.textContent = "Starting analysis...";
+    submit.textContent = "Starting your check…";
+    submit.classList.add("is-loading");
     updateSubmit();
     requestController = new AbortController();
     void (async () => {
@@ -154,19 +148,10 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
         error.hidden = false;
         if (caught instanceof ApiError && (caught.status === 409 || caught.status === 410)) attempt.reset();
       } finally {
-        if (!disposed) { submitting = false; submit.textContent = "Verify Information"; updateSubmit(); }
+        if (!disposed) { submitting = false; submit.textContent = "Check this claim"; submit.classList.remove("is-loading"); updateSubmit(); }
       }
     })();
   });
   setMode("text", true);
   return { node: page, dispose: () => { disposed = true; requestController?.abort(); screenshot.dispose(); } };
-}
-
-export async function setHealthStatus(node: HTMLElement, signal: AbortSignal): Promise<void> {
-  try {
-    await getHealth(signal);
-    if (!signal.aborted) node.textContent = "Service connected";
-  } catch {
-    if (!signal.aborted) node.textContent = "Service unavailable";
-  }
 }

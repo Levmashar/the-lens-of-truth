@@ -1,5 +1,54 @@
 # Delivery Roadmap
 
+## 2026-10-06 gradual frontend refinement, second pass
+
+- [x] Reduce the theme-appropriate supplied logo; keep it left-aligned and vertically centered
+- [x] Replace loading checklist with stage-aware lens motion and compact stage rail
+- [x] Keep actual progress, persistent nodes, announcements and reduced-motion support
+- [x] Fill preceding milestones when the completion list lags; animate connecting lines smoothly
+- [x] Replace generic NEI paragraphs with saved validated case findings/citation anchors
+- [x] Emphasize exact quoted evidence and keep full source context expandable
+- [x] Preserve exact report/audit/source ownership and production release checks
+- [x] Ship production frontend presentation; disable server development diagnostics
+- [x] Verify frontend 64/build, 13 final reading-guide tests, report/API checks and lint/types
+- [x] Rebuild/restart idle services; verify real saved report/guide HTTP 200 and unchanged hash
+- [ ] Visually review this second pass in a browser when browser automation is available
+- [ ] Resolve runtime-mode preference: strict APP_ENV=production blocks current V2.5
+      reports; public presentation is deployed with APP_ENV unchanged
+
+No paid calls, model change or medical-policy change. See
+[changes and verification](FRONTEND_REFINEMENTS_20261006.md).
+
+## 2026-10-06 source-bound citation preflight repair
+
+- [x] Trace all six original failed attempts against exact frozen inputs/raw replies
+- [x] Verify unit/quantity ownership, publication passages, parent IDs and V2.5 dispatch
+- [x] Distinguish scientific source vocabulary from actual citations generically
+- [x] Preserve strict explicit citations, local ownership and historical contracts
+- [x] Persist precise per-attempt citation exception/ID/allowed-set diagnostics
+- [x] Add 88 citation regressions with six exact compressed frozen replies
+- [x] Fresh full frontend-path rerun: 3/3 judges/validators/qualified, NEI, seven calls
+- [x] Replay all three fresh saved decisions and semantic audits on final source
+- [x] Complete final deployed database-enabled backend suite: 1,154 passed, no skips
+- [x] Verify frontend 56/build, Ruff/mypy and restart final backend
+- [x] Verify saved analysis/report and health after restart/suite: completed, HTTP 200
+- [ ] Resolve generic exposure grounding when descriptive usage words block the
+      actual exposure concept; do not bypass null/materiality safeguards
+- [ ] Prioritize actual qualification guard reasons over unrelated contextual
+      population warnings in report explanations
+
+Models and medical-policy versions unchanged. Existing production readiness and
+release gates remain open. See [full diagnosis/results](CITATION_PREFLIGHT_RELIABILITY_FIX_20261006.md).
+
+## 2026-10-06 frontend appearance and clarity
+
+- [x] Use supplied theme-appropriate logos and persistent system-aware theme switch
+- [x] Simplify claim entry, method copy and service-status chrome
+- [x] Add actual-stage loading motion without restarting nodes between polls
+- [x] Explain NEI in plain language while preserving saved report content
+- [x] Verify 56 frontend tests/build and desktop/mobile/reduced-motion browser behavior
+- [x] Rebuild/restart frontend only; preserve backend/models/debug menu
+
 ## 2026-10-06 claim-type causal evidence follow-up
 
 - [x] Confirm HPV/HIV failures through frozen taxonomy/design/source diagnostics

@@ -1,29 +1,41 @@
 @media (max-width: 760px) {
   .content-width { width: min(calc(100% - 2rem), var(--content-width)); }
-  .header-content { min-height: 66px; }
+  .header-content { min-height: 76px; }
+  .header-right { gap: var(--space-3); }
   .header-link { display: none; }
-  .service-status { font-size: .7rem; }
-  .method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stepper { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brand-logo { width: 190px; height: 66px; }
+  .brand-logo img { width: 190px; height: 66px; }
   .footer-content { flex-direction: column; }
-  .verification-card { width: min(calc(100% - 2rem), 790px); }
+  .verification-card { width: min(calc(100% - 2rem), 740px); }
+  .theme-label { display: none; }
+  .theme-toggle { width: 44px; padding: .5rem; }
 }
 @media (max-width: 480px) {
-  .brand-name { max-width: 125px; line-height: 1.1; font-size: .92rem; }
-  .brand-mark { width: 31px; height: 31px; flex: 0 0 auto; }
-  .hero { padding-top: var(--space-12); }
-  .hero-title { font-size: 2.48rem; }
+  .header-content { gap: .5rem; min-height: 70px; }
+  .brand-logo { width: 180px; height: 62px; }
+  .brand-logo img { width: 180px; height: 62px; }
+  .hero { padding-top: var(--space-8); }
+  .hero-title { font-size: 2.45rem; }
+  .hero-copy { font-size: .92rem; max-width: 30ch; }
   .verification-card, .claim-card, .progress-card { padding: var(--space-5); }
   .form-actions, .claims-heading { align-items: flex-start; flex-direction: column; }
   .form-actions .button { width: 100%; }
-  .method-grid { gap: var(--space-5); }
-  .stepper { grid-template-columns: 1fr; gap: var(--space-3); }
-  .meta-grid { grid-template-columns: 1fr; }
+  .method-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+  .stepper { margin-top: var(--space-8); }
+  .step-label { display: none; }
+  .meta-grid, .evidence-clarity { grid-template-columns: 1fr; }
   .evidence-card { padding: var(--space-5); }
   .evidence-footer { flex-direction: column; align-items: flex-start; }
-  .mode-tab { flex: 1; padding-inline: .4rem; font-size: .85rem; }
+  .mode-tab { flex: 1; padding-inline: .75rem; font-size: .85rem; }
   .upload-zone { padding: var(--space-5); }
+  .progress-card { padding: var(--space-4) 0 var(--space-6); }
+  .progress-intro { gap: var(--space-5); }
+  .loading-lens { width: 170px; height: 170px; }
+  .lens-core { width: 84px; height: 84px; }
+  .progress-title { font-size: 1.6rem; }
+  .progress-description { font-size: .9rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .lens-scan { display: none; }
 }

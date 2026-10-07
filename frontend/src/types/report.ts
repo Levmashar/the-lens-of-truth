@@ -2,6 +2,14 @@ import type { VerdictLabel } from "./api";
 
 export interface ReportReason { code: string; text: string }
 
+export interface ReportReadingGuide {
+  version: "report-reading-guide-1.0";
+  verdict_run_id: string;
+  report_semantic_hash: string;
+  findings: { text: string; evidence_ids: string[]; source_unit_ids: string[] }[];
+  highlights: { source_unit_id: string; exact_text: string; kind?: "attribution_quote" | "source_summary" }[];
+}
+
 export interface VerdictExplanation {
   version: "1.0";
   summary: string;

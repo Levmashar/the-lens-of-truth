@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createClaimResult } from "../components/claimResult";
 import { createEvidenceCard } from "../components/evidenceCard";
-import { createProgress } from "../components/progress";
+import { createProgress, updateProgress } from "../components/progress";
 import { errorMessage, parseApiError } from "../api/errors";
 import { currentRoute } from "../utils/routing";
 import { Poller } from "../utils/polling";
 import { analysisId, claimId, progress, report } from "./fixtures";
+import type { ReportReadingGuide } from "../types/report";
+
+afterEach(() => vi.unstubAllEnvs());
 
 describe("report presentation", () => {
   it("uses the saved explanation below the label and shows development details on demand", () => {
@@ -18,6 +21,9 @@ describe("report presentation", () => {
     } });
     const normal = createClaimResult(saved, analysisId, claimId);
     expect(normal.querySelector(".verdict-summary")?.textContent).toBe(saved.verdict_explanation?.summary);
+    expect(normal.querySelector(".verdict-meaning")).toBeNull();
+    expect(normal.textContent).not.toContain("Studies may be limited, give mixed results");
+    expect(normal.querySelector(".evidence-clarity")?.textContent).toContain("85% is not established.");
     expect(normal.textContent).toContain("Why this result");
     expect(normal.querySelector(".verdict-explanation-details")).toBeNull();
     const debug = createClaimResult(saved, analysisId, claimId, true);
@@ -140,6 +146,101 @@ describe("report presentation", () => {
     expect(node.textContent).toContain("Searching scientific evidence");
     expect(node.querySelector('[data-state="active"]')?.textContent).toContain("Searching scientific evidence");
     expect(node.textContent).not.toMatch(/\d+%/);
+  });
+
+  it("fills every preceding milestone when the completion list lags the current stage", () => {
+    const node = createProgress(progress({ status: "running", stage: "validating", completed_stages: ["extracting"] }));
+    expect([...node.querySelectorAll<HTMLElement>(".step")].map((step) => step.dataset.state))
+      .toEqual(["complete", "complete", "complete", "complete", "active", "future", "future"]);
+    expect(node.querySelector('[aria-current="step"]')?.getAttribute("data-stage")).toBe("validating");
+  });
+
+  it("keeps the current milestone active and does not invent completed stages while queued", () => {
+    const node = createProgress(progress({ status: "running", stage: "extracting", completed_stages: ["extracting"] }));
+    expect(node.querySelector<HTMLElement>('.step[data-stage="extracting"]')?.dataset.state).toBe("active");
+    updateProgress(node, progress({ status: "queued", stage: "queued", completed_stages: [] }));
+    expect([...node.querySelectorAll<HTMLElement>(".step")].every((step) => step.dataset.state === "future")).toBe(true);
+    expect(node.querySelector('[aria-current="step"]')).toBeNull();
+  });
+
+  it("updates real progress without replacing the animated lens or stage nodes", () => {
+    const node = createProgress(progress({ status: "running", stage: "retrieving", completed_stages: ["extracting", "normalizing"] }));
+    const lens = node.querySelector(".loading-lens");
+    const markers = [...node.querySelectorAll(".step-marker")];
+    updateProgress(node, progress({ status: "running", stage: "judging", completed_stages: ["extracting", "normalizing", "retrieving"] }));
+    expect(node.querySelector(".loading-lens")).toBe(lens);
+    expect([...node.querySelectorAll(".step-marker")]).toEqual(markers);
+    expect(node.querySelector('[aria-current="step"]')?.textContent).toContain("Comparing claims with the evidence");
+    expect(node.querySelector<HTMLElement>('[data-stage="retrieving"]')?.dataset.state).toBe("complete");
+    expect(node.dataset.stage).toBe("judging");
+    expect(node.querySelector(".progress-phase")?.textContent).toBe("Step 04 of 07");
+    expect(node.querySelectorAll(".step-marker")).toHaveLength(7);
+    expect(node.querySelector(".step-marker")?.textContent).toBe("");
+  });
+
+  it("shows saved source-validated case findings with working source anchors", () => {
+    const saved = report();
+    const guide: ReportReadingGuide = {
+      version: "report-reading-guide-1.0", verdict_run_id: saved.verdict_run_id,
+      report_semantic_hash: saved.semantic_hash,
+      findings: [{ text: "The review found benefit limited to physically stressed participants.",
+        evidence_ids: ["E1"], source_unit_ids: ["E1.U1"] }], highlights: [],
+    };
+    const node = createClaimResult(saved, analysisId, claimId, false, guide);
+    expect(node.querySelector(".case-finding")?.textContent).toContain(guide.findings[0].text);
+    expect(node.querySelector(".finding-citation")?.getAttribute("href")).toBe(`#source-${claimId}-E1`);
+    expect(node.querySelector(`#source-${claimId}-E1`)).not.toBeNull();
+  });
+
+  it("never uses an explanation belonging to another saved report", () => {
+    const node = createClaimResult(report(), analysisId, claimId, false, {
+      version: "report-reading-guide-1.0", verdict_run_id: "foreign",
+      report_semantic_hash: "wrong", highlights: [],
+      findings: [{ text: "Unrelated finding", evidence_ids: ["E1"], source_unit_ids: ["E1.U1"] }],
+    });
+    expect(node.querySelector(".case-explanation")).toBeNull();
+  });
+
+  it("highlights exact owned quotes while preserving every character of the full passage", () => {
+    const text = "Some background. The randomized study found fewer invasive melanomas with daily sunscreen use. Limits apply.";
+    const phrase = "The randomized study found fewer invasive melanomas with daily sunscreen use.";
+    const source = { ...report().key_evidence[0], exact_excerpt: text };
+    const node = createEvidenceCard(source, [{ source_unit_id: "E1.U1", exact_text: phrase }]);
+    expect(node.querySelector(".evidence-key-quote mark")?.textContent).toBe(phrase);
+    expect(node.querySelector(".evidence-full-quote")?.textContent).toBe(text);
+    expect(node.querySelector(".source-context")?.hasAttribute("open")).toBe(false);
+    expect(node.querySelector(".evidence-full-quote mark")?.textContent).toBe(phrase);
+  });
+
+  it("does not highlight guessed wording or quotes belonging to a different unit", () => {
+    const text = "The study did not reduce the measured disease incidence in the general population.";
+    const source = { ...report().key_evidence[0], exact_excerpt: text };
+    const node = createEvidenceCard(source, [
+      { source_unit_id: "E2.U1", exact_text: text },
+      { source_unit_id: "E1.U1", exact_text: "The study reduced disease incidence in the general population." },
+    ]);
+    expect(node.querySelector("mark")).toBeNull();
+    expect(node.querySelector(".evidence-full-quote")?.textContent).toBe(text);
+  });
+
+  it("merges overlapping highlights safely without altering source text or executing HTML", () => {
+    const text = "The source contains literal <script>unsafe()</script> wording and no HTML execution.";
+    const node = createEvidenceCard({ ...report().key_evidence[0], exact_excerpt: text }, [
+      { source_unit_id: "E1.U1", exact_text: text },
+      { source_unit_id: "E1.U1", exact_text: "literal <script>unsafe()</script> wording" },
+    ]);
+    expect(node.querySelector(".evidence-full-quote")?.textContent).toBe(text);
+    expect(node.querySelectorAll(".evidence-full-quote mark")).toHaveLength(1);
+    expect(node.querySelector("script")).toBeNull();
+  });
+
+  it("uses public production presentation without changing release qualification", () => {
+    vi.stubEnv("DEV", false);
+    const node = createClaimResult(report(), analysisId, claimId, true);
+    expect(node.textContent).not.toContain("Development / evaluation");
+    expect(node.querySelector(".technical-details")).toBeNull();
+    expect(node.querySelector(".qualification-notice")?.textContent)
+      .toContain("has not yet met the checks required for public release");
   });
 });
 

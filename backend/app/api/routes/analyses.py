@@ -40,6 +40,7 @@ from app.pipeline.completeness import NormalizationQuality
 from app.pipeline.pico import NormalizationStatus, NormalizedPico
 from app.report.builder import semantic_report_hash
 from app.report.models import LensReport
+from app.report.reading_guide import ReportReadingGuide, build_reading_guide
 from app.retrieval.claims import snapshot_claim
 from app.retrieval.evidence_pack import canonical_pack_bytes
 from app.retrieval.models import EvidencePack
@@ -68,7 +69,9 @@ from app.schemas.retrieval import EvidencePreviewRequest, EvidencePreviewRespons
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.services.image_ingestion import ScreenshotSanitizer
 from app.validation.models import JudgeValidationResult
-from app.verdict.models import LensVerdict
+from app.verdict.models import AggregationInput, LensVerdict, VerdictResult
+from app.verdict.persistence import load_aggregation_context
+from app.verdict.service import semantic_result_hash
 
 router = APIRouter()
 _status_adapter: TypeAdapter[NormalizationStatus] = TypeAdapter(NormalizationStatus)
@@ -762,6 +765,44 @@ async def get_claim_report(
         raise LensError(403, "report_not_qualified",
                         "This report is not qualified for public release.")
     return report
+
+
+@router.get("/{analysis_id}/claims/{claim_id}/report/reading-guide",
+            response_model=ReportReadingGuide)
+async def get_report_reading_guide(
+    analysis_id: UUID, claim_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> ReportReadingGuide:
+    """Read named, checked artifacts; use the report's existing release gate."""
+    report = await get_claim_report(analysis_id, claim_id, session, settings)
+    row = session.get(VerdictRunRecord, report.verdict_run_id)
+    try:
+        if row is None:
+            raise ValueError("Verdict is missing")
+        verdict = VerdictResult.model_validate(row.result_json)
+        if (verdict.semantic_hash != row.semantic_hash
+                or verdict.semantic_hash != semantic_result_hash(verdict)
+                or verdict.semantic_hash != report.provenance.verdict_semantic_hash
+                or verdict.claim_id != claim_id
+                or tuple(verdict.input_judge_run_ids) != tuple(report.provenance.judge_run_ids)
+                or tuple(verdict.input_validation_run_ids) != tuple(
+                    report.provenance.judge_validation_run_ids)):
+            raise ValueError("Verdict provenance mismatch")
+        context = load_aggregation_context(session, AggregationInput(
+            claim_id=claim_id, evidence_pack_id=verdict.evidence_pack_id,
+            evidence_pack_hash=verdict.evidence_pack_hash,
+            judge_run_ids=verdict.input_judge_run_ids,
+            judge_validation_run_ids=verdict.input_validation_run_ids,
+            mode=verdict.mode, policy_version=verdict.policy_version,
+        ))
+        if context.pack is None or context.claim is None or not context.audit_records_valid:
+            raise ValueError("Reading guide source audits unavailable")
+        return build_reading_guide(report, verdict, context.pack, context.judges,
+                                  context.validations, risk_class=context.claim.risk_class)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise LensError(503, "report_provenance_invalid",
+                        "Source explanation is unavailable.") from exc
 
 
 def _upload_response(upload: ScreenshotUpload) -> ScreenshotUploadAccepted:

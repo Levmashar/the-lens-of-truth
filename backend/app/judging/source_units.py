@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.judging.citation_errors import CitationReferenceError, SourceUnitReferenceError
 from app.judging.models import (
     EvidenceRef,
     JudgeConclusion,
@@ -104,15 +105,47 @@ def materialize_content(content: str, snapshot: dict[str, object]) -> JudgeDecis
     statements: list[JudgeStatement] = []
     for statement in proposed.statements:
         if len(set(statement.source_unit_ids)) != len(statement.source_unit_ids):
-            raise ValueError("Duplicate source unit")
-        selected = [units[identifier] for identifier in statement.source_unit_ids]
+            duplicate = next(identifier for index, identifier in
+                             enumerate(statement.source_unit_ids)
+                             if identifier in statement.source_unit_ids[:index])
+            raise CitationReferenceError(
+                "Duplicate source unit", statement_id=statement.statement_id,
+                reference_field="source_unit_ids", offending_id=duplicate,
+                expected_allowed_ids=tuple(units),
+            )
+        selected = []
+        for identifier in statement.source_unit_ids:
+            if identifier not in units:
+                raise SourceUnitReferenceError(
+                    identifier, statement_id=statement.statement_id,
+                    reference_field="source_unit_ids", offending_id=identifier,
+                    expected_allowed_ids=tuple(units),
+                    source_unit_id=identifier,
+                )
+            selected.append(units[identifier])
         if isinstance(statement, UnitStatement24):
-            from app.judging.source_quantities import check_quantity_refs
+            from app.judging.source_quantities import QuantityReferenceError, check_quantity_refs
 
             assert catalog is not None
-            check_quantity_refs(statement.source_quantity_ids, statement.source_unit_ids, catalog)
+            try:
+                check_quantity_refs(
+                    statement.source_quantity_ids, statement.source_unit_ids, catalog,
+                )
+            except QuantityReferenceError as exc:
+                exc.bind_statement(statement.statement_id)
+                raise
         # One whole frozen passage is a unit: no decimal/CI/negation segmentation.
         refs = tuple(EvidenceRef(evidence_id=u.evidence_id, quote=u.text) for u in selected)
+        evidence_ids = tuple(ref.evidence_id for ref in refs)
+        if len(evidence_ids) != len(set(evidence_ids)):
+            duplicate = next(identifier for index, identifier in enumerate(evidence_ids)
+                             if identifier in evidence_ids[:index])
+            raise CitationReferenceError(
+                "duplicate statement evidence reference", statement_id=statement.statement_id,
+                reference_field="evidence_refs.evidence_id", offending_id=duplicate,
+                expected_allowed_ids=tuple(dict.fromkeys(u.evidence_id for u in units.values())),
+                evidence_id=duplicate,
+            )
         statements.append(JudgeStatement.model_validate({
             "statement_id": statement.statement_id, "text": statement.text,
             "kind": statement.kind, "source_unit_ids": statement.source_unit_ids,

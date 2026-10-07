@@ -1,7 +1,7 @@
 .report-card { margin-top: var(--space-8); padding-top: var(--space-8); border-top: 1px solid var(--border); }
 .report-card > .eyebrow { margin-bottom: var(--space-2); }
 .report-claim { font-size: 1.05rem; font-weight: 600; line-height: 1.45; margin-bottom: var(--space-6); }
-.qualification-notice { border-left: 4px solid var(--warning); background: var(--warning-soft); color: #603f1b; padding: var(--space-5); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: var(--space-6); }
+.qualification-notice { border-left: 4px solid var(--warning); background: var(--warning-soft); color: var(--warning); padding: var(--space-5); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: var(--space-6); }
 .notice-title { font-size: .96rem; margin-bottom: var(--space-2); }
 .qualification-notice p { font-size: .87rem; line-height: 1.6; }
 .verdict-card { background: var(--surface-muted); padding: var(--space-6); border-radius: var(--radius-md); border-top: 3px solid var(--accent); }
@@ -16,19 +16,19 @@
 .reason-list { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--space-3); }
 .reason-list li { padding-left: .2rem; }
 .evidence-grid { display: grid; gap: var(--space-4); }
-.evidence-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-6); min-width: 0; background: #fff; }
+.evidence-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-6); min-width: 0; background: var(--surface); }
 .evidence-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font-size: .71rem; font-weight: 750; margin-bottom: var(--space-3); }
 .evidence-title { font-size: 1.1rem; margin-bottom: var(--space-3); overflow-wrap: anywhere; }
 .evidence-meta { color: var(--text-muted); font-size: .81rem; }
 .evidence-role { font-size: .78rem; font-weight: 700; color: var(--accent); }
 .excerpt-label { color: var(--text-muted); font-size: .77rem; margin-bottom: .4rem; }
-.evidence-quote { margin: 0; padding: var(--space-5); border-left: 2px solid #a8c3b6; background: var(--surface-muted); font-family: Georgia, serif; font-size: .95rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.evidence-quote { margin: 0; padding: var(--space-5); border-left: 2px solid var(--quote-border); background: var(--surface-muted); font-family: Georgia, serif; font-size: .95rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
 .evidence-footer { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.2rem; margin-top: var(--space-5); font-size: .76rem; }
 .source-id { color: var(--text-muted); overflow-wrap: anywhere; }
 .source-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 650; overflow-wrap: anywhere; }
 .integrity-note, .source-limitation { color: var(--warning); font-size: .78rem; margin: var(--space-4) 0 0; }
 .integrity-note[data-status="valid"] { color: var(--text-muted); }
-.limitations-card { background: var(--warning-soft); border: 1px solid #e9d8b9; border-radius: var(--radius-md); padding: var(--space-6); margin-top: var(--space-8); }
+.limitations-card { background: var(--warning-soft); border: 1px solid var(--warning-border); border-radius: var(--radius-md); padding: var(--space-6); margin-top: var(--space-8); }
 .assessment-details, .technical-details { border-top: 1px solid var(--border); margin-top: var(--space-8); padding-top: var(--space-5); }
 .technical-details { margin-top: var(--space-5); }
 .details-summary { font-weight: 700; color: var(--accent); cursor: pointer; min-height: 44px; display: list-item; padding-block: .55rem; }
@@ -40,3 +40,25 @@
 .source-list { display: grid; gap: .5rem; }
 .safety-notice { margin-top: var(--space-8); padding: var(--space-6); border-radius: var(--radius-md); background: var(--accent-soft); }
 .safety-notice p { font-size: .88rem; line-height: 1.65; }
+
+.verdict-card { animation: enter-soft 420ms ease both; }
+.meaning-title { font-size: .95rem; margin-bottom: var(--space-3); }
+.case-explanation { border-top: 1px solid var(--border); margin-top: var(--space-5); padding-top: var(--space-5); }
+.case-finding { font-size: .94rem; line-height: 1.8; color: var(--text-muted); max-width: 72ch; }
+.finding-citations { display: inline-flex; flex-wrap: wrap; gap: .3rem; vertical-align: middle; }
+.finding-citation { display: inline-flex; align-items: center; min-height: 32px; padding: .1rem .4rem; font-size: .7rem; font-weight: 650; color: var(--accent); border-radius: 4px; background: var(--accent-soft); text-decoration: none; }
+.finding-citation:hover { text-decoration: underline; }
+.evidence-card, .source-passage { scroll-margin-top: var(--space-6); }
+.evidence-card:target { border-color: var(--accent); }
+.source-passage { margin-top: var(--space-5); }
+.quote-origin { margin-bottom: .4rem; font-size: .73rem; font-weight: 600; color: var(--accent); }
+.evidence-key-quote { position: relative; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: var(--space-5) var(--space-6); margin-bottom: var(--space-3); color: var(--text); font-family: inherit; line-height: 1.75; }
+.evidence-key-quote::before { content: "“"; position: absolute; left: .45rem; top: .35rem; font-family: Georgia, serif; font-size: 2rem; line-height: 1; color: var(--accent); opacity: .5; }
+.evidence-highlight { background: var(--evidence-highlight); color: inherit; padding: .08em .1em; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.evidence-key-quote .evidence-highlight { background: transparent; font-weight: 550; }
+.source-context .details-summary { font-size: .8rem; font-weight: 550; }
+.source-context[open] .evidence-full-quote { animation: enter-soft 240ms ease both; }
+.evidence-full-quote { background: var(--surface-muted); border-left: 3px solid var(--quote-border); font-family: inherit; color: var(--text-muted); font-size: .89rem; line-height: 1.8; }
+.evidence-clarity { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin: var(--space-5) 0 0; }
+.evidence-clarity .meta-label { font-size: .8rem; font-weight: 700; color: var(--text); }
+.evidence-clarity .meta-value { color: var(--text-muted); font-weight: 400; font-size: .92rem; margin-top: .5rem; line-height: 1.65; }
