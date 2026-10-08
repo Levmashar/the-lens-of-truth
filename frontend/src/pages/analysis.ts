@@ -1,10 +1,12 @@
-import { getAnalysis, getClaimReport, getClaims, getReportReadingGuide } from "../api/analyses";
+import { getAnalysis, getClaimReport, getClaims, getDocumentReport, getReportReadingGuide } from "../api/analyses";
 import { ApiError, errorMessage } from "../api/errors";
 import { createClaimResult } from "../components/claimResult";
 import { createDebugProgress } from "../components/debugProgress";
+import { createDocumentReport, type DocumentDisclosureState } from "../components/documentReport";
 import { createProgress, stageLabel, updateProgress } from "../components/progress";
 import type { AnalysisClaim, AnalysisProgress, ClaimSummary } from "../types/api";
 import type { LensReport, ReportReadingGuide } from "../types/report";
+import type { DocumentReport } from "../types/document";
 import { append, clear, element } from "../utils/dom";
 import { Poller } from "../utils/polling";
 import { navigate } from "../utils/routing";
@@ -14,7 +16,7 @@ const terminal = new Set(["completed", "partially_completed", "failed", "claims_
 
 function analysisFailureCopy(analysis: AnalysisProgress): [string, string] {
   const code = analysis.failure_code;
-  if (analysis.input_type === "screenshot" && (code === "screenshot_text_not_found" || code?.startsWith("ocr_"))) {
+  if (code === "screenshot_text_not_found" || code?.startsWith("ocr_")) {
     return ["Screenshot text could not be read", "We couldn't read enough text from this screenshot. Try another image or paste the text instead."];
   }
   if (code === "no_claims_extracted") {
@@ -31,6 +33,9 @@ function analysisFailureCopy(analysis: AnalysisProgress): [string, string] {
   }
   if (code === "claim_extractor_invalid_response") {
     return ["Claims could not be read reliably", "The extraction service returned an unusable claim structure. No medical result was generated; try again later."];
+  }
+  if (code?.startsWith("document_planner_")) {
+    return ["Document could not be read reliably", "We couldn't reliably separate the document's statements and study references. No medical result was generated; try a shorter passage or submit a specific claim."];
   }
   return ["Verification could not be completed", "This analysis could not be completed reliably. No medical result was generated."];
 }
@@ -55,6 +60,10 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
 
   let analysis: AnalysisProgress | null = null;
   let claims: ClaimSummary[] = [];
+  let documentReport: DocumentReport | null = null;
+  let documentError: string | null = null;
+  const documentDisclosures: DocumentDisclosureState = new Map();
+  let documentHasRendered = false;
   const reports = new Map<string, LensReport>();
   const readingGuides = new Map<string, ReportReadingGuide>();
   const reportErrors = new Map<string, string>();
@@ -68,6 +77,13 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
 
   function render(): void {
     if (disposed) return;
+    // Polls update the saved document projection without closing the detail
+    // the reader has opened or moving focus away from its disclosure control.
+    const focusedDisclosure = document.activeElement?.closest<HTMLElement>("[data-document-disclosure]")
+      ?.dataset.documentDisclosure;
+    for (const details of body.querySelectorAll<HTMLDetailsElement>("[data-document-disclosure]")) {
+      documentDisclosures.set(details.dataset.documentDisclosure!, details.open);
+    }
     clear(body);
     if (permanentError) {
       progressHost.hidden = true;
@@ -86,6 +102,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     }
 
     const isTerminal = terminal.has(analysis.status);
+    top.querySelector("h1")!.textContent = analysis.document_mode ? "Your document check" : "Your claim check";
     page.dataset.state = isTerminal ? "finished" : "running";
     progressHost.hidden = isTerminal;
     if (!isTerminal) {
@@ -101,13 +118,25 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
         element("h2", "card-title", title), element("p", "", message));
       body.append(failure);
     }
-    if (analysis.status === "completed" && analysis.claim_count === 0) {
+    if (!analysis.document_mode && analysis.status === "completed" && analysis.claim_count === 0) {
       const empty = element("section", "empty-state");
       append(empty, element("h2", "card-title", "No checkable claims"),
         element("p", "", "No checkable medical claims were identified in this content. Try a more specific health claim or a clearer screenshot."));
       body.append(empty);
     }
-    if (analysis.claims.length) {
+    if (analysis.document_mode) {
+      if (documentReport) {
+        body.append(createDocumentReport(documentReport, documentDisclosures, analysis.debug_enabled, !documentHasRendered));
+        documentHasRendered = true;
+      }
+      else if (!documentError && !isTerminal) {
+        const pending = element("section", "document-overview");
+        append(pending, element("h2", "section-title", "Reading the document in context"),
+          element("p", "document-overview-copy", "Related statements will appear together, with study reporting checked separately from medical conclusions."));
+        body.append(pending);
+      }
+      if (documentError) body.append(element("p", "report-error", documentError));
+    } else if (analysis.claims.length) {
       const heading = element("div", "claims-heading");
       const count = analysis.claim_count ?? analysis.claims.length;
       append(heading, element("h2", "section-title", `${count} claim${count === 1 ? "" : "s"} identified`));
@@ -119,7 +148,14 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       for (const claim of analysis.claims) list.append(createClaimCard(claim));
       body.append(list);
     }
-    if (analysis.debug_enabled && showDevelopmentUi()) body.append(createDebugProgress(analysis, claims, pollError));
+    if (analysis.debug_enabled && showDevelopmentUi(analysis.debug_enabled)) {
+      body.append(createDebugProgress(analysis, claims, pollError, documentReport));
+    }
+    if (focusedDisclosure) {
+      [...body.querySelectorAll<HTMLElement>("[data-document-disclosure]")]
+        .find((node) => node.dataset.documentDisclosure === focusedDisclosure)
+        ?.querySelector<HTMLElement>("summary")?.focus({ preventScroll: true });
+    }
   }
 
   function createClaimCard(claim: AnalysisClaim): HTMLElement {
@@ -184,20 +220,44 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
   }
 
   poller = new Poller(async (signal) => {
-    const [nextAnalysis, nextClaims] = await Promise.all([getAnalysis(id, signal), getClaims(id, signal)]);
+    const [nextAnalysis, nextClaims] = await Promise.all([
+      getAnalysis(id, signal),
+      analysis?.document_mode ? Promise.resolve({ analysis_id: id, claims: [] }) : getClaims(id, signal),
+    ]);
     if (disposed) return "terminal";
     const stageChanged = nextAnalysis.stage !== previousStage;
     analysis = nextAnalysis;
     claims = nextClaims.claims;
     pollError = null;
     status.textContent = "";
+    if (nextAnalysis.document_mode && nextAnalysis.status === "failed"
+        && nextAnalysis.failure_code?.startsWith("document_planner_")) {
+      documentError = null;
+    } else if (nextAnalysis.document_mode) {
+      try {
+        const nextDocument = await getDocumentReport(id, signal);
+        if (disposed) return "terminal";
+        if (nextDocument.analysis_id !== id || nextDocument.version !== "document-report-1.0") {
+          documentError = "The document report could not be matched to this analysis. Refresh the page to try again.";
+        } else {
+          documentReport = nextDocument;
+          documentError = null;
+        }
+      } catch (error: unknown) {
+        if (signal.aborted || disposed) return "terminal";
+        if (error instanceof ApiError && error.status === 404
+            && error.code === "document_not_ready" && !terminal.has(nextAnalysis.status)) {
+          documentError = null;
+        } else documentError = errorMessage(error);
+      }
+    }
     render();
     if (stageChanged) {
       previousStage = nextAnalysis.stage ?? null;
       stageAnnouncement.textContent = terminal.has(nextAnalysis.status)
         ? "Analysis finished" : stageLabel(nextAnalysis.stage ?? "queued");
     }
-    loadReadyReports();
+    if (!nextAnalysis.document_mode) loadReadyReports();
     return terminal.has(nextAnalysis.status) ? "terminal" : "active";
   }, (error, failures) => {
     if (error instanceof ApiError && (error.status === 404 || error.status === 410)) {

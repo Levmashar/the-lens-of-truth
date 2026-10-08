@@ -1,0 +1,17 @@
+A large study drawing from the UK Biobank database with over 470,000
+participants looked at sunscreen use and skin cancer. It found that people
+who used sunscreen frequently had higher risks of developing skin cancers.
+The analysis showed up to a 292% increased risk of invasive melanoma for
+sunscreen users, plus higher rates of basal cell and squamous cell carcinomas.
+
+These links held even after researchers adjusted for variables like age,
+skin type, sunburn history, and outdoor time. As one of the biggest studies
+of its kind, it provides extensive data on real-world habits and health
+outcomes. The results have sparked discussion because they contrast with
+standard advice on sun protection.
+
+Experts have pointed to possible reasons such as how sunscreen is applied
+or combined with other behaviors. The study highlights patterns in sunscreen
+use and its association with skin cancer rates in a large population group.
+Source: UK Biobank data analysis as covered in scientific and media reports
+on the findings.

@@ -1,5 +1,87 @@
 # Project Context
 
+## Context-aware document mode and planner failure repair (2026-10-08)
+
+Paragraph inputs now preserve exact assertions, study attribution and explicit
+context links in document-plan-1.0 instead of disconnected atomic investigations.
+Bounded shared retrieval includes approved full-text methods/results/table passages;
+three independent grouped judges run concurrently and each starts its own validator
+when ready. A frozen shared unit/quantity catalog powers reporting-fidelity checks
+separately from unchanged V2.5 clinical qualification. The vanilla TS/Vite UI shows
+one expandable, partially completing document report with exact citations and
+scientific caveats; no averaged verdict or cached assessment.
+
+Trace of `326b6a1c-c1e4-4960-a036-bf3e2c173224`: OCR and the planner model succeeded,
+but commentary study IDs incorrectly tripped factual group ownership validation.
+Repair only commentary ownership, uniquely grounded link owners and trailing
+punctuation. Later live tests fixed group bounds, redundant source packaging,
+explicit JSON arrays, reporting-versus-clinical validation and generated-quote
+fragility. Source/quantity ownership, integrity, numeric comparability and quorum
+remain strict. Historical source/validator contracts replay without changed results.
+
+Current document versions: workflow/plan/evidence/report 1.0; planner prompt
+document-planner-1.1-2026-10-08; group input 1.1; judge 1.0; validator 1.2; migration
+20261007_0019. Existing query-plan 1.6, clinical position 1.8, question policy 2.1,
+semantic prompt 2.7, judge prompt 2.15 and verdict policy 1.4 remain unchanged.
+All models remain Paratera: extraction/J1 DeepSeek-V4.1-Flash, J2 Qwen3.5-Plus,
+J3 GLM-4.7, validator Qwen3.8-Flash with thinking disabled. Development/debug is
+enabled; production remains unapproved.
+
+Real primary/repeat requests each made seven model calls without retries and
+returned audited document GETs HTTP 200. Backend time fell from 758.228 seconds
+to 130.197/112.217 seconds; the 90-second target remains unmet. Repeat completed
+seven reporting facts (six Supported, numeric risk detail NEI), retained commentary
+and explicitly left an unattributed expert interpretation unavailable. See
+[root causes, exact versions, timelines, results and limitations](DOCUMENT_MODE_RESULTS_20261008.md).
+
+Final PostgreSQL-backed backend suite: 1,469 passed, no failures/skips (257.77 s).
+Frontend 94 tests, TypeScript/Vite build, Ruff and mypy (196 modules) pass.
+Services rebuilt; `/healthz`, frontend analysis route and historical/fresh document
+audit GETs return HTTP 200. Visual browser QA remains unavailable in this session.
+
+## Long-input extraction and grounding repair (2026-10-07)
+
+Trace of `9d105a9e-23c6-41e5-9de9-6ad2ed301c4e`: two 55-second extraction
+timeouts on only 1,019 characters, before retrieval/judging. Make configured
+DeepSeek extraction thinking explicit/disabled with an 8,192-token ceiling,
+strict schema, cutoff rejection and safe usage/stop diagnostics. Preserve
+unique source line wrapping and original offsets; re-establish inherited spans.
+Scan the full accepted 20k MeSH source, remove grammatical lexical false
+failures, require word boundaries, ground literal use/user exposure cores,
+preserve one-sided percent bounds and safely reconstruct reported coordination.
+Unresolved contextual references remain unavailable. Version only extraction
+prompt as `phase7-literal-article-claims-2026-10-07`; models and medical policy
+remain unchanged. Debug is enabled again and built frontend honors the backend
+development debug flag. See [root causes, live results and checks](LONG_INPUT_RELIABILITY_FIXES_20261007.md).
+
+Final live analysis `0e581f5d-8d5d-4f2b-b49e-1529ffe45967`: extraction
+14,974 ms over two bounded attempts; four medical reports HTTP 200, one
+unresolved method sentence safely unavailable, overall `partially_completed`.
+Final application positions: Contradicted / NEI / Contradicted / Unable / NEI.
+One later judge timeout recovered on its existing retry. Total 756,743 ms;
+27 requests in the final run, 42 across the bounded investigation. Full
+database-enabled backend 1,297 passed; final article group 85 passed;
+frontend 76/build, Ruff/mypy pass. Both services rebuilt/restarted; versions
+and production gates remain unchanged apart from the extraction prompt/profile.
+
+## Screenshot upload and OCR repair (2026-10-07)
+
+Screenshot entry now reads locally before analysis and offers editable text
+review. A consent-required public read endpoint returns transient redacted text;
+safe OCR metadata and original upload retention remain. Screenshot-only reviewed
+text enters the unchanged extractor with exact source-span validation; legacy
+direct screenshot submission remains compatible. Fix layout detection, literal
+quotes, process cleanup, transparency, EXIF dimensions, upload retries, control
+races and safe errors. No model, medical-policy, retrieval or `.env` changes.
+
+The observed failure was an extraction-provider timeout after successful OCR.
+Original screenshot now reads at 96.37% with article text only. All supported
+formats, transparency/dark variants and unreadable-file errors pass live HTTP
+checks. Offline backend 1,181 passed/15 DB skips; frontend 71/build, Ruff/mypy
+pass. Services rebuilt/restarted. No paid calls: a live extraction replay was
+blocked by automatic approval review; downstream provider reliability is not
+asserted fixed. See [scope, evidence and verification](OCR_UPLOAD_FIXES_20261007.md).
+
 ## Gradual frontend refinement (2026-10-06, second pass)
 
 Smaller supplied logo stays left-aligned and vertically centered in the header;
@@ -13,7 +95,9 @@ Highlight literal attribution quotes or a source's explicitly stated conclusion;
 preserve the entire source passage underneath. No new AI calls or medical votes.
 
 Production frontend builds omit development/debug/technical chrome; DEBUG_MODE
-is false. Unqualified reports retain a plain public-release status notice.
+was false for this historical pass; the 2026-10-07 task restored development
+diagnostics through the explicit backend flag. Unqualified reports retain a
+plain public-release status notice.
 APP_ENV remains development: strict production still rejects V2.5 reports, and
 the runtime-mode preference remains unanswered. Existing production gates,
 medical logic, models, prompts, query-plan and report hashes are unchanged.

@@ -24,7 +24,14 @@ export interface ScreenshotUpload {
   purge_after: string;
 }
 
-export type AnalysisInput = { type: "text"; text: string } | { type: "screenshot"; upload_id: string };
+export interface ScreenshotText {
+  upload_id: string;
+  redacted_text: string;
+  confidence: number | null;
+  language_used: string;
+}
+
+export type AnalysisInput = { type: "text"; text: string } | { type: "screenshot"; upload_id: string; reviewed_text?: string };
 
 export interface AnalysisStarted {
   analysis_id: string;
@@ -113,6 +120,11 @@ export interface AnalysisProgress {
   debug_enabled?: boolean;
   debug_models?: DebugModelStatus[] | null;
   debug_events?: DebugModelEvent[] | null;
+  document_mode?: boolean;
+  document_progress?: {
+    groups_total: number; groups_completed: number;
+    assertions_total: number; assertions_completed: number;
+  } | null;
 }
 
 export interface DebugModelStatus {

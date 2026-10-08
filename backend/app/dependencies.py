@@ -77,6 +77,8 @@ def get_claim_extractor(
         model=settings.claim_extractor_model,
         api_key=api_key.get_secret_value(),
         maximum_claims=settings.claim_extractor_max_claims,
+        thinking_enabled=settings.claim_extractor_thinking_enabled,
+        max_output_tokens=settings.claim_extractor_max_output_tokens,
     )
 
 

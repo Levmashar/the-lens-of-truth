@@ -10,6 +10,7 @@ import "./styles/layout.css";
 import "./styles/home.css";
 import "./styles/analysis.css";
 import "./styles/progress.css";
+import "./styles/document.css";
 import "./styles/components.css";
 import "./styles/responsive.css";
 

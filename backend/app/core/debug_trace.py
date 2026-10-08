@@ -35,6 +35,7 @@ class ModelDebugEvent:
     call_id: str | None = None
     operation_kind: str | None = None
     semantic_revision_number: int = 0
+    response_metadata: dict[str, object] | None = None
 
 
 _traces: OrderedDict[UUID, tuple[float, list[ModelDebugEvent]]] = OrderedDict()
@@ -71,6 +72,7 @@ def record_model_event(
     call_id: str | None = None,
     operation_kind: str | None = None,
     semantic_revision_number: int = 0,
+    response_metadata: dict[str, object] | None = None,
 ) -> int:
     analysis_id = _active_analysis.get()
     if analysis_id is None:
@@ -93,6 +95,7 @@ def record_model_event(
         evidence_ids=evidence_ids, validation_run_id=validation_run_id,
         call_id=call_id, operation_kind=operation_kind,
         semantic_revision_number=semantic_revision_number,
+        response_metadata=response_metadata,
     ))
     if len(events) > _MAX_EVENTS:
         del events[:-_MAX_EVENTS]

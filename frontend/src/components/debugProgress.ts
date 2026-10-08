@@ -1,4 +1,5 @@
 import type { AnalysisProgress, ClaimSummary } from "../types/api";
+import type { DocumentReport } from "../types/document";
 import { append, element } from "../utils/dom";
 import { stages } from "./progress";
 
@@ -58,6 +59,7 @@ function judgeFailureSummary(
 
 export function createDebugProgress(
   analysis: AnalysisProgress, claims: ClaimSummary[], pollError: string | null,
+  documentReport?: DocumentReport | null,
 ): HTMLElement {
   const panel = element("section", "debug-panel");
   const copyActions = element("div", "debug-copy-actions");
@@ -71,6 +73,7 @@ export function createDebugProgress(
     try {
       await navigator.clipboard.writeText(JSON.stringify({
         analysis, claims, poll_error: pollError,
+        ...(documentReport ? { document: documentReport } : {}),
       }, null, 2));
       copyStatus.textContent = "Copied all diagnostics, including raw model responses.";
     } catch {
@@ -233,6 +236,12 @@ export function createDebugProgress(
       block.append(item);
     }
     panel.append(block);
+  }
+  if (documentReport?.debug_group_runs) {
+    const grouped = element("details", "debug-responses debug-grouped-responses");
+    append(grouped, element("summary", "", "Grouped model responses — raw (development only)"),
+      element("pre", "debug-response-text", JSON.stringify(documentReport.debug_group_runs, null, 2)));
+    panel.append(grouped);
   }
   if (analysis.debug_events?.length) {
     const responses = element("details", "debug-responses");

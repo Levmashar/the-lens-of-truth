@@ -95,6 +95,11 @@ def normalize_pico(
             # recovery is deliberately limited to verified coordination.
             values["outcome"] = shared_clause[1]
     if values["intervention_or_exposure"] is None:
+        values["intervention_or_exposure"] = _literal_usage_core(
+            proposed.intervention_or_exposure if proposed is not None else None,
+            candidate.raw_span,
+        )
+    if values["intervention_or_exposure"] is None:
         values["intervention_or_exposure"] = literal_exposure(candidate.raw_span)
     recovered = literal_outcome(candidate.raw_span, values["intervention_or_exposure"])
     if values["outcome"] is None:
@@ -182,9 +187,50 @@ def _grounded_value(value: str | None, source: str) -> str | None:
         return None
     # Allow harmless whitespace differences, but never an absent term or paraphrase.
     parts = re.split(r"\s+", stripped)
-    pattern = r"\s+".join(re.escape(part) for part in parts)
+    pattern = r"(?<![\w-])" + r"\s+".join(re.escape(part) for part in parts) + r"(?![\w-])"
     match = re.search(pattern, source, flags=re.IGNORECASE)
     return match.group() if match else None
+
+
+def _literal_usage_core(value: str | None, source: str) -> str | None:
+    """Recover a stated exposure from a narrowly verified use paraphrase.
+
+    Only a literal core already present in the proposal is eligible. An
+    adjacent source usage verb or explicit user noun proves this is use wording,
+    while any proposed frequency must also be explicitly stated beside that
+    usage. The output is the source's core, never a reconstructed noun phrase.
+    """
+    if value is None:
+        return None
+    proposal = re.fullmatch(
+        r"(?:(?P<frequency>frequent|regular|occasional|daily|weekly|monthly)\s+)?"
+        r"(?P<core>.+?)\s+(?:use|usage)", value.strip(), re.I,
+    )
+    if proposal is None:
+        return None
+    core = _grounded_value(proposal["core"], source)
+    if core is None:
+        return None
+    pattern = r"\s+".join(re.escape(part) for part in core.split())
+    frequencies = {
+        "frequent": "frequently", "regular": "regularly", "occasional": "occasionally",
+        "daily": "daily", "weekly": "weekly", "monthly": "monthly",
+    }
+    frequency_adjective = (proposal["frequency"] or "").casefold()
+    frequency = frequencies.get(frequency_adjective)
+    verb = r"(?:use|uses|used|using)"
+    suffix = rf"\s+{frequency}(?![\w-])" if frequency else ""
+    ordinary = rf"(?<![\w-]){verb}\s+{pattern}(?![\w-]){suffix}"
+    # Frequency can precede or follow the explicit usage verb. A user noun can
+    # also name the exposure, but its adjective must precede that noun phrase;
+    # 'X users frequently develop Y' qualifies Y, not their use of X.
+    before = (rf"(?<![\w-]){frequency}\s+{verb}\s+{pattern}(?![\w-])"
+              if frequency else ordinary)
+    user_prefix = rf"{frequency_adjective}\s+" if frequency_adjective else ""
+    users = rf"(?<![\w-]){user_prefix}{pattern}\s+users?(?![\w-])"
+    if any(re.search(form, source, re.I) for form in (ordinary, before, users)):
+        return core
+    return None
 
 
 def _grounded_outcome(value: str | None, source: str) -> str | None:

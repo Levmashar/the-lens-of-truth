@@ -236,11 +236,32 @@ describe("report presentation", () => {
 
   it("uses public production presentation without changing release qualification", () => {
     vi.stubEnv("DEV", false);
-    const node = createClaimResult(report(), analysisId, claimId, true);
+    const node = createClaimResult(report(), analysisId, claimId, false);
     expect(node.textContent).not.toContain("Development / evaluation");
     expect(node.querySelector(".technical-details")).toBeNull();
     expect(node.querySelector(".qualification-notice")?.textContent)
       .toContain("has not yet met the checks required for public release");
+  });
+
+  it("shows report diagnostics in a production build only when authorized by the backend", () => {
+    vi.stubEnv("DEV", false);
+    const saved = report("not_enough_evidence", { verdict_explanation: {
+      version: "1.0", reason_category: "numeric_magnitude_unverified", evidence_ids: ["E1"],
+      summary: "The exact magnitude is unresolved.", established: null, unresolved: "85% is not established.",
+    } });
+    const node = createClaimResult(saved, analysisId, claimId, true);
+    expect(node.querySelector(".technical-details")).not.toBeNull();
+    expect(node.querySelector(".verdict-explanation-details")?.textContent).toContain("numeric_magnitude_unverified");
+    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development evaluation only");
+    expect(saved.production_qualified).toBe(false);
+  });
+
+  it("honors an explicit frontend diagnostic opt-out even when backend debug is enabled", () => {
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("VITE_SHOW_DEVELOPMENT_UI", "false");
+    const node = createClaimResult(report(), analysisId, claimId, true);
+    expect(node.querySelector(".technical-details")).toBeNull();
+    expect(node.textContent).not.toContain("Development / evaluation");
   });
 });
 

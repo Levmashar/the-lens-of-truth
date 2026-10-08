@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass
 
 from app.medical.entities import EntityType, MedicalEntity, MedicalEntityCandidate
+from app.medical.mention_context import unsafe_contextless_alias
 from app.medical.mesh import MeshMatch, MeshProvider
 from app.medical.umls import UmlsMatch, UmlsProvider
 from app.pipeline.pico import NormalizedPico
@@ -44,7 +45,7 @@ class MedicalEntityLinker:
         mesh_matches = [
             match for match in self.mesh.find_mentions(phrase)
             if match.end <= eligible_end and _valid_match(phrase, match)
-            and not _unsafe_contextless_alias(match)
+            and not unsafe_contextless_alias(match)
         ]
         spans = sorted(
             {(match.start, match.end) for match in umls_matches}
@@ -139,13 +140,6 @@ def _valid_match(phrase: str, match: UmlsMatch | MeshMatch) -> bool:
         and bool((match.cui if isinstance(match, UmlsMatch) else match.mesh_id).strip())
         and 0 <= match.confidence <= 1
     )
-
-
-def _unsafe_contextless_alias(match: MeshMatch) -> bool:
-    # The official entry term "consumption" also names Economics. In a
-    # multiword exposure such as "soy consumption", that isolated generic
-    # word is not evidence that the medical concept is Economics.
-    return match.match_type == "synonym" and match.surface_text.casefold() == "consumption"
 
 
 def _best_umls(matches: list[UmlsMatch], start: int, end: int) -> UmlsMatch | None:

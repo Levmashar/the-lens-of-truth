@@ -1,5 +1,6 @@
 """Offline tests for official-format MeSH import, lookup, and safe re-normalization."""
 
+import sqlite3
 from pathlib import Path
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -8,12 +9,18 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.medical.linker import MedicalEntityLinker
-from app.medical.mesh import IndexedMeshProvider, LocalMeshProvider
+from app.medical.mesh import (
+    MESH_MENTION_MAX_SOURCE_CHARACTERS,
+    IndexedMeshProvider,
+    LocalMeshProvider,
+)
 from app.medical.mesh_import import import_mesh_xml
 from app.medical.renormalize import renormalize_claim, renormalize_pending
 from app.medical.umls import LocalUmlsProvider, UnconfiguredUmlsProvider
 from app.models.claim import Claim
-from app.pipeline.pico import NormalizedPico
+from app.pipeline.completeness import assess_completeness
+from app.pipeline.pico import NormalizedPico, normalization_status
+from app.pipeline.readiness import ready_for_evidence
 
 
 @pytest.fixture
@@ -80,6 +87,110 @@ def test_entry_term_is_synonym(mesh_provider: IndexedMeshProvider) -> None:
     assert match.preferred_name == "Sunscreening Agents"
     assert match.match_type == "synonym"
     assert match.confidence == 0.95
+
+
+@pytest.mark.parametrize("prefix", ["x " * 21, "context " * 40, "☀\n" + "context " * 150])
+def test_late_mentions_keep_exact_unicode_offsets_and_ambiguity(
+    mesh_provider: IndexedMeshProvider, prefix: str,
+) -> None:
+    source = prefix + "Malignant\nMelanoma and Shared Term."
+    matches = mesh_provider.find_mentions(source)
+
+    melanoma = next(match for match in matches if match.surface_text == "Malignant\nMelanoma")
+    assert melanoma.start == len(prefix)
+    assert melanoma.end == len(prefix) + len("Malignant\nMelanoma")
+    assert source[melanoma.start:melanoma.end] == melanoma.surface_text
+    assert melanoma.mesh_id == "D000002"
+    assert melanoma.match_type == "synonym"
+    assert melanoma.terminology_version == "2026"
+    assert melanoma.terminology_sha256 == mesh_provider.source_sha256
+    assert melanoma.tree_numbers == ("C04.557",)
+    ambiguous = [match for match in matches if match.surface_text == "Shared Term"]
+    assert {match.mesh_id for match in ambiguous} == {"D000003", "D000004"}
+    assert all(source[match.start:match.end] == match.surface_text for match in matches)
+
+
+def test_long_scan_batches_queries_below_sqlite_parameter_limit(
+    mesh_provider: IndexedMeshProvider, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    connect = mesh_provider._connect
+
+    def limited_connection() -> sqlite3.Connection:
+        connection = connect()
+        connection.setlimit(sqlite3.SQLITE_LIMIT_VARIABLE_NUMBER, 500)
+        return connection
+
+    monkeypatch.setattr(mesh_provider, "_connect", limited_connection)
+    # More than 500 distinct subphrases must not become a single SQL request.
+    source = " ".join(f"context{index}" for index in range(150)) + " Melanoma"
+    match, = mesh_provider.find_mentions(source)
+    assert match.surface_text == "Melanoma"
+    assert match.start == source.index("Melanoma")
+
+
+def test_scan_covers_the_entire_publicly_accepted_source(
+    mesh_provider: IndexedMeshProvider,
+) -> None:
+    source = "context " * 2499 + "Melanoma"
+    assert len(source) == MESH_MENTION_MAX_SOURCE_CHARACTERS
+    match, = mesh_provider.find_mentions(source)
+    assert match.end == len(source)
+    assert match.surface_text == source[match.start:match.end] == "Melanoma"
+    pico = NormalizedPico(original_claim=source, outcome="Melanoma")
+    entities = MedicalEntityLinker(UnconfiguredUmlsProvider(), mesh_provider).link(pico)
+    quality = assess_completeness(pico, entities, mesh_provider)
+    assert "source_terminology_scan_truncated" not in quality.normalization_warnings
+
+
+def test_long_complete_claim_can_proceed_but_missing_late_concept_cannot(
+    mesh_provider: IndexedMeshProvider,
+) -> None:
+    source = "Sunscreen " + "context " * 40 + "causes Melanoma."
+    assert len(source) > 256
+    pico = NormalizedPico(
+        original_claim=source, intervention_or_exposure="Sunscreen",
+        outcome="Melanoma", claim_type="causal",
+    )
+    linker = MedicalEntityLinker(UnconfiguredUmlsProvider(), mesh_provider)
+    entities = linker.link(pico)
+    quality = assess_completeness(pico, entities, mesh_provider)
+    status = normalization_status(
+        pico, linked_count=2, mention_count=len(entities), quality=quality,
+    )
+    assert status == "normalized"
+    assert not quality.missing_explicit_concepts
+    assert "source_terminology_scan_truncated" not in quality.normalization_warnings
+    assert ready_for_evidence(
+        status, pico_json=pico.model_dump(), quality_json=quality.model_dump(),
+        standalone_status="complete", standalone_text=source,
+    )
+
+    omitted = pico.model_copy(update={"original_claim": source + " Shared Term."})
+    omitted_quality = assess_completeness(omitted, entities, mesh_provider)
+    assert omitted_quality.missing_explicit_concepts == ("Shared Term",)
+    omitted_status = normalization_status(
+        omitted, linked_count=2, mention_count=len(entities), quality=omitted_quality,
+    )
+    assert omitted_status == "partial"
+    assert not ready_for_evidence(
+        omitted_status, pico_json=omitted.model_dump(), quality_json=omitted_quality.model_dump(),
+    )
+
+
+def test_actual_source_truncation_stays_incomplete_and_never_matches_partial_token(
+    mesh_provider: IndexedMeshProvider,
+) -> None:
+    source = " " * (MESH_MENTION_MAX_SOURCE_CHARACTERS - len("Melanoma")) + "MelanomaFake"
+    assert len(source) > MESH_MENTION_MAX_SOURCE_CHARACTERS
+    assert mesh_provider.find_mentions(source) == ()
+    pico = NormalizedPico(original_claim=source, outcome="MelanomaFake")
+    quality = assess_completeness(pico, (), mesh_provider)
+    assert "source_terminology_scan_truncated" in quality.normalization_warnings
+    status = normalization_status(pico, linked_count=1, mention_count=1, quality=quality)
+    assert status == "partial"
+    assert not ready_for_evidence(
+        status, pico_json=pico.model_dump(), quality_json=quality.model_dump(),
+    )
 
 
 def test_ambiguous_alias_is_not_forced(mesh_provider: IndexedMeshProvider) -> None:

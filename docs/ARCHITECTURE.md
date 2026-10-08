@@ -1,5 +1,48 @@
 # Architecture
 
+## Context-aware document mode (development/test, 2026-10-08)
+
+`document/` owns exact-spanned plans, source-grounded context links, per-group
+evidence snapshots, grouped evaluation, append-only persistence and offline audit
+replay. The worker routes paragraph-sized text/reviewed screenshots to this path;
+short claims retain the existing pipeline. Original text is untrusted input and is
+preserved rather than replaced with a model summary. Commentary remains visible;
+factual groups retain strict study ownership. Omitted/ambiguous references become
+explicit unavailable details. Literal repeats preserve all spans and share a check.
+
+Each bounded group shares approved PubMed/Crossref/authoritative/PMC source work,
+including accessible methods/results/table context. Frozen assertion coverage
+guarantees source inclusion but does not forbid another genuinely relevant unit
+in the same pack. Prompt references and preflight allowlists come from that same
+snapshot. Source units and the complete quantity catalog are sent once; quantities
+use a lossless table view. Public caches keep existing freshness; verdicts are not
+cached. Additional groups reuse fetched sources within the analysis.
+
+Three blind judge chains run concurrently behind a provider-account limiter (three
+in flight). Each starts one grouped validator upon its own response; transport-only
+retries are bounded, with one shared validator deadline. Item defects do not erase
+valid siblings; corrupt envelopes/provenance fail closed. No shared DB session is
+used across async chains. Group boundaries may still serialize distinct groups.
+
+Reporting targets validate finding attributions and every required reporting field,
+not clinical causation. Validator 1.2 returns exact unit/quantity references; the
+backend materializes quotations and applies study identity, integrity, ownership,
+numeric measure/value/bound guards. Clinical targets still require full semantic
+axes and deterministic position 1.8/qualifier policy. Existing quorum and production
+requirements apply to aggregation; there is no averaged document truth score.
+
+Migration 20261007_0019 stores hash-bound document artifacts. GET verifies parents
+as of the report timestamp and replays raw saved responses without model/retrieval
+I/O before serving the saved public projection. Changed provenance/results fail
+closed. Source-view 1.0 and validator 1.0/1.1 dispatch retain historical behavior.
+Consent, redaction, retention and ordinary V2.4/V2.5 audits remain intact.
+
+Current contracts: document workflow/plan/evidence/report 1.0, planner prompt
+1.1-2026-10-08, group input 1.1, group judge 1.0, validator 1.2. The existing
+vanilla TS/Vite UI renders expandable source/reporting/medical views, literal
+citations, uncertainty and partial progress. See
+[live timeline, tests and remaining release/performance limits](DOCUMENT_MODE_RESULTS_20261008.md).
+
 ## V2.4 structured numeric transport (current development/test)
 
 `judging/compact24.py` prepares judge-input-2.4 / prompt 2.14; normal production

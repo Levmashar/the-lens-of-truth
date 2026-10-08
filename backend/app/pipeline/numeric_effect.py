@@ -33,6 +33,14 @@ _TRAILING = re.compile(
     re.I,
 )
 _RR = re.compile(rf"\b(?:RR|relative risk)\s+(?:of\s+)?(?P<value>{_VALUE})\b", re.I)
+_UPPER_BOUND = re.compile(
+    rf"\b(?:up\s+to|at\s+most)\s+(?:an?\s+)?(?P<value>{_VALUE})\s*"
+    r"(?P<unit>%|percentage[ -]points?)(?=\W|$)", re.I,
+)
+_CHANGE_DIRECTION = re.compile(
+    r"\b(?:increases?|increased|raises?|raised|higher|reduces?|reduced|reduction|"
+    r"decreases?|decreased|lowers?|lowered|lower)\b", re.I,
+)
 _DOUBLE = re.compile(r"\b(?P<value>doubles?|triples?)\b", re.I)
 _RELATION = re.compile(
     r"\b(?:increases?|raises?|reduces?|decreases?|lowers?|doubles?|triples?|"
@@ -42,6 +50,24 @@ _RELATION = re.compile(
 
 def numeric_effect(text: str) -> NumericEffect | None:
     """Record asserted notation; never convert ratios into percentages."""
+    upper_match = _UPPER_BOUND.search(text)
+    if upper_match:
+        # 'Up to' is a ceiling, never an exact estimate or a fabricated range
+        # starting at zero. Older consumers safely leave a lone bound unresolved.
+        upper_following = _CHANGE_DIRECTION.match(text[upper_match.end():].lstrip())
+        upper_preceding = list(_CHANGE_DIRECTION.finditer(text[:upper_match.start()]))
+        change = upper_following or (upper_preceding[-1] if upper_preceding else None)
+        upper_direction: Literal["increase", "decrease"] | None = None
+        if change:
+            upper_direction = ("decrease" if change.group().casefold().startswith(
+                ("reduc", "decreas", "lower"),
+            ) else "increase")
+        unit = upper_match["unit"].casefold()
+        return NumericEffect(
+            raw_text=upper_match.group(), status="parsed" if upper_direction else "uncertain",
+            kind="percent_change" if unit == "%" else "percentage_points",
+            upper_value=upper_match["value"], unit=unit, direction=upper_direction,
+        )
     ratio_range = _RR_RANGE.search(text)
     fold = _FOLD.search(text)
     if ratio_range or (fold and (fold["lower"] is not None or not _TRAILING.search(text))):

@@ -1,0 +1,310 @@
+{
+  "assertions": [
+    {
+"assertion_id": "A1",
+"kind": "sample_size",
+"spans": [
+{"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"}
+],
+"pico": {
+"population": "over 470,000 participants",
+"intervention_or_exposure": null,
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "recommendation"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A2",
+"kind": "reported_study_fact",
+"spans": [
+{"start": 79, "end": 130, "text": "looked at sunscreen use and skin\ncancer"}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": "sunscreen use",
+"comparator": null,
+"outcome": "skin\ncancer",
+"timeframe": null
+    ,
+"claim_type": "association"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A3",
+"kind": "reported_study_fact",
+"spans": [
+{"start": 131, "end": 201, "text": "It found that people who used sunscreen\nfrequently had higher risks of developing skin cancers."}
+],
+"pico": {
+"population": "people who used sunscreen\nfrequently",
+"intervention_or_exposure": "sunscreen\nfrequently",
+"comparator": null,
+"outcome": "higher risks of developing skin cancers",
+"timeframe": null
+    ,
+"claim_type": "association"
+},
+"study_id": "S1",
+"risk_class": "high",
+"context_link_ids": ["L1"],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A4",
+"kind": "reported_study_fact",
+"spans": [
+{"start": 202, "end": 292, "text": "The\nanalysis showed up to a 292% increased risk of invasive\nmelanoma for sunscreen users"}
+],
+"pico": {
+"population": "sunscreen users",
+"intervention_or_exposure": "sunscreen",
+"comparator": null,
+"outcome": "up to a 292% increased risk of invasive\nmelanoma",
+"timeframe": null
+    ,
+"claim_type": "association"
+},
+"study_id": "S1",
+"risk_class": "high",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A5",
+"kind": "reported_study_fact",
+"spans": [
+{"start": 293, "end": 350, "text": "plus higher rates of basal\ncell and squamous cell carcinomas."}
+],
+"pico": {
+"population": "sunscreen users",
+"intervention_or_exposure": "sunscreen",
+"comparator": null,
+"outcome": "higher rates of basal\ncell and squamous cell carcinomas",
+"timeframe": null
+    ,
+"claim_type": "association"
+},
+"study_id": "S1",
+"risk_class": "high",
+"context_link_ids": ["L2"],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A6",
+"kind": "methodology",
+"spans": [
+{"start": 351, "end": 470, "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime."}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": null,
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "methodology"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": ["L3"],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A7",
+"kind": "commentary",
+"spans": [
+{"start": 471, "end": 570, "text": "As one of the biggest studies of its kind, it provides\nextensive data on real-world habits and health outcomes."}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": null,
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "other"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": ["L4"],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A8",
+"kind": "commentary",
+"spans": [
+{"start": 571, "end": 666, "text": "The results have sparked discussion because they contrast\nwith standard advice on sun protection."}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": null,
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "other"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A9",
+"kind": "commentary",
+"spans": [
+{"start": 667, "end": 750, "text": "Experts have pointed to possible reasons such as how\nsunscreen is applied or combined with other behaviors."}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": "sunscreen",
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "other"
+},
+"study_id": null,
+"risk_class": "standard",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A10",
+"kind": "reported_study_fact",
+"spans": [
+{"start": 751, "end": 870, "text": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup."}
+],
+"pico": {
+"population": "a large population\ngroup",
+"intervention_or_exposure": "sunscreen use",
+"comparator": null,
+"outcome": "skin cancer rates",
+"timeframe": null
+    ,
+"claim_type": "association"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": ["L5"],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    },
+    {
+"assertion_id": "A11",
+"kind": "commentary",
+"spans": [
+{"start": 871, "end": 960, "text": "Source: UK Biobank data analysis as covered in\nscientific and media reports on the findings."}
+],
+"pico": {
+"population": null,
+"intervention_or_exposure": null,
+"comparator": null,
+"outcome": null,
+"timeframe": null
+    ,
+"claim_type": "other"
+},
+"study_id": "S1",
+"risk_class": "standard",
+"context_link_ids": [],
+"duplicate_of": null
+    ,
+"uncertainty_reasons": []
+    }
+  ],
+  "groups": [
+    {
+"group_id": "G1",
+"title": "UK Biobank sunscreen use and skin cancer study",
+"assertion_ids": ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A10"],
+"study_id": "S1",
+"study_clues": [
+{"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+{"start": 871, "end": 960, "text": "Source: UK Biobank data analysis as covered in\nscientific and media reports on the findings."}
+],
+"context_spans": [
+{"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+{"start": 351, "end": 470, "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime."}
+]
+    },
+    {
+"group_id": "G2",
+"title": "Discussion and expert commentary on findings",
+"assertion_ids": ["A8", "A9", "A11"],
+"study_id": null,
+"study_clues": [],
+"context_spans": [
+{"start": 571, "end": 666, "text": "The results have sparked discussion because they contrast\nwith standard advice on sun protection."},
+{"start": 667, "end": 750, "text": "Experts have pointed to possible reasons such as how\nsunscreen is applied or combined with other behaviors."}
+]
+    }
+  ],
+  "context_links": [
+    {
+"link_id": "L1",
+"reference": {"start": 131, "end": 133, "text": "It"},
+"target": {"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+"relationship": "study_reference",
+"resolved": true
+    },
+    {
+"link_id": "L2",
+"reference": {"start": 202, "end": 214, "text": "The\nanalysis"},
+"target": {"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+"relationship": "study_reference",
+"resolved": true
+    },
+    {
+"link_id": "L3",
+"reference": {"start": 351, "end": 362, "text": "These links"},
+"target": {"start": 131, "end": 201, "text": "It found that people who used sunscreen\nfrequently had higher risks of developing skin cancers."},
+"relationship": "reported_result",
+"resolved": true
+    },
+    {
+"link_id": "L4",
+"reference": {"start": 471, "end": 473, "text": "it"},
+"target": {"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+"relationship": "study_reference",
+"resolved": true
+    },
+    {
+"link_id": "L5",
+"reference": {"start": 751, "end": 760, "text": "The study"},
+"target": {"start": 2, "end": 78, "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants"},
+"relationship": "study_reference",
+"resolved": true
+    }
+  ]
+}

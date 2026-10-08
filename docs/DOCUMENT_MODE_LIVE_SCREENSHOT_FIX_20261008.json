@@ -1,0 +1,1640 @@
+{
+  "analysis": {
+    "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+    "status": "failed",
+    "stage": "building_report",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-08T08:59:49.835823+00:00",
+        "completed_at": "2026-10-08T09:01:22.211721+00:00"
+      },
+      "document": {
+        "mode": "document",
+        "version": "document-workflow-1.0"
+      },
+      "extracting": {
+        "started_at": "2026-10-08T08:58:55.943882+00:00",
+        "completed_at": "2026-10-08T08:59:13.352969+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-08T08:59:13.401756+00:00",
+        "completed_at": "2026-10-08T08:59:49.832523+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-08T09:01:22.207772+00:00",
+        "completed_at": "2026-10-08T09:01:22.216224+00:00"
+      },
+      "aggregating": {
+        "completed_at": "2026-10-08T09:01:22.219744+00:00"
+      },
+      "normalizing": {
+        "completed_at": "2026-10-08T08:59:13.361878+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-08T09:01:22.223541+00:00",
+        "completed_at": "2026-10-08T09:01:22.238871+00:00"
+      }
+    },
+    "claim_count": 12,
+    "completed_claims": 0,
+    "failure_code": "document_assessments_unavailable",
+    "language": "auto",
+    "input_type": "screenshot",
+    "claims": [],
+    "screenshot_ocr": {
+      "provider": "tesseract",
+      "confidence": 0.9636659589699249,
+      "pii_redaction_count": 0
+    },
+    "updated_at": "2026-10-08T09:01:22.238871Z",
+    "debug_enabled": true,
+    "document_mode": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "unavailable",
+        "failure_type": "provider_http_error",
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ],
+    "debug_events": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 17368,
+        "response_excerpt": "{\n  \"assertions\": [\n    {\n    \"assertion_id\": \"A1\",\n    \"kind\": \"sample_size\",\n    \"spans\": [\n    {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"over 470,000 participants\",\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"recommendation\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A2\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 75,\n    \"end\": 121,\n    \"text\": \"looked at sunscreen use and skin\\ncancer\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": \"sunscreen use\",\n    \"comparator\": null,\n    \"outcome\": \"skin\\ncancer\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A3\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 121,\n    \"end\": 199,\n    \"text\": \"It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"people who used sunscreen\\nfrequently\",\n    \"intervention_or_exposure\": \"sunscreen\\nfrequently\",\n    \"comparator\": null,\n    \"outcome\": \"higher risks of developing skin cancers\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L1\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A4\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 200,\n    \"end\": 292,\n    \"text\": \"The\\nanalysis showed up to a 292% increased risk of invasive\\nmelanoma for sunscreen users\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"sunscreen users\",\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": \"up to a 292% increased risk of invasive\\nmelanoma\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"high\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A5\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 292,\n    \"end\": 350,\n    \"text\": \", plus higher rates of basal\\ncell and squamous cell carcinomas.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"sunscreen users\",\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": \"higher rates of basal\\ncell and squamous cell carcinomas\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"high\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A6\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 351,\n    \"end\": 456,\n    \"text\": \"These links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": \"These links\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L2\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A7\",\n    \"kind\": \"methodology\",\n    \"spans\": [\n    {\n    \"start\": 351,\n    \"end\": 456,\n    \"text\": \"These links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L2\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A8\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 457,\n    \"end\": 550,\n    \"text\": \"As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L3\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A9\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 551,\n    \"end\": 640,\n    \"text\": \"The results have sparked discussion because they contrast\\nwith standard advice on sun protection.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A10\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 641,\n    \"end\": 728,\n    \"text\": \"Experts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": null,\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A11\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 729,\n    \"end\": 840,\n    \"text\": \"The study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"a large population\\ngroup\",\n    \"intervention_or_exposure\": \"sunscreen use\",\n    \"comparator\": null,\n    \"outcome\": \"skin cancer rates\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L4\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A12\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 840,\n    \"end\": 920,\n    \"text\": \"Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n    \"group_id\": \"G1\",\n    \"title\": \"UK Biobank sunscreen study: design, sample and reported findings\",\n    \"assertion_ids\": [\"A1\", \"A2\", \"A3\", \"A4\", \"A5\", \"A6\", \"A7\", \"A11\"],\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"study_clues\": [\n    {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    {\n    \"start\": 840,\n    \"end\": 920,\n    \"text\": \"Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ],\n    \"context_spans\": [\n    {\n    \"start\": 0,\n    \"end\": 920,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants looked at sunscreen use and skin\\ncancer. It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers. The\\nanalysis showed up to a 292% increased risk of invasive\\nmelanoma for sunscreen users, plus higher rates of basal\\ncell and squamous cell carcinomas.\\nThese links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime. As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\\nThe results have sparked discussion because they contrast\\nwith standard advice on sun protection.\\nExperts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\\nThe study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup. Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ]\n    },\n    {\n    \"group_id\": \"G2\",\n    \"title\": \"Commentary on interpretation and discussion of the findings\",\n    \"assertion_ids\": [\"A8\", \"A9\", \"A10\", \"A12\"],\n    \"study_id\": null,\n    \"study_clues\": [],\n    \"context_spans\": [\n    {\n    \"start\": 457,\n    \"end\": 920,\n    \"text\": \"As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\\nThe results have sparked discussion because they contrast\\nwith standard advice on sun protection.\\nExperts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\\nThe study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup. Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ]\n    }\n  ],\n  \"context_links\": [\n    {\n    \"link_id\": \"L1\",\n    \"reference\": {\n    \"start\": 121,\n    \"end\": 123,\n    \"text\": \"It\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L2\",\n    \"reference\": {\n    \"start\": 351,\n    \"end\": 363,\n    \"text\": \"These links\"\n    },\n    \"target\": {\n    \"start\": 121,\n    \"end\": 199,\n    \"text\": \"It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers.\"\n    },\n    \"relationship\": \"reported_result\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L3\",\n    \"reference\": {\n    \"start\": 457,\n    \"end\": 459,\n    \"text\": \"it\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L4\",\n    \"reference\": {\n    \"start\": 729,\n    \"end\": 739,\n    \"text\": \"The study\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    }\n  ]\n}",
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "prompt_version": "document-planner-1.1-2026-10-08",
+          "queue_wait_ms": 0,
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 872,
+            "completion_tokens": 3355,
+            "total_tokens": 4227
+          },
+          "provider": "openai_compatible_claim_extractor",
+          "model": "DeepSeek-V4.1-Flash",
+          "latency_ms": 17368,
+          "attempt_count": 1,
+          "raw_response": "{\n  \"assertions\": [\n    {\n    \"assertion_id\": \"A1\",\n    \"kind\": \"sample_size\",\n    \"spans\": [\n    {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"over 470,000 participants\",\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"recommendation\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A2\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 75,\n    \"end\": 121,\n    \"text\": \"looked at sunscreen use and skin\\ncancer\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": \"sunscreen use\",\n    \"comparator\": null,\n    \"outcome\": \"skin\\ncancer\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A3\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 121,\n    \"end\": 199,\n    \"text\": \"It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"people who used sunscreen\\nfrequently\",\n    \"intervention_or_exposure\": \"sunscreen\\nfrequently\",\n    \"comparator\": null,\n    \"outcome\": \"higher risks of developing skin cancers\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L1\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A4\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 200,\n    \"end\": 292,\n    \"text\": \"The\\nanalysis showed up to a 292% increased risk of invasive\\nmelanoma for sunscreen users\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"sunscreen users\",\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": \"up to a 292% increased risk of invasive\\nmelanoma\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"high\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A5\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 292,\n    \"end\": 350,\n    \"text\": \", plus higher rates of basal\\ncell and squamous cell carcinomas.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"sunscreen users\",\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": \"higher rates of basal\\ncell and squamous cell carcinomas\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"high\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A6\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 351,\n    \"end\": 456,\n    \"text\": \"These links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": \"These links\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L2\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A7\",\n    \"kind\": \"methodology\",\n    \"spans\": [\n    {\n    \"start\": 351,\n    \"end\": 456,\n    \"text\": \"These links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L2\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A8\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 457,\n    \"end\": 550,\n    \"text\": \"As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L3\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A9\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 551,\n    \"end\": 640,\n    \"text\": \"The results have sparked discussion because they contrast\\nwith standard advice on sun protection.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A10\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 641,\n    \"end\": 728,\n    \"text\": \"Experts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": \"sunscreen\",\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": null,\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A11\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 729,\n    \"end\": 840,\n    \"text\": \"The study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"a large population\\ngroup\",\n    \"intervention_or_exposure\": \"sunscreen use\",\n    \"comparator\": null,\n    \"outcome\": \"skin cancer rates\",\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L4\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A12\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 840,\n    \"end\": 920,\n    \"text\": \"Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n    \"group_id\": \"G1\",\n    \"title\": \"UK Biobank sunscreen study: design, sample and reported findings\",\n    \"assertion_ids\": [\"A1\", \"A2\", \"A3\", \"A4\", \"A5\", \"A6\", \"A7\", \"A11\"],\n    \"study_id\": \"UK Biobank sunscreen study\",\n    \"study_clues\": [\n    {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    {\n    \"start\": 840,\n    \"end\": 920,\n    \"text\": \"Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ],\n    \"context_spans\": [\n    {\n    \"start\": 0,\n    \"end\": 920,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants looked at sunscreen use and skin\\ncancer. It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers. The\\nanalysis showed up to a 292% increased risk of invasive\\nmelanoma for sunscreen users, plus higher rates of basal\\ncell and squamous cell carcinomas.\\nThese links held even after researchers adjusted for\\nvariables like age, skin type, sunburn history, and outdoor\\ntime. As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\\nThe results have sparked discussion because they contrast\\nwith standard advice on sun protection.\\nExperts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\\nThe study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup. Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ]\n    },\n    {\n    \"group_id\": \"G2\",\n    \"title\": \"Commentary on interpretation and discussion of the findings\",\n    \"assertion_ids\": [\"A8\", \"A9\", \"A10\", \"A12\"],\n    \"study_id\": null,\n    \"study_clues\": [],\n    \"context_spans\": [\n    {\n    \"start\": 457,\n    \"end\": 920,\n    \"text\": \"As one of the biggest studies of its kind, it provides\\nextensive data on real-world habits and health outcomes.\\nThe results have sparked discussion because they contrast\\nwith standard advice on sun protection.\\nExperts have pointed to possible reasons such as how\\nsunscreen is applied or combined with other behaviors.\\nThe study highlights patterns in sunscreen use and its\\nassociation with skin cancer rates in a large population\\ngroup. Source: UK Biobank data analysis as covered in\\nscientific and media reports on the findings.\"\n    }\n    ]\n    }\n  ],\n  \"context_links\": [\n    {\n    \"link_id\": \"L1\",\n    \"reference\": {\n    \"start\": 121,\n    \"end\": 123,\n    \"text\": \"It\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L2\",\n    \"reference\": {\n    \"start\": 351,\n    \"end\": 363,\n    \"text\": \"These links\"\n    },\n    \"target\": {\n    \"start\": 121,\n    \"end\": 199,\n    \"text\": \"It found that people who used sunscreen\\nfrequently had higher risks of developing skin cancers.\"\n    },\n    \"relationship\": \"reported_result\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L3\",\n    \"reference\": {\n    \"start\": 457,\n    \"end\": 459,\n    \"text\": \"it\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    },\n    {\n    \"link_id\": \"L4\",\n    \"reference\": {\n    \"start\": 729,\n    \"end\": 739,\n    \"text\": \"The study\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 75,\n    \"text\": \"A large study drawing from the UK Biobank database with\\nover 470,000 participants\"\n    },\n    \"relationship\": \"study_reference\",\n    \"resolved\": true\n    }\n  ]\n}"
+        }
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "c1009185-6ff3-4ca8-b1fa-40cf97ea3fde",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "22b3af89-cd3b-4170-a30a-0766251f9af4",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "d5beef9c-2291-429a-b315-21e898e7e67b",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "unavailable",
+        "failure_type": "provider_http_error",
+        "http_status": 400,
+        "elapsed_ms": 544,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "22b3af89-cd3b-4170-a30a-0766251f9af4",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 10
+        }
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 17475,
+        "response_excerpt": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n  \"assertion_id\": \"A1\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The identified UK Biobank skin cancer cohort study reports a total cohort of 472,672 individuals, comprising four skin cancer groups and healthy controls.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E169.U1\"],\n    \"qualitative_finding\": \"The study reports a total cohort of 472,672 individuals.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes the UK Biobank as a large-scale database of approximately 500,000 adult participants aged 40 to 69 recruited between 2006 and 2010.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E165.U1\"],\n    \"qualitative_finding\": \"The UK Biobank is described as comprising approximately 500,000 adult participants.\",\n    \"source_quantity_ids\": [\"E165.U1.Q1\", \"E165.U1.Q2\", \"E165.U1.Q3\", \"E165.U1.Q4\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S3\",\n    \"text\": \"The assertion's figure of 'over 470,000 participants' is consistent with the source's reported total cohort of 472,672, though the source's exact figure is 472,672.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E169.U1\"],\n    \"qualitative_finding\": \"The reported total cohort size is 472,672, consistent with the assertion's 'over 470,000'.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion accurately reflects the source's reported cohort size of 472,672 participants, which is consistent with 'over 470,000'.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A2\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The identified source is a UK Biobank skin cancer cohort study that examined associations between demographic/behavioral factors, including use of sun protection, and risk of basal cell carcinoma, cutaneous squamous cell carcinoma, melanoma in situ, and invasive melanoma.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E163.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"The study examined sunscreen use (as part of sun protection) and skin cancer outcomes.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source's disease-environment analysis included 'use of sun protection' as a predictor variable for the four skin cancer groups.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"Use of sun protection was a predictor variable in the multinomial logistic regression analysis.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that the study looked at sunscreen use and skin cancer is supported by the source, which examined sun protection use as a predictor of skin cancer risk.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A3\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that frequent use of sunscreen was positively correlated with basal cell carcinoma (RR=2.40) and cutaneous squamous cell carcinoma (RR=2.26), and that occasional, frequent, and very frequent use of sunscreen was directly correlated with melanoma in situ (RR=1.87~3.58) and invasive melanoma (RR=1.36~3.92).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Frequent sunscreen use was associated with increased risk of all four skin cancer types.\",\n    \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\", \"E172.U1.Q18\", \"E172.U1.Q19\", \"E172.U1.Q24\", \"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes this as a 'surprising association' and a 'paradoxical finding' of increasing risk of skin cancers with increased sunscreen use, which the authors posit may be explained by greater exposure to UV light, lack of reapplication, or increased use of sun protection following skin cancer diagnosis.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E179.U1\"],\n    \"qualitative_finding\": \"The authors describe the association as surprising and paradoxical, offering potential explanations.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that people who used sunscreen frequently had higher risks of developing skin cancers is supported by the source's reported risk ratios for all four cancer types.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A4\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent, and very frequent use of sunscreen, with risk ratios ranging from 1.36 to 3.92.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Invasive melanoma was positively correlated with sunscreen use, with RR ranging from 1.36 to 3.92.\",\n    \"source_quantity_ids\": [\"E172.U1.Q24\", \"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The assertion's figure of 'up to a 292% increased risk' corresponds to the upper bound of the reported risk ratio range (RR=3.92), which represents a 292% increase (3.92 - 1 = 2.92).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"The upper bound of the reported RR range for invasive melanoma is 3.92, corresponding to a 292% increased risk.\",\n    \"source_quantity_ids\": [\"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion's figure of up to 292% increased risk of invasive melanoma is consistent with the source's reported upper bound risk ratio of 3.92 for very frequent sunscreen use.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A5\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that basal cell carcinoma (BCC) was positively correlated with frequent use of sunscreen (RR=2.40) and cutaneous squamous cell carcinoma (cSCC) was positively correlated with frequent ('always') use of sunscreen (RR=2.26).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Higher rates of BCC and cSCC were associated with frequent sunscreen use.\",\n    \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion that there were higher rates of basal cell and squamous cell carcinomas is supported by the source's reported risk ratios for frequent sunscreen use.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A6\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source's disease-environment analysis used multinomial logistic regression to compute risk ratios for demographic and environmental variables, including age, skin color, hair color, ease of skin tanning, and use of sun protection, for each of the four skin cancer groups.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"The analysis adjusted for multiple demographic and environmental variables.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source reports that significant trends were observed for six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Significant associations were observed for multiple demographic and environmental factors across all disease groups.\",\n    \"source_quantity_ids\": [\"E172.U1.Q3\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion that the links held after adjusting for variables like age, skin type, sunburn history, and outdoor time is supported by the source's methodology, which included these variables in the multinomial logistic regression analysis.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A7\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source performed multinomial logistic regression to explore the relationship between demographic and environmental factors (including age, skin color, hair color, ease of skin tanning, subjective age appearance, use of sun protection, frequency of sunlamp use, number of childhood sunburns, and time spent outdoors) and risk of BCC, cSCC, M-is, and M-inv.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\"],\n    \"qualitative_finding\": \"The study used multinomial logistic regression to adjust for multiple demographic and environmental factors.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source states that these factors were set as predictor variables of outcome (disease), using one category in each variable as reference.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\"],\n    \"qualitative_finding\": \"The analysis used reference categories for each predictor variable.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that researchers adjusted for variables like age, skin type, sunburn history, and outdoor time is supported by the source's described methodology of multinomial logistic regression including these factors.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A11\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that frequent use of sunscreen was greatly associated with all four skin cancers (BCC, cSCC, M-is, M-inv) in a UK Biobank cohort of 472,672 individuals.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\", \"E179.U1\"],\n    \"qualitative_finding\": \"The study highlights an association between sunscreen use and skin cancer rates in a large population group.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes this as a 'surprising association' and a 'paradoxical finding' that was reported in prior studies, and posits potential explanations such as greater UV exposure, lack of reapplication, or increased use of sun protection following skin cancer diagnosis.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E179.U1\"],\n    \"qualitative_finding\": \"The authors describe the association as surprising and paradoxical, offering potential explanations.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that the study highlights patterns in sunscreen use and its association with skin cancer rates in a large population group is supported by the source's reported findings and discussion.\",\n  \"uncertainty_reasons\": []\n    }\n  ]\n}",
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "c1009185-6ff3-4ca8-b1fa-40cf97ea3fde",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 9,
+          "input_tokens": 86835,
+          "output_tokens": 2878
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "45ff5f8d-803c-4ba5-b5c3-164799857627",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 44469,
+        "response_excerpt": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports leveraging a UK Biobank cohort with a total of 472,672 individuals, which is over 470,000 participants.\",\n          \"qualitative_finding\": \"The study cohort size is 472,672 individuals.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E169.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E169.U1.Q1\",\n            \"E169.U1.Q2\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms a UK Biobank cohort of 472,672 individuals, consistent with the assertion of over 470,000 participants.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study investigated associations between skin cancer status and demographic and behavioral factors related to UV exposure, including use of sun protection.\",\n          \"qualitative_finding\": \"The study examined sunscreen use and skin cancer.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E163.U1\",\n            \"E170.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study looked at sunscreen use and skin cancer.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that frequent use of sunscreen was positively correlated with BCC (RR=2.40), cSCC (RR=2.26), M-is (RR=1.87~3.58), and M-inv (RR=1.36~3.92), indicating higher risks of developing skin cancers for frequent sunscreen users.\",\n          \"qualitative_finding\": \"Frequent sunscreen use is associated with higher relative risk of skin cancers.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q5\",\n            \"E172.U1.Q13\",\n            \"E172.U1.Q18\",\n            \"E172.U1.Q19\",\n            \"E172.U1.Q24\",\n            \"E172.U1.Q25\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms that frequent sunscreen users had higher relative risks for all four skin cancers studied.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A4\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent and very frequent use of sunscreen (RR=1.36~3.92), which corresponds to up to a 292% increased risk.\",\n          \"qualitative_finding\": \"Invasive melanoma risk for sunscreen users ranges from RR 1.36 to 3.92 (up to 292% increase).\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q24\",\n            \"E172.U1.Q25\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source reports RR up to 3.92 for invasive melanoma with very frequent sunscreen use, which equals a 292% increased risk, matching the assertion.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A5\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that BCC was positively correlated with frequent use of sunscreen (RR=2.40) and cSCC was positively correlated with frequent use of sunscreen (RR=2.26), indicating higher rates of basal cell and squamous cell carcinomas.\",\n          \"qualitative_finding\": \"Higher rates of BCC and cSCC associated with frequent sunscreen use.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q5\",\n            \"E172.U1.Q13\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms higher rates of basal cell and squamous cell carcinomas with frequent sunscreen use.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source performed multinomial logistic regression using predictor variables including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors, and found significant trends for use of sun protection across disease groups.\",\n          \"qualitative_finding\": \"Associations held after adjusting for demographic and environmental variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E170.U1\",\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the links held after adjustment for variables including age, skin type (tanning), sunburn history, and outdoor time.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The study used multinomial logistic regression to explore relationships between demographic and environmental factors (including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors) and skin cancer risk.\",\n          \"qualitative_finding\": \"Multinomial logistic regression was used adjusting for specified variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E170.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the methodology of adjusting for variables like age, skin type, sunburn history, and outdoor time.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A11\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study leveraged a UK Biobank dataset of four skin cancers and matched healthy controls to perform associations between disease status, demographic and behavioral factors related to UV exposure, highlighting patterns in sunscreen use and its association with skin cancer rates.\",\n          \"qualitative_finding\": \"The study highlights associations between sunscreen use and skin cancer rates in a large population.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E163.U1\",\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study highlights patterns in sunscreen use and its association with skin cancer rates in a large population group.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "d5beef9c-2291-429a-b315-21e898e7e67b",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 9,
+          "input_tokens": 84940,
+          "output_tokens": 1696
+        }
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 2,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "a7dcf019-36fc-44a8-ae33-39e48a2abb52",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 25760,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"unavailable\",\n      \"semantic\": null,\n      \"reporting_checks\": [\n       {\"field\":\"study_identity\",\"status\":\"matches\",\"source_unit_ids\":[\"E98.U1\",\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"We leveraged a UK Biobank cohort of basal cell carcinoma (BCC, n = 17,221), cutaneous squamous cell carcinoma (cSCC, n = 2,331), melanoma in situ (M-is, n = 1,158), invasive melanoma (M-inv, n = 3,798), and healthy controls (n = 448,164)\",\"reason\":\"The source explicitly identifies the study as leveraging a UK Biobank cohort with specific participant counts for skin cancer groups and controls.\"},\n       {\"field\":\"reported_result\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E172.U1\"],\"source_quantity_ids\":[\"E172.U1.Q3\"],\"source_value\":\"We observed significant (p<0.05) trends corresponding to six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\"reason\":\"The claim states links held after adjustment for 'age, skin type, sunburn history, and outdoor time'. The source reports significant associations for sex, hair color, skin color, ease of tanning, subjective age appearance, and sun protection use. It does not report that the sunscreen-cancer link specifically persisted after adjusting for age, sunburn history, or outdoor time; rather, these were predictor variables in a multinomial regression where each was analyzed against the reference category independently or as part of the model structure described in E170, but the result summary in E172 lists the significant factors found, which differ from the claim's list of adjusted-for confounders.\"},\n       {\"field\":\"endpoint\",\"status\":\"matches\",\"source_unit_ids\":[\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"basal cell carcinoma (BCC...), cutaneous squamous cell carcinoma (cSCC...), melanoma in situ (M-is...), invasive melanoma (M-inv...)\",\"reason\":\"The endpoints are clearly defined as BCC, cSCC, M-is, and M-inv in the methods.\"},\n       {\"field\":\"adjustment_set\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E170.U1\"],\"source_quantity_ids\":[],\"source_value\":\"These factors were set as predictor variables of outcome (disease), using one category in each variable as reference... Factors composed of continuous variables (age, frequency of sunlamp use, number of childhood sunburns and time spent outdoors (summer and winter) were not transformed.\",\"reason\":\"The source describes a multinomial logistic regression where demographic/environmental factors are predictors. It does not describe an analysis where the sunscreen-skin cancer association is adjusted for age, skin type, sunburn history, and outdoor time in the manner implied by the claim (i.e., showing the link persists *after* controlling for these). The claim implies a specific confounding adjustment strategy that isn't accurately reflected in the reported results which list significant associations for various factors including sunscreen use itself.\"}\n      ],\n      \"interpretation_limits\": [\n       \"The claim mischaracterizes the statistical method: the source uses multinomial logistic regression with categorical predictors, not necessarily a standard confounder-adjusted model for the sunscreen endpoint as described.\",\n       \"The list of variables claimed to be adjusted for (age, skin type, sunburn history, outdoor time) does not perfectly match the significant findings reported in the context of the sunscreen association.\"\n      ]\n    ,\n      \"reason\": \"The reporting fields show mismatches between the claim's description of adjustment and the source's actual methodology and results presentation.\"\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"unavailable\",\n      \"semantic\": null,\n      \"reporting_checks\": [\n       {\"field\":\"study_identity\",\"status\":\"matches\",\"source_unit_ids\":[\"E98.U1\",\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"We leveraged a UK Biobank cohort of basal cell carcinoma (BCC, n = 17,221), cutaneous squamous cell carcinoma (cSCC, n = 2,331), melanoma in situ (M-is, n = 1,158), invasive melanoma (M-inv, n = 3,798), and healthy controls (n = 448,164)\",\"reason\":\"Study identity matches the UK Biobank cohort description.\"},\n       {\"field\":\"reported_result\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E172.U1\"],\"source_quantity_ids\":[\"E172.U1.Q3\"],\"source_value\":\"We observed significant (p<0.05) trends corresponding to six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\"reason\":\"The claim asserts links held after adjustment for specific variables. The source reports significant associations for a different set of variables (sex, hair color, etc.) and does not explicitly state that the sunscreen-risk link remained significant after adjusting for age, skin type, sunburn history, and outdoor time in the way the claim suggests.\"},\n       {\"field\":\"adjustment_set\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E170.U1\"],\"source_quantity_ids\":[],\"source_value\":\"Using the RStudio... package nnet, we performed multinomial logistic regression to explore the relationship between the above-mentioned demographic and environmental factors, and risk of BCC, cSCC M-is and M-inv... These factors were set as predictor variables of outcome (disease), using one category in each variable as reference\",\"reason\":\"The methodology describes multinomial logistic regression with categorical predictors. It does not describe a multivariable adjustment model where the effect of sunscreen is estimated while holding age, skin type, sunburn history, and outdoor time constant in the manner implied by the claim.\"}\n      ],\n      \"interpretation_limits\": [\n       \"The methodology description in the claim ('adjusted for') differs from the source's description ('multinomial logistic regression... predictor variables').\",\n       \"The specific variables listed in the claim do not align with the primary significant findings reported in the source text regarding the sunscreen association.\"\n      ]\n    ,\n      \"reason\": \"Methodology mismatch: The claim describes confounder adjustment, while the source describes a multinomial regression with categorical predictors.\"\n    }\n  ]\n}",
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "45ff5f8d-803c-4ba5-b5c3-164799857627",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 5,
+          "input_tokens": 99531,
+          "output_tokens": 1466
+        }
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 2,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 47666,
+        "response_excerpt": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports leveraging a UK Biobank cohort with a total of 472,672 individuals.\",\n          \"qualitative_finding\": \"The study cohort consists of 472,672 individuals from the UK Biobank.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E169.U1\"],\n          \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The document claims over 470,000 participants; the source confirms a cohort of 472,672 individuals, which is consistent with the claim.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study investigated associations between skin cancer status and demographic and behavioral factors related to UV exposure, including use of sun protection.\",\n          \"qualitative_finding\": \"Study examined sunscreen use and skin cancer.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E163.U1\", \"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study looked at sunscreen use (use of sun/UV protection) and skin cancer.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that frequent use of sunscreen was positively correlated with BCC (RR=2.40), cSCC (RR=2.26), M-is (RR=1.87~3.58), and M-inv (RR=1.36~3.92).\",\n          \"qualitative_finding\": \"Frequent sunscreen use is associated with higher relative risk of skin cancers.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\", \"E172.U1.Q18\", \"E172.U1.Q24\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms that frequent sunscreen use is associated with higher risks of developing skin cancers across all four cancer groups.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A4\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent and very frequent use of sunscreen (RR=1.36~3.92).\",\n          \"qualitative_finding\": \"Up to a 292% increased risk (RR=3.92) of invasive melanoma for sunscreen users.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q24\", \"E172.U1.Q25\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source reports an RR range of 1.36 to 3.92 for invasive melanoma with varying sunscreen use frequencies. An RR of 3.92 corresponds to a 292% increased risk, matching the document's claim of 'up to a 292% increased risk'.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A5\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that BCC was positively correlated with frequent use of sunscreen (RR=2.40) and cSCC was positively correlated with frequent use of sunscreen (RR=2.26).\",\n          \"qualitative_finding\": \"Higher rates of basal cell and squamous cell carcinomas associated with frequent sunscreen use.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms higher rates of BCC and cSCC associated with frequent sunscreen use.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source performed multinomial logistic regression using predictor variables including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors.\",\n          \"qualitative_finding\": \"Analysis adjusted for age, skin tanning, sunburn history, and outdoor time.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source methodology confirms adjustment for variables corresponding to those listed in the document (age, skin type/tanning, sunburn history, outdoor time).\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The study used multinomial logistic regression to explore relationships between demographic and environmental factors and skin cancer risk, adjusting for variables such as age, ease of skin tanning, number of childhood sunburns, and time spent outdoors.\",\n          \"qualitative_finding\": \"Multinomial logistic regression was used with adjustments for specified variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the use of multinomial logistic regression adjusting for the specified variables.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A11\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study leveraged a UK Biobank dataset of four skin cancers and matched healthy controls to perform associations between disease status, demographic and behavioral factors related to UV exposure.\",\n          \"qualitative_finding\": \"Study highlights patterns of sunscreen use and association with skin cancer rates in a large population.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E163.U1\", \"E172.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study highlights patterns in sunscreen use and its association with skin cancer rates in a large UK Biobank population group.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+        "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "a7dcf019-36fc-44a8-ae33-39e48a2abb52",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 7,
+          "input_tokens": 84940,
+          "output_tokens": 1594
+        }
+      }
+    ]
+  },
+  "document_http": 200,
+  "document": {
+    "groups": [
+      {
+        "title": "UK Biobank sunscreen study: design, sample and reported findings",
+        "status": "completed",
+        "group_id": "G1",
+        "assertions": [
+          {
+            "kind": "sample_size",
+            "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A1",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 81,
+                "text": "A large study drawing from the UK Biobank database with\nover 470,000 participants",
+                "start": 0
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "looked at sunscreen use and skin\ncancer.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A2",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 122,
+                "text": "looked at sunscreen use and skin\ncancer.",
+                "start": 82
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "It found that people who used sunscreen\nfrequently had higher risks of developing skin cancers.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A3",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 218,
+                "text": "It found that people who used sunscreen\nfrequently had higher risks of developing skin cancers.",
+                "start": 123
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "The\nanalysis showed up to a 292% increased risk of invasive\nmelanoma for sunscreen users,",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A4",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 308,
+                "text": "The\nanalysis showed up to a 292% increased risk of invasive\nmelanoma for sunscreen users,",
+                "start": 219
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": ", plus higher rates of basal\ncell and squamous cell carcinomas.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A5",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 370,
+                "text": ", plus higher rates of basal\ncell and squamous cell carcinomas.",
+                "start": 307
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A6",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 489,
+                "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime.",
+                "start": 371
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "methodology",
+            "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A7",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 489,
+                "text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime.",
+                "start": 371
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup.",
+            "status": "unavailable",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check.",
+            "assertion_id": "A11",
+            "duplicate_of": null,
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 926,
+                "text": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup.",
+                "start": 808
+              }
+            ],
+            "source_reports": null,
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "reporting_fidelity": {
+              "explanation": "Too few independently validated assessments completed this check.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Accuracy of a study report and a general medical conclusion are separate questions. A reported association does not by itself establish causation or advice.",
+              "result_label": null
+            }
+          }
+        ],
+        "source_match": {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37642678/",
+          "title": "Gene-Environment Analyses in a UK Biobank Skin Cancer Cohort Identifies Important SNPs in DNA Repair Genes That May Help Prognosticate Disease Risk.",
+          "reason": "One candidate matches independent study clues.",
+          "status": "identified",
+          "candidates": [
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/37642678/",
+              "title": "Gene-Environment Analyses in a UK Biobank Skin Cancer Cohort Identifies Important SNPs in DNA Repair Genes That May Help Prognosticate Disease Risk.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 5 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/32615124/",
+              "title": "Polygenic Risk Scores Allow Risk Stratification for Keratinocyte Cancer in Organ-Transplant Recipients.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 3 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/41331717/",
+              "title": "Polyunsaturated Fatty Acids and Skin Cancer: Two-Sample Mendelian Randomization Study.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 3 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/34282681/",
+              "title": "Citrus Consumption and Risk of Non-Melanoma Skin Cancer in the UK Biobank.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 2 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/34437535/",
+              "title": "The impact of age on genetic risk for common diseases.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 2 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/36450978/",
+              "title": "Common and rare variant associations with clonal haematopoiesis phenotypes.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 2 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/38824251/",
+              "title": "Is diet related to skin condition? A Mendelian randomization study.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 2 distinct exposure/endpoint fields occur in the source."
+            },
+            {
+              "url": "https://pubmed.ncbi.nlm.nih.gov/39261450/",
+              "title": "An observational and genetic investigation into the association between psoriasis and risk of malignancy.",
+              "reason": "Named study/cohort clue occurs in title/abstract/methods: UK Biobank.; 2 distinct exposure/endpoint fields occur in the source."
+            }
+          ],
+          "discrepancies": [
+            "Figures, measures, adjustments and causation remain subject to separate source-fidelity and scientific validation."
+          ]
+        }
+      },
+      {
+        "title": "Commentary on interpretation and discussion of the findings",
+        "status": "completed",
+        "group_id": "G2",
+        "assertions": [
+          {
+            "kind": "commentary",
+            "text": "As one of the biggest studies of its kind, it provides\nextensive data on real-world habits and health outcomes.",
+            "status": "not_checkable",
+            "citations": [],
+            "explanation": "Commentary without a separate factual assertion to verify.",
+            "assertion_id": "A8",
+            "duplicate_of": null,
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 601,
+                "text": "As one of the biggest studies of its kind, it provides\nextensive data on real-world habits and health outcomes.",
+                "start": 490
+              }
+            ],
+            "source_reports": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null
+          },
+          {
+            "kind": "commentary",
+            "text": "The results have sparked discussion because they contrast\nwith standard advice on sun protection.",
+            "status": "not_checkable",
+            "citations": [],
+            "explanation": "Commentary without a separate factual assertion to verify.",
+            "assertion_id": "A9",
+            "duplicate_of": null,
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 699,
+                "text": "The results have sparked discussion because they contrast\nwith standard advice on sun protection.",
+                "start": 602
+              }
+            ],
+            "source_reports": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null
+          },
+          {
+            "kind": "commentary",
+            "text": "Experts have pointed to possible reasons such as how\nsunscreen is applied or combined with other behaviors.",
+            "status": "not_checkable",
+            "citations": [],
+            "explanation": "Commentary without a separate factual assertion to verify.",
+            "assertion_id": "A10",
+            "duplicate_of": null,
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 807,
+                "text": "Experts have pointed to possible reasons such as how\nsunscreen is applied or combined with other behaviors.",
+                "start": 700
+              }
+            ],
+            "source_reports": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null
+          },
+          {
+            "kind": "commentary",
+            "text": "Source: UK Biobank data analysis as covered in\nscientific and media reports on the findings.",
+            "status": "not_checkable",
+            "citations": [],
+            "explanation": "Commentary without a separate factual assertion to verify.",
+            "assertion_id": "A12",
+            "duplicate_of": null,
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 1019,
+                "text": "Source: UK Biobank data analysis as covered in\nscientific and media reports on the findings.",
+                "start": 927
+              }
+            ],
+            "source_reports": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null
+          }
+        ],
+        "source_match": {
+          "url": null,
+          "title": null,
+          "reason": "Source identification is pending.",
+          "status": "not_found",
+          "candidates": [],
+          "discrepancies": []
+        }
+      }
+    ],
+    "status": "failed",
+    "version": "document-report-1.0",
+    "progress": {
+      "groups_total": 2,
+      "assertions_total": 12,
+      "groups_completed": 2,
+      "assertions_completed": 12
+    },
+    "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+    "production_qualified": false,
+    "debug_group_runs": [
+      {
+        "slot": 2,
+        "items": {
+          "A1": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A2": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A3": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A4": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A5": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A6": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A7": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A11": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          }
+        },
+        "model": "Qwen3.5-Plus",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "qwen",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 2,
+            "model": "Qwen3.5-Plus",
+            "status": "unavailable",
+            "attempt": 1,
+            "call_id": "22b3af89-cd3b-4170-a30a-0766251f9af4",
+            "failure": "provider_http_error",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T08:59:50.013581+00:00",
+            "input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+            "started_at": "2026-10-08T08:59:50.018595+00:00",
+            "http_status": 400,
+            "completed_at": "2026-10-08T08:59:50.562338+00:00",
+            "queue_wait_ms": 10,
+            "provider_latency_ms": 544
+          }
+        ],
+        "document_sha256": "79463e3dba882df8d9dbd12d1ef6915199f802b6e9ced587d1125c3c2f15c165",
+        "group_input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+        "validation_version": "document-validation-1.0",
+        "group_evidence_hash": "90f8b34c5188beceb44cb640674430aefb434308e440a14503840e15db0898c2"
+      },
+      {
+        "slot": 1,
+        "items": {
+          "A1": {
+            "failure": "source_outside_assertion_evidence_coverage",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A2": {
+            "failure": "source_outside_assertion_evidence_coverage",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A3": {
+            "failure": "source_outside_assertion_evidence_coverage",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A4": {
+            "failure": "source_outside_assertion_evidence_coverage",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A5": {
+            "failure": "source_outside_assertion_evidence_coverage",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A6": {
+            "failure": "semantic_item_unavailable",
+            "position": null,
+            "statements": [
+              {
+                "kind": "study_method",
+                "text": "The source's disease-environment analysis used multinomial logistic regression to compute risk ratios for demographic and environmental variables, including age, skin color, hair color, ease of skin tanning, and use of sun protection, for each of the four skin cancer groups.",
+                "statement_id": "S1",
+                "source_unit_ids": [
+                  "E170.U1",
+                  "E172.U1"
+                ],
+                "numeric_dependency": false,
+                "qualitative_finding": "The analysis adjusted for multiple demographic and environmental variables.",
+                "source_quantity_ids": []
+              },
+              {
+                "kind": "study_finding",
+                "text": "The source reports that significant trends were observed for six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.",
+                "statement_id": "S2",
+                "source_unit_ids": [
+                  "E172.U1"
+                ],
+                "numeric_dependency": true,
+                "qualitative_finding": "Significant associations were observed for multiple demographic and environmental factors across all disease groups.",
+                "source_quantity_ids": [
+                  "E172.U1.Q3"
+                ]
+              }
+            ]
+          },
+          "A7": {
+            "failure": "semantic_item_unavailable",
+            "position": null,
+            "statements": [
+              {
+                "kind": "study_method",
+                "text": "The source performed multinomial logistic regression to explore the relationship between demographic and environmental factors (including age, skin color, hair color, ease of skin tanning, subjective age appearance, use of sun protection, frequency of sunlamp use, number of childhood sunburns, and time spent outdoors) and risk of BCC, cSCC, M-is, and M-inv.",
+                "statement_id": "S1",
+                "source_unit_ids": [
+                  "E170.U1"
+                ],
+                "numeric_dependency": false,
+                "qualitative_finding": "The study used multinomial logistic regression to adjust for multiple demographic and environmental factors.",
+                "source_quantity_ids": []
+              },
+              {
+                "kind": "study_method",
+                "text": "The source states that these factors were set as predictor variables of outcome (disease), using one category in each variable as reference.",
+                "statement_id": "S2",
+                "source_unit_ids": [
+                  "E170.U1"
+                ],
+                "numeric_dependency": false,
+                "qualitative_finding": "The analysis used reference categories for each predictor variable.",
+                "source_quantity_ids": []
+              }
+            ]
+          },
+          "A11": {
+            "failure": "Source quantity belongs to an uncited unit",
+            "position": null,
+            "exception_type": "QuantityReferenceError",
+            "citation_diagnostic": {
+              "message": "Source quantity belongs to an uncited unit",
+              "evidence_id": "E169",
+              "offending_id": "E169.U1.Q1",
+              "statement_id": "S1",
+              "exception_type": "QuantityReferenceError",
+              "source_unit_id": "E169.U1",
+              "reference_field": "source_quantity_ids",
+              "expected_unit_ids": [
+                "E172.U1",
+                "E179.U1"
+              ],
+              "source_quantity_id": "E169.U1.Q1",
+              "expected_allowed_ids": [
+                "E172.U1.Q1",
+                "E172.U1.Q2",
+                "E172.U1.Q3",
+                "E172.U1.Q4",
+                "E172.U1.Q5",
+                "E172.U1.Q6",
+                "E172.U1.Q7",
+                "E172.U1.Q8",
+                "E172.U1.Q9",
+                "E172.U1.Q10",
+                "E172.U1.Q11",
+                "E172.U1.Q12",
+                "E172.U1.Q13",
+                "E172.U1.Q14",
+                "E172.U1.Q15",
+                "E172.U1.Q16",
+                "E172.U1.Q17",
+                "E172.U1.Q18",
+                "E172.U1.Q19",
+                "E172.U1.Q20",
+                "E172.U1.Q21",
+                "E172.U1.Q22",
+                "E172.U1.Q23",
+                "E172.U1.Q24",
+                "E172.U1.Q25",
+                "E172.U1.Q26",
+                "E172.U1.Q27",
+                "E172.U1.Q28",
+                "E172.U1.Q29",
+                "E172.U1.Q30",
+                "E172.U1.Q31",
+                "E179.U1.Q1",
+                "E179.U1.Q2",
+                "E179.U1.Q3",
+                "E179.U1.Q4",
+                "E179.U1.Q5"
+              ]
+            },
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          }
+        },
+        "model": "DeepSeek-V4.1-Flash",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "deepseek",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 1,
+            "model": "DeepSeek-V4.1-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "c1009185-6ff3-4ca8-b1fa-40cf97ea3fde",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T08:59:49.994280+00:00",
+            "input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+            "started_at": "2026-10-08T08:59:49.998912+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T09:00:07.471377+00:00",
+            "input_tokens": 86835,
+            "raw_response": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n  \"assertion_id\": \"A1\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The identified UK Biobank skin cancer cohort study reports a total cohort of 472,672 individuals, comprising four skin cancer groups and healthy controls.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E169.U1\"],\n    \"qualitative_finding\": \"The study reports a total cohort of 472,672 individuals.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes the UK Biobank as a large-scale database of approximately 500,000 adult participants aged 40 to 69 recruited between 2006 and 2010.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E165.U1\"],\n    \"qualitative_finding\": \"The UK Biobank is described as comprising approximately 500,000 adult participants.\",\n    \"source_quantity_ids\": [\"E165.U1.Q1\", \"E165.U1.Q2\", \"E165.U1.Q3\", \"E165.U1.Q4\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S3\",\n    \"text\": \"The assertion's figure of 'over 470,000 participants' is consistent with the source's reported total cohort of 472,672, though the source's exact figure is 472,672.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E169.U1\"],\n    \"qualitative_finding\": \"The reported total cohort size is 472,672, consistent with the assertion's 'over 470,000'.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion accurately reflects the source's reported cohort size of 472,672 participants, which is consistent with 'over 470,000'.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A2\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The identified source is a UK Biobank skin cancer cohort study that examined associations between demographic/behavioral factors, including use of sun protection, and risk of basal cell carcinoma, cutaneous squamous cell carcinoma, melanoma in situ, and invasive melanoma.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E163.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"The study examined sunscreen use (as part of sun protection) and skin cancer outcomes.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source's disease-environment analysis included 'use of sun protection' as a predictor variable for the four skin cancer groups.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"Use of sun protection was a predictor variable in the multinomial logistic regression analysis.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that the study looked at sunscreen use and skin cancer is supported by the source, which examined sun protection use as a predictor of skin cancer risk.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A3\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that frequent use of sunscreen was positively correlated with basal cell carcinoma (RR=2.40) and cutaneous squamous cell carcinoma (RR=2.26), and that occasional, frequent, and very frequent use of sunscreen was directly correlated with melanoma in situ (RR=1.87~3.58) and invasive melanoma (RR=1.36~3.92).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Frequent sunscreen use was associated with increased risk of all four skin cancer types.\",\n    \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\", \"E172.U1.Q18\", \"E172.U1.Q19\", \"E172.U1.Q24\", \"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes this as a 'surprising association' and a 'paradoxical finding' of increasing risk of skin cancers with increased sunscreen use, which the authors posit may be explained by greater exposure to UV light, lack of reapplication, or increased use of sun protection following skin cancer diagnosis.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E179.U1\"],\n    \"qualitative_finding\": \"The authors describe the association as surprising and paradoxical, offering potential explanations.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that people who used sunscreen frequently had higher risks of developing skin cancers is supported by the source's reported risk ratios for all four cancer types.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A4\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent, and very frequent use of sunscreen, with risk ratios ranging from 1.36 to 3.92.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Invasive melanoma was positively correlated with sunscreen use, with RR ranging from 1.36 to 3.92.\",\n    \"source_quantity_ids\": [\"E172.U1.Q24\", \"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The assertion's figure of 'up to a 292% increased risk' corresponds to the upper bound of the reported risk ratio range (RR=3.92), which represents a 292% increase (3.92 - 1 = 2.92).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"The upper bound of the reported RR range for invasive melanoma is 3.92, corresponding to a 292% increased risk.\",\n    \"source_quantity_ids\": [\"E172.U1.Q25\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion's figure of up to 292% increased risk of invasive melanoma is consistent with the source's reported upper bound risk ratio of 3.92 for very frequent sunscreen use.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A5\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that basal cell carcinoma (BCC) was positively correlated with frequent use of sunscreen (RR=2.40) and cutaneous squamous cell carcinoma (cSCC) was positively correlated with frequent ('always') use of sunscreen (RR=2.26).\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Higher rates of BCC and cSCC were associated with frequent sunscreen use.\",\n    \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion that there were higher rates of basal cell and squamous cell carcinomas is supported by the source's reported risk ratios for frequent sunscreen use.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A6\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source's disease-environment analysis used multinomial logistic regression to compute risk ratios for demographic and environmental variables, including age, skin color, hair color, ease of skin tanning, and use of sun protection, for each of the four skin cancer groups.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\", \"E172.U1\"],\n    \"qualitative_finding\": \"The analysis adjusted for multiple demographic and environmental variables.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source reports that significant trends were observed for six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\"],\n    \"qualitative_finding\": \"Significant associations were observed for multiple demographic and environmental factors across all disease groups.\",\n    \"source_quantity_ids\": [\"E172.U1.Q3\"],\n    \"numeric_dependency\": true\n    }\n  ],\n  \"conclusion\": \"The assertion that the links held after adjusting for variables like age, skin type, sunburn history, and outdoor time is supported by the source's methodology, which included these variables in the multinomial logistic regression analysis.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A7\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source performed multinomial logistic regression to explore the relationship between demographic and environmental factors (including age, skin color, hair color, ease of skin tanning, subjective age appearance, use of sun protection, frequency of sunlamp use, number of childhood sunburns, and time spent outdoors) and risk of BCC, cSCC, M-is, and M-inv.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\"],\n    \"qualitative_finding\": \"The study used multinomial logistic regression to adjust for multiple demographic and environmental factors.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source states that these factors were set as predictor variables of outcome (disease), using one category in each variable as reference.\",\n    \"kind\": \"study_method\",\n    \"source_unit_ids\": [\"E170.U1\"],\n    \"qualitative_finding\": \"The analysis used reference categories for each predictor variable.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that researchers adjusted for variables like age, skin type, sunburn history, and outdoor time is supported by the source's described methodology of multinomial logistic regression including these factors.\",\n  \"uncertainty_reasons\": []\n    },\n    {\n  \"assertion_id\": \"A11\",\n  \"status\": \"completed\",\n  \"statements\": [\n    {\n    \"statement_id\": \"S1\",\n    \"text\": \"The source reports that frequent use of sunscreen was greatly associated with all four skin cancers (BCC, cSCC, M-is, M-inv) in a UK Biobank cohort of 472,672 individuals.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E172.U1\", \"E179.U1\"],\n    \"qualitative_finding\": \"The study highlights an association between sunscreen use and skin cancer rates in a large population group.\",\n    \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n    \"numeric_dependency\": true\n    },\n    {\n    \"statement_id\": \"S2\",\n    \"text\": \"The source describes this as a 'surprising association' and a 'paradoxical finding' that was reported in prior studies, and posits potential explanations such as greater UV exposure, lack of reapplication, or increased use of sun protection following skin cancer diagnosis.\",\n    \"kind\": \"study_finding\",\n    \"source_unit_ids\": [\"E179.U1\"],\n    \"qualitative_finding\": \"The authors describe the association as surprising and paradoxical, offering potential explanations.\",\n    \"source_quantity_ids\": [],\n    \"numeric_dependency\": false\n    }\n  ],\n  \"conclusion\": \"The assertion that the study highlights patterns in sunscreen use and its association with skin cancer rates in a large population group is supported by the source's reported findings and discussion.\",\n  \"uncertainty_reasons\": []\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 2878,
+            "queue_wait_ms": 9,
+            "provider_latency_ms": 17475
+          }
+        ],
+        "document_sha256": "79463e3dba882df8d9dbd12d1ef6915199f802b6e9ced587d1125c3c2f15c165",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "45ff5f8d-803c-4ba5-b5c3-164799857627",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T09:00:10.130426+00:00",
+          "input_hash": "e0f12fcc7c19b1bec95cd9ac0d10fa10e7ba8d48af4d85be50ae87021e215233",
+          "started_at": "2026-10-08T09:00:10.132292+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T09:00:35.889800+00:00",
+          "input_tokens": 99531,
+          "raw_response": "{\n  \"version\": \"document-validation-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"unavailable\",\n      \"semantic\": null,\n      \"reporting_checks\": [\n       {\"field\":\"study_identity\",\"status\":\"matches\",\"source_unit_ids\":[\"E98.U1\",\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"We leveraged a UK Biobank cohort of basal cell carcinoma (BCC, n = 17,221), cutaneous squamous cell carcinoma (cSCC, n = 2,331), melanoma in situ (M-is, n = 1,158), invasive melanoma (M-inv, n = 3,798), and healthy controls (n = 448,164)\",\"reason\":\"The source explicitly identifies the study as leveraging a UK Biobank cohort with specific participant counts for skin cancer groups and controls.\"},\n       {\"field\":\"reported_result\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E172.U1\"],\"source_quantity_ids\":[\"E172.U1.Q3\"],\"source_value\":\"We observed significant (p<0.05) trends corresponding to six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\"reason\":\"The claim states links held after adjustment for 'age, skin type, sunburn history, and outdoor time'. The source reports significant associations for sex, hair color, skin color, ease of tanning, subjective age appearance, and sun protection use. It does not report that the sunscreen-cancer link specifically persisted after adjusting for age, sunburn history, or outdoor time; rather, these were predictor variables in a multinomial regression where each was analyzed against the reference category independently or as part of the model structure described in E170, but the result summary in E172 lists the significant factors found, which differ from the claim's list of adjusted-for confounders.\"},\n       {\"field\":\"endpoint\",\"status\":\"matches\",\"source_unit_ids\":[\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"basal cell carcinoma (BCC...), cutaneous squamous cell carcinoma (cSCC...), melanoma in situ (M-is...), invasive melanoma (M-inv...)\",\"reason\":\"The endpoints are clearly defined as BCC, cSCC, M-is, and M-inv in the methods.\"},\n       {\"field\":\"adjustment_set\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E170.U1\"],\"source_quantity_ids\":[],\"source_value\":\"These factors were set as predictor variables of outcome (disease), using one category in each variable as reference... Factors composed of continuous variables (age, frequency of sunlamp use, number of childhood sunburns and time spent outdoors (summer and winter) were not transformed.\",\"reason\":\"The source describes a multinomial logistic regression where demographic/environmental factors are predictors. It does not describe an analysis where the sunscreen-skin cancer association is adjusted for age, skin type, sunburn history, and outdoor time in the manner implied by the claim (i.e., showing the link persists *after* controlling for these). The claim implies a specific confounding adjustment strategy that isn't accurately reflected in the reported results which list significant associations for various factors including sunscreen use itself.\"}\n      ],\n      \"interpretation_limits\": [\n       \"The claim mischaracterizes the statistical method: the source uses multinomial logistic regression with categorical predictors, not necessarily a standard confounder-adjusted model for the sunscreen endpoint as described.\",\n       \"The list of variables claimed to be adjusted for (age, skin type, sunburn history, outdoor time) does not perfectly match the significant findings reported in the context of the sunscreen association.\"\n      ]\n    ,\n      \"reason\": \"The reporting fields show mismatches between the claim's description of adjustment and the source's actual methodology and results presentation.\"\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"unavailable\",\n      \"semantic\": null,\n      \"reporting_checks\": [\n       {\"field\":\"study_identity\",\"status\":\"matches\",\"source_unit_ids\":[\"E98.U1\",\"E99.U1\"],\"source_quantity_ids\":[],\"source_value\":\"We leveraged a UK Biobank cohort of basal cell carcinoma (BCC, n = 17,221), cutaneous squamous cell carcinoma (cSCC, n = 2,331), melanoma in situ (M-is, n = 1,158), invasive melanoma (M-inv, n = 3,798), and healthy controls (n = 448,164)\",\"reason\":\"Study identity matches the UK Biobank cohort description.\"},\n       {\"field\":\"reported_result\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E172.U1\"],\"source_quantity_ids\":[\"E172.U1.Q3\"],\"source_value\":\"We observed significant (p<0.05) trends corresponding to six demographic factors and environmental exposures (sex, hair color, skin color, ease of skin tanning, subjective age appearance, use of sun protection) for each disease group.\",\"reason\":\"The claim asserts links held after adjustment for specific variables. The source reports significant associations for a different set of variables (sex, hair color, etc.) and does not explicitly state that the sunscreen-risk link remained significant after adjusting for age, skin type, sunburn history, and outdoor time in the way the claim suggests.\"},\n       {\"field\":\"adjustment_set\",\"status\":\"mismatch\",\"source_unit_ids\":[\"E170.U1\"],\"source_quantity_ids\":[],\"source_value\":\"Using the RStudio... package nnet, we performed multinomial logistic regression to explore the relationship between the above-mentioned demographic and environmental factors, and risk of BCC, cSCC M-is and M-inv... These factors were set as predictor variables of outcome (disease), using one category in each variable as reference\",\"reason\":\"The methodology describes multinomial logistic regression with categorical predictors. It does not describe a multivariable adjustment model where the effect of sunscreen is estimated while holding age, skin type, sunburn history, and outdoor time constant in the manner implied by the claim.\"}\n      ],\n      \"interpretation_limits\": [\n       \"The methodology description in the claim ('adjusted for') differs from the source's description ('multinomial logistic regression... predictor variables').\",\n       \"The specific variables listed in the claim do not align with the primary significant findings reported in the source text regarding the sunscreen association.\"\n      ]\n    ,\n      \"reason\": \"Methodology mismatch: The claim describes confounder adjustment, while the source describes a multinomial regression with categorical predictors.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 1466,
+          "queue_wait_ms": 5,
+          "provider_latency_ms": 25760
+        },
+        "group_input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+        "validation_version": "document-validation-1.0",
+        "group_evidence_hash": "90f8b34c5188beceb44cb640674430aefb434308e440a14503840e15db0898c2"
+      },
+      {
+        "slot": 3,
+        "items": {
+          "A1": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A2": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A3": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A4": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A5": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A6": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A7": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          },
+          "A11": {
+            "failure": "judge_call_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "A7",
+              "A11"
+            ]
+          }
+        },
+        "model": "GLM-4.7",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "glm",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 3,
+            "model": "GLM-4.7",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "d5beef9c-2291-429a-b315-21e898e7e67b",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T08:59:50.036945+00:00",
+            "input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+            "started_at": "2026-10-08T08:59:50.040853+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T09:00:34.505146+00:00",
+            "input_tokens": 84940,
+            "raw_response": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports leveraging a UK Biobank cohort with a total of 472,672 individuals, which is over 470,000 participants.\",\n          \"qualitative_finding\": \"The study cohort size is 472,672 individuals.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E169.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E169.U1.Q1\",\n            \"E169.U1.Q2\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms a UK Biobank cohort of 472,672 individuals, consistent with the assertion of over 470,000 participants.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study investigated associations between skin cancer status and demographic and behavioral factors related to UV exposure, including use of sun protection.\",\n          \"qualitative_finding\": \"The study examined sunscreen use and skin cancer.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E163.U1\",\n            \"E170.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study looked at sunscreen use and skin cancer.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that frequent use of sunscreen was positively correlated with BCC (RR=2.40), cSCC (RR=2.26), M-is (RR=1.87~3.58), and M-inv (RR=1.36~3.92), indicating higher risks of developing skin cancers for frequent sunscreen users.\",\n          \"qualitative_finding\": \"Frequent sunscreen use is associated with higher relative risk of skin cancers.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q5\",\n            \"E172.U1.Q13\",\n            \"E172.U1.Q18\",\n            \"E172.U1.Q19\",\n            \"E172.U1.Q24\",\n            \"E172.U1.Q25\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms that frequent sunscreen users had higher relative risks for all four skin cancers studied.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A4\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent and very frequent use of sunscreen (RR=1.36~3.92), which corresponds to up to a 292% increased risk.\",\n          \"qualitative_finding\": \"Invasive melanoma risk for sunscreen users ranges from RR 1.36 to 3.92 (up to 292% increase).\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q24\",\n            \"E172.U1.Q25\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source reports RR up to 3.92 for invasive melanoma with very frequent sunscreen use, which equals a 292% increased risk, matching the assertion.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A5\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that BCC was positively correlated with frequent use of sunscreen (RR=2.40) and cSCC was positively correlated with frequent use of sunscreen (RR=2.26), indicating higher rates of basal cell and squamous cell carcinomas.\",\n          \"qualitative_finding\": \"Higher rates of BCC and cSCC associated with frequent sunscreen use.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [\n            \"E172.U1.Q5\",\n            \"E172.U1.Q13\"\n          ],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms higher rates of basal cell and squamous cell carcinomas with frequent sunscreen use.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source performed multinomial logistic regression using predictor variables including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors, and found significant trends for use of sun protection across disease groups.\",\n          \"qualitative_finding\": \"Associations held after adjusting for demographic and environmental variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E170.U1\",\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the links held after adjustment for variables including age, skin type (tanning), sunburn history, and outdoor time.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The study used multinomial logistic regression to explore relationships between demographic and environmental factors (including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors) and skin cancer risk.\",\n          \"qualitative_finding\": \"Multinomial logistic regression was used adjusting for specified variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E170.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the methodology of adjusting for variables like age, skin type, sunburn history, and outdoor time.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A11\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study leveraged a UK Biobank dataset of four skin cancers and matched healthy controls to perform associations between disease status, demographic and behavioral factors related to UV exposure, highlighting patterns in sunscreen use and its association with skin cancer rates.\",\n          \"qualitative_finding\": \"The study highlights associations between sunscreen use and skin cancer rates in a large population.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E163.U1\",\n            \"E172.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study highlights patterns in sunscreen use and its association with skin cancer rates in a large population group.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+            "finish_reason": "stop",
+            "output_tokens": 1696,
+            "queue_wait_ms": 9,
+            "contract_failure": "Expecting value: line 1 column 1 (char 0)",
+            "provider_latency_ms": 44469
+          },
+          {
+            "slot": 3,
+            "model": "GLM-4.7",
+            "status": "responded",
+            "attempt": 2,
+            "call_id": "a7dcf019-36fc-44a8-ae33-39e48a2abb52",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T09:00:34.509722+00:00",
+            "input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+            "started_at": "2026-10-08T09:00:34.512443+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T09:01:22.175840+00:00",
+            "input_tokens": 84940,
+            "raw_response": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports leveraging a UK Biobank cohort with a total of 472,672 individuals.\",\n          \"qualitative_finding\": \"The study cohort consists of 472,672 individuals from the UK Biobank.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E169.U1\"],\n          \"source_quantity_ids\": [\"E169.U1.Q1\", \"E169.U1.Q2\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The document claims over 470,000 participants; the source confirms a cohort of 472,672 individuals, which is consistent with the claim.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study investigated associations between skin cancer status and demographic and behavioral factors related to UV exposure, including use of sun protection.\",\n          \"qualitative_finding\": \"Study examined sunscreen use and skin cancer.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E163.U1\", \"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study looked at sunscreen use (use of sun/UV protection) and skin cancer.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that frequent use of sunscreen was positively correlated with BCC (RR=2.40), cSCC (RR=2.26), M-is (RR=1.87~3.58), and M-inv (RR=1.36~3.92).\",\n          \"qualitative_finding\": \"Frequent sunscreen use is associated with higher relative risk of skin cancers.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\", \"E172.U1.Q18\", \"E172.U1.Q24\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms that frequent sunscreen use is associated with higher risks of developing skin cancers across all four cancer groups.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A4\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that invasive melanoma (M-inv) was positively correlated with occasional, frequent and very frequent use of sunscreen (RR=1.36~3.92).\",\n          \"qualitative_finding\": \"Up to a 292% increased risk (RR=3.92) of invasive melanoma for sunscreen users.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q24\", \"E172.U1.Q25\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source reports an RR range of 1.36 to 3.92 for invasive melanoma with varying sunscreen use frequencies. An RR of 3.92 corresponds to a 292% increased risk, matching the document's claim of 'up to a 292% increased risk'.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A5\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source reports that BCC was positively correlated with frequent use of sunscreen (RR=2.40) and cSCC was positively correlated with frequent use of sunscreen (RR=2.26).\",\n          \"qualitative_finding\": \"Higher rates of basal cell and squamous cell carcinomas associated with frequent sunscreen use.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E172.U1\"],\n          \"source_quantity_ids\": [\"E172.U1.Q5\", \"E172.U1.Q13\"],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms higher rates of BCC and cSCC associated with frequent sunscreen use.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A6\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source performed multinomial logistic regression using predictor variables including age, ease of skin tanning, number of childhood sunburns, and time spent outdoors.\",\n          \"qualitative_finding\": \"Analysis adjusted for age, skin tanning, sunburn history, and outdoor time.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source methodology confirms adjustment for variables corresponding to those listed in the document (age, skin type/tanning, sunburn history, outdoor time).\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A7\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The study used multinomial logistic regression to explore relationships between demographic and environmental factors and skin cancer risk, adjusting for variables such as age, ease of skin tanning, number of childhood sunburns, and time spent outdoors.\",\n          \"qualitative_finding\": \"Multinomial logistic regression was used with adjustments for specified variables.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\"E170.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the use of multinomial logistic regression adjusting for the specified variables.\",\n      \"uncertainty_reasons\": []\n    },\n    {\n      \"assertion_id\": \"A11\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The source study leveraged a UK Biobank dataset of four skin cancers and matched healthy controls to perform associations between disease status, demographic and behavioral factors related to UV exposure.\",\n          \"qualitative_finding\": \"Study highlights patterns of sunscreen use and association with skin cancer rates in a large population.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\"E163.U1\", \"E172.U1\"],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": null\n        }\n      ],\n      \"conclusion\": \"The source confirms the study highlights patterns in sunscreen use and its association with skin cancer rates in a large UK Biobank population group.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+            "finish_reason": "stop",
+            "output_tokens": 1594,
+            "queue_wait_ms": 7,
+            "contract_failure": "Expecting value: line 1 column 1 (char 0)",
+            "provider_latency_ms": 47666
+          }
+        ],
+        "document_sha256": "79463e3dba882df8d9dbd12d1ef6915199f802b6e9ced587d1125c3c2f15c165",
+        "group_input_hash": "d01a8cf9af3a43959fb32a49c7e4325cb5a4a593fae40ae4448a2215acd77d90",
+        "validation_version": "document-validation-1.0",
+        "group_evidence_hash": "90f8b34c5188beceb44cb640674430aefb434308e440a14503840e15db0898c2"
+      }
+    ]
+  },
+  "claims": {
+    "analysis_id": "139d0c77-83eb-4b65-88e7-1872da9b3ea6",
+    "claims": []
+  },
+  "reports": [],
+  "elapsed_ms": 154879,
+  "history": [
+    {
+      "elapsed_ms": 3365,
+      "status": "running",
+      "stage": "extracting",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 23331,
+      "status": "running",
+      "stage": "retrieving",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 57804,
+      "status": "running",
+      "stage": "judging",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 59821,
+      "status": "running",
+      "stage": "validating",
+      "completed": 4
+    },
+    {
+      "elapsed_ms": 151555,
+      "status": "failed",
+      "stage": "building_report",
+      "completed": 0
+    }
+  ],
+  "document_history": [
+    {
+      "elapsed_ms": 3383,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 9466,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 15550,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 23345,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 29414,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 35510,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 41571,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 47662,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 53760,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 60326,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 66923,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 73483,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 82143,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 88698,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 95234,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 101794,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 111133,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 120589,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 130866,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 140243,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    },
+    {
+      "elapsed_ms": 149531,
+      "http_status": 200,
+      "progress": {
+        "groups_total": 2,
+        "assertions_total": 12,
+        "groups_completed": 1,
+        "assertions_completed": 4
+      }
+    }
+  ]
+}

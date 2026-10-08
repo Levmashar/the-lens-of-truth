@@ -1,0 +1,145 @@
+{
+  "analysis": {
+    "analysis_id": "b98df58b-2ec6-40b2-9f88-bef12e31292b",
+    "status": "failed",
+    "stage": "extracting",
+    "completed_stages": [],
+    "stage_timestamps": {
+      "document": {
+        "mode": "document",
+        "version": "document-workflow-1.0"
+      },
+      "extracting": {
+        "started_at": "2026-10-07T19:20:43.934807+00:00"
+      }
+    },
+    "claim_count": 0,
+    "completed_claims": 0,
+    "failure_code": "document_planner_invalid_document_plan",
+    "language": "auto",
+    "input_type": "text",
+    "claims": [],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-07T19:20:43.934807Z",
+    "debug_enabled": true,
+    "document_mode": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "unavailable",
+        "failure_type": "invalid_document_plan",
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      }
+    ],
+    "debug_events": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b98df58b-2ec6-40b2-9f88-bef12e31292b",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "unavailable",
+        "failure_type": "invalid_document_plan",
+        "http_status": 200,
+        "elapsed_ms": 30660,
+        "response_excerpt": "{\n  \"assertions\": [\n    {\n\"assertion_id\": \"A1\",\n\"kind\": \"sample_size\",\n\"spans\": [\n{\"start\": 2, \"end\": 9, \"text\": \"large study\"},\n{\"start\": 10, \"end\": 17, \"text\": \"drawing\"},\n{\"start\": 18, \"end\": 22, \"text\": \"from\"},\n{\"start\": 23, \"end\": 26, \"text\": \"the\"},\n{\"start\": 27, \"end\": 30, \"text\": \"UK\"},\n{\"start\": 31, \"end\": 38, \"text\": \"Biobank\"},\n{\"start\": 39, \"end\": 47, \"text\": \"database\"},\n{\"start\": 48, \"end\": 52, \"text\": \"with\"},\n{\"start\": 53, \"end\": 57, \"text\": \"over\"},\n{\"start\": 58, \"end\": 66, \"text\": \"470,000\"},\n{\"start\": 67, \"end\": 79, \"text\": \"participants\"}\n],\n\"pico\": {\n\"population\": \"participants\",\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A2\",\n\"kind\": \"reported_study_fact\",\n\"spans\": [\n{\"start\": 80, \"end\": 85, \"text\": \"looked\"},\n{\"start\": 86, \"end\": 89, \"text\": \"at\"},\n{\"start\": 90, \"end\": 99, \"text\": \"sunscreen\"},\n{\"start\": 100, \"end\": 103, \"text\": \"use\"},\n{\"start\": 104, \"end\": 107, \"text\": \"and\"},\n{\"start\": 108, \"end\": 111, \"text\": \"skin\"},\n{\"start\": 112, \"end\": 119, \"text\": \"cancer\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": \"sunscreen use\",\n\"comparator\": null,\n\"outcome\": \"skin cancer\",\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A3\",\n\"kind\": \"reported_study_fact\",\n\"spans\": [\n{\"start\": 125, \"end\": 128, \"text\": \"It\"},\n{\"start\": 129, \"end\": 134, \"text\": \"found\"},\n{\"start\": 135, \"end\": 138, \"text\": \"that\"},\n{\"start\": 139, \"end\": 145, \"text\": \"people\"},\n{\"start\": 146, \"end\": 149, \"text\": \"who\"},\n{\"start\": 150, \"end\": 153, \"text\": \"used\"},\n{\"start\": 154, \"end\": 163, \"text\": \"sunscreen\"},\n{\"start\": 164, \"end\": 174, \"text\": \"frequently\"},\n{\"start\": 175, \"end\": 178, \"text\": \"had\"},\n{\"start\": 179, \"end\": 185, \"text\": \"higher\"},\n{\"start\": 186, \"end\": 191, \"text\": \"risks\"},\n{\"start\": 192, \"end\": 194, \"text\": \"of\"},\n{\"start\": 195, \"end\": 205, \"text\": \"developing\"},\n{\"start\": 206, \"end\": 209, \"text\": \"skin\"},\n{\"start\": 210, \"end\": 218, \"text\": \"cancers\"}\n],\n\"pico\": {\n\"population\": \"people\",\n\"intervention_or_exposure\": \"sunscreen frequently\",\n\"comparator\": null,\n\"outcome\": \"developing skin cancers\",\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L1\"],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A4\",\n\"kind\": \"reported_study_fact\",\n\"spans\": [\n{\"start\": 220, \"end\": 223, \"text\": \"The\"},\n{\"start\": 224, \"end\": 232, \"text\": \"analysis\"},\n{\"start\": 233, \"end\": 239, \"text\": \"showed\"},\n{\"start\": 240, \"end\": 242, \"text\": \"up\"},\n{\"start\": 243, \"end\": 245, \"text\": \"to\"},\n{\"start\": 246, \"end\": 247, \"text\": \"a\"},\n{\"start\": 248, \"end\": 251, \"text\": \"292\"},\n{\"start\": 252, \"end\": 253, \"text\": \"%\"},\n{\"start\": 254, \"end\": 263, \"text\": \"increased\"},\n{\"start\": 264, \"end\": 268, \"text\": \"risk\"},\n{\"start\": 269, \"end\": 271, \"text\": \"of\"},\n{\"start\": 272, \"end\": 281, \"text\": \"invasive\"},\n{\"start\": 282, \"end\": 290, \"text\": \"melanoma\"},\n{\"start\": 291, \"end\": 294, \"text\": \"for\"},\n{\"start\": 295, \"end\": 304, \"text\": \"sunscreen\"},\n{\"start\": 305, \"end\": 310, \"text\": \"users\"}\n],\n\"pico\": {\n\"population\": \"sunscreen users\",\n\"intervention_or_exposure\": \"sunscreen\",\n\"comparator\": null,\n\"outcome\": \"invasive melanoma\",\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A5\",\n\"kind\": \"reported_study_fact\",\n\"spans\": [\n{\"start\": 312, \"end\": 316, \"text\": \"plus\"},\n{\"start\": 317, \"end\": 323, \"text\": \"higher\"},\n{\"start\": 324, \"end\": 329, \"text\": \"rates\"},\n{\"start\": 330, \"end\": 332, \"text\": \"of\"},\n{\"start\": 333, \"end\": 338, \"text\": \"basal\"},\n{\"start\": 339, \"end\": 342, \"text\": \"cell\"},\n{\"start\": 343, \"end\": 346, \"text\": \"and\"},\n{\"start\": 347, \"end\": 356, \"text\": \"squamous\"},\n{\"start\": 357, \"end\": 360, \"text\": \"cell\"},\n{\"start\": 361, \"end\": 371, \"text\": \"carcinomas\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": \"basal cell and squamous cell carcinomas\",\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A6\",\n\"kind\": \"methodology\",\n\"spans\": [\n{\"start\": 374, \"end\": 379, \"text\": \"These\"},\n{\"start\": 380, \"end\": 385, \"text\": \"links\"},\n{\"start\": 386, \"end\": 390, \"text\": \"held\"},\n{\"start\": 391, \"end\": 395, \"text\": \"even\"},\n{\"start\": 396, \"end\": 400, \"text\": \"after\"},\n{\"start\": 401, \"end\": 412, \"text\": \"researchers\"},\n{\"start\": 413, \"end\": 421, \"text\": \"adjusted\"},\n{\"start\": 422, \"end\": 424, \"text\": \"for\"},\n{\"start\": 425, \"end\": 434, \"text\": \"variables\"},\n{\"start\": 435, \"end\": 439, \"text\": \"like\"},\n{\"start\": 440, \"end\": 443, \"text\": \"age\"},\n{\"start\": 444, \"end\": 448, \"text\": \"skin\"},\n{\"start\": 449, \"end\": 453, \"text\": \"type\"},\n{\"start\": 454, \"end\": 457, \"text\": \"sun\"},\n{\"start\": 458, \"end\": 465, \"text\": \"burn\"},\n{\"start\": 466, \"end\": 473, \"text\": \"history\"},\n{\"start\": 474, \"end\": 477, \"text\": \"and\"},\n{\"start\": 478, \"end\": 486, \"text\": \"outdoor\"},\n{\"start\": 487, \"end\": 491, \"text\": \"time\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L2\"],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A7\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 493, \"end\": 495, \"text\": \"As\"},\n{\"start\": 496, \"end\": 499, \"text\": \"one\"},\n{\"start\": 500, \"end\": 502, \"text\": \"of\"},\n{\"start\": 503, \"end\": 506, \"text\": \"the\"},\n{\"start\": 507, \"end\": 514, \"text\": \"biggest\"},\n{\"start\": 515, \"end\": 522, \"text\": \"studies\"},\n{\"start\": 523, \"end\": 525, \"text\": \"of\"},\n{\"start\": 526, \"end\": 529, \"text\": \"its\"},\n{\"start\": 530, \"end\": 535, \"text\": \"kind\"},\n{\"start\": 536, \"end\": 538, \"text\": \"it\"},\n{\"start\": 539, \"end\": 548, \"text\": \"provides\"},\n{\"start\": 549, \"end\": 559, \"text\": \"extensive\"},\n{\"start\": 560, \"end\": 564, \"text\": \"data\"},\n{\"start\": 565, \"end\": 567, \"text\": \"on\"},\n{\"start\": 568, \"end\": 572, \"text\": \"real\"},\n{\"start\": 573, \"end\": 578, \"text\": \"world\"},\n{\"start\": 579, \"end\": 585, \"text\": \"habits\"},\n{\"start\": 586, \"end\": 589, \"text\": \"and\"},\n{\"start\": 590, \"end\": 596, \"text\": \"health\"},\n{\"start\": 597, \"end\": 605, \"text\": \"outcomes\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L3\"],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A8\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 607, \"end\": 610, \"text\": \"The\"},\n{\"start\": 611, \"end\": 618, \"text\": \"results\"},\n{\"start\": 619, \"end\": 622, \"text\": \"have\"},\n{\"start\": 623, \"end\": 630, \"text\": \"sparked\"},\n{\"start\": 631, \"end\": 641, \"text\": \"discussion\"},\n{\"start\": 642, \"end\": 649, \"text\": \"because\"},\n{\"start\": 650, \"end\": 653, \"text\": \"they\"},\n{\"start\": 654, \"end\": 662, \"text\": \"contrast\"},\n{\"start\": 663, \"end\": 667, \"text\": \"with\"},\n{\"start\": 668, \"end\": 676, \"text\": \"standard\"},\n{\"start\": 677, \"end\": 681, \"text\": \"advice\"},\n{\"start\": 682, \"end\": 684, \"text\": \"on\"},\n{\"start\": 685, \"end\": 688, \"text\": \"sun\"},\n{\"start\": 689, \"end\": 700, \"text\": \"protection\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L4\"],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A9\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 702, \"end\": 709, \"text\": \"Experts\"},\n{\"start\": 710, \"end\": 713, \"text\": \"have\"},\n{\"start\": 714, \"end\": 721, \"text\": \"pointed\"},\n{\"start\": 722, \"end\": 724, \"text\": \"to\"},\n{\"start\": 725, \"end\": 733, \"text\": \"possible\"},\n{\"start\": 734, \"end\": 741, \"text\": \"reasons\"},\n{\"start\": 742, \"end\": 748, \"text\": \"such\"},\n{\"start\": 749, \"end\": 751, \"text\": \"as\"},\n{\"start\": 752, \"end\": 755, \"text\": \"how\"},\n{\"start\": 756, \"end\": 764, \"text\": \"sunscreen\"},\n{\"start\": 765, \"end\": 767, \"text\": \"is\"},\n{\"start\": 768, \"end\": 775, \"text\": \"applied\"},\n{\"start\": 776, \"end\": 778, \"text\": \"or\"},\n{\"start\": 779, \"end\": 787, \"text\": \"combined\"},\n{\"start\": 788, \"end\": 792, \"text\": \"with\"},\n{\"start\": 793, \"end\": 798, \"text\": \"other\"},\n{\"start\": 799, \"end\": 808, \"text\": \"behaviors\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A10\",\n\"kind\": \"reported_study_fact\",\n\"spans\": [\n{\"start\": 810, \"end\": 813, \"text\": \"The\"},\n{\"start\": 814, \"end\": 819, \"text\": \"study\"},\n{\"start\": 820, \"end\": 830, \"text\": \"highlights\"},\n{\"start\": 831, \"end\": 839, \"text\": \"patterns\"},\n{\"start\": 840, \"end\": 842, \"text\": \"in\"},\n{\"start\": 843, \"end\": 852, \"text\": \"sunscreen\"},\n{\"start\": 853, \"end\": 856, \"text\": \"use\"},\n{\"start\": 857, \"end\": 860, \"text\": \"and\"},\n{\"start\": 861, \"end\": 864, \"text\": \"its\"},\n{\"start\": 865, \"end\": 876, \"text\": \"association\"},\n{\"start\": 877, \"end\": 881, \"text\": \"with\"},\n{\"start\": 882, \"end\": 885, \"text\": \"skin\"},\n{\"start\": 886, \"end\": 893, \"text\": \"cancer\"},\n{\"start\": 894, \"end\": 899, \"text\": \"rates\"},\n{\"start\": 900, \"end\": 902, \"text\": \"in\"},\n{\"start\": 903, \"end\": 904, \"text\": \"a\"},\n{\"start\": 905, \"end\": 910, \"text\": \"large\"},\n{\"start\": 911, \"end\": 921, \"text\": \"population\"},\n{\"start\": 922, \"end\": 927, \"text\": \"group\"}\n],\n\"pico\": {\n\"population\": \"large population group\",\n\"intervention_or_exposure\": \"sunscreen use\",\n\"comparator\": null,\n\"outcome\": \"skin cancer rates\",\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": \"S1\",\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L5\"],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A11\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 929, \"end\": 935, \"text\": \"Source\"},\n{\"start\": 936, \"end\": 937, \"text\": \":\"},\n{\"start\": 938, \"end\": 940, \"text\": \"UK\"},\n{\"start\": 941, \"end\": 948, \"text\": \"Biobank\"},\n{\"start\": 949, \"end\": 953, \"text\": \"data\"},\n{\"start\": 954, \"end\": 962, \"text\": \"analysis\"},\n{\"start\": 963, \"end\": 965, \"text\": \"as\"},\n{\"start\": 966, \"end\": 973, \"text\": \"covered\"},\n{\"start\": 974, \"end\": 976, \"text\": \"in\"},\n{\"start\": 977, \"end\": 987, \"text\": \"scientific\"},\n{\"start\": 988, \"end\": 991, \"text\": \"and\"},\n{\"start\": 992, \"end\": 997, \"text\": \"media\"},\n{\"start\": 998, \"end\": 1005, \"text\": \"reports\"},\n{\"start\": 1006, \"end\": 1008, \"text\": \"on\"},\n{\"start\": 1009, \"end\": 1012, \"text\": \"the\"},\n{\"start\": 1013, \"end\": 1021, \"text\": \"findings\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": null,\n\"comparator\": null,\n\"outcome\": null,\n\"timeframe\": null,\n\"claim_type\": null\n},\n\"study_id\": null,\n\"risk_class\": \"unknown\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n\"group_id\": \"G1\",\n\"title\": \"UK Biobank study design and sample\",\n\"assertion_ids\": [\"A1\", \"A2\"],\n\"study_id\": \"S1\",\n\"study_clues\": [\n{\"start\": 27, \"end\": 30, \"text\": \"UK\"},\n{\"start\": 31, \"end\": 38, \"text\": \"Biobank\"},\n{\"start\": 39, \"end\": 47, \"text\": \"database\"}\n],\n\"context_spans\": [\n{\"start\": 2, \"end\": 9, \"text\": \"large study\"},\n{\"start\": 58, \"end\": 66, \"text\": \"470,000\"}\n]\n    },\n    {\n\"group_id\": \"G2\",\n\"title\": \"Reported sunscreen use and skin cancer risk findings\",\n\"assertion_ids\": [\"A3\", \"A4\", \"A5\"],\n\"study_id\": \"S1\",\n\"study_clues\": [\n{\"start\": 27, \"end\": 30, \"text\": \"UK\"},\n{\"start\": 31, \"end\": 38, \"text\": \"Biobank\"}\n],\n\"context_spans\": [\n{\"start\": 125, \"end\": 128, \"text\": \"It\"},\n{\"start\": 220, \"end\": 223, \"text\": \"The\"},\n{\"start\": 224, \"end\": 232, \"text\": \"analysis\"}\n]\n    },\n    {\n\"group_id\": \"G3\",\n\"title\": \"Adjustment methodology\",\n\"assertion_ids\": [\"A6\"],\n\"study_id\": \"S1\",\n\"study_clues\": [\n{\"start\": 401, \"end\": 412, \"text\": \"researchers\"}\n],\n\"context_spans\": [\n{\"start\": 374, \"end\": 379, \"text\": \"These\"},\n{\"start\": 380, \"end\": 385, \"text\": \"links\"}\n]\n    },\n    {\n\"group_id\": \"G4\",\n\"title\": \"Study significance and discussion commentary\",\n\"assertion_ids\": [\"A7\", \"A8\", \"A9\"],\n\"study_id\": \"S1\",\n\"study_clues\": [\n{\"start\": 503, \"end\": 506, \"text\": \"the\"},\n{\"start\": 507, \"end\": 514, \"text\": \"biggest\"},\n{\"start\": 515, \"end\": 522, \"text\": \"studies\"}\n],\n\"context_spans\": [\n{\"start\": 536, \"end\": 538, \"text\": \"it\"},\n{\"start\": 607, \"end\": 610, \"text\": \"The\"},\n{\"start\": 611, \"end\": 618, \"text\": \"results\"}\n]\n    },\n    {\n\"group_id\": \"G5\",\n\"title\": \"Study association summary and source\",\n\"assertion_ids\": [\"A10\", \"A11\"],\n\"study_id\": \"S1\",\n\"study_clues\": [\n{\"start\": 814, \"end\": 819, \"text\": \"study\"},\n{\"start\": 938, \"end\": 940, \"text\": \"UK\"},\n{\"start\": 941, \"end\": 948, \"text\": \"Biobank\"}\n],\n\"context_spans\": [\n{\"start\": 810, \"end\": 813, \"text\": \"The\"},\n{\"start\": 929, \"end\": 935, \"text\": \"Source\"}\n]\n    }\n  ],\n  \"context_links\": [\n    {\n\"link_id\": \"L1\",\n\"reference\": {\"start\": 125, \"end\": 128, \"text\": \"It\"},\n\"target\": {\"start\": 2, \"end\": 9, \"text\": \"large study\"},\n\"relationship\": \"study_reference\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L2\",\n\"reference\": {\"start\": 374, \"end\": 385, \"text\": \"These links\"},\n\"target\": {\"start\": 186, \"end\": 191, \"text\": \"risks\"},\n\"relationship\": \"reported_result\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L3\",\n\"reference\": {\"start\": 536, \"end\": 538, \"text\": \"it\"},\n\"target\": {\"start\": 2, \"end\": 9, \"text\": \"large study\"},\n\"relationship\": \"study_reference\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L4\",\n\"reference\": {\"start\": 650, \"end\": 653, \"text\": \"they\"},\n\"target\": {\"start\": 611, \"end\": 618, \"text\": \"results\"},\n\"relationship\": \"reported_result\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L5\",\n\"reference\": {\"start\": 861, \"end\": 864, \"text\": \"its\"},\n\"target\": {\"start\": 843, \"end\": 856, \"text\": \"sunscreen use\"},\n\"relationship\": \"reported_result\",\n\"resolved\": true\n    }\n  ]\n}",
+        "analysis_id": "b98df58b-2ec6-40b2-9f88-bef12e31292b",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "prompt_version": "document-planner-1.0-2026-10-07",
+          "queue_wait_ms": 0,
+          "finish_reason": "stop"
+        }
+      }
+    ]
+  },
+  "document_http": 404,
+  "document": {
+    "error": {
+      "code": "document_not_ready",
+      "message": "Document checks are being prepared.",
+      "request_id": "355f0aec-ac8f-461e-9fde-b732a1c23924"
+    }
+  },
+  "claims": {
+    "analysis_id": "b98df58b-2ec6-40b2-9f88-bef12e31292b",
+    "claims": []
+  },
+  "reports": [],
+  "elapsed_ms": 34370,
+  "history": [
+    {
+      "elapsed_ms": 2205,
+      "status": "running",
+      "stage": "extracting",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 34358,
+      "status": "failed",
+      "stage": "extracting",
+      "completed": 0
+    }
+  ]
+}

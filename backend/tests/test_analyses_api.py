@@ -127,6 +127,12 @@ class FakeAnalysisIngestionService:
             ),
         )
 
+    async def read_screenshot_text(
+        self, *, session: object, upload_id: UUID, language: str,
+    ) -> OcrPreview:
+        del language
+        return await self.preview_screenshot_ocr(session=session, upload_id=upload_id)
+
     async def preview_claim_extraction(
         self, *, session: object, request: CreateAnalysisRequest
     ) -> ClaimExtractionPreview:
@@ -306,6 +312,45 @@ def test_ocr_preview_returns_redacted_development_diagnostics(phase_two_client: 
     assert response.status_code == 200
     assert response.json()["provider"] == "tesseract"
     assert response.json()["lines"][0]["text"] == "Vitamin C prevents colds."
+
+
+def test_public_screenshot_read_returns_only_review_text_with_consent(
+    phase_two_client: TestClient,
+) -> None:
+    from app.core.config import Settings, get_runtime_settings
+
+    phase_two_client.app.dependency_overrides[get_runtime_settings] = lambda: Settings(
+        _env_file=None, app_env="production",
+    )
+    upload_id = phase_two_client.app.dependency_overrides[
+        get_analysis_ingestion_service
+    ]().upload_id
+    response = phase_two_client.post(
+        f"/v1/analyses/uploads/screenshots/{upload_id}/read",
+        json={
+            "lang": "auto",
+            "consent": {"privacy_notice_version": "2026-09-01", "accepted": True},
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "upload_id": str(upload_id), "redacted_text": "Vitamin C prevents colds.",
+        "confidence": 0.9, "language_used": "eng",
+    }
+
+
+@pytest.mark.parametrize("consent", [
+    None, {"privacy_notice_version": "2026-09-01", "accepted": False},
+])
+def test_public_screenshot_read_requires_consent(
+    phase_two_client: TestClient, consent: object,
+) -> None:
+    response = phase_two_client.post(
+        f"/v1/analyses/uploads/screenshots/{uuid4()}/read",
+        json={"consent": consent},
+    )
+    assert response.status_code == 422
 
 
 def test_rejects_submission_without_accepted_consent(phase_two_client: TestClient) -> None:

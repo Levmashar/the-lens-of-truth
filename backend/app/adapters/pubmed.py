@@ -9,6 +9,7 @@ from typing import Protocol
 
 import httpx
 
+from app.adapters.source_metrics import record_ncbi_source_http
 from app.retrieval.errors import RetrievalError, RetrievalFailureKind
 from app.retrieval.models import PubMedFetchResult
 from app.retrieval.normalize import parse_pubmed_xml_details
@@ -158,9 +159,17 @@ class PubMedAdapter:
                         headers={"User-Agent": f"{self._tool}/1.0 ({self._email})"},
                     ) as client:
                         async with asyncio.timeout(self._timeout):
+                            record_ncbi_source_http(
+                                endpoint, database=params.get("db"),
+                                source_database=params.get("dbfrom"),
+                            )
                             response = await client.get(endpoint, params=safe_params)
                 else:
                     async with asyncio.timeout(self._timeout):
+                        record_ncbi_source_http(
+                            endpoint, database=params.get("db"),
+                            source_database=params.get("dbfrom"),
+                        )
                         response = await self._client.get(endpoint, params=safe_params,
                                                           timeout=self._timeout,
                                                           headers={"User-Agent": (

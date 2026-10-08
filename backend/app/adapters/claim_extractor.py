@@ -14,12 +14,14 @@ import httpx
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from app.adapters.http import HttpAdapterBase
+from app.adapters.source_spans import reconcile_unique_source_span
+from app.adapters.structured_output import strict_chat_schema
 from app.core.debug_trace import record_model_event
 from app.core.errors import ExternalCapabilityError
 from app.pipeline.claim_types import ClaimType, explicit_relation, legacy_claim_type
 from app.pipeline.standalone import StandaloneStatus, validate_standalone
 
-CLAIM_EXTRACTION_PROMPT_VERSION = "phase7-standalone-source-spans-2026-09-29"
+CLAIM_EXTRACTION_PROMPT_VERSION = "phase7-literal-article-claims-2026-10-07"
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are a health-claim extraction engine.
@@ -53,6 +55,17 @@ or present it as confidence that the claim is medically true.
 Also return pico with population, intervention_or_exposure, comparator,
 outcome, and timeframe. Use null for information absent from the source.
 Never infer a population, comparator, or outcome that the content does not state.
+Every non-null PICO value must use exact source words, allowing only whitespace
+differences. Prefer a minimal literal medical entity over a grammatical
+paraphrase: do not replace a stated noun with an invented use/frequency phrase.
+Keep frequency, qualifiers and numbers in raw_span. Select enough of the source
+clause to contain its exposure and outcome; do not return isolated fragments
+such as "plus higher rates" or unresolved "these links". Only an explicitly
+shared coordinated subject may be inherited using source offsets.
+For articles, extract the medical findings, not descriptions of study size,
+discussion, recommendations, adjustment methods or vague summaries that add no
+independent health proposition. Keep reported associations as associations,
+not causal effects. Preserve bounds such as "up to" and exact numeric wording.
 claim_type must be exactly one of: causal, association, prevention, treatment,
 diagnostic, safety, recommendation, statistical_or_study_result, methodology,
 other. Use causal for explicit causal wording and association for explicit
@@ -206,6 +219,27 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
     model: str = ""
     api_key: str = ""
     maximum_claims: int = 20
+    thinking_enabled: bool | None = None
+    max_output_tokens: int = 8192
+
+    def request_options(self) -> dict[str, object]:
+        """Bound extraction output and explicitly configure known thinking APIs."""
+
+        options: dict[str, object] = {"max_tokens": self.max_output_tokens}
+        if self.thinking_enabled is None:
+            return options
+        if self.model.casefold().startswith(("deepseek-", "glm-")):
+            options["thinking"] = {
+                "type": "enabled" if self.thinking_enabled else "disabled",
+            }
+        elif self.model.casefold().startswith("qwen"):
+            options["enable_thinking"] = self.thinking_enabled
+        else:
+            raise ExternalCapabilityError(
+                code="claim_extractor_configuration_error",
+                message="Explicit extraction thinking is unsupported for this model.",
+            )
+        return options
 
     @property
     def model_id(self) -> str:
@@ -236,10 +270,11 @@ class OpenAICompatibleClaimExtractor(HttpAdapterBase):
                 "json_schema": {
                     "name": "atomic_claim_extraction",
                     "strict": True,
-                    "schema": ClaimExtractionPayload.model_json_schema(),
+                    "schema": strict_chat_schema(ClaimExtractionPayload.model_json_schema()),
                 },
             },
         }
+        request_body.update(self.request_options())
         headers = {"Authorization": f"Bearer {self.api_key}"}
         return await _extract_with_retry(
             self, request_body, headers, source_text=text, reconcile_offsets=True,
@@ -322,6 +357,7 @@ async def _extract_with_retry(
                 trace_id = None
                 response_content: str | None = None
                 http_status: int | None = None
+                response_metadata: dict[str, object] = {"input_char_count": len(source_text)}
                 if attempt == 2 and repair_needed:
                     messages = request_body["messages"]
                     assert isinstance(messages, list)
@@ -347,6 +383,7 @@ async def _extract_with_retry(
                             trace_id = _safe_trace_id(response.headers.get("x-request-id"))
                             response.raise_for_status()
                         response_content = _completion_content(response)
+                        response_metadata.update(_completion_metadata(response))
                         payload = _parse_response(
                             response, discard_verifiability_labels=discard_verifiability_labels
                         )
@@ -369,6 +406,7 @@ async def _extract_with_retry(
                         adapter, attempt=attempt, failure_type="none", started=started,
                         attempt_started=attempt_started, trace_id=trace_id,
                         http_status=http_status,
+                        response_metadata=response_metadata,
                     )
                     record_model_event(
                         role="extraction", provider=adapter.service_name,
@@ -376,6 +414,7 @@ async def _extract_with_retry(
                         failure_type=None, http_status=http_status,
                         elapsed_ms=round((monotonic() - attempt_started) * 1000),
                         response_content=response_content,
+                        response_metadata=response_metadata,
                     )
                     return payload
                 except (TimeoutError, httpx.TimeoutException) as exc:
@@ -398,6 +437,7 @@ async def _extract_with_retry(
                     adapter, attempt=attempt, failure_type=failure_type, started=started,
                     attempt_started=attempt_started, trace_id=trace_id,
                     http_status=http_status,
+                    response_metadata=response_metadata,
                 )
                 record_model_event(
                     role="extraction", provider=adapter.service_name,
@@ -406,6 +446,7 @@ async def _extract_with_retry(
                     failure_type=failure_type, http_status=http_status,
                     elapsed_ms=round((monotonic() - attempt_started) * 1000),
                     response_content=response_content,
+                    response_metadata=response_metadata,
                 )
                 repair_needed = isinstance(cause, _ResponseFailure)
                 retry_delay = 0.0
@@ -463,12 +504,21 @@ async def _extract_with_retry(
 def _needs_pico_repair(payload: ClaimExtractionPayload) -> bool:
     """Give a source-explicit, incomplete relation one bounded repair attempt."""
 
+    # Imported here because the PICO grounder consumes the extraction contract.
+    from app.pipeline.pico import normalize_pico
+
     for candidate in payload.claims:
+        if candidate.standalone_status in {"uncertain", "incomplete"}:
+            return True
         if candidate.claim_type not in {
             ClaimType.CAUSAL, ClaimType.ASSOCIATION, ClaimType.PREVENTION,
             ClaimType.TREATMENT, ClaimType.DIAGNOSTIC, ClaimType.SAFETY,
         }:
             continue
+        if candidate.standalone_status == "complete" and candidate.pico is not None:
+            grounded = normalize_pico(candidate)
+            if grounded.intervention_or_exposure is None or grounded.outcome is None:
+                return True
         relation = _RELATION_WITH_OBJECT.search(candidate.raw_span)
         if relation is None:
             continue
@@ -491,6 +541,7 @@ def _log_extraction_attempt(
     attempt_started: float,
     trace_id: str | None,
     http_status: int | None = None,
+    response_metadata: dict[str, object] | None = None,
 ) -> None:
     """Log timing and failure category without source text, URL, or credentials."""
 
@@ -498,12 +549,12 @@ def _log_extraction_attempt(
         logging.INFO if failure_type == "none" else logging.WARNING,
         "claim_extraction provider=%s model=%s attempt_number=%d attempt_count=%d "
         "failure_type=%s http_status=%s elapsed_ms=%d attempt_elapsed_ms=%d "
-        "retry_occurred=%s trace_id=%s",
+        "retry_occurred=%s trace_id=%s response_metadata=%s",
         adapter.service_name, adapter.model_id, attempt, attempt, failure_type,
         http_status,
         round((monotonic() - started) * 1000),
         round((monotonic() - attempt_started) * 1000),
-        attempt > 1, trace_id,
+        attempt > 1, trace_id, response_metadata or {},
     )
 
 
@@ -543,22 +594,60 @@ def _completion_content(response: httpx.Response) -> str | None:
     return content if isinstance(content, str) else None
 
 
+def _completion_metadata(response: httpx.Response) -> dict[str, object]:
+    """Keep safe counters/stop categories, never provider reasoning or error bodies."""
+
+    try:
+        body = response.json()
+        choice = body["choices"][0]
+    except (ValueError, KeyError, IndexError, TypeError):
+        return {}
+    if not isinstance(body, dict) or not isinstance(choice, dict):
+        return {}
+    finish = choice.get("finish_reason")
+    metadata: dict[str, object] = {
+        "finish_reason": finish if finish is None or (isinstance(finish, str) and finish in {
+            "stop", "length", "content_filter", "tool_calls", "function_call",
+        }) else "other",
+    }
+    content = _completion_content(response)
+    if content is not None:
+        metadata["response_char_count"] = len(content)
+    usage = body.get("usage")
+    if isinstance(usage, dict):
+        counts = {name: value for name in ("prompt_tokens", "completion_tokens", "total_tokens")
+                  if isinstance(value := usage.get(name), int)
+                  and not isinstance(value, bool) and value >= 0}
+        details = usage.get("completion_tokens_details")
+        if isinstance(details, dict):
+            value = details.get("reasoning_tokens")
+            if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+                counts["reasoning_tokens"] = value
+        metadata["usage"] = counts
+    return metadata
+
+
 def _reconcile_unique_offsets(
     payload: ClaimExtractionPayload, source_text: str,
 ) -> ClaimExtractionPayload:
-    """Correct arithmetic offsets only when the exact span occurs once in source."""
+    """Bind unique whitespace-equivalent spans back to the exact original source."""
 
     claims: list[ExtractedClaimCandidate] = []
     for claim in payload.claims:
         if source_text[claim.span_start : claim.span_end] == claim.raw_span:
             claims.append(claim)
             continue
-        start = source_text.find(claim.raw_span)
-        if start < 0 or source_text.find(claim.raw_span, start + 1) >= 0:
+        match = reconcile_unique_source_span(source_text, claim.raw_span)
+        if match is None:
             claims.append(claim)  # Existing validator rejects non-unique or invented spans.
             continue
+        start, end, original_span = match
         claims.append(claim.model_copy(update={
-            "span_start": start, "span_end": start + len(claim.raw_span),
+            "raw_span": original_span, "span_start": start, "span_end": end,
+            # The provider's other offsets cannot be assumed to use original
+            # whitespace positions. Standalone validation may rebuild a literal
+            # adjacent antecedent; an unverified inherited span is never kept.
+            "resolved_from_span_start": None, "resolved_from_span_end": None,
         }))
     return payload.model_copy(update={"claims": claims})
 
@@ -578,6 +667,9 @@ def _parse_response(
     choice = choices[0]
     if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
         raise _ResponseFailure("unsupported_structured_response")
+    if choice.get("finish_reason") == "length":
+        # Even valid JSON may be a silently incomplete list when generation is cut off.
+        raise _ResponseFailure("output_token_limit")
     return _parse_claim_payload(
         choice["message"].get("content"), discard_verifiability_labels=discard_verifiability_labels
     )

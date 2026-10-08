@@ -63,6 +63,8 @@ from app.schemas.analysis import (
     OcrPreviewLine,
     OcrPreviewResponse,
     ScreenshotOcrMetadata,
+    ScreenshotReadRequest,
+    ScreenshotTextResponse,
     ScreenshotUploadAccepted,
 )
 from app.schemas.retrieval import EvidencePreviewRequest, EvidencePreviewResponse
@@ -126,6 +128,29 @@ async def create_screenshot_upload(
     image = await sanitizer.sanitize_upload(screenshot)
     upload = await service.create_screenshot_upload(session=session, image=image)
     return _upload_response(upload)
+
+
+@router.post(
+    "/uploads/screenshots/{upload_id}/read",
+    response_model=ScreenshotTextResponse,
+)
+async def read_screenshot_text(
+    upload_id: UUID,
+    request: ScreenshotReadRequest,
+    session: Annotated[Session, Depends(get_db_session)],
+    service: Annotated[AnalysisIngestionService, Depends(get_analysis_ingestion_service)],
+) -> ScreenshotTextResponse:
+    """Run local OCR for review without extraction, retrieval, or judging."""
+
+    result = await service.read_screenshot_text(
+        session=session, upload_id=upload_id, language=request.language,
+    )
+    return ScreenshotTextResponse(
+        upload_id=result.upload_id,
+        redacted_text=result.redacted_text,
+        confidence=result.confidence,
+        language_used=result.language_used,
+    )
 
 
 @router.post(
@@ -285,10 +310,68 @@ async def get_analysis(
         input_type=detail.input_type if detail else None,
         claims=claims, screenshot_ocr=detail.screenshot_ocr if detail else None,
         updated_at=run.updated_at, debug_enabled=settings.debug_enabled,
+        document_mode=run.stage_timestamps.get("document", {}).get("mode") == "document",
         debug_events=debug_events,
         debug_models=_debug_model_statuses(settings, debug_events, session, run)
         if debug_events is not None else None,
     )
+
+
+@router.get("/{analysis_id}/document")
+async def get_document_report(
+    analysis_id: UUID,
+    session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_runtime_settings)],
+) -> dict[str, object]:
+    """Read the saved overview only; GET never invokes a model or retrieval."""
+    from app.document.audit import verify_document_report
+    from app.document.models import DocumentPlan
+    from app.document.persistence import latest_document_artifact, load_document_artifacts
+    from app.document.report import build_document_report
+
+    get_run(session, analysis_id)
+    try:
+        artifact = latest_document_artifact(session, analysis_id, "report")
+        if artifact is None:
+            raise LensError(404, "document_not_ready", "Document checks are being prepared.")
+        report = dict(artifact.snapshot_json)
+        if settings.app_env in {"staging", "production"} and not report.get("production_qualified"):
+            raise LensError(403, "report_not_qualified",
+                            "Report is not qualified for public release.")
+        plan_row = latest_document_artifact(session, analysis_id, "plan")
+        if plan_row is None:
+            raise ValueError("Document plan is absent")
+        parents = [row for row in load_document_artifacts(session, analysis_id)
+                   if row.created_at <= artifact.created_at]
+        evidence_rows = [row for row in parents if row.kind == "group_evidence"]
+        judge_rows = [row for row in parents if row.kind == "group_judge"]
+        verify_document_report(report, plan_row, evidence_rows, judge_rows,
+                               analysis_id, settings.app_env)
+        evidence = {row.group_id: row.snapshot_json for row in evidence_rows if row.group_id}
+        runs: dict[str, list[dict[str, object]]] = {}
+        for row in judge_rows:
+            if row.group_id is None:
+                raise ValueError("Document judge group is absent")
+            runs.setdefault(row.group_id, []).append(row.snapshot_json)
+        failures = {row.group_id: str(row.snapshot_json["failure"]) for row in parents
+                    if row.kind == "error" and row.group_id}
+        projection = build_document_report(
+            analysis_id, DocumentPlan.model_validate(plan_row.snapshot_json), evidence, runs,
+            app_env=settings.app_env, status=str(report["status"]), failures=failures,
+        )
+        if projection != report:
+            raise ValueError("Document report projection mismatch")
+        if settings.debug_enabled:
+            # Exact grouped responses and timing; prompts/keys are never returned.
+            report["debug_group_runs"] = [
+                {k: v for k, v in row.snapshot_json.items()
+                 if k not in {"group_input", "validation_input"}}
+                for row in judge_rows]
+            report["debug_errors"] = [row.snapshot_json for row in parents if row.kind == "error"]
+        return report
+    except (ValueError, TypeError, KeyError) as exc:
+        raise LensError(503, "document_audit_invalid",
+                        "Document audit could not be verified.") from exc
 
 
 def _debug_model_statuses(

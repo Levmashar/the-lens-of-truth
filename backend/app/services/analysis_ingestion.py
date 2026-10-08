@@ -196,7 +196,88 @@ class AnalysisIngestionService:
             )
         return submission
 
-    async def preview_screenshot_ocr(self, *, session: Session, upload_id: UUID) -> OcrPreview:
+    async def prepare_document_submission(
+        self, *, session: Session, request: CreateAnalysisRequest, analysis_id: UUID,
+        purge_after: datetime,
+    ) -> tuple[Submission, str]:
+        """Same private intake/consent/retention, without running atomic extraction."""
+        await self.purge_expired(session=session)
+        upload = None
+        confidence = None
+        if request.input.type == "text":
+            assert request.input.text is not None
+            source = request.input.text
+            content_hash = _sha256(source)
+        elif request.input.type == "screenshot":
+            assert request.input.upload_id is not None
+            upload = session.get(ScreenshotUpload, request.input.upload_id)
+            if upload is None or upload.purge_after <= datetime.now(UTC):
+                raise LensError(404, "screenshot_upload_not_found", "Screenshot has expired.")
+            if upload.submission_id is not None:
+                raise LensError(409, "screenshot_upload_already_used", "Screenshot already used.")
+            source, confidence = await self._screenshot_source_text(upload, request)
+            content_hash = upload.content_sha256
+        else:
+            raise LensError(501, "input_type_not_implemented", "URL input is unavailable.")
+        if not source.strip() or len(source) > 20_000:
+            raise LensError(422, "document_text_invalid",
+                            "Provide readable text within 20,000 characters.")
+        redaction = self._redactor.redact(source)
+        submission = Submission(id=analysis_id, client=request.client, language=request.language,
+            input_type=InputType(request.input.type), content_sha256=content_hash,
+            privacy_notice_version=request.consent.privacy_notice_version,
+            consent_accepted=request.consent.accepted, status="document_planning",
+            extraction_provider=self._extractor.service_name,
+            extraction_model=self._extractor.model_id,
+            extraction_prompt_version="document-planner-1.0", purge_after=purge_after)
+        if upload is not None:
+            upload.submission = submission
+            upload.ocr_provider = upload.ocr_provider or self._ocr.service_name
+            upload.ocr_confidence = confidence
+            upload.pii_redaction_count = len(redaction.matches)
+            upload.status = "processed"
+        session.add(submission)
+        session.commit()
+        return submission, redaction.text
+
+    async def read_screenshot_text(
+        self, *, session: Session, upload_id: UUID, language: str,
+    ) -> OcrPreview:
+        """Read locally for user review; persist safe OCR metadata, never full text."""
+
+        result = await self.preview_screenshot_ocr(
+            session=session, upload_id=upload_id, language=language,
+        )
+        upload = session.get(ScreenshotUpload, upload_id)
+        assert upload is not None
+        if upload.submission_id is not None:
+            raise LensError(
+                status_code=409,
+                code="screenshot_upload_already_used",
+                message="Screenshot upload has already been submitted for analysis.",
+            )
+        if not result.redacted_text.strip():
+            raise LensError(
+                status_code=422,
+                code="screenshot_text_not_found",
+                message="No readable text was found in the screenshot.",
+            )
+        if len(result.redacted_text) > 20_000:
+            raise LensError(
+                status_code=422,
+                code="screenshot_text_too_long",
+                message="Crop the screenshot to the text you want to check.",
+            )
+        upload.ocr_provider = result.provider
+        upload.ocr_confidence = result.confidence
+        upload.pii_redaction_count = result.pii_redaction_count
+        upload.status = "read"
+        session.commit()
+        return result
+
+    async def preview_screenshot_ocr(
+        self, *, session: Session, upload_id: UUID, language: str = "auto",
+    ) -> OcrPreview:
         """Re-run OCR for a development preview without retaining recognized text."""
 
         await self.purge_expired(session=session)
@@ -209,7 +290,7 @@ class AnalysisIngestionService:
             )
         result = await self._ocr.recognize(
             image=await self._storage.get(object_key=upload.object_key),
-            language_hint="auto",
+            language_hint=language,
         )
         redaction = self._redactor.redact(result.text)
         return OcrPreview(
@@ -258,24 +339,21 @@ class AnalysisIngestionService:
                     code="screenshot_upload_not_found",
                     message="Screenshot upload was not found or has expired.",
                 )
-            ocr_result = await self._ocr.recognize(
-                image=await self._storage.get(object_key=upload.object_key),
-                language_hint=request.language,
-            )
-            if not ocr_result.text.strip():
+            source_text, confidence = await self._screenshot_source_text(upload, request)
+            if not source_text.strip():
                 raise LensError(
                     status_code=422,
                     code="screenshot_text_not_found",
                     message="No readable text was found in the screenshot.",
                 )
-            redaction = self._redactor.redact(ocr_result.text)
+            redaction = self._redactor.redact(source_text)
             payload = await self._extractor.extract(text=redaction.text, language=request.language)
             return self._claim_preview(
                 input_type="screenshot",
                 payload=payload,
                 redacted_text=redaction.text,
                 pii_redaction_count=len(redaction.matches),
-                screenshot_ocr=(self._ocr.service_name, ocr_result.confidence),
+                screenshot_ocr=(upload.ocr_provider or self._ocr.service_name, confidence),
             )
         raise LensError(
             status_code=501,
@@ -337,17 +415,14 @@ class AnalysisIngestionService:
                 message="Screenshot upload has already been submitted for analysis.",
             )
 
-        ocr_result = await self._ocr.recognize(
-            image=await self._storage.get(object_key=upload.object_key),
-            language_hint=request.language,
-        )
-        if not ocr_result.text.strip():
+        source_text, ocr_confidence = await self._screenshot_source_text(upload, request)
+        if not source_text.strip():
             raise LensError(
                 status_code=422,
                 code="screenshot_text_not_found",
                 message="No readable text was found in the screenshot.",
             )
-        redaction = self._redactor.redact(ocr_result.text)
+        redaction = self._redactor.redact(source_text)
         payload = await self._extractor.extract(text=redaction.text, language=request.language)
         submission = self._persist_submission(
             session=session,
@@ -358,13 +433,32 @@ class AnalysisIngestionService:
             screenshot_upload=upload,
             analysis_id=analysis_id,
         )
-        upload.ocr_provider = self._ocr.service_name
-        upload.ocr_confidence = ocr_result.confidence
+        upload.ocr_provider = upload.ocr_provider or self._ocr.service_name
+        upload.ocr_confidence = ocr_confidence
         upload.pii_redaction_count = len(redaction.matches)
         upload.status = "processed"
         session.commit()
         session.refresh(submission)
         return submission
+
+    async def _screenshot_source_text(
+        self, upload: ScreenshotUpload, request: CreateAnalysisRequest,
+    ) -> tuple[str, float | None]:
+        """Use explicit user-reviewed text, or retain the legacy direct-OCR path."""
+
+        if request.input.reviewed_text is not None:
+            if not upload.ocr_provider:
+                raise LensError(
+                    status_code=422,
+                    code="screenshot_text_not_ready",
+                    message="Read the screenshot before submitting reviewed text.",
+                )
+            return request.input.reviewed_text, upload.ocr_confidence
+        result = await self._ocr.recognize(
+            image=await self._storage.get(object_key=upload.object_key),
+            language_hint=request.language,
+        )
+        return result.text, result.confidence
 
     def _persist_submission(
         self,

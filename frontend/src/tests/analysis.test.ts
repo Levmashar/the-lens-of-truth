@@ -10,7 +10,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn());
   document.body.replaceChildren();
 });
-afterEach(() => { dispose?.(); dispose = null; vi.unstubAllGlobals(); });
+afterEach(() => { dispose?.(); dispose = null; vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 function mount(): HTMLElement {
   const page = createAnalysisPage(analysisId);
@@ -210,6 +210,14 @@ describe("analysis page", () => {
     expect(node.textContent).toContain("No medical result was generated");
   });
 
+  it("identifies OCR failure even before screenshot metadata has been persisted", async () => {
+    mockResponses(progress({ status: "failed", stage: "extracting", input_type: null,
+      claim_count: 0, claims: [], failure_code: "ocr_failed" }), summaries([]));
+    const node = mount();
+    await vi.waitFor(() => expect(node.textContent).toContain("Screenshot text could not be read"));
+    expect(node.textContent).not.toContain("Not Enough Evidence");
+  });
+
   it("identifies extraction rate limits and advises waiting", async () => {
     mockResponses(progress({ status: "failed", stage: "extracting", claim_count: 0,
       claims: [], failure_code: "claim_extractor_rate_limited" }), summaries([]));
@@ -351,6 +359,43 @@ describe("analysis page", () => {
     await vi.waitFor(() => expect(node.textContent).toContain("Vitamin C prevents the common cold."));
     expect(node.textContent).not.toContain("Development diagnostics");
     expect(node.textContent).not.toContain("Error code:");
+  });
+
+  it("shows backend-authorized raw responses in a production-built frontend", async () => {
+    vi.stubEnv("DEV", false);
+    mockResponses(progress({ debug_enabled: true, debug_events: [{
+      role: "extraction", provider: "fixture", model: "fixture", attempt: 1,
+      status: "responded", failure_type: null, http_status: 200, elapsed_ms: 12,
+      response_excerpt: "Saved model response for debugging.",
+    }] }));
+    const node = mount();
+    await vi.waitFor(() => expect(node.querySelector(".debug-response-text")?.textContent)
+      .toContain("Saved model response for debugging."));
+    expect(node.querySelector(".debug-panel")?.textContent).toContain("Copy all diagnostics");
+  });
+
+  it("keeps raw responses private in a production build when backend debug is off", async () => {
+    vi.stubEnv("DEV", false);
+    mockResponses(progress({ debug_enabled: false, debug_events: [{
+      role: "extraction", provider: "fixture", model: "fixture", attempt: 1,
+      status: "responded", failure_type: null, http_status: 200, elapsed_ms: 12,
+      response_excerpt: "Diagnostic data must remain hidden.",
+    }] }));
+    const node = mount();
+    await vi.waitFor(() => expect(node.querySelector(".verdict-label")).not.toBeNull());
+    expect(node.querySelector(".debug-panel")).toBeNull();
+    expect(node.querySelector(".technical-details")).toBeNull();
+    expect(node.textContent).not.toContain("Diagnostic data must remain hidden.");
+  });
+
+  it("honors the frontend diagnostic opt-out for the raw response panel", async () => {
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("VITE_SHOW_DEVELOPMENT_UI", "false");
+    mockResponses(progress({ debug_enabled: true }));
+    const node = mount();
+    await vi.waitFor(() => expect(node.querySelector(".verdict-label")).not.toBeNull());
+    expect(node.querySelector(".debug-panel")).toBeNull();
+    expect(node.querySelector(".technical-details")).toBeNull();
   });
 
   it("shows expired analysis without silently recreating it", async () => {

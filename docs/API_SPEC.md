@@ -1,5 +1,43 @@
 # API Specification
 
+## Context-aware document reports (development/test, 2026-10-08)
+
+Existing consent-required `POST /v1/analyses` accepts text and reviewed screenshot
+text as before. Paragraph-sized input enters document mode automatically;
+`GET /v1/analyses/{analysis_id}` adds `document_mode: true`. The existing status,
+stage and progress fields remain. Ordinary short-claim responses are unchanged.
+
+`GET /v1/analyses/{analysis_id}/document` returns `document-report-1.0` with:
+
+- analysis identity/status and production qualification;
+- assertion/group progress and expandable group source matches;
+- every assertion's exact original spans/text, kind and status;
+- separate reporting fidelity and medical interpretation;
+- result/explanation, exact citations and backend-derived scientific limitations;
+- duplicate links or explicit commentary/unavailable details.
+
+There is no averaged score or forced single verdict for mixed documents. A partially
+completed report can be returned while remaining chains are in flight. The endpoint
+verifies frozen parents and deterministically replays saved responses; GET makes
+no source/model calls. Only artifacts present at the saved report time participate.
+Changed/missing provenance returns 503 `document_audit_invalid`; a not-yet-created
+report returns `document_not_ready`. Expiration follows existing retention handling.
+Production release remains blocked for the current unapproved evaluation contracts.
+
+In development with debug enabled, `debug_group_runs` includes grouped raw judge
+and validator responses, attempts, failures, timing/usage and item diagnostics.
+Requests/credentials are excluded. `debug_errors` provides bounded sanitized precise
+exceptions. Frontend Copy all diagnostics includes grouped raw replies. Public views
+do not expose those development fields.
+
+Internal validator 1.2 distinguishes source attribution/reporting checks from
+clinical axes and transports exact source/quantity IDs, not generated quotations;
+the public report materializes literal quotations from the frozen units. Historical
+validator 1.0/1.1 and group-input 1.0 responses are replayed under their original
+contracts, without silently mapping invalid old fields.
+
+See [versions, real API runs and limitations](DOCUMENT_MODE_RESULTS_20261008.md).
+
 ## V2.4 structured quantity reference diagnostics (development only)
 
 New normal development/test decisions and validations use 2.4. On

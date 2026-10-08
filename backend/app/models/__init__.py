@@ -2,6 +2,7 @@
 
 from app.models.analysis_run import AnalysisRunRecord, ClaimAnalysisRunRecord
 from app.models.claim import Claim
+from app.models.document_run import DocumentRunRecord
 from app.models.evaluation import FinalVerdict, ModelEvaluation
 from app.models.evidence import EvidenceDocument, EvidencePassage
 from app.models.judge_run import JudgeRunRecord
@@ -21,6 +22,7 @@ __all__ = [
     "AnalysisRunRecord",
     "ClaimAnalysisRunRecord",
     "Claim",
+    "DocumentRunRecord",
     "EvidenceDocument",
     "EvidencePassage",
     "EvidencePackRecord",

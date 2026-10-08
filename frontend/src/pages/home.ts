@@ -1,4 +1,4 @@
-import { startAnalysis, uploadScreenshot } from "../api/analyses";
+import { readScreenshot, startAnalysis, uploadScreenshot } from "../api/analyses";
 import { ApiError, errorMessage } from "../api/errors";
 import { createClaimInput } from "../components/claimInput";
 import { createPrivacyConsent } from "../components/privacyConsent";
@@ -39,7 +39,21 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
   imageTab.setAttribute("aria-controls", panel.id);
   const attempt = new SubmissionAttempt();
   const claim = createClaimInput(onChange);
-  const screenshot = createScreenshotUpload(onChange);
+  const screenshot = createScreenshotUpload(onScreenshotChange);
+  const review = element("div", "screenshot-review");
+  review.hidden = true;
+  const reviewLabel = element("label", "field-label", "Check the text we read");
+  reviewLabel.htmlFor = "screenshot-text";
+  const reviewInput = element("textarea", "claim-textarea");
+  reviewInput.id = "screenshot-text";
+  reviewInput.rows = 7;
+  reviewInput.maxLength = 20_000;
+  const reviewHint = element("p", "field-hint", "Correct any reading errors, and keep the claim you want to check. Only this text will be analyzed.");
+  reviewHint.id = "screenshot-review-hint";
+  reviewInput.setAttribute("aria-describedby", reviewHint.id);
+  reviewInput.addEventListener("input", onChange);
+  append(review, reviewLabel, reviewInput, reviewHint);
+  screenshot.node.append(review);
   const consent = createPrivacyConsent(updateSubmit);
   const exampleButton = element("button", "text-action", "Try an example");
   exampleButton.type = "button";
@@ -79,12 +93,30 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
   let submitting = false;
   let disposed = false;
   let requestController: AbortController | null = null;
+  let screenshotUploadId: string | null = null;
+  let screenshotExpiresAt = Infinity;
+  let screenshotRead = false;
 
   function updateSubmit(): void {
-    submit.disabled = submitting || !consent.input.checked || (mode === "text" ? !claim.input.value.trim() : !screenshot.getFile());
+    submit.disabled = submitting || !consent.input.checked || (mode === "text" ? !claim.input.value.trim() : !screenshot.getFile() || (screenshotRead && !reviewInput.value.trim()));
+    if (!submitting) submit.textContent = mode === "screenshot" && !screenshotRead ? "Read screenshot" : "Check this claim";
   }
   function onChange(): void { attempt.reset(); error.hidden = true; updateSubmit(); }
+  function onScreenshotChange(): void {
+    screenshotUploadId = null;
+    screenshotExpiresAt = Infinity;
+    screenshotRead = false;
+    reviewInput.value = "";
+    review.hidden = true;
+    onChange();
+  }
+  function lockScreenshotControls(locked: boolean): void {
+    screenshot.setDisabled(locked);
+    reviewInput.disabled = locked;
+    textTab.disabled = imageTab.disabled = exampleButton.disabled = locked;
+  }
   function setMode(next: Mode, initial = false): void {
+    if (submitting && mode === "screenshot") return;
     mode = next;
     if (!initial) attempt.reset();
     clear(panel);
@@ -119,36 +151,69 @@ export function createHomePage(): { node: HTMLElement; dispose: () => void } {
       error.hidden = false;
       return;
     }
+    if (mode === "screenshot" && screenshotRead && !reviewInput.value.trim()) return;
+    if (mode === "screenshot" && Date.now() >= screenshotExpiresAt) {
+      onScreenshotChange();
+      error.textContent = "The uploaded screenshot has expired. Read it again to continue.";
+      error.hidden = false;
+      return;
+    }
+    const submittedMode = mode;
+    if (submittedMode === "screenshot") error.hidden = true;
     submitting = true;
     submit.textContent = "Starting your check…";
     submit.classList.add("is-loading");
+    if (submittedMode === "screenshot") lockScreenshotControls(true);
     updateSubmit();
     requestController = new AbortController();
     void (async () => {
       try {
-        const key = await attempt.prepare(mode === "text" ? text : file as File);
-        if (disposed) return;
         let input;
-        if (mode === "text") input = { type: "text" as const, text };
+        if (submittedMode === "text") input = { type: "text" as const, text };
         else {
           if (!file) return;
-          let uploadId = attempt.uploadedId;
-          if (!uploadId) {
-            const upload = await uploadScreenshot(file, requestController?.signal);
-            uploadId = upload.upload_id;
-            attempt.uploadedId = uploadId;
+          if (!screenshotRead) {
+            if (!screenshotUploadId) {
+              submit.textContent = "Uploading screenshot…";
+              const upload = await uploadScreenshot(file, requestController?.signal);
+              if (disposed) return;
+              screenshotUploadId = upload.upload_id;
+              screenshotExpiresAt = Date.parse(upload.purge_after) || Infinity;
+            }
+            submit.textContent = "Reading screenshot…";
+            const read = await readScreenshot(screenshotUploadId, requestController?.signal);
+            if (disposed) return;
+            reviewInput.value = read.redacted_text;
+            screenshotRead = true;
+            review.hidden = false;
+            reviewInput.disabled = false;
+            reviewInput.focus();
+            return;
           }
-          input = { type: "screenshot" as const, upload_id: uploadId };
+          if (!screenshotUploadId) return;
+          input = { type: "screenshot" as const, upload_id: screenshotUploadId, reviewed_text: reviewInput.value.trim() };
         }
+        const key = await attempt.prepare(submittedMode === "text" ? text : JSON.stringify(input));
+        if (disposed) return;
         const started = await startAnalysis(input, key, requestController?.signal);
         if (!disposed) { attempt.reset(); navigate(`/analysis/${started.analysis_id}`); }
       } catch (caught) {
         if (disposed) return;
         error.textContent = errorMessage(caught);
         error.hidden = false;
+        if (submittedMode === "screenshot" && caught instanceof ApiError && ["screenshot_upload_not_found", "screenshot_upload_already_used", "upload_not_available", "screenshot_text_not_ready"].includes(caught.code)) {
+          onScreenshotChange();
+          error.textContent = errorMessage(caught);
+          error.hidden = false;
+        }
         if (caught instanceof ApiError && (caught.status === 409 || caught.status === 410)) attempt.reset();
       } finally {
-        if (!disposed) { submitting = false; submit.textContent = "Check this claim"; submit.classList.remove("is-loading"); updateSubmit(); }
+        if (!disposed) {
+          submitting = false;
+          if (submittedMode === "screenshot") lockScreenshotControls(false);
+          submit.classList.remove("is-loading");
+          updateSubmit();
+        }
       }
     })();
   });

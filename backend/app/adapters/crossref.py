@@ -11,6 +11,7 @@ from urllib.parse import quote
 import httpx
 
 from app.adapters.pubmed import QueryCache
+from app.adapters.source_metrics import record_source_http
 from app.retrieval.models import (
     CrossrefEnrichment,
     IntegrityCheck,
@@ -206,9 +207,11 @@ class CrossrefAdapter:
         if self._client is None:
             async with httpx.AsyncClient(base_url=_BASE_URL, timeout=self._timeout) as client:
                 async with asyncio.timeout(self._timeout):
+                    record_source_http("crossref", "work")
                     return await client.get(path, params={"mailto": self._mailto},
                                             headers=headers)
         async with asyncio.timeout(self._timeout):
+            record_source_http("crossref", "work")
             return await self._client.get(path, params={"mailto": self._mailto},
                                           headers=headers, timeout=self._timeout)
 

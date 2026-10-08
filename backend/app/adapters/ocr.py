@@ -50,13 +50,13 @@ class TesseractOcrAdapter:
                 "-l",
                 language,
                 "--psm",
-                "6",
+                "3",
                 "tsv",
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL,
             )
-        except FileNotFoundError as exc:
+        except (OSError, NotImplementedError) as exc:
             raise ExternalCapabilityError(
                 code="ocr_unavailable",
                 message="Screenshot OCR is not available in this environment.",
@@ -65,12 +65,14 @@ class TesseractOcrAdapter:
         try:
             stdout, _ = await asyncio.wait_for(process.communicate(image), self.timeout_seconds)
         except TimeoutError as exc:
-            process.kill()
-            await process.wait()
+            await _stop_process(process)
             raise ExternalCapabilityError(
                 code="ocr_timeout",
                 message="Screenshot OCR timed out. Please try a smaller, clearer image.",
             ) from exc
+        except asyncio.CancelledError:
+            await _stop_process(process)
+            raise
 
         if process.returncode != 0:
             raise ExternalCapabilityError(
@@ -81,10 +83,22 @@ class TesseractOcrAdapter:
         return parse_tesseract_tsv(stdout.decode("utf-8", errors="replace"), language)
 
 
+async def _stop_process(process: asyncio.subprocess.Process) -> None:
+    """Reap cancelled OCR workers and drain their pipes, including large TSV output."""
+
+    if process.returncode is None:
+        try:
+            process.kill()
+        except ProcessLookupError:
+            pass
+    await process.communicate()
+
+
 def parse_tesseract_tsv(payload: str, language_used: str) -> OcrResult:
     """Parse Tesseract TSV without retaining unneeded word-level raw payloads."""
 
-    reader = csv.DictReader(io.StringIO(payload), delimiter="\t")
+    # Recognized quotes are literal text, not CSV quoting around a TSV field.
+    reader = csv.DictReader(io.StringIO(payload), delimiter="\t", quoting=csv.QUOTE_NONE)
     grouped: dict[tuple[str, str, str, str], list[dict[str, str]]] = {}
     for row in reader:
         word = row.get("text", "").strip()

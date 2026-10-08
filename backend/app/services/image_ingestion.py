@@ -91,7 +91,13 @@ class ScreenshotSanitizer:
                 source.verify()
 
             with Image.open(io.BytesIO(payload)) as decoded:
-                normalized = ImageOps.exif_transpose(decoded).convert("RGB")
+                oriented = ImageOps.exif_transpose(decoded)
+                # Preserve visible text in transparent PNG/WebP screenshots.
+                # A direct RGB conversion turns transparent pixels black.
+                rgba = oriented.convert("RGBA")
+                background = Image.new("RGBA", rgba.size, "white")
+                normalized = Image.alpha_composite(background, rgba).convert("RGB")
+                width, height = normalized.size
                 output = io.BytesIO()
                 normalized.save(output, format="PNG", optimize=True)
         except UploadValidationError:

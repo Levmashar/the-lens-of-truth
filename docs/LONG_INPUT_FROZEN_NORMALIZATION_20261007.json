@@ -1,0 +1,310 @@
+{
+  "date": "2026-10-07",
+  "mode": "offline_frozen_replay",
+  "paid_calls": 0,
+  "network_calls": 0,
+  "saved_response": "runtime/article_extraction.json",
+  "source_fixture": "backend/tests/fixtures/long_input_sunscreen_20261007.txt",
+  "source_characters": 1019,
+  "source_sha256": "79463e3dba882df8d9dbd12d1ef6915199f802b6e9ced587d1125c3c2f15c165",
+  "mesh_release": "2026",
+  "mesh_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd",
+  "ready_claims": 4,
+  "claims": [
+    {
+      "ordinal": 1,
+      "source_span_valid": true,
+      "span_start": 137,
+      "span_end": 217,
+      "raw_text": "people who used sunscreen\nfrequently had higher risks of developing skin cancers",
+      "normalized_text": "people who used sunscreen\nfrequently had higher risks of developing skin cancers",
+      "standalone_status": "complete",
+      "resolved_from_span_start": null,
+      "resolved_from_span_end": null,
+      "normalization_status": "normalized",
+      "ready_for_evidence": true,
+      "pico": {
+        "original_claim": "people who used sunscreen\nfrequently had higher risks of developing skin cancers",
+        "population": "people who used sunscreen\nfrequently",
+        "intervention_or_exposure": "sunscreen",
+        "comparator": null,
+        "outcome": "higher risks of developing skin cancers",
+        "timeframe": null,
+        "claim_type": "association"
+      },
+      "quality": {
+        "normalization_coverage": 1.0,
+        "missing_explicit_concepts": [],
+        "required_slots_missing": [],
+        "ambiguous_concepts": [],
+        "normalization_warnings": [],
+        "terminology_version": "2026",
+        "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+      },
+      "linked_entities": [
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "population",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "intervention_or_exposure",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "risks",
+          "entity_type": "outcome",
+          "mesh_id": "D012306",
+          "preferred_name": "Risk"
+        },
+        {
+          "surface_text": "skin cancers",
+          "entity_type": "outcome",
+          "mesh_id": "D012878",
+          "preferred_name": "Skin Neoplasms"
+        }
+      ]
+    },
+    {
+      "ordinal": 2,
+      "source_span_valid": true,
+      "span_start": 239,
+      "span_end": 307,
+      "raw_text": "up to a 292% increased risk of invasive\nmelanoma for sunscreen users",
+      "normalized_text": "up to a 292% increased risk of invasive\nmelanoma for sunscreen users",
+      "standalone_status": "complete",
+      "resolved_from_span_start": null,
+      "resolved_from_span_end": null,
+      "normalization_status": "normalized",
+      "ready_for_evidence": true,
+      "pico": {
+        "original_claim": "up to a 292% increased risk of invasive\nmelanoma for sunscreen users",
+        "population": "sunscreen users",
+        "intervention_or_exposure": "sunscreen",
+        "comparator": null,
+        "outcome": "up to a 292% increased risk of invasive\nmelanoma",
+        "timeframe": null,
+        "claim_type": "association",
+        "numeric_effect": {
+          "raw_text": "up to a 292%",
+          "status": "parsed",
+          "kind": "percent_change",
+          "value": null,
+          "unit": "%",
+          "direction": "increase",
+          "upper_value": "292"
+        }
+      },
+      "quality": {
+        "normalization_coverage": 1.0,
+        "missing_explicit_concepts": [],
+        "required_slots_missing": [],
+        "ambiguous_concepts": [],
+        "normalization_warnings": [],
+        "terminology_version": "2026",
+        "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+      },
+      "linked_entities": [
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "population",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "intervention_or_exposure",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "risk",
+          "entity_type": "outcome",
+          "mesh_id": "D012306",
+          "preferred_name": "Risk"
+        },
+        {
+          "surface_text": "melanoma",
+          "entity_type": "outcome",
+          "mesh_id": "D008545",
+          "preferred_name": "Melanoma"
+        }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "source_span_valid": true,
+      "span_start": 309,
+      "span_end": 369,
+      "raw_text": "plus higher rates of basal\ncell and squamous cell carcinomas",
+      "normalized_text": "sunscreen users had higher rates of basal\ncell and squamous cell carcinomas.",
+      "standalone_status": "reconstructed",
+      "resolved_from_span_start": 292,
+      "resolved_from_span_end": 307,
+      "normalization_status": "normalized",
+      "ready_for_evidence": true,
+      "pico": {
+        "original_claim": "plus higher rates of basal\ncell and squamous cell carcinomas",
+        "population": "sunscreen users",
+        "intervention_or_exposure": "sunscreen users",
+        "comparator": null,
+        "outcome": "higher rates of basal\ncell and squamous cell carcinomas",
+        "timeframe": null,
+        "claim_type": "association"
+      },
+      "quality": {
+        "normalization_coverage": 1.0,
+        "missing_explicit_concepts": [],
+        "required_slots_missing": [],
+        "ambiguous_concepts": [],
+        "normalization_warnings": [],
+        "terminology_version": "2026",
+        "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+      },
+      "linked_entities": [
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "population",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "intervention_or_exposure",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "cell",
+          "entity_type": "outcome",
+          "mesh_id": "D002477",
+          "preferred_name": "Cells"
+        },
+        {
+          "surface_text": "squamous cell carcinomas",
+          "entity_type": "outcome",
+          "mesh_id": "D002294",
+          "preferred_name": "Carcinoma, Squamous Cell"
+        }
+      ]
+    },
+    {
+      "ordinal": 4,
+      "source_span_valid": true,
+      "span_start": 371,
+      "span_end": 488,
+      "raw_text": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime",
+      "normalized_text": null,
+      "standalone_status": "uncertain",
+      "resolved_from_span_start": null,
+      "resolved_from_span_end": null,
+      "normalization_status": "partial",
+      "ready_for_evidence": false,
+      "pico": {
+        "original_claim": "These links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime",
+        "population": null,
+        "intervention_or_exposure": null,
+        "comparator": null,
+        "outcome": "links held even after researchers adjusted for\nvariables like age, skin type, sunburn history, and outdoor\ntime",
+        "timeframe": null,
+        "claim_type": "statistical_or_study_result"
+      },
+      "quality": {
+        "normalization_coverage": 1.0,
+        "missing_explicit_concepts": [],
+        "required_slots_missing": [],
+        "ambiguous_concepts": [],
+        "normalization_warnings": [],
+        "terminology_version": "2026",
+        "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+      },
+      "linked_entities": [
+        {
+          "surface_text": "researchers",
+          "entity_type": "outcome",
+          "mesh_id": "D012108",
+          "preferred_name": "Research Personnel"
+        },
+        {
+          "surface_text": "skin",
+          "entity_type": "outcome",
+          "mesh_id": "D012867",
+          "preferred_name": "Skin"
+        },
+        {
+          "surface_text": "sunburn",
+          "entity_type": "outcome",
+          "mesh_id": "D013471",
+          "preferred_name": "Sunburn"
+        },
+        {
+          "surface_text": "history",
+          "entity_type": "outcome",
+          "mesh_id": "D006664",
+          "preferred_name": "History"
+        },
+        {
+          "surface_text": "time",
+          "entity_type": "outcome",
+          "mesh_id": "D013995",
+          "preferred_name": "Time"
+        }
+      ]
+    },
+    {
+      "ordinal": 5,
+      "source_span_valid": true,
+      "span_start": 808,
+      "span_end": 925,
+      "raw_text": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup",
+      "normalized_text": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup",
+      "standalone_status": "complete",
+      "resolved_from_span_start": null,
+      "resolved_from_span_end": null,
+      "normalization_status": "normalized",
+      "ready_for_evidence": true,
+      "pico": {
+        "original_claim": "The study highlights patterns in sunscreen use and its\nassociation with skin cancer rates in a large population\ngroup",
+        "population": "a large population\ngroup",
+        "intervention_or_exposure": "sunscreen use",
+        "comparator": null,
+        "outcome": "skin cancer rates",
+        "timeframe": null,
+        "claim_type": "association"
+      },
+      "quality": {
+        "normalization_coverage": 1.0,
+        "missing_explicit_concepts": [],
+        "required_slots_missing": [],
+        "ambiguous_concepts": [],
+        "normalization_warnings": [],
+        "terminology_version": "2026",
+        "terminology_sha256": "ccd4d0d33bebfd4c836a59e7dd0c635b1d4e20c4f5a6abc55e2eb0ba4c8716dd"
+      },
+      "linked_entities": [
+        {
+          "surface_text": "population\ngroup",
+          "entity_type": "population",
+          "mesh_id": "D044382",
+          "preferred_name": "Population Groups"
+        },
+        {
+          "surface_text": "sunscreen",
+          "entity_type": "intervention_or_exposure",
+          "mesh_id": "D013473",
+          "preferred_name": "Sunscreening Agents"
+        },
+        {
+          "surface_text": "skin cancer",
+          "entity_type": "outcome",
+          "mesh_id": "D012878",
+          "preferred_name": "Skin Neoplasms"
+        }
+      ]
+    }
+  ],
+  "limitation": "This replay checks extraction, source spans, standalone reconstruction and normalization only. It does not rerun retrieval, judges, semantic validation or final medical assessment."
+}

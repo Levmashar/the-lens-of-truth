@@ -1,0 +1,74 @@
+{
+  "timestamp_utc": "2026-10-07T08:27:03.316038+00:00",
+  "analysis_count_unchanged": true,
+  "paid_model_calls": 0,
+  "results": [
+    {
+      "format": "PNG",
+      "background": "white",
+      "upload_status": 201,
+      "read_status": 200,
+      "upload_id": "5b83be11-185d-40dc-818a-2751e7321815",
+      "recognized_text": "\"Smoking causes lung cancer.\"\nRisk: 85%.",
+      "confidence": 0.94441161125
+    },
+    {
+      "format": "JPEG",
+      "background": "white",
+      "upload_status": 201,
+      "read_status": 200,
+      "upload_id": "50209096-aa60-48b2-9aec-923ed466ee65",
+      "recognized_text": "\"Smoking causes lung cancer.\"\nRisk: 85%.",
+      "confidence": 0.94347853625
+    },
+    {
+      "format": "WEBP",
+      "background": "white",
+      "upload_status": 201,
+      "read_status": 200,
+      "upload_id": "5fdf0e83-eb33-4214-833d-df5512cca742",
+      "recognized_text": "\"Smoking causes lung cancer.\"\nRisk: 85%.",
+      "confidence": 0.94441161125
+    },
+    {
+      "format": "PNG",
+      "background": "transparent",
+      "upload_status": 201,
+      "read_status": 200,
+      "upload_id": "878e12ed-b3d4-4632-b109-67f43f1a4541",
+      "recognized_text": "\"Smoking causes lung cancer.\"\nRisk: 85%.",
+      "confidence": 0.94441161125
+    },
+    {
+      "format": "PNG",
+      "background": "black",
+      "upload_status": 201,
+      "read_status": 200,
+      "upload_id": "0f048970-fa5b-46de-9291-cc7b37d813ef",
+      "recognized_text": "\"Smoking causes lung cancer.\"\nRisk: 85%.",
+      "confidence": 0.9466298949999999
+    },
+    {
+      "case": "original_saved_screenshot",
+      "read_status": 200,
+      "confidence": 0.9636659589699249,
+      "characters": 1019,
+      "ends_with_article_text": true
+    },
+    {
+      "case": "blank_screenshot",
+      "status": 422,
+      "code": "screenshot_text_not_found"
+    },
+    {
+      "case": "invalid.png",
+      "status": 415,
+      "code": "invalid_screenshot"
+    },
+    {
+      "case": "empty.png",
+      "status": 415,
+      "code": "empty_screenshot"
+    }
+  ]
+}

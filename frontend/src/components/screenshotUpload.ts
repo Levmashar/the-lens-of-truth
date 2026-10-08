@@ -5,7 +5,7 @@ const allowed = ["image/png", "image/jpeg", "image/webp"];
 const maxBytes = 10 * 1024 * 1024;
 
 export function createScreenshotUpload(onChange: () => void): {
-  node: HTMLElement; getFile: () => File | null; dispose: () => void;
+  node: HTMLElement; getFile: () => File | null; setDisabled: (value: boolean) => void; dispose: () => void;
 } {
   const group = element("div", "field-group");
   const label = element("label", "field-label", "Screenshot");
@@ -33,6 +33,7 @@ export function createScreenshotUpload(onChange: () => void): {
   error.hidden = true;
   let file: File | null = null;
   let previewUrl: string | null = null;
+  let disabled = false;
 
   function select(candidate: File | null): void {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -42,8 +43,12 @@ export function createScreenshotUpload(onChange: () => void): {
     preview.hidden = true;
     error.hidden = true;
     if (candidate) {
-      if (!allowed.includes(candidate.type)) {
+      const supported = allowed.includes(candidate.type) || (!candidate.type && /\.(png|jpe?g|webp)$/i.test(candidate.name));
+      if (!supported) {
         error.textContent = "Choose a PNG, JPEG, or WebP screenshot.";
+        error.hidden = false;
+      } else if (candidate.size === 0) {
+        error.textContent = "This image file is empty. Choose another screenshot.";
         error.hidden = false;
       } else if (candidate.size > maxBytes) {
         error.textContent = "Choose a screenshot smaller than 10 MB.";
@@ -58,18 +63,31 @@ export function createScreenshotUpload(onChange: () => void): {
     }
     onChange();
   }
-  input.addEventListener("change", () => select(input.files?.[0] ?? null));
+  input.addEventListener("change", () => {
+    if (!disabled && input.files?.[0]) select(input.files[0]);
+    input.value = ""; // Allow choosing the same file again after a decoding error.
+  });
+  image.addEventListener("error", () => {
+    if (disabled) return;
+    select(null);
+    error.textContent = "This image couldn't be opened. Choose another screenshot.";
+    error.hidden = false;
+  });
   remove.addEventListener("click", () => { input.value = ""; select(null); });
-  zone.addEventListener("dragover", (event) => { event.preventDefault(); zone.classList.add("is-dragging"); });
+  zone.addEventListener("dragover", (event) => { event.preventDefault(); if (!disabled) zone.classList.add("is-dragging"); });
   zone.addEventListener("dragleave", () => zone.classList.remove("is-dragging"));
   zone.addEventListener("drop", (event) => {
     event.preventDefault();
     zone.classList.remove("is-dragging");
-    select(event.dataTransfer?.files[0] ?? null);
+    if (!disabled) select(event.dataTransfer?.files[0] ?? null);
   });
   append(actions, replace, remove);
   append(preview, image, detail, actions);
   append(zone, prompt, hint, input, preview);
   append(group, label, zone, error);
-  return { node: group, getFile: () => file, dispose: () => { if (previewUrl) URL.revokeObjectURL(previewUrl); } };
+  return {
+    node: group, getFile: () => file,
+    setDisabled: (value) => { disabled = value; input.disabled = replace.disabled = remove.disabled = value; },
+    dispose: () => { if (previewUrl) URL.revokeObjectURL(previewUrl); },
+  };
 }

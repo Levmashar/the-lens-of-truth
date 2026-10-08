@@ -81,6 +81,12 @@ class Settings(BaseSettings):
         default=115.0, gt=0, le=120,
         validation_alias="CLAIM_EXTRACTOR_TOTAL_TIMEOUT_SECONDS",
     )
+    claim_extractor_thinking_enabled: bool | None = Field(
+        default=None, validation_alias="CLAIM_EXTRACTOR_THINKING_ENABLED",
+    )
+    claim_extractor_max_output_tokens: int = Field(
+        default=8192, ge=256, le=16384, validation_alias="CLAIM_EXTRACTOR_MAX_OUTPUT_TOKENS",
+    )
     claim_extractor_max_claims: int = Field(
         default=20, ge=1, le=50, validation_alias="CLAIM_EXTRACTOR_MAX_CLAIMS"
     )

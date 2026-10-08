@@ -22,6 +22,8 @@
 .upload-image { display: block; max-height: 260px; max-width: 100%; object-fit: contain; margin-inline: auto; border-radius: var(--radius-sm); }
 .upload-detail { overflow-wrap: anywhere; font-size: .85rem; margin: .8rem 0; }
 .upload-actions { display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; }
+.screenshot-review { margin-top: var(--space-6); }
+.screenshot-review[hidden] { display: none; }
 .field-error, .form-error { color: var(--danger); background: var(--danger-soft); padding: var(--space-3); border-radius: var(--radius-sm); font-size: .9rem; }
 .verification-card > .text-action { margin-top: var(--space-3); font-size: .82rem; min-height: 36px; }
 .form-helper { margin: var(--space-3) 0 var(--space-4); color: var(--text-muted); font-size: .8rem; }

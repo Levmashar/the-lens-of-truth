@@ -10,7 +10,7 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   article.dataset.verdict = report.verdict;
   const guide = readingGuide?.verdict_run_id === report.verdict_run_id
     && readingGuide.report_semantic_hash === report.semantic_hash ? readingGuide : undefined;
-  const developmentUi = showDevelopmentUi();
+  const developmentUi = showDevelopmentUi(debugEnabled);
 
   if (!report.production_qualified) {
     const notice = element("aside", "qualification-notice");

@@ -1,6 +1,7 @@
 import { apiRequest } from "./client";
-import type { AnalysisClaimsResponse, AnalysisInput, AnalysisProgress, AnalysisStarted, HealthResponse, ScreenshotUpload } from "../types/api";
+import type { AnalysisClaimsResponse, AnalysisInput, AnalysisProgress, AnalysisStarted, HealthResponse, ScreenshotText, ScreenshotUpload } from "../types/api";
 import type { LensReport, ReportReadingGuide } from "../types/report";
+import type { DocumentReport } from "../types/document";
 
 export const PRIVACY_NOTICE_VERSION = "2026-09-01";
 
@@ -12,6 +13,14 @@ export function uploadScreenshot(file: File, signal?: AbortSignal): Promise<Scre
   const body = new FormData();
   body.append("screenshot", file);
   return apiRequest<ScreenshotUpload>("/v1/analyses/uploads/screenshots", { method: "POST", body, signal }, 201);
+}
+
+export function readScreenshot(uploadId: string, signal?: AbortSignal): Promise<ScreenshotText> {
+  return apiRequest<ScreenshotText>(`/v1/analyses/uploads/screenshots/${encodeURIComponent(uploadId)}/read`, {
+    method: "POST", signal,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lang: "auto", consent: { privacy_notice_version: PRIVACY_NOTICE_VERSION, accepted: true } }),
+  });
 }
 
 export function startAnalysis(input: AnalysisInput, key: string, signal?: AbortSignal): Promise<AnalysisStarted> {
@@ -31,6 +40,10 @@ export function getAnalysis(id: string, signal?: AbortSignal): Promise<AnalysisP
 
 export function getClaims(id: string, signal?: AbortSignal): Promise<AnalysisClaimsResponse> {
   return apiRequest<AnalysisClaimsResponse>(`/v1/analyses/${encodeURIComponent(id)}/claims`, { signal });
+}
+
+export function getDocumentReport(id: string, signal?: AbortSignal): Promise<DocumentReport> {
+  return apiRequest<DocumentReport>(`/v1/analyses/${encodeURIComponent(id)}/document`, { signal });
 }
 
 export function getClaimReport(id: string, claimId: string, signal?: AbortSignal): Promise<LensReport> {

@@ -2,6 +2,7 @@
 
 import logging
 from datetime import UTC, datetime
+from typing import cast
 from uuid import UUID
 
 from app.adapters.entailment import OpenAICompatibleEntailmentValidator
@@ -27,6 +28,7 @@ from app.orchestration.service import AnalysisOrchestrator
 from app.retrieval.models import ClaimSnapshot, EvidencePack, RetrievalResult
 from app.retrieval.service import retrieve_pubmed
 from app.schemas.analysis import CreateAnalysisRequest
+from app.services.analysis_ingestion import AnalysisIngestionService
 from app.validation.joint import validate_joint
 from app.validation.models import JudgeValidationRun
 from app.validation.service import ValidationService
@@ -233,4 +235,13 @@ async def _run_background_traced(
                 session.commit()
             logger.warning("analysis_worker_initialization_failed analysis=%s", analysis_id)
             return
-        await orchestrator.run(session, analysis_id, request)
+        from app.document.planner import should_use_document_mode
+
+        text = request.input.text or request.input.reviewed_text or ""
+        if should_use_document_mode(text):
+            from app.document.worker import run_document
+
+            await run_document(analysis_id, request, settings,
+                               cast(AnalysisIngestionService, orchestrator.ingestion))
+        else:
+            await orchestrator.run(session, analysis_id, request)

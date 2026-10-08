@@ -27,6 +27,7 @@ class AnalysisInput(BaseModel):
     type: Literal["text", "screenshot", "url"]
     text: str | None = Field(default=None, min_length=1, max_length=20_000)
     upload_id: UUID | None = None
+    reviewed_text: str | None = Field(default=None, min_length=1, max_length=20_000)
     url: AnyHttpUrl | None = None
 
     @model_validator(mode="after")
@@ -41,6 +42,10 @@ class AnalysisInput(BaseModel):
             raise ValueError("Only text submissions may include text.")
         if self.type != "screenshot" and self.upload_id is not None:
             raise ValueError("Only screenshot submissions may include upload_id.")
+        if self.type != "screenshot" and self.reviewed_text is not None:
+            raise ValueError("Only screenshot submissions may include reviewed_text.")
+        if self.reviewed_text is not None and not self.reviewed_text.strip():
+            raise ValueError("Reviewed screenshot text must not be blank.")
         if self.type != "url" and self.url is not None:
             raise ValueError("Only URL submissions may include url.")
         return self
@@ -79,6 +84,23 @@ class OcrPreviewLine(BaseModel):
     top: int
     width: int
     height: int
+
+
+class ScreenshotReadRequest(BaseModel):
+    """Consent to local OCR; reading a screenshot makes no model calls."""
+
+    model_config = ConfigDict(populate_by_name=True)
+    language: str = Field(default="auto", alias="lang", max_length=16)
+    consent: Consent
+
+
+class ScreenshotTextResponse(BaseModel):
+    """Transient redacted text for user review, available in public builds."""
+
+    upload_id: UUID
+    redacted_text: str
+    confidence: float | None
+    language_used: str
 
 
 class OcrPreviewResponse(BaseModel):
@@ -212,6 +234,7 @@ class AnalysisProgress(BaseModel):
     screenshot_ocr: ScreenshotOcrMetadata | None
     updated_at: datetime
     debug_enabled: bool = False
+    document_mode: bool = False
     debug_models: list["DebugModelStatus"] | None = None
     debug_events: list["DebugModelEvent"] | None = None
 
@@ -235,6 +258,7 @@ class DebugModelEvent(BaseModel):
     call_id: str | None = None
     operation_kind: str | None = None
     semantic_revision_number: int = 0
+    response_metadata: dict[str, object] | None = None
 
 
 class DebugModelStatus(BaseModel):

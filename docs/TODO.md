@@ -1,5 +1,61 @@
 # Delivery Roadmap
 
+## 2026-10-08 context-aware document mode
+
+- [x] Trace atomic serialization and retained main-paragraph diagnostics
+- [x] Preserve complete original context, exact spans, qualifiers and study links
+- [x] Bound groups, retain unresolved assertions and safely deduplicate literal repeats
+- [x] Identify source candidates; shared approved retrieval/full-text and frozen quantities
+- [x] Run three blind grouped judges with per-judge grouped validation concurrently
+- [x] Separate reporting fidelity from existing clinical evidence qualification
+- [x] Ship expandable vanilla TS/Vite document overview, citations and partial progress
+- [x] Add append-only persistence/migration, ownership hashes and offline read-time replay
+- [x] Repair exact 326b6a1c planner failure without relaxing factual study ownership
+- [x] Fix subsequent JSON shape, group-bound, quote and transport contract defects
+- [x] Live main paragraph and repeat: seven calls each, audited HTTP 200 reports
+- [x] Frontend 94/build, lint/types and historical/single-claim regressions
+- [x] Final complete PostgreSQL-backed suite: 1,469 passed, no failures/skips
+- [ ] Improve 112–130-second latency toward the 90-second target without losing checks
+- [ ] Resolve missing source/context for explicitly unavailable document interpretations
+- [ ] Visual browser QA when an enabled browser is available
+- [ ] Production/clinical qualification remains a separate, unmet release requirement
+
+See [exact measurements and remaining limitations](DOCUMENT_MODE_RESULTS_20261008.md).
+
+## 2026-10-07 long-input extraction and grounding
+
+- [x] Trace actual two-attempt extraction timeout independently of OCR/input bound
+- [x] Bound output, make thinking explicit, enforce strict schema and cutoff checks
+- [x] Add safe response-size/usage/stop diagnostics and restore built debug UI
+- [x] Preserve unique wrapped source spans; invalidate stale antecedent offsets
+- [x] Fix accepted-source MeSH coverage, WHO pronoun and relation-word false failures
+- [x] Fix literal exposure grounding, numeric upper bounds and safe reported coordination
+- [x] Replay saved extraction with real MeSH: four medical candidates ready;
+      unresolved contextual method sentence remains unavailable
+- [x] Run live configured extractor and an initial complete frontend-path analysis
+- [x] Final full frontend-path run: four medical reports HTTP 200, unresolved
+      context sentence safely unavailable; no extraction timeout
+- [x] Full DB backend 1,297 pass, final article checks 85 pass, frontend 76/build;
+      lint/types/diff and health checks pass; results/versions recorded
+
+See [results](LONG_INPUT_RELIABILITY_FIXES_20261007.md).
+
+## 2026-10-07 screenshot upload and OCR
+
+- [x] Trace actual upload/OCR/provider failure separately: extractor timed out
+- [x] Fix layout, quote parsing, OCR cancellation, transparency and EXIF metadata
+- [x] Add consent-required public local OCR/read-and-review workflow
+- [x] Preserve screenshot provenance, retention, redaction and legacy handoff
+- [x] Fix upload retries, expired references, in-flight controls and safe errors
+- [x] Verify full offline backend 1,181/15 skips, frontend 71/build, lint/types
+- [x] Live HTTP supported formats/dark/transparency/original image and error cases
+- [x] Rebuild/restart idle services; no model/medical-policy/environment changes
+- [x] Live extraction replay subsequently authorized by the new long-input task;
+      same supplied article answered HTTP 200. Historical OCR-scope rejection
+      remains documented; analyzer fixes are recorded separately above.
+
+See [details and limitations](OCR_UPLOAD_FIXES_20261007.md).
+
 ## 2026-10-06 gradual frontend refinement, second pass
 
 - [x] Reduce the theme-appropriate supplied logo; keep it left-aligned and vertically centered

@@ -13,6 +13,12 @@ from typing import Protocol, cast
 from app.medical.entities import MatchType
 
 _WORDS = re.compile(r"[^\W_]+(?:[-'][^\W_]+)*", re.UNICODE)
+# Scan the entire publicly accepted source, while keeping individual SQL
+# requests below SQLite's portable parameter limit. Phrase width retains the
+# existing lexical matching policy; it is not a limit on source coverage.
+MESH_MENTION_MAX_SOURCE_CHARACTERS = 20_000
+_MENTION_MAX_TERM_WORDS = 8
+_MENTION_QUERY_BATCH_SIZE = 500
 
 
 def normalize_term(value: str) -> str:
@@ -182,27 +188,38 @@ class IndexedMeshProvider:
     def find_mentions(self, phrase: str) -> tuple[MeshMatch, ...]:
         """Look up bounded source subphrases, keeping offsets and all ambiguities."""
 
-        tokens = list(_WORDS.finditer(phrase[:256]))[:20]
+        tokens = list(_WORDS.finditer(phrase[:MESH_MENTION_MAX_SOURCE_CHARACTERS]))
+        if (len(phrase) > MESH_MENTION_MAX_SOURCE_CHARACTERS and tokens
+                and tokens[-1].end() == MESH_MENTION_MAX_SOURCE_CHARACTERS):
+            # A capped source may end in the middle of a token. Never produce
+            # a medical match from that possibly incomplete spelling.
+            tokens.pop()
         spans: dict[tuple[int, int], str] = {}
         for start_index in range(len(tokens)):
-            for end_index in range(start_index, min(len(tokens), start_index + 8)):
+            for end_index in range(
+                start_index, min(len(tokens), start_index + _MENTION_MAX_TERM_WORDS),
+            ):
                 start, end = tokens[start_index].start(), tokens[end_index].end()
                 spans[(start, end)] = normalize_term(phrase[start:end])
         if not spans:
             return ()
-        terms = tuple(set(spans.values()))
-        placeholders = ",".join("?" for _ in terms)
-        with closing(self._connect()) as connection:
-            rows = connection.execute(
-                f"""SELECT a.term_norm, a.descriptor_id, d.label, d.tree_numbers,
-                           a.match_type
-                    FROM alias AS a JOIN descriptor AS d ON d.id = a.descriptor_id
-                    WHERE a.term_norm IN ({placeholders})""",
-                terms,
-            ).fetchall()
+        terms = tuple(sorted(set(spans.values())))
         by_term: dict[str, list[tuple[str, str, str, str]]] = {}
-        for term_norm, mesh_id, label, tree_json, match_type in rows:
-            by_term.setdefault(term_norm, []).append((mesh_id, label, tree_json, match_type))
+        with closing(self._connect()) as connection:
+            for batch_start in range(0, len(terms), _MENTION_QUERY_BATCH_SIZE):
+                batch = terms[batch_start:batch_start + _MENTION_QUERY_BATCH_SIZE]
+                placeholders = ",".join("?" for _ in batch)
+                rows = connection.execute(
+                    f"""SELECT a.term_norm, a.descriptor_id, d.label, d.tree_numbers,
+                               a.match_type
+                        FROM alias AS a JOIN descriptor AS d ON d.id = a.descriptor_id
+                        WHERE a.term_norm IN ({placeholders})""",
+                    batch,
+                ).fetchall()
+                for term_norm, mesh_id, label, tree_json, match_type in rows:
+                    by_term.setdefault(term_norm, []).append(
+                        (mesh_id, label, tree_json, match_type),
+                    )
         matches = [
             MeshMatch(
                 surface_text=phrase[start:end], start=start, end=end, mesh_id=mesh_id,

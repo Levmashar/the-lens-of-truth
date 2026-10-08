@@ -254,12 +254,20 @@ def normalize_frozen_references(
     response: JointResponse23, prepared: PreparedSemanticInput,
 ) -> tuple[JointResponse23, tuple[dict[str, str], ...]]:
     """Shared exact child/parent ownership rule, selected by a versioned caller."""
+    attributes, conversions = normalize_source_attributions(response.attributions, prepared)
+    return response.model_copy(update={"attributions": attributes}), conversions
+
+
+def normalize_source_attributions(
+    attributions: tuple[Attribution23, ...], prepared: PreparedSemanticInput,
+) -> tuple[tuple[Attribution23, ...], tuple[dict[str, str], ...]]:
+    """Normalize exact frozen source ownership independently of clinical axes."""
     payload = json.loads(prepared.user_prompt.split("\n", 1)[1])
     units = payload["frozen_snapshot"]["source_units"]
     parents = {unit["unit_id"]: unit["evidence_id"] for unit in units}
     conversions: list[dict[str, str]] = []
     attributes = []
-    for attribution, statement in zip(response.attributions,
+    for attribution, statement in zip(attributions,
                                       payload["candidate_statements"], strict=True):
         expected = tuple(statement["evidence_ids"])
         allowed_units = set(statement["source_unit_ids"])
@@ -276,7 +284,7 @@ def normalize_frozen_references(
             else:
                 raise ValueError("Unknown or foreign axes source reference")
         attributes.append(attribution.model_copy(update={"evidence_ids": tuple(mapped)}))
-    return response.model_copy(update={"attributions": tuple(attributes)}), tuple(conversions)
+    return tuple(attributes), tuple(conversions)
 
 
 def check_response23(response: JointResponse23, prepared: PreparedSemanticInput) -> None:

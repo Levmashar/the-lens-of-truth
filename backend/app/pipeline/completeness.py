@@ -5,7 +5,9 @@ import re
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.medical.entities import MedicalEntity
+from app.medical.mention_context import unsafe_contextless_alias
 from app.medical.mesh import (
+    MESH_MENTION_MAX_SOURCE_CHARACTERS,
     IndexedMeshProvider,
     MeshMatch,
     MeshProvider,
@@ -15,7 +17,7 @@ from app.pipeline.claim_types import ClaimType
 from app.pipeline.pico import NormalizedPico
 
 _GENERIC_TERMS = frozenset({
-    "risk", "study", "studies", "people", "person", "use", "users", "rate",
+    "risk", "risks", "study", "studies", "people", "person", "use", "users", "rate",
     "rates", "health", "illness", "disease", "effect", "effects", "result",
     "results", "higher", "lower", "frequent", "exposure", "invasive",
     "consumption",
@@ -55,7 +57,8 @@ def assess_completeness(
             required.append("outcome")
 
     matches = tuple(match for match in _salient_matches(mesh.find_mentions(pico.original_claim))
-                    if not _setting_mention(match, pico))
+                    if not _setting_mention(match, pico)
+                    and not _relationship_mention(match, pico.original_claim))
     slot_values = (
         pico.population, pico.intervention_or_exposure, pico.comparator,
         pico.outcome, pico.timeframe,
@@ -81,7 +84,8 @@ def assess_completeness(
         warnings.append("ambiguous_terminology")
     if isinstance(mesh, UnconfiguredMeshProvider):
         warnings.append("source_terminology_scan_unavailable")
-    if len(pico.original_claim) > 256:
+    if (isinstance(mesh, IndexedMeshProvider)
+            and len(pico.original_claim) > MESH_MENTION_MAX_SOURCE_CHARACTERS):
         warnings.append("source_terminology_scan_truncated")
     return NormalizationQuality(
         normalization_coverage=(round(len(represented) / len(matches), 3) if matches else None),
@@ -101,6 +105,8 @@ def _salient_matches(matches: tuple[MeshMatch, ...]) -> tuple[MeshMatch, ...]:
     for match in sorted(matches, key=lambda item: (-(item.end - item.start), item.start)):
         if match.match_type not in {"exact", "synonym"} or match.confidence < 0.9:
             continue
+        if unsafe_contextless_alias(match):
+            continue
         surface = match.surface_text.casefold().strip()
         if surface in _GENERIC_TERMS or len(surface) < 3:
             continue
@@ -112,7 +118,20 @@ def _salient_matches(matches: tuple[MeshMatch, ...]) -> tuple[MeshMatch, ...]:
 
 def _contains(haystack: str, needle: str) -> bool:
     pattern = r"\s+".join(re.escape(part) for part in needle.split())
-    return bool(re.search(pattern, haystack, flags=re.IGNORECASE))
+    return bool(re.search(rf"(?<!\w){pattern}(?!\w)", haystack, flags=re.IGNORECASE))
+
+
+def _relationship_mention(match: MeshMatch, source: str) -> bool:
+    """A stated exposure-outcome relation is grammar, not an omitted entity.
+
+    The lexical MeSH term Association can also name a psychological process.
+    Keep it required outside an explicit relationship construction, and retain
+    all the exposure/outcome concepts on either side of that construction.
+    """
+
+    return match.surface_text.casefold() in {
+        "association", "associations", "correlation", "correlations",
+    } and bool(re.match(r"\s+(?:with|between)\b", source[match.end:], re.I))
 
 
 def _setting_mention(match: MeshMatch, pico: NormalizedPico) -> bool:

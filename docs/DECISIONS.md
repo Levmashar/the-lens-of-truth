@@ -1,5 +1,38 @@
 # Architecture Decisions
 
+## ADR-060 - Context-aware document evidence and reporting fidelity
+
+**Decision (2026-10-08):** Use an exact-spanned document plan and frozen shared
+evidence for related study assertions instead of disconnected atomic analyses.
+Preserve full original context, qualifiers, explicit literal references and every
+unresolved detail. Keep different studies/endpoints separate. Deduplicate only
+verifiable literal repeats; never cache semantic verdicts.
+
+Run three independent grouped judge chains within the provider-account concurrency
+limit and start each one's grouped validator when ready. Preserve item isolation,
+task-local database sessions, bounded deadlines/retries, source/quantity ownership,
+integrity, existing clinical safeguards/quorum and production gates.
+
+Reporting fidelity is a distinct validation target: verify attributed findings and
+the source's reported details without requiring clinical causation. New validator
+1.2 transports source/quantity IDs; backend-owned literal source materialization
+removes generated quotation spelling from the machine-critical contract. Clinical
+targets retain full semantic axes and deterministic qualification. Reporting support
+does not become support for a general medical conclusion.
+
+Persist append-only hash-bound plan/evidence/judge/report artifacts and verify them
+offline at read time. Version-dispatch earlier contracts without rewriting their
+results. Deliver one expandable vanilla TypeScript document report, partial progress,
+exact citations and explicit scientific interpretation limits; no average score.
+
+The exact 326b6a1c failure showed that commentary attribution must not trigger
+factual group ownership checks. Factual mismatches still fail closed. Unique literal
+reference ownership/punctuation repair preserves source text without inventing
+antecedents. Follow-up live testing corrected grouped shape, source packaging,
+retrieval bounds and validator target/quote transport. Models are unchanged.
+Production certification and the under-90-second target remain unmet. See
+[implementation, full evidence and measurements](DOCUMENT_MODE_RESULTS_20261008.md).
+
 ## ADR-059 - Disambiguate source vocabulary without aliasing citations
 
 **Decision (2026-10-06):** Repair the V2.5 prose preflight namespace collision
