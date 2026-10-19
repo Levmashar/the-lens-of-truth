@@ -7,10 +7,15 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
+from app.adapters.discovery import ScholarlyDiscovery
 from app.adapters.pubmed import PubMedAdapter
 from app.core.config import Settings
 from app.db.session import get_db_session
-from app.dependencies import get_analysis_ingestion_service, get_pubmed_adapter
+from app.dependencies import (
+    get_analysis_ingestion_service,
+    get_discovery_adapters,
+    get_pubmed_adapter,
+)
 from app.main import create_app
 from app.models.claim import Claim
 from app.pipeline.pico import NormalizedPico
@@ -59,6 +64,9 @@ def test_evidence_preview_returns_pack_without_verdict(monkeypatch: pytest.Monke
     app.dependency_overrides[get_db_session] = FakeSession
     app.dependency_overrides[get_analysis_ingestion_service] = FakeService
     app.dependency_overrides[get_pubmed_adapter] = lambda: adapter
+    discovery = ScholarlyDiscovery(client=httpx.AsyncClient(transport=httpx.MockTransport(
+        lambda request: httpx.Response(200, json={'results': [], 'resultList': {'result': []}}))))
+    app.dependency_overrides[get_discovery_adapters] = lambda: (discovery, None)
     with TestClient(app) as client:
         response = client.post("/v1/analyses/evidence-preview", json={
             "analysis_id": str(analysis_id), "claim_id": str(claim_id),

@@ -2,6 +2,8 @@
 
 import re
 
+from pydantic import Field
+
 from app.judging.models import JudgeDecisionV2, JudgeRun
 from app.retrieval.lexical import lay_variants
 from app.retrieval.models import EvidencePack
@@ -16,6 +18,8 @@ class RelationshipContext(FrozenModel):
     source_contexts: dict[str, str] = {}
     disease_onset: bool
     population: str | None = None
+    retrieval_scope_ceiling: dict[str, bool] | None = Field(
+        default=None, exclude_if=lambda value: value is None)
 
 
 def relationship_context(judge: JudgeRun, pack: EvidencePack, *, scope_polarity: bool = False
@@ -73,6 +77,13 @@ def relationship_context(judge: JudgeRun, pack: EvidencePack, *, scope_polarity:
     context.pop("population")
     if scope_polarity:
         context["population"] = pico.population if pico else None
+    if pack.evidence_pack_version == "2.0":
+        context["retrieval_scope_ceiling"] = {
+            s.statement_id: all(
+                (c := documents[passages[r.evidence_id].passage.document_id].retrieval_context)
+                is not None and c.classification != "direct" for r in s.evidence_refs)
+            for s in judge.decision.statements
+        }
     return context
 
 
@@ -149,6 +160,8 @@ def guarded_axes(
         codes = []
         adjustments = []
         incompatible = False
+        if (context.retrieval_scope_ceiling or {}).get(axis.statement_id):
+            codes.append("RETRIEVAL_SCOPE_IS_INDIRECT")
         if context.disease_onset and (
             (_CELL_TREATMENT.search(text) and _CELL_SUBJECT.search(text))
             or (

@@ -459,7 +459,7 @@ def build_report(
         pack.claim_snapshot, pack.query_plan, pack.documents, pack.passages,
         pack.selected_evidence_ids, pack_version=pack.evidence_pack_version,
     )).hexdigest()
-    if (pack.evidence_pack_version not in {"1.3", "1.4", "1.5"}
+    if (pack.evidence_pack_version not in {"1.3", "1.4", "1.5", "2.0"}
             or pack.snapshot_hash != actual_pack_hash
             or verdict.evidence_pack_hash != actual_pack_hash
             or verdict.claim_id != pack.claim_id

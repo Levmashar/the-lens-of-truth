@@ -143,7 +143,7 @@ describe("analysis page", () => {
   it("loads progress, per-claim status, and a persisted report", async () => {
     const fetchMock = mockResponses(progress());
     const node = mount();
-    await vi.waitFor(() => expect(node.textContent).toContain("Development / evaluation result"));
+    await vi.waitFor(() => expect(node.textContent).toContain("Development preview"));
     expect(node.textContent).toContain("Vitamin C prevents the common cold.");
     expect(node.textContent).not.toContain("1 of 1 claims completed");
     expect(fetchMock.mock.calls.some(([url]) => url.endsWith("/claims"))).toBe(true);
@@ -157,10 +157,10 @@ describe("analysis page", () => {
       normalized_text: "Regular usage of soy lowers muscle gain.",
       standalone_status: "reconstructed" as const,
     };
-    mockResponses(progress({ claims: [soyClaim] }));
+    mockResponses(progress({ claims: [soyClaim] }), summaries(), report("not_enough_evidence", { claim: { text: soyClaim.normalized_text, claim_type: "causal" } }));
     const node = mount();
-    await vi.waitFor(() => expect(node.querySelector(".claim-text")?.textContent)
-      .toBe("Regular usage of soy lowers muscle gain."));
+    await vi.waitFor(() => expect(node.querySelector(".claim-question")?.textContent)
+      .toBe("Does regular usage of soy lower muscle gain?"));
   });
 
   it("keeps a completed report while another claim fails", async () => {
@@ -171,7 +171,7 @@ describe("analysis page", () => {
     ]));
     const node = mount();
     await vi.waitFor(() => expect(node.textContent).toContain("1 of 2 completed"));
-    await vi.waitFor(() => expect(node.textContent).toContain("Development / evaluation result"));
+    await vi.waitFor(() => expect(node.textContent).toContain("Development preview"));
     expect(node.textContent).toContain("Unable to complete");
     expect(node.textContent).not.toContain("Some claims completed;");
   });
@@ -190,7 +190,7 @@ describe("analysis page", () => {
     ]));
     const node = mount();
     await vi.waitFor(() => expect(node.textContent).toContain("complete exposure and outcome"));
-    expect(node.textContent).toContain("Unable to Verify Reliably");
+    expect(node.textContent).toContain("We couldn't complete the check");
     expect(node.textContent).not.toContain("Not Enough Evidence");
   });
 
@@ -346,11 +346,12 @@ describe("analysis page", () => {
       headline: "Unable to Verify Reliably", short_summary: "Unable to Verify Reliably",
     }));
     const node = mount();
-    await vi.waitFor(() => expect(node.textContent).toContain("Development / evaluation result"));
+    await vi.waitFor(() => expect(node.textContent).toContain("Development preview"));
     expect(node.querySelectorAll(".report-claim")).toHaveLength(0);
     expect(node.querySelectorAll(".verdict-headline")).toHaveLength(0);
-    expect(node.querySelectorAll(".verdict-summary")).toHaveLength(0);
-    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development evaluation only");
+    expect(node.querySelectorAll(".verdict-summary")).toHaveLength(1);
+    expect(node.querySelector(".verdict-summary")?.textContent).toContain("unfinished check");
+    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development preview");
   });
 
   it("hides development diagnostics when the toggle is off", async () => {

@@ -292,7 +292,7 @@ def qualification_input24(
                              else "question-evidence-2.0" if position_version ==
                              "validated-evidence-position-1.7" and decision.schema_version == "2.5"
                              else "question-evidence-1.0")
-            if pack.evidence_pack_version == "1.5"
+            if pack.evidence_pack_version in {"1.5", "2.0"}
             else "legacy-1.0",
             question_category=question_category(pack.claim_snapshot,
                 experimental_setting=position_version in {"validated-evidence-position-1.5",
@@ -302,7 +302,7 @@ def qualification_input24(
                 causal_policy=decision.schema_version == "2.5"
                 and position_version in {"validated-evidence-position-1.7",
                                     "validated-evidence-position-1.8"})
-            if pack.evidence_pack_version == "1.5"
+            if pack.evidence_pack_version in {"1.5", "2.0"}
             else "other",
         ),
         assessments=response.assessments,

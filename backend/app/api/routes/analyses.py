@@ -12,6 +12,8 @@ from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
 
 from app.adapters.crossref import CrossrefAdapter
+from app.adapters.discovery import ScholarlyDiscovery
+from app.adapters.official_web import OfficialWebDiscovery
 from app.adapters.pubmed import PubMedAdapter
 from app.core.config import Settings, get_runtime_settings
 from app.core.debug_trace import model_events
@@ -21,6 +23,7 @@ from app.dependencies import (
     get_analysis_ingestion_service,
     get_authoritative_adapter,
     get_crossref_adapter,
+    get_discovery_adapters,
     get_pubmed_adapter,
 )
 from app.medical.entities import MedicalEntity
@@ -45,7 +48,7 @@ from app.retrieval.claims import snapshot_claim
 from app.retrieval.evidence_pack import canonical_pack_bytes
 from app.retrieval.models import EvidencePack
 from app.retrieval.persistence import persist_retrieval
-from app.retrieval.service import retrieve_pubmed
+from app.retrieval.v2 import retrieve_adaptive
 from app.schemas.analysis import (
     AnalysisClaim,
     AnalysisClaimsResponse,
@@ -87,6 +90,8 @@ async def preview_pubmed_evidence(
     adapter: Annotated[PubMedAdapter, Depends(get_pubmed_adapter)],
     crossref: Annotated[CrossrefAdapter | None, Depends(get_crossref_adapter)],
     settings: Annotated[Settings, Depends(get_runtime_settings)],
+    discovery_adapters: Annotated[
+        tuple[ScholarlyDiscovery, OfficialWebDiscovery], Depends(get_discovery_adapters)],
 ) -> EvidencePreviewResponse:
     """Retrieve PubMed evidence for one stored claim; never produce a verdict."""
 
@@ -97,8 +102,9 @@ async def preview_pubmed_evidence(
     claim = session.get(Claim, request.claim_id)
     if claim is None or claim.submission_id != request.analysis_id:
         raise LensError(404, "claim_not_found", "Claim was not found or has expired.")
-    result = await retrieve_pubmed(
-        snapshot_claim(claim), adapter,
+    discovery, web = discovery_adapters
+    result = await retrieve_adaptive(
+        snapshot_claim(claim), adapter, discovery=discovery, web=web,
         selected_limit=settings.pubmed_selected_evidence_limit,
         max_per_document=settings.pubmed_max_passages_per_document,
         crossref=crossref,
@@ -358,14 +364,29 @@ async def get_document_report(
         projection = build_document_report(
             analysis_id, DocumentPlan.model_validate(plan_row.snapshot_json), evidence, runs,
             app_env=settings.app_env, status=str(report["status"]), failures=failures,
+            version=str(report["version"]),
         )
         if projection != report:
             raise ValueError("Document report projection mismatch")
+        if report["version"] != "document-report-1.3":
+            # Verify the old reading view first; do not rewrite any historical artifact.
+            report = build_document_report(
+                analysis_id, DocumentPlan.model_validate(plan_row.snapshot_json), evidence, runs,
+                app_env=settings.app_env, status=str(report["status"]), failures=failures,
+            )
+            report["historical_projection"] = {
+                "version": artifact.version, "snapshot_hash": artifact.snapshot_hash,
+            }
+        from app.document.reader import build_reader_view
+
+        report["reader_view"] = build_reader_view(
+            report, DocumentPlan.model_validate(plan_row.snapshot_json)
+        )
         if settings.debug_enabled:
             # Exact grouped responses and timing; prompts/keys are never returned.
             report["debug_group_runs"] = [
                 {k: v for k, v in row.snapshot_json.items()
-                 if k not in {"group_input", "validation_input"}}
+                 if k not in {"group_input", "validation_input", "validation_repair_input"}}
                 for row in judge_rows]
             report["debug_errors"] = [row.snapshot_json for row in parents if row.kind == "error"]
         return report

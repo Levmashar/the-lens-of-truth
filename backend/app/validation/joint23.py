@@ -340,9 +340,9 @@ def qualification_input23(
             based_on_statement_ids=decision.conclusion.based_on_statement_ids,
             defects=material, required_findings_available=available
             and not response.missing_material_evidence,
-            evidence_policy="question-evidence-1.0" if pack.evidence_pack_version == "1.5"
+            evidence_policy="question-evidence-1.0" if pack.evidence_pack_version in {"1.5", "2.0"}
             else "legacy-1.0", question_category=question_category(pack.claim_snapshot)
-            if pack.evidence_pack_version == "1.5" else "other",
+            if pack.evidence_pack_version in {"1.5", "2.0"} else "other",
         ), assessments=response.assessments,
         comparator=pack.claim_snapshot.pico.comparator if pack.claim_snapshot.pico else None,
         exact_claim=pack.claim_snapshot.standalone_text,

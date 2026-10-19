@@ -154,7 +154,7 @@ async def validate_v2(
                     "source_kind": document.source_kind,
                     "authoritative": document.authoritative.model_dump(mode="json")
                     if document.authoritative else None}
-                   if pack.evidence_pack_version == "1.5" else {}),
+                   if pack.evidence_pack_version in {"1.5", "2.0"} else {}),
             })
         if not issues and unit_contract and decision.schema_version not in {"2.3", "2.4", "2.5"}:
             check = compare_assertion_numbers(

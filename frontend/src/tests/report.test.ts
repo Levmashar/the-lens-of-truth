@@ -71,9 +71,9 @@ describe("report presentation", () => {
     expect(node.textContent).not.toContain("Randomized Controlled Trial");
   });
   it.each([
-    ["supported", "Supported"], ["contradicted", "Contradicted"],
-    ["not_enough_evidence", "Not Enough Evidence"],
-    ["unable_to_verify_reliably", "Unable to Verify Reliably"],
+    ["supported", "Supported by research"], ["contradicted", "Research contradicts this"],
+    ["not_enough_evidence", "Not established by research"],
+    ["unable_to_verify_reliably", "We couldn't complete the check"],
   ] as const)("renders %s without truth scores or model ranking", (label, display) => {
     const node = createClaimResult(report(label), analysisId, claimId);
     expect(node.querySelector(".verdict-label")?.textContent).toBe(display);
@@ -82,7 +82,7 @@ describe("report presentation", () => {
 
   it("keeps the development notice visible and uses exact source text safely", () => {
     const node = createClaimResult(report(), analysisId, claimId);
-    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development evaluation only");
+    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development preview");
     expect(node.querySelector(".qualification-notice")?.closest("details")).toBeNull();
     expect(node.querySelector(".evidence-quote")?.textContent).toBe("Exact frozen excerpt <script>alert(1)</script>");
     expect(node.querySelector("script")).toBeNull();
@@ -137,7 +137,7 @@ describe("report presentation", () => {
       },
     });
     const node = createClaimResult(empty, analysisId, claimId);
-    expect(node.querySelector(".details-body")?.textContent)
+    expect(node.querySelector(".assessment-details .details-body")?.textContent)
       .toContain("No judge assessment ran because the search selected no usable evidence.");
   });
 
@@ -252,7 +252,7 @@ describe("report presentation", () => {
     const node = createClaimResult(saved, analysisId, claimId, true);
     expect(node.querySelector(".technical-details")).not.toBeNull();
     expect(node.querySelector(".verdict-explanation-details")?.textContent).toContain("numeric_magnitude_unverified");
-    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development evaluation only");
+    expect(node.querySelector(".qualification-notice")?.textContent).toContain("Development preview");
     expect(saved.production_qualified).toBe(false);
   });
 

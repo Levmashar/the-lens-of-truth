@@ -450,9 +450,9 @@ def test_invalid_validator_item_does_not_destroy_its_valid_sibling(monkeypatch, 
                 foreign["quantity_id"]
             ]
         else:
-            data["items"][1]["reporting_checks"][0]["source_value"] = (
-                "An invented source quotation."
-            )
+            next(item for item in data["items"] if item["assertion_id"] == "A2")[
+                "reporting_checks"
+            ][0]["source_value"] = "An invented source quotation."
 
     results = run(
         monkeypatch,
@@ -463,7 +463,7 @@ def test_invalid_validator_item_does_not_destroy_its_valid_sibling(monkeypatch, 
     )
     assert all(r["items"]["A1"]["position"] == "supported" for r in results)
     assert all(r["items"]["A2"]["position"] is None for r in results)
-    assert len(calls) == 6
+    assert len(calls) == (9 if defect in {"missing_item", "bad_quote"} else 6)
 
 
 @pytest.mark.parametrize("phase", ["judge", "validator"])

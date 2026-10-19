@@ -1,0 +1,99 @@
+{
+  "analysis_id": "a897813c-5ce9-4f56-b1b6-29c50ed2480e",
+  "status": "partially_completed",
+  "stage": "building_report",
+  "completed_stages": [
+    "extracting",
+    "normalizing",
+    "retrieving",
+    "judging",
+    "validating",
+    "aggregating",
+    "building_report"
+  ],
+  "stage_timestamps": {
+    "judging": {
+      "started_at": "2026-10-13T12:51:48.846105+00:00",
+      "completed_at": "2026-10-13T12:53:38.693794+00:00"
+    },
+    "document": {
+      "mode": "document",
+      "version": "document-workflow-1.0"
+    },
+    "extracting": {
+      "started_at": "2026-10-13T12:50:38.278420+00:00",
+      "completed_at": "2026-10-13T12:51:04.480519+00:00"
+    },
+    "retrieving": {
+      "started_at": "2026-10-13T12:51:04.646227+00:00",
+      "completed_at": "2026-10-13T12:51:48.837389+00:00"
+    },
+    "validating": {
+      "started_at": "2026-10-13T12:53:38.684845+00:00",
+      "completed_at": "2026-10-13T12:53:38.699194+00:00"
+    },
+    "aggregating": {
+      "completed_at": "2026-10-13T12:53:38.704176+00:00"
+    },
+    "normalizing": {
+      "completed_at": "2026-10-13T12:51:04.487466+00:00"
+    },
+    "building_report": {
+      "started_at": "2026-10-13T12:53:38.710452+00:00",
+      "completed_at": "2026-10-13T12:53:38.737006+00:00"
+    }
+  },
+  "claim_count": 11,
+  "completed_claims": 4,
+  "failure_code": null,
+  "language": "auto",
+  "input_type": "text",
+  "claims": [],
+  "screenshot_ocr": null,
+  "updated_at": "2026-10-13T12:53:38.737006Z",
+  "debug_enabled": true,
+  "document_mode": true,
+  "debug_models": [
+    {
+      "role": "extraction",
+      "provider": "openai_compatible_claim_extractor",
+      "model": "DeepSeek-V4.1-Flash",
+      "status": "responded",
+      "failure_type": null,
+      "origin": "analysis"
+    },
+    {
+      "role": "judge_1",
+      "provider": "paratera",
+      "model": "DeepSeek-V4.1-Flash",
+      "status": "not_called",
+      "failure_type": null,
+      "origin": "current_configuration"
+    },
+    {
+      "role": "judge_2",
+      "provider": "paratera",
+      "model": "Qwen3.5-Plus",
+      "status": "not_called",
+      "failure_type": null,
+      "origin": "current_configuration"
+    },
+    {
+      "role": "judge_3",
+      "provider": "paratera",
+      "model": "GLM-4.7",
+      "status": "not_called",
+      "failure_type": null,
+      "origin": "current_configuration"
+    },
+    {
+      "role": "semantic_validator",
+      "provider": "paratera",
+      "model": "Qwen3.8-Flash",
+      "status": "not_called",
+      "failure_type": null,
+      "origin": "current_configuration"
+    }
+  ],
+  "debug_events": []
+}

@@ -131,7 +131,7 @@ def build_relation_payload(
                         {
                             "evidence_design": fact(document, statement).model_dump(mode="json")
                         }
-                        if pack.evidence_pack_version == "1.5"
+                        if pack.evidence_pack_version in {"1.5", "2.0"}
                         else {}
                     ),
                 }
@@ -167,7 +167,7 @@ def build_relation_payload(
                 fact(documents[passages[ref.evidence_id].passage.document_id], s)
                 for ref in s.evidence_refs
             )
-            if pack.evidence_pack_version == "1.5"
+            if pack.evidence_pack_version in {"1.5", "2.0"}
             else (),
         )
         for s in statements
@@ -194,12 +194,12 @@ async def qualify_with_relations(
         evidence_ids=tuple(dict.fromkeys(ref.evidence_id for s in statements
                                         for ref in s.evidence_refs)),
         prompt_version="claim-relation-1.3-2026-10-01"
-        if pack.evidence_pack_version == "1.5" else PROMPT_VERSION,
+        if pack.evidence_pack_version in {"1.5", "2.0"} else PROMPT_VERSION,
     )
     exact_input = json.loads(prepared.user_prompt.split("\n", 1)[1])
     audit = RelationValidationAudit(
         prompt_version="claim-relation-1.3-2026-10-01"
-        if pack.evidence_pack_version == "1.5" else PROMPT_VERSION,
+        if pack.evidence_pack_version in {"1.5", "2.0"} else PROMPT_VERSION,
         provider=validator.provider if validator else None,
         model=validator.model if validator else None, prompt_hash=prepared.prompt_hash,
         input_hash=canonical_hash(exact_input), input_json=exact_input,
@@ -231,13 +231,13 @@ async def qualify_with_relations(
         based_on_statement_ids=decision.conclusion.based_on_statement_ids, defects=defects,
         required_findings_available=(not audit.error_category and
                                      set(decision.conclusion.based_on_statement_ids) <= available),
-        evidence_policy=("question-evidence-1.0" if pack.evidence_pack_version == "1.5"
+        evidence_policy=("question-evidence-1.0" if pack.evidence_pack_version in {"1.5", "2.0"}
                          else "legacy-1.0"),
         question_category=question_category(pack.claim_snapshot)
-        if pack.evidence_pack_version == "1.5" else "other",
+        if pack.evidence_pack_version in {"1.5", "2.0"} else "other",
     )
     qualification = ConclusionQualificationAudit(
-        version="conclusion-qualifier-1.1" if pack.evidence_pack_version == "1.5"
+        version="conclusion-qualifier-1.1" if pack.evidence_pack_version in {"1.5", "2.0"}
         else QUALIFIER_VERSION, input=inputs, output=qualify_conclusion(inputs),
     )
     dependencies = set(decision.conclusion.based_on_statement_ids)

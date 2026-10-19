@@ -1,0 +1,20 @@
+This skill includes material derived from the Microsoft playwright-cli repository.
+
+Source:
+- Repository: microsoft/playwright-cli
+- Path: skills/playwright-cli/SKILL.md
+
+Copyright (c) Microsoft Corporation.
+
+Licensed under the Apache License, Version 2.0.
+See LICENSE.txt in this directory.
+
+Modifications:
+- Adapted for the Codex skill collection.
+- Added a wrapper script and local reference guides.
+
+Repository-local Lens adaptations (2026-10-14):
+- Replaced home-directory skill paths with repository-local paths.
+- Added a native PowerShell wrapper; both wrappers require an existing local CLI.
+- Removed automatic npm downloads and global installation instructions.
+- Added Windows/WSL prerequisites and repository-local artifact guidance.

@@ -8,6 +8,12 @@ export interface ReportReadingGuide {
   report_semantic_hash: string;
   findings: { text: string; evidence_ids: string[]; source_unit_ids: string[] }[];
   highlights: { source_unit_id: string; exact_text: string; kind?: "attribution_quote" | "source_summary" }[];
+  retrieval?: {
+    version: "retrieval-coverage-2.0";
+    state: "search_incomplete" | "no_eligible_sources" | "related_only" | "direct_candidates";
+    explanation: string;
+    sources: { title: string; url: string; classification: string; missing_qualifiers: string[] }[];
+  };
 }
 
 export interface VerdictExplanation {

@@ -269,10 +269,10 @@ def prepare_judge_input(
         document = document_map.get(ranked.passage.document_id)
         if document is None or document.integrity.status == "retracted":
             raise ValueError("Selected evidence has no usable frozen document")
-        if (pack.evidence_pack_version == "1.5"
+        if (pack.evidence_pack_version in {"1.5", "2.0"}
                 and document.evidence_role_hint == "incompatible"):
             raise ValueError("Incompatible evidence cannot enter judge input")
-        if pack.evidence_pack_version == "1.5" and document.document_id in seen_documents:
+        if pack.evidence_pack_version in {"1.5", "2.0"} and document.document_id in seen_documents:
             continue
         seen_documents.add(document.document_id)
         siblings = sorted(by_document[document.document_id], key=lambda item: (
@@ -324,12 +324,12 @@ def prepare_judge_input(
                     "document_id": document.document_id,
                     "document_sha256": document.content_sha256,
                     "canonical_url": document.canonical_url}
-                   if pack.evidence_pack_version == "1.5" else {}),
+                   if pack.evidence_pack_version in {"1.5", "2.0"} else {}),
             },
             "passages": included,
         })
     claim = pack.claim_snapshot
-    if pack.evidence_pack_version == "1.5" and sum(
+    if pack.evidence_pack_version in {"1.5", "2.0"} and sum(
         document_map[passage_map[i].passage.document_id].evidence_role_hint == "contextual"
         for i in selected_ids
     ) > 2:
@@ -382,7 +382,7 @@ def prepare_judge_input(
     instructions = (RELATION_UNIT_INSTRUCTIONS if version == INPUT_SNAPSHOT_VERSION
                     else UNIT_INSTRUCTIONS if version == "judge-input-2.1"
                     else SYSTEM_INSTRUCTIONS)
-    if pack.evidence_pack_version == "1.5":
+    if pack.evidence_pack_version in {"1.5", "2.0"}:
         instructions += """
 Document purpose is not truth. Attribute exact public-health assessments as
 assessments, not trials. A guideline recommendation is not proof of a causal

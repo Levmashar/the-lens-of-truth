@@ -1,0 +1,78 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - button "The Lens of Truth, home" [ref=f1e5] [cursor=pointer]
+      - generic [ref=f1e7]:
+        - link "How it works" [ref=f1e8] [cursor=pointer]:
+          - /url: /#method
+        - button "Switch to dark mode" [ref=f1e9] [cursor=pointer]:
+          - generic [ref=f1e11]: Dark mode
+  - main [ref=f1e12]:
+    - generic [ref=f1e50]:
+      - heading "Your claim check" [level=1] [ref=f1e52]
+      - status [ref=f1e53]: Identifying medical claims
+      - region "Verification progress" [ref=f1e55]:
+        - generic [ref=f1e71]:
+          - paragraph [ref=f1e72]: Step 01 of 07
+          - heading "Identifying medical claims" [level=2] [ref=f1e73]
+          - paragraph [ref=f1e74]: Finding the health statements that can be checked.
+        - list [ref=f1e75]:
+          - listitem "Identifying medical claims" [ref=f1e76]:
+            - generic [ref=f1e78]: Read
+          - listitem "Understanding medical concepts" [ref=f1e80]:
+            - generic [ref=f1e82]: Understand
+          - listitem "Searching scientific evidence" [ref=f1e84]:
+            - generic [ref=f1e86]: Find
+          - listitem "Comparing claims with the evidence" [ref=f1e88]:
+            - generic [ref=f1e90]: Compare
+          - listitem "Checking citations and reasoning" [ref=f1e92]:
+            - generic [ref=f1e94]: Verify
+          - listitem "Combining verified assessments" [ref=f1e96]:
+            - generic [ref=f1e98]: Combine
+          - listitem "Preparing the report" [ref=f1e100]:
+            - generic [ref=f1e102]: Report
+        - paragraph [ref=f1e104]: You can leave this tab open. Your results will appear here.
+      - region "Development diagnostics" [ref=f1e106]:
+        - paragraph [ref=f1e107]: Development diagnostics
+        - heading "Live process status" [level=2] [ref=f1e108]
+        - generic [ref=f1e109]:
+          - button "Copy all diagnostics" [ref=f1e110] [cursor=pointer]
+          - status
+        - paragraph [ref=f1e111]: Development only. Model response excerpts may repeat submitted text. Requests and provider reasoning are not displayed; do not submit secrets.
+        - paragraph [ref=f1e112]: Analysis running · stage extracting · ID b337bb36-6858-4b04-bdb8-038b26136ab3
+        - list [ref=f1e113]:
+          - listitem [ref=f1e114]:
+            - generic [ref=f1e115]: Identifying medical claims
+            - generic [ref=f1e116]: Running
+          - listitem [ref=f1e117]:
+            - generic [ref=f1e118]: Understanding medical concepts
+            - generic [ref=f1e119]: Waiting
+          - listitem [ref=f1e120]:
+            - generic [ref=f1e121]: Searching scientific evidence
+            - generic [ref=f1e122]: Waiting
+          - listitem [ref=f1e123]:
+            - generic [ref=f1e124]: Comparing claims with the evidence
+            - generic [ref=f1e125]: Waiting
+          - listitem [ref=f1e126]:
+            - generic [ref=f1e127]: Checking citations and reasoning
+            - generic [ref=f1e128]: Waiting
+          - listitem [ref=f1e129]:
+            - generic [ref=f1e130]: Combining verified assessments
+            - generic [ref=f1e131]: Waiting
+          - listitem [ref=f1e132]:
+            - generic [ref=f1e133]: Preparing the report
+            - generic [ref=f1e134]: Waiting
+        - generic [ref=f1e135]:
+          - heading "Models used / configured" [level=3] [ref=f1e136]
+          - paragraph [ref=f1e137]: "extraction: openai_compatible_claim_extractor / DeepSeek-V4.1-Flash — Calling · this analysis"
+          - paragraph [ref=f1e138]: "judge_1: paratera / DeepSeek-V4.1-Flash — Not called · current configuration"
+          - paragraph [ref=f1e139]: "judge_2: paratera / Qwen3.5-Plus — Not called · current configuration"
+          - paragraph [ref=f1e140]: "judge_3: paratera / GLM-4.7 — Not called · current configuration"
+          - paragraph [ref=f1e141]: "semantic_validator: paratera / Qwen3.8-Flash — Not called · current configuration"
+        - group [ref=f1e142]:
+          - generic "Model responses — raw (development only)" [ref=f1e143]
+      - button "Check another claim" [ref=f1e144] [cursor=pointer]
+  - contentinfo [ref=f1e46]:
+    - generic [ref=f1e47]:
+      - generic [ref=f1e48]: The Lens of Truth
+      - generic [ref=f1e49]: Health claims, checked against research.

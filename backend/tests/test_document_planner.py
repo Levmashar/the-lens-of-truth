@@ -271,6 +271,81 @@ def test_factual_group_attribution_stays_strict_and_names_offending_item(kind: s
         build_document_plan(text, DocumentPlanProposal.model_validate(data))
 
 
+@pytest.mark.parametrize("defect", [None, "unlinked", "foreign_study", "ambiguous"])
+def test_null_group_factual_owner_is_restored_only_by_unique_literal_study_link(defect):
+    first, second = "Study Alpha reported outcome Y.", "The study also reported outcome Z."
+    text = first + " " + second
+    data = proposal(text, [first, second]).model_dump(mode="json")
+    for item in data["assertions"]:
+        item["study_id"] = "S1"
+    data["assertions"][1]["context_link_ids"] = [] if defect == "unlinked" else ["L1"]
+    data["groups"] = [
+        {"group_id": "G1", "title": "Study Alpha", "assertion_ids": ["A1"], "study_id": "S1"},
+        {
+            "group_id": "G2",
+            "title": "Discussion",
+            "assertion_ids": ["A2"],
+            "study_id": "S2" if defect == "foreign_study" else None,
+        },
+    ]
+    data["context_links"] = (
+        []
+        if defect == "unlinked"
+        else [
+            {
+                "link_id": "L1",
+                "reference": source_span(text, "The study"),
+                "target": source_span(text, first),
+                "relationship": "study_reference",
+                "resolved": True,
+            }
+        ]
+    )
+    if defect == "ambiguous":
+        # Overlapping source ownership cannot prove a unique host group.
+        data["assertions"].append({**data["assertions"][0], "assertion_id": "A3"})
+        data["groups"].append(
+            {
+                "group_id": "G3",
+                "title": "Another attribution",
+                "assertion_ids": ["A3"],
+                "study_id": "S1",
+            }
+        )
+    proposed = DocumentPlanProposal.model_validate(data)
+    if defect:
+        with pytest.raises(ValueError, match="Group attribution does not match"):
+            build_document_plan(text, proposed)
+    else:
+        plan = build_document_plan(text, proposed)
+        assert len(plan.groups) == 1
+        assert plan.groups[0].assertion_ids == ("A1", "A2")
+        assert plan.assertion("A2").study_id == "S1"
+        assert "literal_study_owner_restored:A2:G2->G1" in plan.warnings
+        assert (
+            plan.planning_audit["normalization_version"]
+            == planner.DOCUMENT_PLAN_NORMALIZATION_VERSION
+        )
+
+
+def test_mixed_group_null_attribution_is_separated_without_guessing_study_or_pico():
+    first, second = "Study Alpha reported outcome Y.", "The description gives no author names."
+    text = first + " " + second
+    data = proposal(text, [first, second]).model_dump(mode="json")
+    data["assertions"][0]["study_id"] = "S1"
+    data["assertions"][1].update(kind="methodology", study_id=None)
+    data["groups"][0]["study_id"] = "S1"
+    plan = build_document_plan(text, DocumentPlanProposal.model_validate(data))
+    assert len(plan.groups) == 2
+    assert plan.groups[0].assertion_ids == ("A1",)
+    assert plan.groups[1].assertion_ids == ("A2",)
+    assert plan.groups[1].study_id is None
+    assert plan.assertion("A2").study_id is None
+    assert plan.assertion("A2").pico.outcome is None
+    assert plan.assertion("A2").pico.intervention_or_exposure is None
+    assert "unattributed_detail_separated:A2:G1" in plan.warnings
+
+
 def test_absent_reference_marks_only_declared_owner_unresolved() -> None:
     first, second = "Agent X had outcome Y.", "It had outcome Z."
     text = first + " " + second

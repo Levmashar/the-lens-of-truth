@@ -107,7 +107,7 @@ def _has_direct_causal_design(
             for ref in statement.evidence_refs:
                 passage = passages.get(ref.evidence_id)
                 document = documents.get(passage.passage.document_id) if passage else None
-                if pack.evidence_pack_version == "1.5":
+                if pack.evidence_pack_version in {"1.5", "2.0"}:
                     if document and design_eligible(question_category(pack.claim_snapshot),
                                                     design_fact(document)):
                         return True
@@ -122,9 +122,9 @@ def _pack_failure(
     pack = context.pack
     if pack is None or context.stored_pack_hash is None:
         return ReasonCode.PACK_UNAVAILABLE
-    if pack.evidence_pack_version not in {policy.pack_version, "1.4", "1.5"}:
+    if pack.evidence_pack_version not in {policy.pack_version, "1.4", "1.5", "2.0"}:
         return ReasonCode.PACK_VERSION_UNSUPPORTED
-    if pack.evidence_pack_version == "1.5" and policy.version != POLICY_V4.version:
+    if pack.evidence_pack_version in {"1.5", "2.0"} and policy.version != POLICY_V4.version:
         return ReasonCode.PACK_VERSION_UNSUPPORTED
     if (context.stored_pack_version is not None
             and context.stored_pack_version != pack.evidence_pack_version):
@@ -592,7 +592,7 @@ def _audit_failure(
                         or qualifier.input.claim_type != context.pack.claim_snapshot.claim_type
                         or qualifier.input.risk_class != context.claim.risk_class):
                     return ReasonCode.AUDIT_RECORD_MISMATCH
-                modern = context.pack.evidence_pack_version == "1.5"
+                modern = context.pack.evidence_pack_version in {"1.5", "2.0"}
                 if (qualifier.version != ("conclusion-qualifier-1.1" if modern else
                                           "conclusion-qualifier-1.0")
                         or qualifier.input.evidence_policy != ("question-evidence-1.0"

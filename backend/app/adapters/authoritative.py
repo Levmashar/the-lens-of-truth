@@ -33,6 +33,11 @@ _ORGANIZATIONS = {
     "WHO": "www.who.int",
     "IARC": "www.iarc.who.int",
     "NIH/NCCIH": "www.nccih.nih.gov",
+    "NHS": "www.nhs.uk",
+    "NIH/NEI": "www.nei.nih.gov",
+    "NIH/MedlinePlus": "medlineplus.gov",
+    "AAO": "www.aao.org",
+    "AAP": "www.aap.org",
 }
 _ADDITIONAL_APPROVED_HOSTS = {"CDC": {"hivrisk.cdc.gov"}}
 
@@ -439,8 +444,12 @@ class AuthoritativeAdapter:
         excerpt projections are rebuilt from those blocks for every group.
         The ordinary single-claim adapter keeps its existing behavior.
         """
-        if not 1 <= len(claims) <= 8 or not 0 < cache_ttl_seconds <= 21_600:
+        if len(claims) > 8:
             raise ValueError("Approved document retrieval exceeds its bounded group scope")
+        if not 0 < cache_ttl_seconds <= 21_600:
+            raise ValueError("Approved document retrieval cache TTL is outside its allowed bounds")
+        if not claims:
+            return (), {}
         cache = document_cache if document_cache is not None else {}
         sources: dict[str, ApprovedSource] = {}
         source_claims: dict[str, list[ClaimSnapshot]] = {}

@@ -1,0 +1,23 @@
+[
+  {
+    "file": "incomplete.json",
+    "source": "runtime/reader-preview-20261014/a897813c-5ce9-4f56-b1b6-29c50ed2480e-document.json",
+    "analysis_id": "a897813c-5ce9-4f56-b1b6-29c50ed2480e",
+    "sha256": "47f70cfbfa7c8b82c25b478740cd449b59d8620ad2df00c868cc059e118a7395",
+    "capture": "read-only API capture 2026-10-14"
+  },
+  {
+    "file": "incomplete-analysis.json",
+    "source": "runtime/reader-preview-20261014/a897813c-5ce9-4f56-b1b6-29c50ed2480e-analysis.json",
+    "analysis_id": "a897813c-5ce9-4f56-b1b6-29c50ed2480e",
+    "sha256": "ee9e54c6e9ce3d0b93e7424c306e97245db78b1712c0ce13229f8044efb3af3a",
+    "capture": "read-only API capture 2026-10-14"
+  },
+  {
+    "file": "historical.json",
+    "source": "runtime/report_clarity_20261008/view_42f64be8-dde4-4b0d-a43a-d9990631f99a.json",
+    "analysis_id": "42f64be8-dde4-4b0d-a43a-d9990631f99a",
+    "sha256": "d3452d828c1baecee3f1ca5067e97904ee3aaaf80cf66a3acf60809480392434",
+    "capture": "historical read-only capture 2026-10-08; original API now returns 404"
+  }
+]

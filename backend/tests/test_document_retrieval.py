@@ -228,6 +228,51 @@ def test_group_retrieves_each_publication_once_and_freezes_one_catalog():
     GroupEvidenceSnapshot.model_validate(result.model_dump(mode="json"))
 
 
+def test_no_eligible_assertions_skips_all_source_adapters_and_keeps_missing_pico():
+    plan = _plan()
+    plan = plan.model_copy(
+        update={
+            "assertions": tuple(
+                assertion.model_copy(
+                    update={
+                        "kind": "interpretation",
+                        "pico": NormalizedPico(
+                            original_claim=assertion.source_text, claim_type="association"
+                        ),
+                    }
+                )
+                for assertion in plan.assertions
+            )
+        }
+    )
+
+    class Unexpected:
+        async def search(self, *_args, **_kwargs):
+            raise AssertionError("No source search without an eligible question")
+
+        async def retrieve_group(self, *_args, **_kwargs):
+            raise AssertionError("No approved-source adapter call for an empty group")
+
+    result = asyncio.run(
+        retrieve_document_group(
+            uuid4(),
+            plan,
+            plan.groups[0],
+            Unexpected(),
+            authoritative=Unexpected(),
+        )
+    )
+    assert not any(result.normalization_ready.values())
+    assert result.query_executions == ()
+    assert result.pack.documents == ()
+    assert result.source_http_requests == {}
+    assert all(claim.pico.outcome is None for claim in result.claim_snapshots.values())
+    assert all(
+        claim.pico.intervention_or_exposure is None for claim in result.claim_snapshots.values()
+    )
+    GroupEvidenceSnapshot.model_validate(result.model_dump(mode="json"))
+
+
 def test_document_retrieval_fetches_one_approved_source_for_both_assertions():
     plan = _plan()
     attempts = 0

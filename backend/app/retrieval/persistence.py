@@ -23,7 +23,7 @@ def persist_retrieval(session: Session, result: RetrievalResult) -> EvidencePack
     pack = result.pack
     run = RetrievalRun(
         id=uuid4(), claim_id=pack.claim_id,
-        source="combined" if pack.evidence_pack_version == "1.5" else "pubmed",
+        source="combined" if pack.evidence_pack_version in {"1.5", "2.0"} else "pubmed",
         status=result.diagnostics.status,
         query_plan_json=pack.query_plan.model_dump(mode="json"),
         diagnostics_json=result.diagnostics.model_dump(mode="json"),

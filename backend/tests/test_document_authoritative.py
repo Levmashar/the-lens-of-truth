@@ -232,3 +232,21 @@ def test_ordinary_single_claim_excerpt_behavior_is_unchanged():
     assert len(docs[0].abstract_sections) == 8
     assert all("lung cancer" in s.text for s in docs[0].abstract_sections)
     assert docs[0].authoritative.omitted_block_count == 8
+
+
+def test_empty_group_has_no_requests_and_is_not_an_oversized_group():
+    async def run():
+        def unexpected(request):
+            raise AssertionError("An empty group must not fetch a source")
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(unexpected)) as client:
+            adapter = AuthoritativeAdapter(
+                SourceManifest(version="fixture", sources=(_source(),)), client=client
+            )
+            assert await adapter.retrieve_group(()) == ((), {})
+            with pytest.raises(ValueError, match="bounded group scope"):
+                await adapter.retrieve_group(tuple(_claims()[0] for _ in range(9)))
+            with pytest.raises(ValueError, match="cache TTL"):
+                await adapter.retrieve_group((), cache_ttl_seconds=0)
+
+    asyncio.run(run())

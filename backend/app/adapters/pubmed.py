@@ -141,6 +141,25 @@ class PubMedAdapter:
         })
         return parse_pubmed_xml_details(response.content)
 
+    async def fetch_cached(self, pmids: tuple[str, ...]) -> PubMedFetchResult:
+        """V2-only bounded metadata cache, retaining original fetch timestamps."""
+        self.last_fetch_cache_hit = False
+        key = 'pubmed:efetch:v2:' + hashlib.sha256(','.join(sorted(pmids)).encode()).hexdigest()
+        if self._cache and pmids:
+            cached = await self._cache.get(key)
+            if cached:
+                try:
+                    result = PubMedFetchResult.model_validate_json(cached)
+                    if {d.pmid for d in result.documents} == set(pmids):
+                        self.last_fetch_cache_hit = True
+                        return result
+                except ValueError:
+                    pass
+        result = await self.fetch(pmids)
+        if self._cache and pmids and {d.pmid for d in result.documents} == set(pmids):
+            await self._cache.set(key, result.model_dump_json(), self._cache_ttl)
+        return result
+
     async def _request(self, endpoint: str, params: dict[str, str]) -> httpx.Response:
         global _LAST_REQUEST
         safe_params = {**params, "tool": self._tool, "email": self._email}

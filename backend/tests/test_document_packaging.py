@@ -38,6 +38,38 @@ def test_quantity_table_round_trips_the_entire_frozen_catalog_without_omission()
     )
 
 
+@pytest.mark.parametrize("version", ["document-group-input-1.1", "document-group-input-1.2"])
+def test_both_quantity_table_versions_preserve_all_literals_and_ownership(version):
+    evidence = pack(contrary_trial=True)
+    frozen = document_snapshot(uuid4(), evidence)
+    view = source_view(evidence, frozen, version=version)
+    assert (
+        expand_quantity_view(view["source_quantity_catalog"]) == frozen["source_quantity_catalog"]
+    )
+
+
+def test_bad_dictionary_index_is_rejected_not_dropped():
+    evidence = pack()
+    view = source_view(evidence, document_snapshot(uuid4(), evidence))["source_quantity_catalog"]
+    if view["rows"]:
+        view["rows"][0][-1] = 99999
+        with pytest.raises(ValueError, match="dictionary reference"):
+            expand_quantity_view(view)
+
+
+def test_reporting_only_schema_omits_inapplicable_clinical_axes_without_weakening_attribution():
+    from app.document.evaluation import GroupValidationResponse, ReportingGroupValidationResponse
+
+    small = ReportingGroupValidationResponse.model_json_schema()
+    full = GroupValidationResponse.model_json_schema()
+    assert "JointResponse23" not in small["$defs"]
+    assert "JointResponse23" in full["$defs"]
+    item = small["$defs"]["CompletedReportingItem"]
+    assert item["properties"]["semantic"]["type"] == "null"
+    assert "attributions" in item["required"] and "reporting_checks" in item["required"]
+    assert item["properties"]["attributions"]["minItems"] == 1
+
+
 @pytest.mark.parametrize("wrapper", ["```json\n{}\n```", "```\n{}\n```"])
 def test_one_exact_json_fence_is_transport_framing_not_an_invalid_shared_envelope(wrapper):
     data = {"version": JUDGE_VERSION, "group_id": "G1", "items": []}

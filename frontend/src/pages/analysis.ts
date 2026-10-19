@@ -3,6 +3,7 @@ import { ApiError, errorMessage } from "../api/errors";
 import { createClaimResult } from "../components/claimResult";
 import { createDebugProgress } from "../components/debugProgress";
 import { createDocumentReport, type DocumentDisclosureState } from "../components/documentReport";
+import { createDocumentReader } from "../components/documentReader";
 import { createProgress, stageLabel, updateProgress } from "../components/progress";
 import type { AnalysisClaim, AnalysisProgress, ClaimSummary } from "../types/api";
 import type { LensReport, ReportReadingGuide } from "../types/report";
@@ -70,6 +71,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
   const reportLoading = new Set<string>();
   const reportControllers = new Map<string, AbortController>();
   let previousStage: string | null = null;
+  let previousStatus: string | null = null;
   let disposed = false;
   let permanentError: string | null = null;
   let pollError: string | null = null;
@@ -103,7 +105,12 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
 
     const isTerminal = terminal.has(analysis.status);
     top.querySelector("h1")!.textContent = analysis.document_mode ? "Your document check" : "Your claim check";
-    page.dataset.state = isTerminal ? "finished" : "running";
+    top.hidden = Boolean(analysis.document_mode && documentReport?.reader_view?.topics.length);
+    top.classList.toggle("sr-only", !analysis.document_mode && isTerminal && reports.size > 0);
+    page.dataset.state = analysis.status === "failed" ? "failed" : isTerminal ? "finished" : "running";
+    if (analysis.document_mode && analysis.status === "failed" && documentReport?.progress.assertions_completed === 0) {
+      status.textContent = "We couldn't complete a reliable check. No claims were successfully assessed.";
+    }
     progressHost.hidden = isTerminal;
     if (!isTerminal) {
       if (!progressNode) {
@@ -111,7 +118,8 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
         progressHost.append(progressNode);
       } else updateProgress(progressNode, analysis);
     }
-    if (analysis.status === "failed" && analysis.claims.length === 0) {
+    if (analysis.status === "failed" && analysis.claims.length === 0
+      && !(analysis.document_mode && documentReport)) {
       const failure = element("section", "error-state");
       const [title, message] = analysisFailureCopy(analysis);
       append(failure,
@@ -126,7 +134,16 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
     }
     if (analysis.document_mode) {
       if (documentReport) {
-        body.append(createDocumentReport(documentReport, documentDisclosures, analysis.debug_enabled, !documentHasRendered));
+        if (documentReport.reader_view?.topics.length) {
+          try {
+            body.append(createDocumentReader(documentReport, analysis, documentDisclosures,
+              Boolean(analysis.debug_enabled && showDevelopmentUi(analysis.debug_enabled))));
+          } catch {
+            top.hidden = false;
+            body.append(element("p", "report-error", "The reader view could not be matched to this report. The verified original is shown below."),
+              createDocumentReport(documentReport, documentDisclosures, analysis.debug_enabled, !documentHasRendered));
+          }
+        } else body.append(createDocumentReport(documentReport, documentDisclosures, analysis.debug_enabled, !documentHasRendered));
         documentHasRendered = true;
       }
       else if (!documentError && !isTerminal) {
@@ -143,34 +160,45 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       if (isTerminal && count > 1) {
         heading.append(element("p", "muted-copy", `${analysis.completed_claims ?? 0} of ${count} completed`));
       }
-      body.append(heading);
+      if (count > 1 || !isTerminal) body.append(heading);
       const list = element("div", "claim-list");
       for (const claim of analysis.claims) list.append(createClaimCard(claim));
       body.append(list);
     }
-    if (analysis.debug_enabled && showDevelopmentUi(analysis.debug_enabled)) {
-      body.append(createDebugProgress(analysis, claims, pollError, documentReport));
+    if (analysis.debug_enabled && showDevelopmentUi(analysis.debug_enabled)
+      && !body.querySelector(".document-reader")) {
+      const diagnostics = element("details", "consumer-diagnostics");
+      diagnostics.dataset.documentDisclosure = "claim-diagnostics";
+      diagnostics.append(element("summary", "consumer-disclosure", "Developer diagnostics"),
+        createDebugProgress(analysis, claims, pollError, documentReport));
+      body.append(diagnostics);
+    }
+    for (const details of body.querySelectorAll<HTMLDetailsElement>("[data-document-disclosure]")) {
+      details.open = documentDisclosures.get(details.dataset.documentDisclosure!) ?? details.open;
     }
     if (focusedDisclosure) {
-      [...body.querySelectorAll<HTMLElement>("[data-document-disclosure]")]
+      const target = [...body.querySelectorAll<HTMLElement>("[data-document-disclosure]")]
         .find((node) => node.dataset.documentDisclosure === focusedDisclosure)
-        ?.querySelector<HTMLElement>("summary")?.focus({ preventScroll: true });
+      ;
+      (target?.querySelector<HTMLElement>("summary") ?? target)?.focus({ preventScroll: true });
     }
   }
 
   function createClaimCard(claim: AnalysisClaim): HTMLElement {
     const summary = claims.find((item) => item.claim_id === claim.claim_id);
     const card = element("section", "claim-card");
+    const ready = summary?.status === "completed" && reports.has(claim.claim_id);
+    card.classList.toggle("reader-result-shell", ready);
     const cardTop = element("div", "claim-card-top");
     append(cardTop, element("p", "eyebrow", `Claim ${claim.ordinal}`));
     const claimStatus = summary?.status === "completed" ? "Completed" : summary?.status === "failed" ? "Unable to complete" : summary?.status === "running" ? "Analyzing" : "Waiting";
     cardTop.append(element("span", "claim-status", claimStatus));
     // Coordinated source spans can omit a shared subject. Show the verified
     // standalone proposition that retrieval and judging actually assess.
-    append(card, cardTop, element("h3", "claim-text", claim.normalized_text ?? claim.raw_text));
+    if (!ready) append(card, cardTop, element("h3", "claim-text", claim.normalized_text ?? claim.raw_text));
     if (summary?.status === "failed") {
       if (summary.failure_code === "normalization_incomplete") {
-        card.append(element("h4", "claim-result-label", "Unable to Verify Reliably"));
+        card.append(element("h4", "claim-result-label", "We couldn't complete the check"));
       }
       card.append(element("p", "claim-failure", summary.failure_code?.endsWith("_timeout")
         ? "This claim took too long to verify. No report is available."
@@ -237,7 +265,7 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       try {
         const nextDocument = await getDocumentReport(id, signal);
         if (disposed) return "terminal";
-        if (nextDocument.analysis_id !== id || nextDocument.version !== "document-report-1.0") {
+        if (nextDocument.analysis_id !== id || !["document-report-1.0", "document-report-1.1", "document-report-1.2", "document-report-1.3"].includes(nextDocument.version)) {
           documentError = "The document report could not be matched to this analysis. Refresh the page to try again.";
         } else {
           documentReport = nextDocument;
@@ -252,10 +280,12 @@ export function createAnalysisPage(id: string): { node: HTMLElement; dispose: ()
       }
     }
     render();
-    if (stageChanged) {
+    if (stageChanged || nextAnalysis.status !== previousStatus) {
       previousStage = nextAnalysis.stage ?? null;
-      stageAnnouncement.textContent = terminal.has(nextAnalysis.status)
-        ? "Analysis finished" : stageLabel(nextAnalysis.stage ?? "queued");
+      previousStatus = nextAnalysis.status;
+      stageAnnouncement.textContent = nextAnalysis.status === "failed" ? "Check could not be completed reliably"
+        : nextAnalysis.status === "partially_completed" ? "Check finished with incomplete assessments"
+        : terminal.has(nextAnalysis.status) ? "Analysis finished" : stageLabel(nextAnalysis.stage ?? "queued");
     }
     if (!nextAnalysis.document_mode) loadReadyReports();
     return terminal.has(nextAnalysis.status) ? "terminal" : "active";

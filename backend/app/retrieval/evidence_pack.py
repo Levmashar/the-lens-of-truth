@@ -16,7 +16,7 @@ from app.retrieval.models import (
 )
 from app.retrieval.ranking import select_top_evidence
 
-JUDGE_READY_PACK_VERSIONS = frozenset({"1.3", "1.4", "1.5"})
+JUDGE_READY_PACK_VERSIONS = frozenset({"1.3", "1.4", "1.5", "2.0"})
 
 
 def deduplicate_documents(
@@ -57,12 +57,14 @@ def canonical_pack_bytes(
     document_data = []
     for document in documents:
         data = document.model_dump(mode="json", exclude={"retrieved_at"})
-        if pack_version != "1.5":
+        if pack_version not in {"1.5", "2.0"}:
             for field in ("source_kind", "authoritative", "relationship_analysis",
                           "evidence_role_hint"):
                 data.pop(field, None)
-        if pack_version not in {"1.4", "1.5"}:
+        if pack_version not in {"1.4", "1.5", "2.0"}:
             data.pop("endpoint_directness", None)
+        if pack_version != "2.0":
+            data.pop("retrieval_context", None)
         integrity = data["integrity"]
         integrity.pop("checked_at", None)
         for check in integrity["checks"]:
@@ -79,7 +81,7 @@ def canonical_pack_bytes(
         "documents": document_data,
         "passages": [passage.model_dump(
             mode="json", exclude={"endpoint_directness"}
-            if pack_version not in {"1.4", "1.5"} else None
+            if pack_version not in {"1.4", "1.5", "2.0"} else None
         ) for passage in passages],
         "selected_evidence_ids": selected_evidence_ids,
     }
@@ -91,7 +93,7 @@ def build_evidence_pack(
     claim: ClaimSnapshot, plan: QueryPlan, documents: tuple[PubMedDocument, ...],
     passages: tuple[RankedPassage, ...], *, retrieved_at: datetime | None = None,
     selected_limit: int = 8, max_per_document: int = 1,
-    pack_version: Literal["1.4", "1.5"] = "1.4",
+    pack_version: Literal["1.4", "1.5", "2.0"] = "1.4",
 ) -> EvidencePack:
     """Freeze all passages and a separate diversified selection in one snapshot."""
 
@@ -102,12 +104,17 @@ def build_evidence_pack(
         passages, limit=selected_limit, max_per_document=max_per_document,
         documents=ordered_documents, claim=claim,
     )
-    if pack_version == "1.5":
+    if pack_version in {"1.5", "2.0"}:
         from app.retrieval.evidence_roles import select_role_aware
 
         ordered_documents, audited_passages, selected_ids = select_role_aware(
             ordered_documents, audited_passages, selected_ids, limit=selected_limit,
         )
+    if pack_version == "2.0":
+        from app.retrieval.adaptive import constrain_selection
+
+        ordered_documents, audited_passages, selected_ids = constrain_selection(
+            claim, ordered_documents, audited_passages, selected_ids, limit=selected_limit)
     digest = hashlib.sha256(canonical_pack_bytes(
         claim, plan, ordered_documents, audited_passages, selected_ids,
         pack_version=pack_version,

@@ -8,6 +8,7 @@ from uuid import UUID, uuid5
 from app.document.evaluation import (
     GROUP_INPUT_VERSION,
     JUDGE_VERSION,
+    VALIDATION_VERSION,
     JudgeItem,
     ValidationItem,
     document_snapshot,
@@ -17,12 +18,15 @@ from app.document.evaluation import (
     projected_pack,
     qualify_item,
     validation_assertion_payload,
+    validation_contract_items,
     validation_item_type,
+    validation_repair_payload,
 )
 from app.document.models import DocumentGroup, DocumentPlan, canonical_document_hash
 from app.document.packaging import (
     INPUT_VERSION,
     LEGACY_INPUT_VERSION,
+    TABLE_INPUT_VERSION,
     expand_quantity_view,
     source_view,
 )
@@ -166,7 +170,7 @@ def _verify_run(
             raise ValueError("document_audit_failed_chain_contains_unbound_calls")
         return
     input_version = run["group_input"].get("version")
-    if input_version not in {INPUT_VERSION, LEGACY_INPUT_VERSION}:
+    if input_version not in {INPUT_VERSION, TABLE_INPUT_VERSION, LEGACY_INPUT_VERSION}:
         raise ValueError("document_audit_unknown_group_input_version")
     expected_input = _group_input(plan, group, evidence, version=input_version)
     if run["group_input"] != expected_input:
@@ -203,7 +207,7 @@ def _verify_run(
                 "source_quantity_catalog"
             ] != (
                 expand_quantity_view(expected_input["sources"]["source_quantity_catalog"])
-                if input_version == INPUT_VERSION
+                if input_version != LEGACY_INPUT_VERSION
                 else expected_input["sources"]["source_quantity_catalog"]
             ):
                 raise ValueError("document_audit_local_source_snapshot_mismatch")
@@ -218,7 +222,13 @@ def _verify_run(
             ):
                 raise ValueError("source_outside_assertion_evidence_coverage")
             validation_assertions.append(
-                validation_assertion_payload(assertion, judge, projection, validation_version)
+                validation_assertion_payload(
+                    assertion,
+                    judge,
+                    projection,
+                    validation_version,
+                    compact_reporting=input_version == INPUT_VERSION,
+                )
             )
             projections[aid] = (judge, projection, local)
         except (ValueError, KeyError):
@@ -250,7 +260,36 @@ def _verify_run(
             or any(not isinstance(attempt, dict) for attempt in attempts)
         ):
             raise ValueError("document_audit_invalid_validator_attempts")
-        if call.get("status") == "responded":
+        if validation_version == VALIDATION_VERSION:
+            expected_statements = {
+                aid: tuple(s.statement_id for s in valid[aid].statements)
+                for aid in projections
+                if is_reporting(plan.assertion(aid))
+            }
+            request_payload = expected_validation
+            for index, attempt in enumerate(attempts or [call]):
+                if attempt.get("input_hash") is not None and attempt[
+                    "input_hash"
+                ] != input_snapshot_hash(request_payload):
+                    raise ValueError("document_audit_validator_request_hash_mismatch")
+                parsed, _, diagnostics = validation_contract_items(
+                    attempt,
+                    group.group_id,
+                    tuple(a["assertion_id"] for a in request_payload["assertions"]),
+                    expected_statements,
+                )
+                validation_items.update(parsed)
+                if diagnostics and index == 0 and len(attempts or [call]) > 1:
+                    request_payload = _json(
+                        validation_repair_payload(expected_validation, diagnostics)
+                    )
+                    if run.get("validation_repair_input") != request_payload:
+                        raise ValueError("document_audit_validation_repair_input_mismatch")
+            if "validation_repair_input" in run and not any(
+                a.get("coverage_diagnostics") for a in (attempts or [])
+            ):
+                raise ValueError("document_audit_unjustified_validation_repair")
+        elif call.get("status") == "responded":
             if not isinstance(call.get("raw_response"), str):
                 raise ValueError("document_audit_missing_raw_validator_response")
             try:
@@ -279,6 +318,7 @@ def _verify_run(
                     local,
                     evidence.source_match.status,
                     evidence.source_match.matched_document_ids,
+                    compact_reporting=input_version == INPUT_VERSION,
                 )
                 replay["statements"] = [s.model_dump(mode="json") for s in valid[aid].statements]
             except (ValueError, KeyError):
@@ -329,9 +369,12 @@ def verify_document_report(
     """
     if app_env not in {"development", "test", "staging", "production"}:
         raise ValueError("document_audit_invalid_environment")
-    if report.get("version") != "document-report-1.0" or report.get("analysis_id") != str(
-        analysis_id
-    ):
+    if report.get("version") not in {
+        "document-report-1.0",
+        "document-report-1.1",
+        "document-report-1.2",
+        "document-report-1.3",
+    } or report.get("analysis_id") != str(analysis_id):
         raise ValueError("document_audit_report_identity_mismatch")
     plan = DocumentPlan.model_validate(_artifact(plan_artifact, "plan", analysis_id))
     evidence_by_group = {}

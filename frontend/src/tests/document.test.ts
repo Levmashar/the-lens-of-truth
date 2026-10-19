@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createDocumentReport } from "../components/documentReport";
+import { createDocumentReport, documentCounts } from "../components/documentReport";
 import { createDebugProgress } from "../components/debugProgress";
 import { createAnalysisPage } from "../pages/analysis";
 import type { DocumentAssertion, DocumentGroup, DocumentReport } from "../types/document";
@@ -50,9 +50,98 @@ function mount(): HTMLElement {
 }
 
 describe("document presentation", () => {
+  it("counts assessed, unavailable, background and pending independently of old completion counters", () => {
+    const items = [assertion(), assertion({ assertion_id: "A2", result_label: "not_enough_evidence" }),
+      assertion({ assertion_id: "A3", status: "unavailable" }), assertion({ assertion_id: "A4", status: "not_checkable" }),
+      assertion({ assertion_id: "A5", status: "duplicate", duplicate_of: "A1" }), assertion({ assertion_id: "A6", status: "pending" })];
+    expect(documentCounts(items)).toEqual({ total: 6, assessed: 2, unavailable: 1, background: 2, pending: 1, processed: 5 });
+    const node = createDocumentReport(documentReport({ groups: [group({ assertions: items })],
+      progress: { groups_total: 1, groups_completed: 1, assertions_total: 6, assertions_completed: 6 } }));
+    expect(node.querySelector(".document-progress")?.textContent).toBe("2 assessed1 unavailable2 background / not assessed1 pending");
+    expect(node.textContent).not.toContain("6 of 6");
+  });
+
+  it("uses reporting labels while preserving clinical labels and canonical data", () => {
+    const medical = assertion({ assertion_id: "A2", kind: "general_medical_assertion", reporting_fidelity: null });
+    const reporting = assertion({ result_label: "not_enough_evidence" });
+    const node = createDocumentReport(documentReport({ groups: [group({ assertions: [reporting, medical] })] }));
+    expect(node.querySelector('[data-assertion-id="A1"] .document-assertion-result')?.textContent).toBe("Could not verify this detail");
+    expect(node.querySelector('[data-assertion-id="A2"] .document-assertion-result')?.textContent).toBe("Supported");
+    expect(reporting.result_label).toBe("not_enough_evidence");
+  });
+
+  it("separates search failure, not found, pending and not-applicable status text", () => {
+    const cases = ["failed", "not_found", "pending", "not_applicable"] as const;
+    const node = createDocumentReport(documentReport({ groups: cases.map((status, i) => group({
+      group_id: `G${i + 1}`, source_match: { ...group().source_match, status, title: null, url: null },
+    })) }));
+    const statuses = [...node.querySelectorAll(".document-source-status")].map((n) => n.textContent);
+    expect(statuses).toEqual(["Source search failed", "Searched; source not found", "Source search pending", "Study search not applicable"]);
+  });
+
+  it("leads with the server's traced summary and detail-specific limits, not a new verdict", () => {
+    const a = assertion({ heading: "Reported effect size", result_label: "not_enough_evidence",
+      explanation: "The source contains 3.92, but its statistical measure does not establish disease probability.",
+      association_caveat: "An accurately reported association does not by itself establish causation." });
+    const node = createDocumentReport(documentReport({ version: "document-report-1.1", groups: [group({ assertions: [a] })],
+      completion_text: "Finished with limitations", reading_summary: {
+        main_takeaway: [{ text: "The number and adjustment details remain unresolved.", assertion_ids: ["A1"], group_ids: ["G1"], evidence: [] }],
+        attention: [{ text: "Reported effect size", explanation: a.explanation, assertion_ids: ["A1"], group_ids: ["G1"], evidence: [], result_label: "not_enough_evidence" }],
+        matches: [], limits: [],
+      } }));
+    expect([...node.querySelectorAll("h2")].map((n) => n.textContent)).toContain("Main takeaway");
+    expect(node.textContent).not.toContain("Your document, checked in context");
+    expect(node.querySelector(".document-association-caveat")?.textContent).toContain("does not by itself establish causation");
+    expect(node.querySelector(".document-attention")?.textContent).toContain("3.92");
+    expect(node.querySelector(".document-attention .document-association-caveat")?.closest("details")).toBeNull();
+    expect(node.querySelector(".document-assertion-title")?.textContent).toContain("Reported effect size");
+    expect(node.querySelector(".document-submitted-wording")?.textContent).toBe(a.text);
+  });
+
+  it("links short exact excerpts to one full passage, opens it and preserves keyboard focus", () => {
+    const full = "The estimate was not a clinical risk ratio. It was a category-relative estimate from this model.";
+    const citation = { ...assertion().citations[0], exact_text: full, excerpt: "The estimate was not a clinical risk ratio." };
+    const states = new Map<string, boolean>();
+    const node = createDocumentReport(documentReport({ groups: [group({ sources: [citation], assertions: [assertion({ citations: [citation] }), assertion({ assertion_id: "A2", citations: [citation] })] })] }), states);
+    document.body.append(node);
+    expect(node.querySelectorAll(".document-full-passage")).toHaveLength(1);
+    expect(node.querySelector(".document-citation mark")?.textContent).toBe(citation.excerpt);
+    (node.querySelector(".document-citation a") as HTMLAnchorElement).click();
+    const passage = node.querySelector<HTMLDetailsElement>(".document-full-passage")!;
+    expect(passage.open).toBe(true);
+    expect(node.querySelector<HTMLDetailsElement>(".document-topic")?.open).toBe(true);
+    expect(document.activeElement).toBe(passage.querySelector("summary"));
+    expect(states.get("source:G1:E1.U1")).toBe(true);
+  });
+
+  it("attaches a grounded source note to its topic without dropping its assertion ID or original wording", () => {
+    const note = assertion({ assertion_id: "A2", heading: "Source note", kind: "commentary", status: "not_checkable", text: "Source: unnamed media report.", citations: [], reporting_fidelity: null });
+    const node = createDocumentReport(documentReport({ groups: [group(), group({ group_id: "G2", title: "Source attribution", display_parent_group_id: "G1", assertions: [note] })] }));
+    expect(node.querySelectorAll(".document-topic")).toHaveLength(1);
+    expect(node.querySelector('[data-assertion-id="A2"]')?.textContent).toContain(note.text);
+    expect(node.textContent).toContain("Background wording; not assessed");
+    expect(node.textContent).not.toContain("Source attribution");
+  });
+
+  it("retains owned full frozen passages when a checkable source note is folded into its topic", () => {
+    const citation = { ...assertion().citations[0], excerpt: "Exact source wording" };
+    const note = assertion({ assertion_id: "A2", text: "Source: the study report.", citations: [citation] });
+    const node = createDocumentReport(documentReport({ groups: [group({ assertions: [] }), group({
+      group_id: "G2", display_parent_group_id: "G1", assertions: [note], sources: [citation],
+    })] }));
+    document.body.append(node);
+    expect(node.querySelectorAll(".document-topic")).toHaveLength(1);
+    expect(node.querySelector(".document-background .document-assertion-result")?.textContent).toBe("Matches the paper");
+    (node.querySelector(".document-background .document-citation a") as HTMLAnchorElement).click();
+    const passage = node.querySelector<HTMLDetailsElement>("#document-source-G2-E1\\.U1")!;
+    expect(passage.open).toBe(true);
+    expect(passage.querySelector("blockquote")?.textContent).toBe(citation.exact_text);
+    expect(node.querySelectorAll(".document-full-passage")).toHaveLength(1);
+  });
+
   it("keeps reporting fidelity separate from medical interpretation without an overall truth label", () => {
     const node = createDocumentReport(documentReport());
-    expect(node.textContent).toContain("Supported as an accurate account of this study");
+    expect(node.textContent).toContain("Matches the paper");
     expect(node.textContent).toContain("Medical interpretation");
     expect(node.textContent).toContain("This association does not establish causation.");
     expect(node.querySelector(".document-source-status")?.textContent).toBe("Source identified");
@@ -65,8 +154,8 @@ describe("document presentation", () => {
       kind: "general_medical_assertion", reporting_fidelity: null, medical_interpretation: null,
       text: "Smoking causes lung cancer.", explanation: "Validated evidence supports causation.",
     })] })] }));
-    expect(node.textContent).toContain("Supported as a general medical conclusion");
-    expect(node.textContent).not.toContain("Supported as an accurate account of this study");
+    expect(node.textContent).toContain("Supported");
+    expect(node.textContent).not.toContain("Matches the paper");
   });
 
   it("shows an ordinary medical assessment once when the projection repeats its interpretation", () => {
@@ -78,7 +167,7 @@ describe("document presentation", () => {
     })] })] }));
     expect(node.querySelectorAll(".document-assessment")).toHaveLength(1);
     expect(node.textContent?.split(explanation)).toHaveLength(2);
-    expect(node.textContent).toContain("Supported as a general medical conclusion");
+    expect(node.textContent).toContain("Supported");
   });
 
   it("renders exact cited text and untrusted strings without executing markup", () => {
@@ -113,7 +202,7 @@ describe("document presentation", () => {
       groups: [group({ status: "running", assertions: [assertion(), assertion({ assertion_id: "A2", status: "pending",
         result_label: "contradicted", explanation: "Unchecked proposal", citations: [] })] })],
     }));
-    expect(node.querySelector(".document-progress")?.textContent).toContain("1 of 2 details checked");
+    expect(node.querySelector(".document-progress")?.textContent).toContain("1 assessed");
     expect(node.querySelector('[data-assertion-id="A2"] .document-assertion-result')?.textContent).toBe("Checking");
     expect(node.textContent).not.toContain("Unchecked proposal");
     expect(node.querySelector('[role="progressbar"]')?.getAttribute("aria-valuenow")).toBe("1");
@@ -124,7 +213,7 @@ describe("document presentation", () => {
       status: "unavailable", result_label: null, reporting_fidelity: null, medical_interpretation: null,
       explanation: "This assessment could not be validated.",
     })] })] }));
-    expect(node.querySelector(".document-assertion-result")?.textContent).toBe("Unable to Verify Reliably");
+    expect(node.querySelector(".document-assertion-result")?.textContent).toBe("Check unavailable");
     expect(node.querySelector(".document-citations")).toBeNull();
   });
 
@@ -134,7 +223,7 @@ describe("document presentation", () => {
       reporting_fidelity: null, medical_interpretation: null, citations: [],
       source_spans: [{ start: 45, end: 87, text: "Repeated source sentence." }],
     })] })] }));
-    expect(node.textContent).toContain("Checked with its original statement");
+    expect(node.textContent).toContain("Repeated wording; shared check");
     expect(node.textContent).toContain("Repeated source sentence.");
     expect(node.querySelector('[data-assertion-id="A2"] a')?.getAttribute("href"))
       .toBe("#document-assertion-G1-A1");
@@ -145,7 +234,7 @@ describe("document presentation", () => {
       group({ group_id: "G3", title: "An unrelated claim" })] }));
     expect(node.querySelectorAll(".document-topic")).toHaveLength(3);
     expect(node.querySelectorAll(".document-source")).toHaveLength(3);
-    expect(node.querySelectorAll(".document-topic[open]")).toHaveLength(1);
+    expect(node.querySelectorAll(".document-topic[open]")).toHaveLength(0);
   });
 
   it("keeps release qualification visible in public presentation", () => {
@@ -170,6 +259,21 @@ describe("document presentation", () => {
 });
 
 describe("document API flow", () => {
+  it("shows a readable limitations report when source checks fail, without claiming the document could not be read", async () => {
+    const saved = documentReport({ version: "document-report-1.2", status: "failed",
+      completion_text: "Finished with limitations", groups: [group({ assertions: [assertion({
+        status: "unavailable", result_label: "unable_to_verify_reliably", citations: [],
+        explanation: "The described source could not be securely identified.",
+      })] })] });
+    vi.stubGlobal("fetch", vi.fn((url: string) => Promise.resolve(jsonResponse(url.endsWith("/document")
+      ? saved : url.endsWith("/claims") ? summaries([]) : progress({ document_mode: true, status: "failed",
+        stage: "building_report", claims: [], failure_code: "document_assessments_unavailable" })))));
+    const node = mount();
+    await vi.waitFor(() => expect(node.querySelector(".document-report")).not.toBeNull());
+    expect(node.textContent).toContain("Finished with limitations");
+    expect(node.textContent).not.toContain("Document could not be read reliably");
+    expect(node.querySelector(".error-state")).toBeNull();
+  });
   it("loads one document overview without requesting individual claim reports", async () => {
     const fetchMock = vi.fn((url: string) => Promise.resolve(jsonResponse(url.endsWith("/document")
       ? documentReport() : url.endsWith("/claims") ? summaries([]) : progress({ document_mode: true, claims: [] }))));
@@ -253,7 +357,7 @@ describe("document API flow", () => {
       const updated = node.querySelector<HTMLDetailsElement>(".document-assertion")!;
       expect(updated.open).toBe(true);
       expect(document.activeElement).toBe(updated.querySelector("summary"));
-      expect(node.querySelector(".document-progress")?.textContent).toContain("2 of 2 details checked");
+      expect(node.querySelector(".document-progress")?.textContent).toContain("1 assessed");
       expect(node.querySelector(".document-report")?.getAttribute("data-initial")).toBe("false");
       expect(fetchMock.mock.calls.filter(([url]) => url.endsWith("/claims"))).toHaveLength(1);
     } finally { vi.useRealTimers(); }

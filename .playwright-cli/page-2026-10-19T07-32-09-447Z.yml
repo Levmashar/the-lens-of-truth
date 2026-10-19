@@ -1,0 +1,242 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - button "The Lens of Truth, home" [ref=f1e5] [cursor=pointer]
+      - button "Switch to dark mode" [ref=f1e9] [cursor=pointer]
+  - main [ref=f1e12]:
+    - generic [ref=f1e13]:
+      - heading "Your claim check" [level=1] [ref=f1e15]
+      - status [ref=f1e16]: Analysis finished
+      - generic [ref=f1e17]:
+        - article [ref=f1e28]:
+          - region "Research assessment" [ref=f1e29]:
+            - paragraph [ref=f1e30]: Does using your phone while lying on your side worsen myopia?
+            - heading "Not established by research" [level=2] [ref=f1e31]
+            - paragraph [ref=f1e32]: Related research exists, but it does not establish this specific claim. The studies did not separately test whether using a phone while lying on your side affects how quickly short-sightedness gets worse.
+            - paragraph [ref=f1e33]: Not established doesn't mean disproven.
+          - complementary [ref=f1e34]:
+            - paragraph [ref=f1e35]: Development preview. Not qualified for medical use.
+            - paragraph [ref=f1e36]: Some assessments could not be verified; the result uses only those that passed.
+          - group [ref=f1e37]:
+            - generic "See the evidence +" [ref=f1e38] [cursor=pointer]
+            - generic [ref=f1e44]:
+              - generic [ref=f1e45]:
+                - heading "What the checked sources found" [level=3] [ref=f1e46]
+                - paragraph [ref=f1e47]:
+                  - text: The specific exposure of lateral recumbent phone use was not investigated as a separate risk factor for myopia progression.
+                  - generic [ref=f1e48]:
+                    - 'link "Read source 1: Smartphone use as a possible risk factor for myopia." [ref=f1e49] [cursor=pointer]':
+                      - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E2"
+                      - text: Source 1
+                    - 'link "Read source 2: The association between smartphone use and myopia progression in children: a prospective cohort study." [ref=f1e50] [cursor=pointer]':
+                      - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E22"
+                      - text: Source 2
+                - paragraph [ref=f1e51]:
+                  - text: Higher daily smartphone data usage is associated with the presence of myopia in students.
+                  - 'link "Read source 1: Smartphone use as a possible risk factor for myopia." [ref=f1e53] [cursor=pointer]':
+                    - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E106"
+                    - text: Source 1
+                - paragraph [ref=f1e54]:
+                  - text: The evidence regarding myopia progression relies on observed associations from a prospective cohort study tracking general smartphone usage patterns, not specific postures.
+                  - 'link "Read source 2: The association between smartphone use and myopia progression in children: a prospective cohort study." [ref=f1e56] [cursor=pointer]':
+                    - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E22"
+                    - text: Source 2
+              - generic [ref=f1e57]:
+                - heading "Related evidence has limits" [level=4] [ref=f1e58]
+                - paragraph [ref=f1e59]: "Some source requests or discovered records could not be fully used. We found research or clinical guidance on related topics, but the search did not locate a source matching all the details in this claim. Search matching could not establish coverage for the exposure: “Using your phone while laying down on your side”. Related findings cannot establish or rule out the more specific claim. The reported assessment shows whether the available findings passed verification."
+                - group [ref=f1e60]:
+                  - generic "Explore the sources found" [ref=f1e61] [cursor=pointer]
+              - generic [ref=f1e62]:
+                - group [ref=f1e63]:
+                  - generic "Smartphone use as a possible risk factor for myopia. ⌃" [ref=f1e67] [cursor=pointer]
+                  - article [ref=f1e68]:
+                    - paragraph [ref=f1e69]: Study design unavailable
+                    - paragraph [ref=f1e70]: Clinical & experimental optometry · 2021-01-01
+                    - paragraph [ref=f1e71]: Relevant but insufficient
+                    - generic [ref=f1e72]:
+                      - paragraph [ref=f1e73]: Quoted from METHODS · E2
+                      - blockquote [ref=f1e74]: Primary, secondary and tertiary level students completed a questionnaire exploring patterns of smartphone usage and assessing their attitudes toward potential myopia risk factors. Device-recorded data usage over an extended period was quantified as the primary and objective indicator of phone use. Average daily time spent using a smartphone was also quantified by self-reported estimates. Refractive status was verified by an optometrist.
+                    - generic [ref=f1e75]:
+                      - paragraph [ref=f1e76]: Quoted from RESULTS · E106
+                      - group [ref=f1e77]:
+                        - generic "Read the full cited passage" [ref=f1e78] [cursor=pointer]
+                    - generic [ref=f1e79]:
+                      - generic [ref=f1e80]: PMID 32452059
+                      - generic [ref=f1e81]: DOI 10.1111/cxo.13092
+                      - link "View original source ↗" [ref=f1e82] [cursor=pointer]:
+                        - /url: https://pubmed.ncbi.nlm.nih.gov/32452059/
+                    - paragraph [ref=f1e83]: "Publication integrity: no signal found in completed checks"
+                - group [ref=f1e65]:
+                  - 'generic "The association between smartphone use and myopia progression in children: a prospective cohort study. ⌄" [ref=f1e66] [cursor=pointer]'
+          - group [ref=f1e39]:
+            - generic "About this check +" [ref=f1e40] [cursor=pointer]
+          - paragraph [ref=f1e41]: This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.
+        - group [ref=f1e42]:
+          - generic "Developer diagnostics +" [active] [ref=f1e43] [cursor=pointer]
+          - region "Development diagnostics" [ref=f1e84]:
+            - paragraph [ref=f1e85]: Development diagnostics
+            - heading "Live process status" [level=2] [ref=f1e86]
+            - generic [ref=f1e87]:
+              - button "Copy all diagnostics" [ref=f1e88] [cursor=pointer]
+              - status
+            - paragraph [ref=f1e89]: Development only. Model response excerpts may repeat submitted text. Requests and provider reasoning are not displayed; do not submit secrets.
+            - paragraph [ref=f1e90]: Analysis completed · stage completed · ID cc3007b2-3c9c-40d8-af50-ea0bdf92d941
+            - list [ref=f1e91]:
+              - listitem [ref=f1e92]:
+                - generic [ref=f1e93]: Identifying medical claims
+                - generic [ref=f1e94]: Completed
+              - listitem [ref=f1e95]:
+                - generic [ref=f1e96]: Understanding medical concepts
+                - generic [ref=f1e97]: Completed
+              - listitem [ref=f1e98]:
+                - generic [ref=f1e99]: Searching scientific evidence
+                - generic [ref=f1e100]: Completed
+              - listitem [ref=f1e101]:
+                - generic [ref=f1e102]: Comparing claims with the evidence
+                - generic [ref=f1e103]: Completed
+              - listitem [ref=f1e104]:
+                - generic [ref=f1e105]: Checking citations and reasoning
+                - generic [ref=f1e106]: Completed
+              - listitem [ref=f1e107]:
+                - generic [ref=f1e108]: Combining verified assessments
+                - generic [ref=f1e109]: Completed
+              - listitem [ref=f1e110]:
+                - generic [ref=f1e111]: Preparing the report
+                - generic [ref=f1e112]: Completed
+            - generic [ref=f1e113]:
+              - heading "Models used / configured" [level=3] [ref=f1e114]
+              - paragraph [ref=f1e115]: "extraction: openai_compatible_claim_extractor / DeepSeek-V4.1-Flash — Responded · this analysis"
+              - paragraph [ref=f1e116]: "judge_1: paratera / DeepSeek-V4.1-Flash — Responded · this analysis"
+              - paragraph [ref=f1e117]: "judge_2: paratera / Qwen3.5-Plus — Responded · this analysis"
+              - paragraph [ref=f1e118]: "judge_3: paratera / GLM-4.7 — Responded · this analysis"
+              - paragraph [ref=f1e119]: "semantic_validator: paratera / Qwen3.8-Flash — Responded · this analysis"
+            - generic [ref=f1e120]:
+              - 'heading "Claim 1: completed at building_report" [level=3] [ref=f1e121]'
+              - list [ref=f1e122]:
+                - listitem [ref=f1e123]:
+                  - generic [ref=f1e124]: Identifying medical claims
+                  - generic [ref=f1e125]: Completed
+                - listitem [ref=f1e126]:
+                  - generic [ref=f1e127]: Understanding medical concepts
+                  - generic [ref=f1e128]: Completed
+                - listitem [ref=f1e129]:
+                  - generic [ref=f1e130]: Searching scientific evidence
+                  - generic [ref=f1e131]: Completed
+                - listitem [ref=f1e132]:
+                  - generic [ref=f1e133]: Comparing claims with the evidence
+                  - generic [ref=f1e134]: Completed
+                - listitem [ref=f1e135]:
+                  - generic [ref=f1e136]: Checking citations and reasoning
+                  - generic [ref=f1e137]: Completed
+                - listitem [ref=f1e138]:
+                  - generic [ref=f1e139]: Combining verified assessments
+                  - generic [ref=f1e140]: Completed
+                - listitem [ref=f1e141]:
+                  - generic [ref=f1e142]: Preparing the report
+                  - generic [ref=f1e143]: Completed
+              - paragraph [ref=f1e144]: "Extraction: completed at submission level"
+              - paragraph [ref=f1e145]: Evidence Pack created
+              - paragraph [ref=f1e146]: "Judging: completed, 3 structured response(s)"
+              - paragraph [ref=f1e147]: "Validation: completed, 2 accepted / 0 rejected / 1 unavailable"
+              - paragraph [ref=f1e148]: Verdict aggregation recorded
+              - paragraph [ref=f1e149]: Report created
+              - group [ref=f1e150]:
+                - generic "Extraction and PICO" [ref=f1e151]
+              - paragraph [ref=f1e152]: "Retrieval: 39 candidates · 2 selected (0 authoritative, 2 PubMed) · direct 0, contextual 2, incompatible 0"
+              - group [ref=f1e153]:
+                - generic "Failure waterfall (pipeline status only)" [ref=f1e154]
+                - paragraph [ref=f1e155]: "extraction: PASS"
+                - paragraph [ref=f1e156]: "normalization: PASS"
+                - paragraph [ref=f1e157]: "retrieval: PASS"
+                - paragraph [ref=f1e158]: "selection: PASS"
+                - paragraph [ref=f1e159]: "judge response: 3/3 usable"
+                - paragraph [ref=f1e160]: "source attribution: 3/3"
+                - paragraph [ref=f1e161]: "semantic classification: 3/3"
+                - paragraph [ref=f1e162]: "judge qualification: 2/3"
+                - paragraph [ref=f1e163]: "final aggregation: not_enough_evidence"
+              - paragraph [ref=f1e164]: "Final: 2/3 qualified · not_enough_evidence, not_enough_evidence · VALIDATION_UNAVAILABLE, ALL_JUDGES_NOT_ENOUGH_EVIDENCE, EVALUATION_ONLY · production no · calls unavailable · 116919 ms"
+              - generic [ref=f1e165]:
+                - paragraph [ref=f1e166]: "Judge 1: DeepSeek-V4.1-Flash (deepseek) — succeeded"
+                - paragraph [ref=f1e167]: "Attempts: 1; elapsed: 7755 ms; citation validation: unable_to_validate"
+                - paragraph [ref=f1e168]: Judge run cd923360-b758-4363-bb14-3c9178af73fd · validation run 20e6a48f-7fb4-47fa-9afa-ee21c8227b36 · semantic revision 0
+                - paragraph [ref=f1e169]:
+                  - text: "Error code:"
+                  - code [ref=f1e170]: missing_material_evidence
+                - paragraph [ref=f1e171]: "Proposal (advisory): none · validated evidence position: unavailable · structured yes · findings 5 · qualified no"
+                - paragraph [ref=f1e172]: The assessment did not meet the qualification rules.
+                - paragraph [ref=f1e173]: "Reasons: REQUIRED_FINDING_UNAVAILABLE · optional numeric: none · material numeric: none"
+                - paragraph [ref=f1e174]: "Aggregation exclusions: VALIDATION_UNAVAILABLE"
+                - paragraph [ref=f1e175]: "Tokens: 8992 in / 870 out · identity verified no · family verified no"
+                - paragraph [ref=f1e176]: "Failure categories: semantic_axes_unqualified"
+                - paragraph [ref=f1e177]: "Conclusion: uncertain"
+                - paragraph [ref=f1e178]: "S1: supported_by_sources"
+                - paragraph [ref=f1e179]: "S2: supported_by_sources"
+                - paragraph [ref=f1e180]: "S3: supported_by_sources"
+                - paragraph [ref=f1e181]: "S4: supported_by_sources"
+                - paragraph [ref=f1e182]: "S5: supported_by_sources"
+                - group [ref=f1e183]:
+                  - generic "Evidence axes" [ref=f1e184]
+                - paragraph [ref=f1e185]: "S1: E66, E22 · association / other · contrast unknown"
+                - paragraph [ref=f1e186]: "S2: E67, E131 · causal_assessment / other · contrast unknown"
+                - paragraph [ref=f1e187]: "S3: E106, E2 · association / endpoint · contrast unknown"
+                - paragraph [ref=f1e188]: "S4: E63, E35 · association / same_question · contrast unknown"
+                - paragraph [ref=f1e189]: "S5: E2, E22, E106 · context / other · contrast unknown"
+                - paragraph [ref=f1e190]: "S1 (5.1) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e191]: "S1 (1.2) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e192]: "S1 (3.4) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e193]: "S1 (1.0) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e194]: "S1 (0.001) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e195]: "S1 (523) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e196]: "S1 (6–14) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e197]: "S1 (24) · Numeric source fidelity: verified · Source measure: duration · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e198]: "S3 (1.08) · Numeric source fidelity: verified · Source measure: odds ratio · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e199]: "S3 (1.03–1.14) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e200]: "S3 (0.09) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+              - generic [ref=f1e201]:
+                - paragraph [ref=f1e202]: "Judge 2: Qwen3.5-Plus (qwen) — succeeded"
+                - paragraph [ref=f1e203]: "Attempts: 1; elapsed: 19341 ms; citation validation: validated"
+                - paragraph [ref=f1e204]: Judge run 9c1fbf55-8074-48d2-9c04-bc740a437f2c · validation run c4a8cdd6-e1b8-44ea-9bdf-576b5621f049 · semantic revision 0
+                - paragraph [ref=f1e205]: "Proposal (advisory): none · validated evidence position: not_enough_evidence · structured yes · findings 4 · qualified yes"
+                - paragraph [ref=f1e206]: "Reasons: ONLY_INSUFFICIENT_OR_CONTEXT · optional numeric: none · material numeric: none"
+                - paragraph [ref=f1e207]: "Tokens: 9855 in / 1002 out · identity verified no · family verified no"
+                - paragraph [ref=f1e208]: "Conclusion: justified"
+                - paragraph [ref=f1e209]: "S1: supported_by_sources"
+                - paragraph [ref=f1e210]: "S2: supported_by_sources"
+                - paragraph [ref=f1e211]: "S3: supported_by_sources"
+                - paragraph [ref=f1e212]: "S4: supported_by_sources"
+                - group [ref=f1e213]:
+                  - generic "Evidence axes" [ref=f1e214]
+                - paragraph [ref=f1e215]: "S1: E106 · association / other · contrast unknown"
+                - paragraph [ref=f1e216]: "S2: E66 · association / other · contrast unknown"
+                - paragraph [ref=f1e217]: "S3: E22 · context / other · contrast unknown"
+                - paragraph [ref=f1e218]: "S4: E106 · imprecise_null / other · null no_source_precision_signal · contrast unknown"
+                - paragraph [ref=f1e219]: "S1 (1.08) · Numeric source fidelity: verified · Source measure: odds ratio · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e220]: "S1 (1.03–1.14) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e221]: "S2 (5.1) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e222]: "S2 (1.2) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e223]: "S2 (3.4) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e224]: "S2 (1.0) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e225]: "S2 (0.001) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e226]: "S4 (0.09) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+                - paragraph [ref=f1e227]: "S4 (12) · Numeric source fidelity: verified · Source measure: unknown · Claim measure: unknown · Comparability: uncertain · Numeric effect: unresolved"
+              - generic [ref=f1e228]:
+                - paragraph [ref=f1e229]: "Judge 3: GLM-4.7 (glm) — succeeded"
+                - paragraph [ref=f1e230]: "Attempts: 1; elapsed: 20329 ms; citation validation: validated"
+                - paragraph [ref=f1e231]: Judge run 1d6d1918-eadf-447f-a382-704780f253b9 · validation run dc1458ab-0b47-4b7c-a50c-196cbd724bb6 · semantic revision 0
+                - paragraph [ref=f1e232]: "Proposal (advisory): none · validated evidence position: not_enough_evidence · structured yes · findings 3 · qualified yes"
+                - paragraph [ref=f1e233]: "Reasons: ONLY_INSUFFICIENT_OR_CONTEXT · optional numeric: none · material numeric: none"
+                - paragraph [ref=f1e234]: "Tokens: 8484 in / 684 out · identity verified no · family verified no"
+                - paragraph [ref=f1e235]: "Conclusion: justified"
+                - paragraph [ref=f1e236]: "S1: supported_by_sources"
+                - paragraph [ref=f1e237]: "S2: supported_by_sources"
+                - paragraph [ref=f1e238]: "S3: supported_by_sources"
+                - group [ref=f1e239]:
+                  - generic "Evidence axes" [ref=f1e240]
+                - paragraph [ref=f1e241]: "S1: E106 · association / other · contrast unknown"
+                - paragraph [ref=f1e242]: "S2: E66 · direct_result / exposure_gradient · contrast unknown"
+                - paragraph [ref=f1e243]: "S3: E2, E22 · context / other · contrast unknown"
+      - button "Check another claim" [ref=f1e21] [cursor=pointer]
+  - contentinfo [ref=f1e22]:
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]: The Lens of Truth
+      - generic [ref=f1e25]: Health claims, checked against research.

@@ -11,8 +11,10 @@ import "./styles/home.css";
 import "./styles/analysis.css";
 import "./styles/progress.css";
 import "./styles/document.css";
+import "./styles/reader.css";
 import "./styles/components.css";
 import "./styles/responsive.css";
+import "./styles/consumer.css";
 
 const root = document.getElementById("app");
 if (!root) throw new Error("Application root not found");

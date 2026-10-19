@@ -48,7 +48,8 @@ from app.verdict.policy import POLICY_V4
 JUDGE_VERSION = "document-judge-1.0"
 LEGACY_VALIDATION_VERSION = "document-validation-1.0"
 ATTRIBUTION_VALIDATION_VERSION = "document-validation-1.1"
-VALIDATION_VERSION = "document-validation-1.2"
+STRUCTURED_VALIDATION_VERSION = "document-validation-1.2"
+VALIDATION_VERSION = "document-validation-1.3"
 GROUP_INPUT_VERSION = INPUT_VERSION
 REPORTING_VERSION = "reporting-fidelity-position-1.0"
 
@@ -80,6 +81,7 @@ number is essential to the finding use true and cite its exact quantity IDs.
 must be exact IDs in the supplied SINGLE snapshot; quantities must belong to
 cited units. A quantity ID's parent unit must also occur in source_unit_ids.
 The quantity catalog is a lossless table: columns name the fields of each row.
+dictionary_columns maps an encoded column's integer cells to the literal values.
 assertion_evidence_coverage guarantees included relevant passages; it is not an
 exclusive citation allowlist. You may cite any supplied source unit when it
 actually addresses this assertion; unrelated endpoints remain ineligible.
@@ -110,11 +112,12 @@ clinical semantic axes for reporting fidelity.
 clinical_evidence: use attributions=[] and semantic containing the usual
 attributions, assessments and missing_material_evidence. Use semantic=null only
 if unable to assess, status unavailable and explain why.
-Return exactly {"version":"document-validation-1.2","group_id":"the supplied
+Return exactly {"version":"document-validation-1.3","group_id":"the supplied
 group_id","items":[...]}. items MUST be a JSON ARRAY, never a keyed dictionary.
 Each element includes assertion_id, status, attributions, semantic,
 reporting_checks, interpretation_limits and reason. Return every item once.
 The source quantity catalog is a lossless columns/rows table; use the exact
+IDs; dictionary_columns decodes integer cells in the named columns.
 quantity and parent unit IDs in each row. Never cite a quantity without its unit.
 Keep attribution/check reasons concise (one short clause); do not repeat source
 passages. interpretation_limits=[] for reporting items: backend design facts supply
@@ -139,6 +142,12 @@ For non-reporting items use reporting_checks=[]; clinical position is derived
 by the backend's existing scientific eligibility rules. interpretation_limits
 is an array of concise limitations grounded in the submitted findings. A
 non-significant estimate cannot manufacture absence/contradiction.
+For reporting targets status=completed means findings were assessed, NOT that the
+submitted claim is true. Mismatch or unresolved fields still require completed
+attributions for EVERY candidate statement, including unsupported findings.
+Use status=unavailable only when you genuinely cannot assess any finding; in that
+case leave both attributions and reporting_checks empty and explain the failure.
+Do not return populated field checks while omitting finding attributions.
 """
 )
 
@@ -202,9 +211,30 @@ class ValidationItem12(Contract):
 
 
 class GroupValidationResponse(Contract):
-    version: Literal["document-validation-1.2"]
+    version: Literal["document-validation-1.3"]
     group_id: str
     items: tuple[ValidationItem12, ...] = Field(max_length=8)
+
+
+class ReportingValidationItem12(ValidationItem12):
+    semantic: None
+
+
+class CompletedReportingItem(ReportingValidationItem12):
+    status: Literal["completed"]
+    attributions: tuple[Attribution23, ...] = Field(min_length=1, max_length=5)
+
+
+class UnavailableReportingItem(ReportingValidationItem12):
+    status: Literal["unavailable"]
+    attributions: tuple[Attribution23, ...] = Field(max_length=0)
+    reporting_checks: tuple[ReportingReference12, ...] = Field(max_length=0)
+
+
+class ReportingGroupValidationResponse(Contract):
+    version: Literal["document-validation-1.3"]
+    group_id: str
+    items: tuple[CompletedReportingItem | UnavailableReportingItem, ...] = Field(max_length=8)
 
 
 def validation_item_type(version: str) -> type[ValidationItem] | type[ValidationItem12]:
@@ -212,7 +242,7 @@ def validation_item_type(version: str) -> type[ValidationItem] | type[Validation
         return ValidationItem
     if version == ATTRIBUTION_VALIDATION_VERSION:
         return ValidationItem11
-    if version == VALIDATION_VERSION:
+    if version in {VALIDATION_VERSION, STRUCTURED_VALIDATION_VERSION}:
         return ValidationItem12
     raise ValueError("unknown_document_validation_version")
 
@@ -261,6 +291,64 @@ def parse_group_items(
         except ValueError as exc:
             failures[identifier] = str(exc)[:2000]
     return valid, failures
+
+
+def validation_contract_items(
+    call: dict[str, Any],
+    group_id: str,
+    expected: tuple[str, ...],
+    statements: dict[str, tuple[str, ...]],
+) -> tuple[dict[str, Any], dict[str, str], dict[str, Any]]:
+    """Exact reporting coverage; populated checks cannot substitute for attribution."""
+    if call["status"] != "responded":
+        return {}, {}, {}
+    try:
+        items, failures = parse_group_items(
+            call["raw_response"],
+            version=VALIDATION_VERSION,
+            group_id=group_id,
+            expected=expected,
+            item_type=ValidationItem12,
+        )
+    except ValueError as exc:
+        return (
+            {},
+            {aid: str(exc) for aid in expected},
+            {},
+        )
+    diagnostics: dict[str, Any] = {
+        aid: {"error": error} for aid, error in failures.items() if aid in expected
+    }
+    for aid, item in list(items.items()):
+        if aid not in statements:
+            continue
+        actual = tuple(a.statement_id for a in item.attributions)
+        error = (
+            "reporting_attribution_statement_ids_mismatch"
+            if item.status == "completed" and actual != statements[aid]
+            else "reporting_unavailable_contains_completed_checks"
+            if item.status == "unavailable" and (item.attributions or item.reporting_checks)
+            else None
+        )
+        if error:
+            diagnostics[aid] = {
+                "error": error,
+                "expected_statement_ids": list(statements[aid]),
+                "returned_statement_ids": list(actual),
+            }
+            failures[aid] = error
+            del items[aid]
+    return items, failures, diagnostics
+
+
+def validation_repair_payload(
+    payload: dict[str, Any], diagnostics: dict[str, Any]
+) -> dict[str, Any]:
+    return {
+        **payload,
+        "assertions": [a for a in payload["assertions"] if a["assertion_id"] in diagnostics],
+        "contract_repair": diagnostics,
+    }
 
 
 def reporting_fields(assertion: DocumentAssertion) -> tuple[str, ...]:
@@ -314,6 +402,14 @@ def projected_pack(
     documents = tuple(annotate_study_quality(claim, d) for d in pack.documents)
     documents, passages = annotate_directness(claim, documents, pack.passages)
     documents, passages = annotate_endpoints(claim, documents, passages)
+    if pack.evidence_pack_version == '2.0':
+        from app.retrieval.adaptive import classify
+
+        documents = tuple(d.model_copy(update={
+            'retrieval_context': (context := classify(claim, d)),
+            'evidence_role_hint': 'direct' if context.classification == 'direct'
+            else 'incompatible' if context.classification == 'irrelevant' else 'contextual',
+        }) for d in documents)
     digest = hashlib.sha256(
         canonical_pack_bytes(
             claim,
@@ -388,19 +484,31 @@ def document_snapshot(pack_id: UUID, pack: EvidencePack) -> dict[str, Any]:
     }
 
 
-def prepared_document_semantics(judge: JudgeRun, pack: EvidencePack) -> PreparedSemanticInput:
+def prepared_document_semantics(
+    judge: JudgeRun, pack: EvidencePack, *, reporting_only: bool = False
+) -> PreparedSemanticInput:
     assert isinstance(judge.decision, JudgeDecisionV2) and judge.input_snapshot_json is not None
-    payload, _ = build_relation_payload(
-        pack,
-        qualitative_statements(judge),
-        magnitude_version="structured-quantity-2.4",
-        finding_design=True,
-        causal_synthesis=True,
-        experimental_binding=True,
-        laboratory_intervention=True,
-        causal_policy=True,
-        causal_disclaimer=True,
-    )
+    payload: dict[str, Any]
+    if reporting_only:
+        payload = {
+            "pico": pack.claim_snapshot.pico.model_dump(mode="json")
+            if pack.claim_snapshot.pico
+            else None,
+            "claim_type": pack.claim_snapshot.claim_type,
+            "original_claim": pack.claim_snapshot.raw_text,
+        }
+    else:
+        payload, _ = build_relation_payload(
+            pack,
+            qualitative_statements(judge),
+            magnitude_version="structured-quantity-2.4",
+            finding_design=True,
+            causal_synthesis=True,
+            experimental_binding=True,
+            laboratory_intervention=True,
+            causal_policy=True,
+            causal_disclaimer=True,
+        )
     payload["candidate_statements"] = [
         {
             **s.model_dump(mode="json", exclude={"evidence_refs"}),
@@ -624,6 +732,8 @@ def qualify_item(
     snapshot: dict[str, Any],
     source_status: str,
     matched_documents: tuple[str, ...],
+    *,
+    compact_reporting: bool = False,
 ) -> dict[str, Any]:
     structured_reporting = isinstance(item, ValidationItem12)
     if isinstance(item, ValidationItem12):
@@ -652,7 +762,9 @@ def qualify_item(
         )
     if item.status != "completed":
         return {"position": None, "failure": "semantic_item_unavailable"}
-    prepared = prepared_document_semantics(judge, pack)
+    prepared = prepared_document_semantics(
+        judge, pack, reporting_only=compact_reporting and is_reporting(assertion)
+    )
     if is_reporting(assertion) and isinstance(item, ValidationItem11):
         if item.semantic is not None:
             raise ValueError("reporting_target_requires_source_attributions_not_clinical_axes")
@@ -714,8 +826,18 @@ def validation_assertion_payload(
     judge: JudgeRun,
     pack: EvidencePack,
     version: str = VALIDATION_VERSION,
+    *,
+    compact_reporting: bool = False,
 ) -> dict[str, Any]:
-    semantic = json.loads(prepared_document_semantics(judge, pack).user_prompt.split("\n", 1)[1])
+    semantic = json.loads(
+        prepared_document_semantics(
+            judge,
+            pack,
+            reporting_only=compact_reporting
+            and version in {VALIDATION_VERSION, STRUCTURED_VALIDATION_VERSION}
+            and is_reporting(assertion),
+        ).user_prompt.split("\n", 1)[1]
+    )
     for key in ("frozen_snapshot", "source_quantity_catalog"):
         semantic.pop(key, None)
     for statement in semantic.get("candidate_statements", []):
@@ -726,7 +848,11 @@ def validation_assertion_payload(
         "required_reporting_fields": reporting_fields(assertion) if is_reporting(assertion) else (),
         "semantic_input": semantic,
     }
-    if version in {VALIDATION_VERSION, ATTRIBUTION_VALIDATION_VERSION}:
+    if version in {
+        VALIDATION_VERSION,
+        STRUCTURED_VALIDATION_VERSION,
+        ATTRIBUTION_VALIDATION_VERSION,
+    }:
         item["validation_target"] = (
             "reporting_fidelity" if is_reporting(assertion) else "clinical_evidence"
         )
@@ -783,7 +909,7 @@ async def evaluate_group(
     # Pack content is frozen once; prompt IDs and all validation allowlists
     # originate from this EXACT same snapshot, never a separately trimmed view.
     pack_id = uuid4()
-    shared = document_snapshot(pack_id, pack)
+    shared = await asyncio.to_thread(document_snapshot, pack_id, pack)
     sources = source_view(pack, shared)
     context = (
         plan.original_text
@@ -884,15 +1010,16 @@ async def evaluate_group(
                 break
         projections: dict[str, tuple[JudgeRun, EvidencePack, dict[str, Any]]] = {}
         validation_assertions = []
+        preparation_started = monotonic()
         for assertion in assertions:
             aid = assertion.assertion_id
             try:
                 if aid not in valid:
                     raise ValueError(failures.get(aid, "judge_call_unavailable"))
-                projection = projected_pack(
-                    pack, assertion, analysis_id, (claim_snapshots or {}).get(aid)
+                projection = await asyncio.to_thread(
+                    projected_pack, pack, assertion, analysis_id, (claim_snapshots or {}).get(aid)
                 )
-                local_snapshot = document_snapshot(pack_id, projection)
+                local_snapshot = await asyncio.to_thread(document_snapshot, pack_id, projection)
                 # Exact equality prevents independent packaging/allowlist divergence.
                 if (
                     local_snapshot["source_units"] != shared["source_units"]
@@ -900,12 +1027,20 @@ async def evaluate_group(
                     != shared["source_quantity_catalog"]
                 ):
                     raise ValueError("shared_source_snapshot_mismatch")
-                judge = materialize_item(valid[aid], projection, slot, local_snapshot)
+                judge = await asyncio.to_thread(
+                    materialize_item, valid[aid], projection, slot, local_snapshot
+                )
                 # Coverage describes guaranteed inclusion, not exclusive use.
                 # materialize_item already enforces the shared frozen allowlist;
                 # source attribution and endpoint/scope guards check relevance.
                 validation_assertions.append(
-                    validation_assertion_payload(assertion, judge, projection)
+                    await asyncio.to_thread(
+                        validation_assertion_payload,
+                        assertion,
+                        judge,
+                        projection,
+                        compact_reporting=True,
+                    )
                 )
                 projections[aid] = (judge, projection, local_snapshot)
             except (ValueError, KeyError) as exc:
@@ -916,6 +1051,7 @@ async def evaluate_group(
                     "expected_assertion_ids": expected,
                 }
                 result["items"][aid]["citation_diagnostic"] = citation_error_details(exc)
+        result["validation_preparation_ms"] = round((monotonic() - preparation_started) * 1000)
         if validation_assertions:
             validation_payload = {
                 "version": VALIDATION_VERSION,
@@ -930,20 +1066,49 @@ async def evaluate_group(
             result["validation_input"] = validation_payload
             validation_deadline = monotonic() + 75
             result["validation_attempts"] = []
+            validation_items: dict[str, Any] = {}
+            validation_failures: dict[str, str] = {}
+            requested_payload = validation_payload
+            expected_statements = {
+                a.assertion_id: tuple(s.statement_id for s in valid[a.assertion_id].statements)
+                for a in assertions
+                if is_reporting(a) and a.assertion_id in projections
+            }
             for attempt in (1, 2):
                 call = await complete_group(
                     validator,
                     role="semantic_validator",
                     operation="document_validation",
-                    system=VALIDATOR_INSTRUCTIONS,
-                    payload=validation_payload,
-                    schema=GroupValidationResponse,
+                    system=(
+                        "DOCUMENT GROUP CONTRACT:"
+                        + VALIDATOR_INSTRUCTIONS.split("DOCUMENT GROUP CONTRACT:", 1)[1]
+                    )
+                    if all(is_reporting(a) for a in assertions)
+                    else VALIDATOR_INSTRUCTIONS,
+                    payload=requested_payload,
+                    schema=ReportingGroupValidationResponse
+                    if all(is_reporting(a) for a in assertions)
+                    else GroupValidationResponse,
                     timeout=75,
                     concurrency=settings.judge_concurrency_limit,
                     deadline=validation_deadline,
                     attempt=attempt,
                 )
                 result["validation_attempts"].append(call)
+                requested = tuple(a["assertion_id"] for a in requested_payload["assertions"])
+                parsed, failures_now, diagnostics = validation_contract_items(
+                    call, group.group_id, requested, expected_statements
+                )
+                validation_items.update(parsed)
+                validation_failures.update(failures_now)
+                if diagnostics:
+                    call["coverage_diagnostics"] = diagnostics
+                    if attempt == 1 and monotonic() < validation_deadline:
+                        requested_payload = validation_repair_payload(
+                            validation_payload, diagnostics
+                        )
+                        result["validation_repair_input"] = requested_payload
+                        continue
                 status = call.get("http_status")
                 transient = call.get("failure") in {
                     "RemoteProtocolError",
@@ -959,26 +1124,14 @@ async def evaluate_group(
                 ):
                     break
             result["validation_call"] = call
-            validation_items: dict[str, ValidationItem] = {}
-            validation_failures: dict[str, str] = {}
-            if call["status"] == "responded":
-                try:
-                    validation_items, validation_failures = parse_group_items(
-                        call["raw_response"],
-                        version=VALIDATION_VERSION,
-                        group_id=group.group_id,
-                        expected=tuple(projections),
-                        item_type=ValidationItem12,
-                    )
-                except ValueError as exc:
-                    call["contract_failure"] = str(exc)
             for aid, (judge, projection, snapshot) in projections.items():
                 try:
                     if aid not in validation_items:
                         raise ValueError(
                             validation_failures.get(aid, "group_validation_unavailable")
                         )
-                    result["items"][aid] = qualify_item(
+                    result["items"][aid] = await asyncio.to_thread(
+                        qualify_item,
                         plan.assertion(aid),
                         validation_items[aid],
                         judge,
@@ -986,6 +1139,7 @@ async def evaluate_group(
                         snapshot,
                         source_match.get("status", "not_found"),
                         tuple(source_match.get("matched_document_ids", ())),
+                        compact_reporting=True,
                     )
                     result["items"][aid]["statements"] = [
                         s.model_dump(mode="json") for s in valid[aid].statements

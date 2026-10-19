@@ -1,9 +1,11 @@
 """One source investigation and frozen citation namespace for each document group."""
 
+import asyncio
 import hashlib
 import json
 import re
 from collections import Counter
+from dataclasses import asdict
 from datetime import UTC, datetime
 from time import monotonic
 from typing import Literal
@@ -14,10 +16,13 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.adapters.authoritative import AuthoritativeAdapter
 from app.adapters.claim_extractor import ExtractedClaimCandidate, PicoCandidate
 from app.adapters.crossref import CrossrefAdapter
+from app.adapters.discovery import DiscoveryLead, ScholarlyDiscovery
+from app.adapters.official_web import OfficialWebDiscovery
 from app.adapters.pmc import PmcFullText, PmcFullTextAdapter
 from app.adapters.pubmed import PubMedAdapter
 from app.adapters.source_metrics import source_http_metrics
 from app.document.models import DocumentAssertion, DocumentGroup, DocumentPlan
+from app.document.study_identity import metadata_clues, version_fingerprints
 from app.judging.source_quantities import derive_catalog
 from app.judging.source_units import SourceUnit
 from app.medical.linker import MedicalEntityLinker
@@ -25,6 +30,7 @@ from app.medical.mesh import UnconfiguredMeshProvider
 from app.pipeline.completeness import NormalizationQuality, assess_completeness
 from app.pipeline.pico import normalization_status, normalize_pico
 from app.pipeline.readiness import ready_for_evidence
+from app.retrieval.adaptive import discovery_terms, plan_adaptive_queries, scholarly_query
 from app.retrieval.errors import RetrievalError
 from app.retrieval.evidence_pack import (
     build_evidence_pack,
@@ -49,7 +55,7 @@ from app.retrieval.ranking import rank_passages
 from app.retrieval.service import _enrich_dois
 from app.retrieval.study_quality import annotate_study_quality
 
-VERSION = "document-evidence-1.0"
+VERSION: Literal["document-evidence-1.1"] = "document-evidence-1.1"
 _MAX_QUERIES = 12
 _MAX_PMIDS = 50
 _MAX_SELECTED = 24
@@ -119,7 +125,11 @@ class GroupSourceMatch(BaseModel):
 
 class GroupEvidenceSnapshot(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
-    version: Literal["document-evidence-1.0"] = "document-evidence-1.0"
+    version: Literal[
+        "document-evidence-1.0",
+        "document-evidence-1.1",
+        "document-evidence-2.0",
+    ] = VERSION
     group_id: str
     document_sha256: str
     pack: EvidencePack
@@ -140,6 +150,9 @@ class GroupEvidenceSnapshot(BaseModel):
     source_http_requests: dict[str, int] = Field(default_factory=dict)
     metrics: dict[str, float | int]
     limitations: tuple[str, ...] = ()
+    discovery_audit: dict[str, object] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     snapshot_hash: str
 
     @model_validator(mode="after")
@@ -281,6 +294,67 @@ def document_claim_snapshots(
                 ),
             )
             pico = normalize_pico(candidate, source_text=plan.original_text)
+            targets = [
+                link.target
+                for link in plan.context_links
+                if link.link_id in assertion.context_link_ids
+                and link.resolved
+                and link.relationship == "shared_exposure"
+                and link.target is not None
+            ]
+            # Exact, ordered document links must survive atomic re-normalization.
+            updates = {
+                name: getattr(assertion.pico, name)
+                for name in (
+                    "intervention_or_exposure",
+                    "outcome",
+                    "population",
+                    "comparator",
+                    "timeframe",
+                )
+                if getattr(pico, name) is None
+                and getattr(assertion.pico, name)
+                and any(getattr(assertion.pico, name) in target.text for target in targets)
+            }
+            if (
+                linker
+                and targets
+                and re.fullmatch(
+                    r"(?:higher|lower|larger|smaller) doses?",
+                    pico.intervention_or_exposure or "",
+                    re.I,
+                )
+            ):
+                parents = [
+                    a
+                    for a in plan.assertions
+                    if a.assertion_id != aid
+                    and any(
+                        s.start <= target.start < target.end <= s.end
+                        for s in a.spans
+                        for target in targets
+                    )
+                ]
+                if len(parents) == 1 and parents[0].pico.claim_type == pico.claim_type:
+                    parent = parents[0]
+                    entities = linker.link(parent.pico)
+                    exposures = {
+                        e.surface_text
+                        for e in entities
+                        if e.entity_type == "intervention_or_exposure"
+                        and (e.mesh_id or e.umls_cui)
+                        and any(e.surface_text in t.text for t in targets)
+                    }
+                    if len(exposures) == 1:
+                        updates["intervention_or_exposure"] = next(iter(exposures))
+                        if (pico.outcome or "").casefold() in {
+                            "protection",
+                            "benefit",
+                            "benefits",
+                            "risk",
+                        }:
+                            updates["outcome"] = parent.pico.outcome
+            pico = pico.model_copy(update=updates)
         snapshots[aid] = ClaimSnapshot(
             claim_id=uuid5(analysis_id, aid),
             raw_text=assertion.source_text,
@@ -340,6 +414,8 @@ def document_normalization_audit(
 def plan_group_queries(
     group: DocumentGroup,
     snapshots: dict[str, ClaimSnapshot],
+    *,
+    adaptive: bool = False,
 ) -> tuple[QueryPlan, tuple[str, ...]]:
     """Clue queries and round-robin assertion queries retain bounded coverage."""
     queries: list[RetrievalQuery] = []
@@ -377,8 +453,9 @@ def plan_group_queries(
                 source_fields=("document.group.study_clues.doi",),
             ),
         )
-    assertion_plans = {aid: plan_pubmed_queries(claim) for aid, claim in snapshots.items()}
-    for round_index in range(2):
+    planner = plan_adaptive_queries if adaptive else plan_pubmed_queries
+    assertion_plans = {aid: planner(claim) for aid, claim in snapshots.items()}
+    for round_index in range(3 if adaptive else 2):
         for aid, assertion_plan in assertion_plans.items():
             if len(assertion_plan.queries) > round_index:
                 q = assertion_plan.queries[round_index]
@@ -397,7 +474,7 @@ def plan_group_queries(
             unique.append(query_item.model_copy(update={"query_id": f"Q{len(unique) + 1}"}))
     omitted = tuple(q.query for q in unique[_MAX_QUERIES:])
     return QueryPlan(
-        version="1.6",
+        version="2.0" if adaptive else "1.6",
         queries=tuple(unique[:_MAX_QUERIES]),
         warnings=("bounded_document_query_limit",) if omitted else (),
     ), omitted
@@ -439,6 +516,8 @@ def _source_match(
         )
         all_text = " ".join(p.text for p in owned)
         matching = []
+        bibliography = metadata_clues(clues, document)
+        fingerprints = version_fingerprints(snapshots, all_text) if bibliography else ()
         exact_identifier = document.pmid in pmids or bool(
             document.doi
             and (document.doi.casefold() in {v.rstrip(".,;").casefold() for v in identifiers})
@@ -472,9 +551,28 @@ def _source_match(
             for words in map(_words, outcome_terms)
         )
         identity = exact_identifier or bool(matched_names and exposure_hit and outcome_hit)
+        years = set(re.findall(r"\b(?:19|20)\d{2}\b", clues))
+        year_conflict = bool(
+            years and document.publication_date and str(document.publication_date.year) not in years
+        )
+        if bibliography:
+            matching.extend(bibliography)
+            matching.extend(fingerprints)
+            identity = identity or bool(fingerprints and exposure_hit and outcome_hit)
+        if year_conflict and not exact_identifier:
+            identity = False
+            discrepancies.append("Supplied publication year differs from candidate metadata.")
         score = min(
             1.0,
-            (0.8 if exact_identifier else 0.55 if matched_names else 0)
+            (
+                0.8
+                if exact_identifier
+                else 0.65
+                if bibliography and fingerprints
+                else 0.55
+                if matched_names or bibliography
+                else 0
+            )
             + min(0.3, topic_hits * 0.1),
         )
         if not matching:
@@ -534,6 +632,7 @@ def _reported_selection(
         (
             (
                 len(words & _words(p.text)) / max(1, len(words))
+                - min(0.4, max(0, len(p.text) - 4000) / 20000)
                 + (0.15 if p.document_id in candidate_ids else 0),
                 p,
             )
@@ -557,6 +656,8 @@ async def retrieve_document_group(
     linker: MedicalEntityLinker | None = None,
     source_cache: DocumentSourceCache | None = None,
     claim_snapshots: dict[str, ClaimSnapshot] | None = None,
+    discovery: ScholarlyDiscovery | None = None,
+    web: OfficialWebDiscovery | None = None,
 ) -> GroupEvidenceSnapshot:
     """Freeze per-group source HTTP attempts, without affecting single-claim callers."""
     with source_http_metrics() as counts:
@@ -571,6 +672,8 @@ async def retrieve_document_group(
             linker=linker,
             source_cache=source_cache,
             claim_snapshots=claim_snapshots,
+            discovery=discovery,
+            web=web,
             source_http_requests=counts,
         )
 
@@ -588,6 +691,8 @@ async def _retrieve_document_group(
     source_cache: DocumentSourceCache | None,
     claim_snapshots: dict[str, ClaimSnapshot] | None,
     source_http_requests: dict[str, int],
+    discovery: ScholarlyDiscovery | None,
+    web: OfficialWebDiscovery | None,
 ) -> GroupEvidenceSnapshot:
     """Search once, fetch each publication once and freeze one assertion coverage union."""
     started = monotonic()
@@ -596,11 +701,25 @@ async def _retrieve_document_group(
     if set(snapshots) != set(group.assertion_ids):
         raise ValueError("Retrieval snapshots do not cover exactly the document group")
     statuses, qualities, readiness = document_normalization_audit(plan, group, snapshots, linker)
-    query_plan, omitted_queries = plan_group_queries(group, snapshots)
+    query_plan, omitted_queries = plan_group_queries(
+        group, snapshots, adaptive=discovery is not None
+    )
+    eligible = tuple(
+        claim
+        for aid, claim in snapshots.items()
+        if plan.assertion(aid).checkable
+        and plan.assertion(aid).planning_status == "ready"
+        and readiness[aid]
+    )
+    if not eligible:
+        # Retain incomplete normalization without manufacturing a search question.
+        query_plan = query_plan.model_copy(update={"queries": ()})
     executions = []
     provenance: dict[str, set[str]] = {}
     limitations = []
     requests: Counter[str] = Counter()
+    discovery_leads: list[DiscoveryLead] = []
+    discovered_guidance: tuple[PubMedDocument, ...] = ()
     for query in query_plan.queries:
         try:
             requests["pubmed_searches"] += 1
@@ -620,6 +739,30 @@ async def _retrieve_document_group(
         except RetrievalError as exc:
             limitations.append(f"{query.query_id}: public source search unavailable ({exc.kind}).")
             executions.append(QueryExecution(query_id=query.query_id, pmids=(), cache_hit=False))
+    if discovery and eligible:
+        # At most two distinct medical questions supplement the existing 12-query
+        # assertion coverage bound. No reporting study identity is inferred here.
+        unique = {discovery_terms(c, broad=True): c for c in eligible}
+        searches = [
+            (provider, scholarly_query(c, broad=True, provider=provider))
+            for c in list(unique.values())[:2]
+            for provider in ("europe_pmc", "openalex")
+        ]
+        batches = await asyncio.gather(*(discovery.search(p, q) for p, q in searches))
+        for batch in batches:
+            for lead in batch:
+                discovery_leads.append(lead)
+                if lead.pmid and lead.publication_type != "retracted":
+                    provenance.setdefault(lead.pmid, set()).add("discovery:" + lead.provider)
+        if len(unique) > 2:
+            limitations.append(
+                "Supplementary discovery covered two medical questions; "
+                "remaining assertions retain bounded PubMed query coverage."
+            )
+        if web:
+            discovered_guidance = await web.retrieve(
+                eligible[0], discovery_terms(eligible[0], broad=True)
+            )
     if fulltext and group.study_clues and query_plan.queries:
         # Search article bodies for clues missing from abstracts, through PMC only.
         topics = [
@@ -656,7 +799,7 @@ async def _retrieve_document_group(
     )[:_MAX_PMIDS]
     missing = tuple(pmid for pmid in wanted if pmid not in cache.documents)
     if missing:
-        fetched = await adapter.fetch(missing)
+        fetched = await adapter.fetch_cached(missing) if discovery else await adapter.fetch(missing)
         requests["pubmed_fetch_batches"] += 1
         requests["pubmed_publications_fetched"] += len(fetched.documents)
         cache.documents.update({d.pmid: d for d in fetched.documents})
@@ -672,6 +815,45 @@ async def _retrieve_document_group(
             if pmid in cache.documents
         )
     )
+    if discovery:
+        from app.retrieval.v2 import identity_matches
+
+        verified = []
+        for doc in documents:
+            matching = [
+                lead
+                for lead in discovery_leads
+                if identity_matches(lead, doc) and lead.publication_type != "retracted"
+            ]
+            if not matching and not any(
+                q.startswith("Q") or q == "PMC_DISCOVERY" for q in provenance[doc.pmid]
+            ):
+                limitations.append(
+                    f"Unverified supplementary identity excluded: {doc.document_id}."
+                )
+                continue
+            verified.append(
+                doc.model_copy(
+                    update={
+                        "metadata_provenance": {
+                            **doc.metadata_provenance,
+                            **{
+                                "discovered_by:" + lead.provider: lead.identifier
+                                for lead in matching
+                            },
+                            **{
+                                "discovery_query:"
+                                + lead.provider
+                                + ":"
+                                + hashlib.sha256(lead.query.encode()).hexdigest(): lead.query
+                                for lead in matching
+                                if lead.query
+                            },
+                        }
+                    }
+                )
+            )
+        documents = tuple(verified)
     unenriched = tuple(d for d in documents if d.document_id not in cache.crossref)
     if unenriched:
         cache.crossref.update(await _enrich_dois(unenriched, crossref, timeout_seconds=20))
@@ -697,15 +879,9 @@ async def _retrieve_document_group(
         )
         for d in documents
     )
-    if authoritative:
+    if authoritative and eligible:
         approved, approved_statuses = await authoritative.retrieve_group(
-            tuple(
-                claim
-                for aid, claim in snapshots.items()
-                if plan.assertion(aid).checkable
-                and plan.assertion(aid).planning_status == "ready"
-                and readiness[aid]
-            ),
+            eligible,
             document_cache=cache.authoritative,
         )
         requests["authoritative_sources_considered"] += len(approved_statuses)
@@ -723,6 +899,7 @@ async def _retrieve_document_group(
             if d.authoritative and d.authoritative.omitted_block_count
         )
         documents = deduplicate_documents((*documents, *approved))
+    documents = deduplicate_documents((*documents, *discovered_guidance))
     passages = tuple(p for d in documents for p in extract_passages(d))
     initial_ids = {p.passage_id: f"E{i}" for i, p in enumerate(passages, 1)}
     initial_match = _source_match(group, snapshots, documents, passages, initial_ids)
@@ -751,6 +928,18 @@ async def _retrieve_document_group(
     candidate_ids = set(match.matched_document_ids) or {
         c.document_id for c in match.candidates[:2] if c.score >= 0.55
     }
+    if not candidate_ids:
+        # Unknown study identity is not permission to rank any large abstract
+        # that happens to mention generic methods/participants. Require the
+        # group's actual exposure and endpoint in publication-level context.
+        exposures = [_words(c.pico.intervention_or_exposure or "") for c in eligible if c.pico]
+        outcomes = [_words(c.pico.outcome or "") for c in eligible if c.pico]
+        candidate_ids = {
+            d.document_id
+            for d in documents
+            if any(w and len(w & _words(d.title)) / len(w) >= 0.6 for w in exposures)
+            and any(w and len(w & _words(d.title)) / len(w) >= 0.6 for w in outcomes)
+        }
     per_assertion: dict[str, tuple[str, ...]] = {}
     selected: set[str] = set()
     for aid, claim in snapshots.items():
@@ -759,7 +948,9 @@ async def _retrieve_document_group(
             per_assertion[aid] = ()
             continue
         if assertion.kind in {"reported_study_fact", "methodology", "sample_size"}:
-            chosen = _reported_selection(assertion, passages, candidate_ids)
+            chosen = (
+                _reported_selection(assertion, passages, candidate_ids) if candidate_ids else ()
+            )
         else:
             ranked = rank_passages(claim, documents, passages)
             individual = build_evidence_pack(
@@ -769,7 +960,7 @@ async def _retrieve_document_group(
                 ranked,
                 selected_limit=3,
                 max_per_document=2,
-                pack_version="1.5",
+                pack_version="2.0" if discovery else "1.5",
             )
             local = {p.evidence_id: p.passage.passage_id for p in individual.passages}
             chosen = tuple(local[eid] for eid in individual.selected_evidence_ids)
@@ -805,11 +996,11 @@ async def _retrieve_document_group(
             documents,
             ranked_group,
             selected_ids,
-            pack_version="1.5",
+            pack_version="2.0" if discovery else "1.5",
         )
     ).hexdigest()
     pack = EvidencePack(
-        evidence_pack_version="1.5",
+        evidence_pack_version="2.0" if discovery else "1.5",
         claim_id=representative.claim_id,
         claim_snapshot=representative,
         query_plan=query_plan,
@@ -842,7 +1033,7 @@ async def _retrieve_document_group(
             "document search bound; no assertion was discarded."
         )
     data: dict[str, object] = {
-        "version": VERSION,
+        "version": "document-evidence-2.0" if discovery else VERSION,
         "group_id": group.group_id,
         "document_sha256": plan.original_sha256,
         "pack": pack.model_dump(mode="json"),
@@ -873,4 +1064,13 @@ async def _retrieve_document_group(
         },
         "limitations": tuple(dict.fromkeys(limitations)),
     }
+    if discovery:
+        data["discovery_audit"] = {
+            "providers": discovery.executions,
+            "official_web": web.executions if web else [],
+            "lead_count": len(discovery_leads),
+            "canonical_identity_required": True,
+            "leads": [asdict(lead) for lead in discovery_leads],
+            "model_calls": 0,
+        }
     return GroupEvidenceSnapshot.model_validate({**data, "snapshot_hash": _snapshot_digest(data)})

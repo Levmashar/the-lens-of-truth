@@ -1,0 +1,80 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - button "The Lens of Truth, home" [ref=f1e5] [cursor=pointer]
+      - button "Switch to dark mode" [ref=f1e9] [cursor=pointer]
+  - main [ref=f1e12]:
+    - generic [ref=f1e13]:
+      - heading "Your claim check" [level=1] [ref=f1e15]
+      - status [ref=f1e16]: Analysis finished
+      - generic [ref=f1e17]:
+        - article [ref=f1e28]:
+          - region "Research assessment" [ref=f1e29]:
+            - paragraph [ref=f1e30]: Does using your phone while lying on your side worsen myopia?
+            - heading "Not established by research" [level=2] [ref=f1e31]
+            - paragraph [ref=f1e32]: Related research exists, but it does not establish this specific claim. The studies did not separately test whether using a phone while lying on your side affects how quickly short-sightedness gets worse.
+            - paragraph [ref=f1e33]: Not established doesn't mean disproven.
+          - complementary [ref=f1e34]:
+            - paragraph [ref=f1e35]: Development preview. Not qualified for medical use.
+            - paragraph [ref=f1e36]: Some assessments could not be verified; the result uses only those that passed.
+          - group [ref=f1e37]:
+            - generic "See the evidence +" [ref=f1e38] [cursor=pointer]
+            - generic [ref=f1e44]:
+              - generic [ref=f1e45]:
+                - heading "What the checked sources found" [level=3] [ref=f1e46]
+                - paragraph [ref=f1e47]:
+                  - text: The specific exposure of lateral recumbent phone use was not investigated as a separate risk factor for myopia progression.
+                  - generic [ref=f1e48]:
+                    - 'link "Read source 1: Smartphone use as a possible risk factor for myopia." [ref=f1e49] [cursor=pointer]':
+                      - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E2"
+                      - text: Source 1
+                    - 'link "Read source 2: The association between smartphone use and myopia progression in children: a prospective cohort study." [ref=f1e50] [cursor=pointer]':
+                      - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E22"
+                      - text: Source 2
+                - paragraph [ref=f1e51]:
+                  - text: Higher daily smartphone data usage is associated with the presence of myopia in students.
+                  - 'link "Read source 1: Smartphone use as a possible risk factor for myopia." [ref=f1e53] [cursor=pointer]':
+                    - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E106"
+                    - text: Source 1
+                - paragraph [ref=f1e54]:
+                  - text: The evidence regarding myopia progression relies on observed associations from a prospective cohort study tracking general smartphone usage patterns, not specific postures.
+                  - 'link "Read source 2: The association between smartphone use and myopia progression in children: a prospective cohort study." [ref=f1e56] [cursor=pointer]':
+                    - /url: "#source-d417c414-f1a0-41a8-91c2-73bb583caa55-E22"
+                    - text: Source 2
+              - generic [ref=f1e57]:
+                - heading "Related evidence has limits" [level=4] [ref=f1e58]
+                - paragraph [ref=f1e59]: "Some source requests or discovered records could not be fully used. We found research or clinical guidance on related topics, but the search did not locate a source matching all the details in this claim. Search matching could not establish coverage for the exposure: “Using your phone while laying down on your side”. Related findings cannot establish or rule out the more specific claim. The reported assessment shows whether the available findings passed verification."
+                - group [ref=f1e60]:
+                  - generic "Explore the sources found" [ref=f1e61] [cursor=pointer]
+              - generic [ref=f1e62]:
+                - group [ref=f1e63]:
+                  - generic "Smartphone use as a possible risk factor for myopia. ⌃" [ref=f1e67] [cursor=pointer]
+                  - article [ref=f1e68]:
+                    - paragraph [ref=f1e69]: Study design unavailable
+                    - paragraph [ref=f1e70]: Clinical & experimental optometry · 2021-01-01
+                    - paragraph [ref=f1e71]: Relevant but insufficient
+                    - generic [ref=f1e72]:
+                      - paragraph [ref=f1e73]: Quoted from METHODS · E2
+                      - blockquote [ref=f1e74]: Primary, secondary and tertiary level students completed a questionnaire exploring patterns of smartphone usage and assessing their attitudes toward potential myopia risk factors. Device-recorded data usage over an extended period was quantified as the primary and objective indicator of phone use. Average daily time spent using a smartphone was also quantified by self-reported estimates. Refractive status was verified by an optometrist.
+                    - generic [ref=f1e75]:
+                      - paragraph [ref=f1e76]: Quoted from RESULTS · E106
+                      - group [ref=f1e77]:
+                        - generic "Read the full cited passage" [ref=f1e78] [cursor=pointer]
+                    - generic [ref=f1e79]:
+                      - generic [ref=f1e80]: PMID 32452059
+                      - generic [ref=f1e81]: DOI 10.1111/cxo.13092
+                      - link "View original source ↗" [active] [ref=f1e82] [cursor=pointer]:
+                        - /url: https://pubmed.ncbi.nlm.nih.gov/32452059/
+                    - paragraph [ref=f1e83]: "Publication integrity: no signal found in completed checks"
+                - group [ref=f1e65]:
+                  - 'generic "The association between smartphone use and myopia progression in children: a prospective cohort study. ⌄" [ref=f1e66] [cursor=pointer]'
+          - group [ref=f1e39]:
+            - generic "About this check +" [ref=f1e40] [cursor=pointer]
+          - paragraph [ref=f1e41]: This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.
+        - group [ref=f1e42]:
+          - generic "Developer diagnostics +" [ref=f1e43] [cursor=pointer]
+      - button "Check another claim" [ref=f1e21] [cursor=pointer]
+  - contentinfo [ref=f1e22]:
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]: The Lens of Truth
+      - generic [ref=f1e25]: Health claims, checked against research.

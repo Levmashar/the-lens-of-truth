@@ -1,0 +1,758 @@
+{
+  "analysis": {
+    "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+    "status": "failed",
+    "stage": "building_report",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-08T15:01:04.422615+00:00",
+        "completed_at": "2026-10-08T15:01:19.417014+00:00"
+      },
+      "document": {
+        "mode": "document",
+        "version": "document-workflow-1.0"
+      },
+      "extracting": {
+        "started_at": "2026-10-08T15:00:54.864785+00:00",
+        "completed_at": "2026-10-08T15:01:02.171306+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-08T15:01:02.204939+00:00",
+        "completed_at": "2026-10-08T15:01:04.420370+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-08T15:01:19.414404+00:00",
+        "completed_at": "2026-10-08T15:01:19.419476+00:00"
+      },
+      "aggregating": {
+        "completed_at": "2026-10-08T15:01:19.421364+00:00"
+      },
+      "normalizing": {
+        "completed_at": "2026-10-08T15:01:02.174425+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-08T15:01:19.423017+00:00",
+        "completed_at": "2026-10-08T15:01:19.428902+00:00"
+      }
+    },
+    "claim_count": 3,
+    "completed_claims": 0,
+    "failure_code": "document_assessments_unavailable",
+    "language": "auto",
+    "input_type": "text",
+    "claims": [],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-08T15:01:19.428902Z",
+    "debug_enabled": true,
+    "document_mode": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "not_called",
+        "failure_type": null,
+        "origin": "current_configuration"
+      }
+    ],
+    "debug_events": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 7283,
+        "response_excerpt": "{\n  \"assertions\": [\n    {\n    \"assertion_id\": \"A1\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"seventeen adults\",\n    \"intervention_or_exposure\": \"a daily stretching routine\",\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"recommendation\"\n    },\n    \"study_id\": \"Aurora Notebook Study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A2\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 79,\n    \"end\": 123,\n    \"text\": \"It reportedly found improved memory after three weeks.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": \"improved memory\",\n    \"timeframe\": \"after three weeks\"\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"Aurora Notebook Study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L1\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A3\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 124,\n    \"end\": 246,\n    \"text\": \"The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"other\"\n    },\n    \"study_id\": null,\n    \"risk_class\": \"unknown\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n    \"group_id\": \"G1\",\n    \"title\": \"Aurora Notebook Study reported facts\",\n    \"assertion_ids\": [\"A1\", \"A2\"],\n    \"study_id\": \"Aurora Notebook Study\",\n    \"study_clues\": [\n    {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    }\n    ],\n    \"context_spans\": [\n    {\n    \"start\": 0,\n    \"end\": 123,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults. It reportedly found improved memory after three weeks.\"\n    }\n    ]\n    },\n    {\n    \"group_id\": \"G2\",\n    \"title\": \"Missing bibliographic and provenance details\",\n    \"assertion_ids\": [\"A3\"],\n    \"study_id\": null,\n    \"study_clues\": [],\n    \"context_spans\": [\n    {\n    \"start\": 124,\n    \"end\": 246,\n    \"text\": \"The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.\"\n    }\n    ]\n    }\n  ],\n  \"context_links\": [\n    {\n    \"link_id\": \"L1\",\n    \"reference\": {\n    \"start\": 79,\n    \"end\": 81,\n    \"text\": \"It\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    },\n    \"relationship\": \"same_topic\",\n    \"resolved\": true\n    }\n  ]\n}",
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "prompt_version": "document-planner-1.1-2026-10-08",
+          "queue_wait_ms": 0,
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 716,
+            "completion_tokens": 957,
+            "total_tokens": 1673
+          },
+          "provider": "openai_compatible_claim_extractor",
+          "model": "DeepSeek-V4.1-Flash",
+          "latency_ms": 7283,
+          "attempt_count": 1,
+          "raw_response": "{\n  \"assertions\": [\n    {\n    \"assertion_id\": \"A1\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": \"seventeen adults\",\n    \"intervention_or_exposure\": \"a daily stretching routine\",\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"recommendation\"\n    },\n    \"study_id\": \"Aurora Notebook Study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A2\",\n    \"kind\": \"reported_study_fact\",\n    \"spans\": [\n    {\n    \"start\": 79,\n    \"end\": 123,\n    \"text\": \"It reportedly found improved memory after three weeks.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": \"improved memory\",\n    \"timeframe\": \"after three weeks\"\n    ,\"claim_type\": \"association\"\n    },\n    \"study_id\": \"Aurora Notebook Study\",\n    \"risk_class\": \"standard\",\n    \"context_link_ids\": [\"L1\"],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    },\n    {\n    \"assertion_id\": \"A3\",\n    \"kind\": \"commentary\",\n    \"spans\": [\n    {\n    \"start\": 124,\n    \"end\": 246,\n    \"text\": \"The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.\"\n    }\n    ],\n    \"pico\": {\n    \"population\": null,\n    \"intervention_or_exposure\": null,\n    \"comparator\": null,\n    \"outcome\": null,\n    \"timeframe\": null\n    ,\"claim_type\": \"other\"\n    },\n    \"study_id\": null,\n    \"risk_class\": \"unknown\",\n    \"context_link_ids\": [],\n    \"duplicate_of\": null\n    ,\n    \"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n    \"group_id\": \"G1\",\n    \"title\": \"Aurora Notebook Study reported facts\",\n    \"assertion_ids\": [\"A1\", \"A2\"],\n    \"study_id\": \"Aurora Notebook Study\",\n    \"study_clues\": [\n    {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    }\n    ],\n    \"context_spans\": [\n    {\n    \"start\": 0,\n    \"end\": 123,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults. It reportedly found improved memory after three weeks.\"\n    }\n    ]\n    },\n    {\n    \"group_id\": \"G2\",\n    \"title\": \"Missing bibliographic and provenance details\",\n    \"assertion_ids\": [\"A3\"],\n    \"study_id\": null,\n    \"study_clues\": [],\n    \"context_spans\": [\n    {\n    \"start\": 124,\n    \"end\": 246,\n    \"text\": \"The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.\"\n    }\n    ]\n    }\n  ],\n  \"context_links\": [\n    {\n    \"link_id\": \"L1\",\n    \"reference\": {\n    \"start\": 79,\n    \"end\": 81,\n    \"text\": \"It\"\n    },\n    \"target\": {\n    \"start\": 0,\n    \"end\": 78,\n    \"text\": \"A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.\"\n    },\n    \"relationship\": \"same_topic\",\n    \"resolved\": true\n    }\n  ]\n}",
+          "normalization_version": "document-plan-normalization-1.2"
+        }
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "1d622240-cec9-4375-8eb8-0e44bd3ae1ee",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "ab204fea-16fe-4d51-9a69-545afc6c3716",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "52c3acae-b0ee-49ea-8c38-20c2a0bc20a5",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 14948,
+        "response_excerpt": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G1\",\"items\":[{\"assertion_id\":\"A1\",\"status\":\"unavailable\",\"statements\":[],\"conclusion\":\"No source units or documents were supplied, and the source_match status is not_found with no candidates, so no reliable source-attributed finding about the Aurora Notebook Study's population or intervention can be returned.\",\"uncertainty_reasons\":[\"The supplied snapshot contains no source units, documents, or quantity rows.\",\"Source matching reports not_found with no candidates and states that available candidates do not establish the attributed study identity.\"]},{\"assertion_id\":\"A2\",\"status\":\"unavailable\",\"statements\":[],\"conclusion\":\"No source units or documents were supplied, and the source_match status is not_found with no candidates, so no reliable source-attributed finding about improved memory after three weeks can be returned.\",\"uncertainty_reasons\":[\"The supplied snapshot contains no source units, documents, or quantity rows.\",\"Source matching reports not_found with no candidates and states that available candidates do not establish the attributed study identity.\"]}]}",
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "1d622240-cec9-4375-8eb8-0e44bd3ae1ee",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 1339,
+          "output_tokens": 234
+        }
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 14972,
+        "response_excerpt": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source units or documents were provided in the input to verify the existence, methodology, or sample size of the 'Aurora Notebook Study'.\",\n      \"uncertainty_reasons\": [\n        \"The supplied source_match status is 'not_found' with no matched document IDs.\",\n        \"The source_units array and documents list are empty, preventing any attribution of the reported study facts.\"\n      ]\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source units or documents were provided in the input to verify the reported outcome of improved memory or the three-week timeframe.\",\n      \"uncertainty_reasons\": [\n        \"The supplied source_match status is 'not_found' with no candidates establishing the study identity.\",\n        \"The assertion_evidence_coverage for A2 is an empty list, and no source quantities exist to support the finding.\"\n      ]\n    }\n  ]\n}",
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "ab204fea-16fe-4d51-9a69-545afc6c3716",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 1328,
+          "output_tokens": 280
+        }
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 14975,
+        "response_excerpt": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source document or verifiable study data was found to confirm the existence, methodology, or sample size of the 'Aurora Notebook Study'; the claim relies entirely on an unverified report with no author, journal, or identifiers.\",\n      \"uncertainty_reasons\": [\n        \"Source match status is not_found with no candidate documents available.\",\n        \"The attributed study lacks any verifiable identifiers (authors, journal, DOI, PMID, registry number).\"\n      ]\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source document or verifiable study data was found to confirm the reported outcome of improved memory after three weeks; the claim relies entirely on an unverified report with no author, journal, or identifiers.\",\n      \"uncertainty_reasons\": [\n        \"Source match status is not_found with no candidate documents available.\",\n        \"The attributed study lacks any verifiable identifiers (authors, journal, DOI, PMID, registry number).\"\n      ]\n    }\n  ]\n}\n```",
+        "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "52c3acae-b0ee-49ea-8c38-20c2a0bc20a5",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 1270,
+          "output_tokens": 283
+        }
+      }
+    ]
+  },
+  "document_http": 200,
+  "document": {
+    "groups": [
+      {
+        "title": "Aurora Notebook Study reported facts",
+        "counts": {
+          "total": 2,
+          "pending": 0,
+          "assessed": 0,
+          "processed": 2,
+          "background": 0,
+          "unavailable": 2
+        },
+        "status": "completed",
+        "sources": [],
+        "group_id": "G1",
+        "assertions": [
+          {
+            "kind": "reported_study_fact",
+            "text": "A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.",
+            "status": "unavailable",
+            "heading": "Reported finding",
+            "citations": [],
+            "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+            "assertion_id": "A1",
+            "duplicate_of": null,
+            "failure_kind": "source_not_identified",
+            "reason_codes": [],
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 112,
+                "text": "A report called the Aurora Notebook Study is said to have tested a daily stretching routine in seventeen adults.",
+                "start": 0
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "reporting_fidelity",
+            "field_diagnostics": [],
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "association_caveat": null,
+            "reporting_fidelity": {
+              "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": null,
+            "display_parent_group_id": null
+          },
+          {
+            "kind": "reported_study_fact",
+            "text": "It reportedly found improved memory after three weeks.",
+            "status": "unavailable",
+            "heading": "Reported finding: improved memory",
+            "citations": [],
+            "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+            "assertion_id": "A2",
+            "duplicate_of": null,
+            "failure_kind": "source_not_identified",
+            "reason_codes": [],
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 167,
+                "text": "It reportedly found improved memory after three weeks.",
+                "start": 113
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "reporting_fidelity",
+            "field_diagnostics": [],
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "association_caveat": null,
+            "reporting_fidelity": {
+              "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": null,
+            "display_parent_group_id": null
+          }
+        ],
+        "source_match": {
+          "url": null,
+          "title": null,
+          "reason": "Available candidates do not establish the attributed study identity.",
+          "status": "not_found",
+          "candidates": [],
+          "search_state": "searched",
+          "discrepancies": [
+            "The attributed source must not be assumed from topical similarity."
+          ]
+        },
+        "processing_status": "finished",
+        "display_parent_group_id": null
+      },
+      {
+        "title": "Missing bibliographic and provenance details",
+        "counts": {
+          "total": 1,
+          "pending": 0,
+          "assessed": 0,
+          "processed": 1,
+          "background": 1,
+          "unavailable": 0
+        },
+        "status": "completed",
+        "sources": [],
+        "group_id": "G2",
+        "assertions": [
+          {
+            "kind": "commentary",
+            "text": "The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.",
+            "status": "not_checkable",
+            "heading": "Background wording",
+            "citations": [],
+            "explanation": "This wording was retained as background, not independently assessed. Comparative or interpretive wording here has not been verified.",
+            "assertion_id": "A3",
+            "duplicate_of": null,
+            "failure_kind": null,
+            "reason_codes": [],
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 292,
+                "text": "The description gives no author names, journal, publication date, DOI, PMID, registry number or link to the original report.",
+                "start": 168
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "medical_evidence",
+            "field_diagnostics": [],
+            "aggregation_reason": "",
+            "association_caveat": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null,
+            "display_parent_group_id": null
+          }
+        ],
+        "source_match": {
+          "url": null,
+          "title": null,
+          "reason": "No independently checkable study reference is available for this section.",
+          "status": "not_applicable",
+          "candidates": [],
+          "search_state": "not_applicable",
+          "discrepancies": []
+        },
+        "processing_status": "finished",
+        "display_parent_group_id": null
+      }
+    ],
+    "status": "failed",
+    "version": "document-report-1.2",
+    "progress": {
+      "total": 3,
+      "pending": 0,
+      "assessed": 0,
+      "processed": 3,
+      "background": 1,
+      "unavailable": 2,
+      "groups_total": 2,
+      "assertions_total": 3,
+      "groups_completed": 2,
+      "assertions_completed": 0
+    },
+    "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+    "completion_text": "Finished with limitations",
+    "reading_summary": {
+      "limits": [],
+      "matches": [],
+      "attention": [
+        {
+          "text": "Reported finding",
+          "status": "unavailable",
+          "evidence": [],
+          "group_ids": [
+            "G1"
+          ],
+          "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+          "result_label": "unable_to_verify_reliably",
+          "assertion_ids": [
+            "A1"
+          ]
+        },
+        {
+          "text": "Reported finding: improved memory",
+          "status": "unavailable",
+          "evidence": [],
+          "group_ids": [
+            "G1"
+          ],
+          "explanation": "The described source could not be securely identified, so no qualified assessment of this reporting detail was completed. This does not establish that the opposite is true.",
+          "result_label": "unable_to_verify_reliably",
+          "assertion_ids": [
+            "A2"
+          ]
+        }
+      ],
+      "main_takeaway": [
+        {
+          "text": "No statement has a qualified matching or supporting result yet.",
+          "evidence": [],
+          "group_ids": [],
+          "assertion_ids": []
+        },
+        {
+          "text": "Checks for reported finding; reported finding: improved memory could not be completed. 1 background or repeated items were retained without an independent assessment.",
+          "evidence": [],
+          "group_ids": [
+            "G1"
+          ],
+          "assertion_ids": [
+            "A1",
+            "A2"
+          ]
+        }
+      ]
+    },
+    "production_qualified": false,
+    "debug_group_runs": [
+      {
+        "slot": 1,
+        "items": {
+          "A1": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          },
+          "A2": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          }
+        },
+        "model": "DeepSeek-V4.1-Flash",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "deepseek",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 1,
+            "model": "DeepSeek-V4.1-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "1d622240-cec9-4375-8eb8-0e44bd3ae1ee",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:01:04.427252+00:00",
+            "input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+            "started_at": "2026-10-08T15:01:04.427320+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:01:19.373760+00:00",
+            "input_tokens": 1339,
+            "raw_response": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G1\",\"items\":[{\"assertion_id\":\"A1\",\"status\":\"unavailable\",\"statements\":[],\"conclusion\":\"No source units or documents were supplied, and the source_match status is not_found with no candidates, so no reliable source-attributed finding about the Aurora Notebook Study's population or intervention can be returned.\",\"uncertainty_reasons\":[\"The supplied snapshot contains no source units, documents, or quantity rows.\",\"Source matching reports not_found with no candidates and states that available candidates do not establish the attributed study identity.\"]},{\"assertion_id\":\"A2\",\"status\":\"unavailable\",\"statements\":[],\"conclusion\":\"No source units or documents were supplied, and the source_match status is not_found with no candidates, so no reliable source-attributed finding about improved memory after three weeks can be returned.\",\"uncertainty_reasons\":[\"The supplied snapshot contains no source units, documents, or quantity rows.\",\"Source matching reports not_found with no candidates and states that available candidates do not establish the attributed study identity.\"]}]}",
+            "finish_reason": "stop",
+            "output_tokens": 234,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 14948
+          }
+        ],
+        "document_sha256": "344ec94c6ced2e42100a3968c9777e40fd22fc514541a47c7e7b0a3673cc2017",
+        "group_input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "8e882ad2d2c2a7fea89b271f1e9e8febaca317b582631f3b5823bf55ed20c435"
+      },
+      {
+        "slot": 2,
+        "items": {
+          "A1": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          },
+          "A2": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          }
+        },
+        "model": "Qwen3.5-Plus",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "qwen",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 2,
+            "model": "Qwen3.5-Plus",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "ab204fea-16fe-4d51-9a69-545afc6c3716",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:01:04.431391+00:00",
+            "input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+            "started_at": "2026-10-08T15:01:04.431445+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:01:19.401821+00:00",
+            "input_tokens": 1328,
+            "raw_response": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source units or documents were provided in the input to verify the existence, methodology, or sample size of the 'Aurora Notebook Study'.\",\n      \"uncertainty_reasons\": [\n        \"The supplied source_match status is 'not_found' with no matched document IDs.\",\n        \"The source_units array and documents list are empty, preventing any attribution of the reported study facts.\"\n      ]\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source units or documents were provided in the input to verify the reported outcome of improved memory or the three-week timeframe.\",\n      \"uncertainty_reasons\": [\n        \"The supplied source_match status is 'not_found' with no candidates establishing the study identity.\",\n        \"The assertion_evidence_coverage for A2 is an empty list, and no source quantities exist to support the finding.\"\n      ]\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 280,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 14972
+          }
+        ],
+        "document_sha256": "344ec94c6ced2e42100a3968c9777e40fd22fc514541a47c7e7b0a3673cc2017",
+        "group_input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "8e882ad2d2c2a7fea89b271f1e9e8febaca317b582631f3b5823bf55ed20c435"
+      },
+      {
+        "slot": 3,
+        "items": {
+          "A1": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          },
+          "A2": {
+            "failure": "judge_item_unavailable",
+            "position": null,
+            "exception_type": "ValueError",
+            "citation_diagnostic": null,
+            "expected_assertion_ids": [
+              "A1",
+              "A2"
+            ]
+          }
+        },
+        "model": "GLM-4.7",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "glm",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 3,
+            "model": "GLM-4.7",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "52c3acae-b0ee-49ea-8c38-20c2a0bc20a5",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:01:04.435514+00:00",
+            "input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+            "started_at": "2026-10-08T15:01:04.435579+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:01:19.409398+00:00",
+            "input_tokens": 1270,
+            "raw_response": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source document or verifiable study data was found to confirm the existence, methodology, or sample size of the 'Aurora Notebook Study'; the claim relies entirely on an unverified report with no author, journal, or identifiers.\",\n      \"uncertainty_reasons\": [\n        \"Source match status is not_found with no candidate documents available.\",\n        \"The attributed study lacks any verifiable identifiers (authors, journal, DOI, PMID, registry number).\"\n      ]\n    },\n    {\n      \"assertion_id\": \"A2\",\n      \"status\": \"unavailable\",\n      \"statements\": [],\n      \"conclusion\": \"No source document or verifiable study data was found to confirm the reported outcome of improved memory after three weeks; the claim relies entirely on an unverified report with no author, journal, or identifiers.\",\n      \"uncertainty_reasons\": [\n        \"Source match status is not_found with no candidate documents available.\",\n        \"The attributed study lacks any verifiable identifiers (authors, journal, DOI, PMID, registry number).\"\n      ]\n    }\n  ]\n}\n```",
+            "finish_reason": "stop",
+            "output_tokens": 283,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 14975
+          }
+        ],
+        "document_sha256": "344ec94c6ced2e42100a3968c9777e40fd22fc514541a47c7e7b0a3673cc2017",
+        "group_input_hash": "6fb4988e0162fd6fe3354e46f4274fab07d4be0aeddbfd340219bbf7fe337a4d",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "8e882ad2d2c2a7fea89b271f1e9e8febaca317b582631f3b5823bf55ed20c435"
+      }
+    ],
+    "debug_errors": []
+  },
+  "claims": {
+    "analysis_id": "070aef60-2150-4b2e-a3f7-00e8934f7d3f",
+    "claims": []
+  },
+  "reports": [],
+  "elapsed_ms": 36916,
+  "history": [
+    {
+      "elapsed_ms": 2199,
+      "status": "running",
+      "stage": "extracting",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 10252,
+      "status": "running",
+      "stage": "retrieving",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 12260,
+      "status": "running",
+      "stage": "judging",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 26726,
+      "status": "failed",
+      "stage": "building_report",
+      "completed": 0
+    }
+  ],
+  "document_history": [
+    {
+      "elapsed_ms": 2209,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 8242,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 36899,
+      "http_status": 200,
+      "progress": {
+        "total": 3,
+        "pending": 0,
+        "assessed": 0,
+        "processed": 3,
+        "background": 1,
+        "unavailable": 2,
+        "groups_total": 2,
+        "assertions_total": 3,
+        "groups_completed": 2,
+        "assertions_completed": 0
+      }
+    }
+  ]
+}

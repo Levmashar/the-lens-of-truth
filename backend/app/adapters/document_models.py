@@ -50,7 +50,7 @@ async def complete_group(
     """No tools, hidden reasoning, schema fallback or credential-bearing audit."""
     queued = monotonic()
     call_id = str(uuid4())
-    request = {
+    request: dict[str, Any] = {
         "model": slot.model,
         "temperature": 0,
         "max_tokens": max_tokens,
@@ -83,7 +83,20 @@ async def complete_group(
         "input_hash": hashlib.sha256(
             json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
         ).hexdigest(),
+        "payload_characters": len(request["messages"][1]["content"]),
+        "system_characters": len(system),
+        "schema_characters": len(json.dumps(request["response_format"]["json_schema"]["schema"])),
+        "configured_attempt_timeout_seconds": timeout,
     }
+    if deadline is not None and deadline <= monotonic():
+        return {
+            **audit,
+            "status": "unavailable",
+            "failure": "deadline_exhausted_before_request",
+            "queue_wait_ms": 0,
+            "provider_latency_ms": 0,
+            "completed_at": datetime.now(UTC).isoformat(),
+        }
     # Queue wait is bounded separately from provider latency. The caller's
     # shared deadline can shorten, never extend, these limits.
     limiter = account_limiter(slot, concurrency)
@@ -121,6 +134,7 @@ async def complete_group(
             provider_timeout = (
                 min(timeout, max(0.001, deadline - monotonic())) if deadline else timeout
             )
+            audit["effective_provider_timeout_seconds"] = provider_timeout
             async with asyncio.timeout(provider_timeout):
                 async with httpx.AsyncClient(
                     timeout=httpx.Timeout(provider_timeout), follow_redirects=False

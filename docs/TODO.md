@@ -1,5 +1,82 @@
 # Delivery Roadmap
 
+## 2026-10-19 Retrieval V2
+
+- [x] Trace frozen f0b25b24 zero-candidate queries and preserve its saved hash/report
+- [x] Adaptive terminology/qualifier/endpoint-stage searches with bounded fallback
+- [x] Europe PMC/OpenAlex discovery, canonical identity/content verification and deduplication
+- [x] NHS/NLM official discovery and one verified allowlisted reference hop
+- [x] Explicit direct/indirect/background classification with deterministic scope ceiling
+- [x] Keep reviewed authoritative eligibility; fix sibling-title selection/scope confusion
+- [x] Cached, concurrent public-source work with request/latency/token diagnostics
+- [x] Reader explanation separates source failures and missing specific claim detail
+- [x] Real frontend/API claim checks, smoking/sunscreen controls and historical replay
+- [x] Backend 1,534 passed / 5 existing OCR skips; frontend 125/build; lint/types/browser
+- [ ] Reviewed content/integrity admission for scholarly records without a canonical PMID
+- [ ] Broader official-site coverage where canonical pages are blocked or not extractable
+- [ ] Causal-design/selection coverage for activity/diabetes prevention without weakening safeguards
+- [ ] Reduce remaining model-token/end-to-end latency under existing gateway constraints
+- [ ] Larger independent retrieval evaluation and clinical production qualification
+
+See [measurements and limitations](RETRIEVAL_V2_RESULTS_20261019.md).
+
+## 2026-10-15 document reliability
+
+- [x] Replay frozen study identity, raw responses and original historical audit
+- [x] Generic bibliographic/result version matching without topic-only identity or rounding
+- [x] Preserve quoted/attributed/indirect medical propositions as independently checkable
+- [x] Per-assertion reference ownership and literal coordinated context repair
+- [x] Preserve source-owned medical PICO context without copying earlier dosage
+- [x] Relevant reporting selection, lossless quantity packaging and nonblocking preparation
+- [x] Validator 1.3 exact attribution coverage, bounded invalid-item repair and audit
+- [x] Failed/zero-assessed reader state with explicit visible/accessibility failure
+- [x] Fresh full frontend flow, final 13 calls without retries/timeouts, 8 assessed / 2 unavailable
+- [x] Full backend 1,510 passed / 5 skipped; frontend 123/build; lint/types and browser checks
+- [ ] Improve semantic availability for high-risk dose-response claims without lowering quorum
+- [ ] Resolve conservative numerical-reporting comparability where primary findings are valid
+- [ ] Separate joint-adjustment-proof correctness work and production qualification
+
+See [evidence and per-call measurements](DOCUMENT_VITAMIN_C_RELIABILITY_20261015.md).
+
+## 2026-10-14 reader-first document screen
+
+- [x] Build and visually inspect three labelled fixture preview states before integration
+- [x] User approval to continue integration
+- [x] Add read-only reader-view-1.0 after historical audit without altering saved reports
+- [x] Share vanilla TS renderer between preview and normal document result page
+- [x] Preserve original report, all records/passages, diagnostics and clipboard copy
+- [x] Desktop/mobile Chrome, keyboard, contrast and 200% text reflow checks
+- [x] Frontend 122/build, relevant backend 126, Ruff/mypy, service rebuild/restart
+- [x] Repair missing reporting attribution coverage with strict bounded retry/versioning (1.3, 2026-10-15)
+- [ ] Require source-grounded same-model proof for simultaneous adjustment qualification
+- [ ] Human comprehension research and separate production/clinical release qualification
+
+See [integration verification](READER_FIRST_INTEGRATION_20261014.md) and
+[separate correctness findings](READER_PREVIEW_BACKEND_FINDINGS_20261014.md).
+
+## 2026-10-08 document report clarity
+
+- [x] Replay retained main report with exact unchanged historical audit/hash/results
+- [x] Explain reporting fidelity separately from medical conclusions
+- [x] Lead with qualified traced takeaway, attention, matches and relevant limits
+- [x] Derive assessed/unavailable/background/pending counts from actual states
+- [x] Separate empty retrieval groups from oversized inputs and search failures
+- [x] Explain frozen effect-measure uncertainty and qualified adjustment disagreement
+- [x] Preserve linked context, source notes, duplicates, exact spans and owned sources
+- [x] Pool full frozen passages; link whole-sentence excerpts with disclosure/focus support
+- [x] Version reading report 1.3; preserve earlier audits and read-only upgrades
+- [x] Repair two live planner ownership defects without inventing attribution/PICO
+- [x] Run original paragraph, unidentified source and mixed topics through normal API
+- [x] Frontend 102/build, lint/types and service rebuild/restart
+- [x] Final complete PostgreSQL-backed backend suite: 1,491 passed, no failures/skips
+- [ ] Resolve clinical grouped validator empty attribution/axes replies, preserving requirements
+- [ ] Resolve reporting validator reason-length and statement-ID reliability
+- [ ] Resolve remaining ambiguous planner references without guessing antecedents
+- [ ] Rendered desktop/mobile browser QA when an enabled browser is available
+- [ ] Latency below 90 seconds and production/clinical release qualification
+
+See [complete evidence and current versions](DOCUMENT_REPORT_CLARITY_RESULTS_20261008.md).
+
 ## 2026-10-08 context-aware document mode
 
 - [x] Trace atomic serialization and retained main-paragraph diagnostics

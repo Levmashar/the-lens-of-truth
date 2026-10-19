@@ -463,5 +463,29 @@ def test_endpoint_uses_only_parents_present_at_the_saved_report_time(monkeypatch
         lambda *args, **kwargs: pytest.fail("GET must not make provider calls"),
     )
     result = asyncio.run(analyses.get_document_report(analysis_id, object(), settings()))
+    reader = result.pop("reader_view")
     assert result == partial
+    assert reader["topics"][0]["state"] == "incomplete"
+    assert not any(
+        line["basis"] == "approved_finding" for line in reader["topics"][0]["established"]
+    )
     assert result["progress"]["groups_completed"] == 0
+
+
+def test_coverage_repair_preserves_valid_siblings_and_is_audited(monkeypatch):
+    def omit_then_repair(data, payload):
+        if "contract_repair" not in payload:
+            data["items"][1]["attributions"] = []
+
+    saved = fixture(monkeypatch, mutate_validation=omit_then_repair)
+    assert verify(saved)
+    for row in saved[4]:
+        run = row.snapshot_json
+        assert len(run["validation_attempts"]) == 2
+        assert [a["assertion_id"] for a in run["validation_repair_input"]["assertions"]] == ["A2"]
+        assert run["items"]["A1"]["position"] == "supported"
+        assert run["items"]["A2"]["position"] == "supported"
+    saved[4][0].snapshot_json["validation_repair_input"]["contract_repair"] = {}
+    rehash(saved[4][0])
+    with pytest.raises(ValueError, match="repair_input_mismatch"):
+        verify(saved)

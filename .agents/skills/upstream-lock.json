@@ -1,0 +1,153 @@
+{
+  "installed_on": "2026-10-14",
+  "scope": "repository-only .agents/skills; no global configuration or package installation",
+  "hash_algorithm": "sha256",
+  "upstream_skills": [
+    {
+      "name": "frontend-design",
+      "repository": "https://github.com/anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/frontend-design",
+      "upstream_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "installed_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3",
+          "installed_sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
+        }
+      ],
+      "modified_upstream_files": [],
+      "local_additions": [],
+      "license_notices": [
+        "LICENSE.txt"
+      ],
+      "review": "Instructions, script and reference contents reviewed before upstream script execution; no upstream script was run during installation."
+    },
+    {
+      "name": "web-design-guidelines",
+      "repository": "https://github.com/vercel-labs/agent-skills",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "upstream_path": "skills/web-design-guidelines",
+      "upstream_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f",
+          "installed_sha256": "0435ad4add5bb6bed2c11fbaad87355fb25f43b25f3ff5cbaa3e5e4e7946b76d"
+        }
+      ],
+      "modified_upstream_files": [
+        "SKILL.md"
+      ],
+      "local_additions": [
+        {
+          "path": "UPSTREAM-LICENSE-NOTICE.md",
+          "sha256": "7832d1bd63c6fef98344fc0a28c6457553a14441faebdcfd70bb9c90b2aff8bb"
+        }
+      ],
+      "license_notices": [
+        "UPSTREAM-LICENSE-NOTICE.md (MIT declaration from pinned README; no separate upstream license text)"
+      ],
+      "review": "Instructions, script and reference contents reviewed before upstream script execution; no upstream script was run during installation."
+    },
+    {
+      "name": "playwright",
+      "repository": "https://github.com/openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.curated/playwright",
+      "upstream_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda",
+          "installed_sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda"
+        },
+        {
+          "path": "NOTICE.txt",
+          "sha256": "417d5d3372914ecfd9fe102ac1d7dc2119253209f9718d6c222f616876c1904b",
+          "installed_sha256": "88d06ecc1d158fb382faee467ee3c372801a106d0f5b75846bcd9b0ca65b6ca3"
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "0ffaabcc8e0990627c4725f18bf1c7955534a796c1c199e872909de2013ce6a8",
+          "installed_sha256": "c0e22a737847be287b1ad6e73be7e0bbc27f5f93e5425d2d8c78f7a08bf720fb"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "ddda43720fc566fffa45264be8f17f7745a3cee28d5245d41d3b963bc9967230",
+          "installed_sha256": "ddda43720fc566fffa45264be8f17f7745a3cee28d5245d41d3b963bc9967230"
+        },
+        {
+          "path": "assets/playwright-small.svg",
+          "sha256": "f1d213c0f76735d8272c3d3e9fbf71fe7b894e2d1588907044c780f2c33a9732",
+          "installed_sha256": "f1d213c0f76735d8272c3d3e9fbf71fe7b894e2d1588907044c780f2c33a9732"
+        },
+        {
+          "path": "assets/playwright.png",
+          "sha256": "521669f088c838196c6c852ccc9abdd7234d8f37fc9a8a7a9af7db2d50193381",
+          "installed_sha256": "521669f088c838196c6c852ccc9abdd7234d8f37fc9a8a7a9af7db2d50193381"
+        },
+        {
+          "path": "references/cli.md",
+          "sha256": "7c069a8206ba20b9ddbdc42436b04de30bb3aa4a825ba98680757ee62e954900",
+          "installed_sha256": "d699b657a386ad44e865986839f7d12d8d3f656a5de26a1f32337fb4294f19b4"
+        },
+        {
+          "path": "references/workflows.md",
+          "sha256": "a2b5835a00ebee3906c146adf7f764f7718ea3f89a8702d86eaa135dfe0fc8c2",
+          "installed_sha256": "55629377113a7fa70027871906ea805201b0ac6ea3976fb7c16481315c296014"
+        },
+        {
+          "path": "scripts/playwright_cli.sh",
+          "sha256": "aa3fdff5d0e4556177f4dfd5f04117e772aa54f94b6a2e34b6c0edf629c6b9b5",
+          "installed_sha256": "90a0cbebc4401b018999c27a5939bf1d0054b4c8bf5fc38f2082b87839c00de5"
+        }
+      ],
+      "modified_upstream_files": [
+        "NOTICE.txt",
+        "SKILL.md",
+        "references/cli.md",
+        "references/workflows.md",
+        "scripts/playwright_cli.sh"
+      ],
+      "local_additions": [
+        {
+          "path": "references/local-setup.md",
+          "sha256": "fb2b347397354dc35aca330e2fe65c3be18b9a0dbde1dd388df71b43574957bb"
+        },
+        {
+          "path": "scripts/playwright_cli.ps1",
+          "sha256": "0e6af2165d4ab9b24da6a863b51633ee03569496ef25d63b2235776d1eb5aeef"
+        }
+      ],
+      "license_notices": [
+        "LICENSE.txt",
+        "NOTICE.txt"
+      ],
+      "review": "Instructions, script and reference contents reviewed before upstream script execution; no upstream script was run during installation."
+    }
+  ],
+  "local_skills": [
+    {
+      "name": "lens-reader-review",
+      "origin": "User-requested Lens repository instructions; no upstream repository",
+      "path": ".agents/skills/lens-reader-review/SKILL.md",
+      "sha256": "4f3d8bdbcce4f390c62ed4efd4167277671b0935fd3f098b43359a1251891040"
+    }
+  ],
+  "adaptations": [
+    "PowerShell and Bash wrappers locate existing CLI relative to their own repository-local paths.",
+    "No npx auto-downloads, global installs, execution-policy changes, or home-directory skill paths.",
+    "Playwright references use repository-local wrappers and ignored runtime/playwright artifacts.",
+    "Vercel WebFetch wording adapted to available web tools or PowerShell public-URL fetching.",
+    "Upstream Apache license texts and all assets/references are preserved; Playwright NOTICE records modifications."
+  ],
+  "missing_prerequisites": [
+    "Repository-local @playwright/cli is absent; wrappers fail clearly without installing it.",
+    "No connected browser was exposed during inventory.",
+    "No usable WSL development distribution was found; only docker-desktop was listed."
+  ],
+  "browser_testing": "Not performed. Existing Chrome/Edge files and Chromium cache do not prove launch compatibility."
+}

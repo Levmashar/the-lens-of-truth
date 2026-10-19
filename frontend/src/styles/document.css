@@ -41,10 +41,10 @@
 .document-assertion[open] .document-assertion-result::after { content: " −"; }
 .document-assertion-content { padding: 0 0 var(--space-6); max-width: 82ch; animation: enter-soft 220ms ease both; }
 .document-assessment { margin-bottom: var(--space-5); }
-.document-assessment h4 { font-size: .9rem; margin-bottom: var(--space-2); }
+.document-assessment h5 { font-size: .9rem; margin-bottom: var(--space-2); }
 .document-assessment p { color: var(--text-muted); font-size: .93rem; margin: 0; }
 .document-interpretation { padding-left: var(--space-4); border-left: 2px solid var(--quote-border); margin-block: var(--space-5); }
-.document-interpretation h4, .document-citations h4 { font-size: .88rem; margin-bottom: var(--space-3); }
+.document-interpretation h4, .document-citations h5 { font-size: .88rem; margin-bottom: var(--space-3); }
 .document-limits { color: var(--text-muted); padding-left: 1.1rem; font-size: .9rem; }
 .document-limits li + li { margin-top: var(--space-2); }
 .document-citation { margin: var(--space-5) 0; }
@@ -55,6 +55,33 @@
 .document-original-text .field-hint { margin-top: var(--space-3); }
 .document-note { color: var(--text-muted); font-size: .87rem; margin-top: var(--space-4); }
 .document-pending { color: var(--text-muted); font-size: .9rem; }
+.document-takeaway { max-width: 76ch; font-size: 1.05rem; line-height: 1.7; margin-block: var(--space-3); }
+.document-trace-links { display: inline-flex; flex-wrap: wrap; gap: .3rem .7rem; margin-left: .65rem; font-size: .75rem; font-weight: 500; vertical-align: baseline; }
+.document-completion { font-size: .86rem; font-weight: 650; margin-block: var(--space-5) var(--space-3); }
+.document-reading-section { padding-block: var(--space-6); border-bottom: 1px solid var(--border); }
+.document-reading-section .section-title, .document-detailed-checks > .section-title { font-size: 1.25rem; margin-bottom: var(--space-4); }
+.document-reading-list { list-style: none; padding: 0; margin: 0; max-width: 82ch; }
+.document-reading-list > li { padding-block: var(--space-3); line-height: 1.65; }
+.document-reading-list p { color: var(--text-muted); margin: var(--space-2) 0 0; font-size: .95rem; }
+.document-reading-result { display: block; color: var(--text-muted); font-size: .8rem; margin-top: .25rem; }
+.document-attention .document-reading-list > li { padding-left: var(--space-4); border-left: 2px solid var(--quote-border); margin-block: var(--space-3); }
+.document-detailed-checks { padding-top: var(--space-7); }
+.document-topic-title, .document-assertion-title { margin: 0; }
+.document-wording-label { color: var(--text-muted); font-size: .75rem; font-weight: 650; margin-top: 0; }
+.document-submitted-wording { white-space: pre-wrap; margin: 0 0 var(--space-5); padding-left: var(--space-4); border-left: 2px solid var(--border); line-height: 1.7; }
+.document-association-caveat { border-left: 2px solid var(--quote-border); padding-left: var(--space-4); color: var(--text-muted); line-height: 1.65; font-size: .9rem; }
+.document-citation-meta { display: flex; flex-direction: column; gap: var(--space-2); }
+.document-full-passage { border-top: 1px solid var(--border); padding-block: var(--space-3); }
+.document-full-passage blockquote { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; margin: var(--space-4) 0; }
+.document-frozen-sources { padding-top: var(--space-5); }
+.document-background { padding-block: var(--space-4); }
+.document-report summary:focus-visible, .document-report a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 3px; }
+.document-report summary { cursor: pointer; }
+.document-report a { overflow-wrap: anywhere; }
+.document-report [id] { scroll-margin-top: 6rem; }
+@media (prefers-reduced-motion: reduce) {
+  .document-report, .document-report * { animation: none !important; transition: none !important; }
+}
 @media (max-width: 600px) {
   .document-assertion > summary { grid-template-columns: 1fr; gap: var(--space-2); }
   .document-assertion-result { text-align: left; padding: 0; }

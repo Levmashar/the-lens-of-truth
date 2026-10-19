@@ -492,7 +492,7 @@ def test_report_read_never_calls_retrieval_and_rejects_modified_snapshot(
     async def forbidden(*_: object) -> object:
         raise AssertionError("Report GET must not retrieve")
 
-    monkeypatch.setattr("app.api.routes.analyses.retrieve_pubmed", forbidden)
+    monkeypatch.setattr("app.api.routes.analyses.retrieve_adaptive", forbidden)
     report = asyncio.run(get_claim_report(run.id, row.claim_id, session,
                                         Settings(app_env="development")))
     assert report.claim.text == FIXTURE_TEXT

@@ -12,7 +12,9 @@ from app.adapters.claim_extractor import (
     OpenAICompatibleClaimExtractor,
 )
 from app.adapters.crossref import CrossrefAdapter
+from app.adapters.discovery import ScholarlyDiscovery
 from app.adapters.ocr import TesseractOcrAdapter
+from app.adapters.official_web import OfficialWebDiscovery
 from app.adapters.pubmed import PubMedAdapter, RedisQueryCache
 from app.adapters.storage import LocalFilesystemUploadStorage
 from app.core.config import Settings, get_settings
@@ -178,3 +180,11 @@ def get_authoritative_adapter(settings: Settings) -> AuthoritativeAdapter | None
         manifest, max_age_days=settings.authoritative_max_update_age_days,
         verified_age_days=settings.authoritative_max_review_age_days,
     )
+
+
+def get_discovery_adapters(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> tuple[ScholarlyDiscovery, OfficialWebDiscovery]:
+    """Public metadata/page caches; no additional model or search credentials."""
+    cache = RedisQueryCache(settings.redis_url, label="Retrieval V2")
+    return ScholarlyDiscovery(cache=cache), OfficialWebDiscovery(cache=cache)

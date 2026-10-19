@@ -1,6 +1,120 @@
 # Project Context
 
-## Context-aware document mode and planner failure repair (2026-10-08)
+## Consumer claim results (2026-10-19)
+
+Claim reports now lead with a large presentation verdict, a question and one
+approved-source explanation. Evidence, check details and development diagnostics
+open separately. NEI displays “Not established by research”; scientific labels,
+qualification limits and all backend rules remain unchanged. Real retained phone
+and smoking screens plus labelled synthetic other states were inspected on desktop
+and mobile. Frontend 136 tests/build pass; frontend redeployed locally. No paid
+calls or backend changes. See [screenshots and verification](CONSUMER_RESULT_SCREEN_20261019.md).
+
+## Retrieval V2 (2026-10-19)
+
+Retrieval/query plan/Evidence Pack 2.0 now use bounded synonym/terminology and
+endpoint-stage searches, Europe PMC/OpenAlex discovery with canonical NCBI
+hydration, and controlled NHS/NLM official discovery with one allowlisted
+reference hop. Only verified content enters the frozen source graph. New
+unreviewed guidance stays background-only; reviewed manifest sources retain
+existing clinical eligibility. Full PICO qualifiers remain unchanged. Indirect
+findings have an auditable context ceiling and cannot become decisive votes.
+Historical source contracts and read-time audits remain supported.
+
+Original f0b25b24 had zero candidates because conversational filler was mandatory
+in every query and the six-token cutoff omitted the posture qualifier. Fresh
+browser run cc3007b2 now has 16 indirect research candidates, one verified
+background page and two qualified NEI assessments; source searches/records that
+could not be used are disclosed. Smoking and sunscreen controls return Supported.
+Activity and magnetic-bracelet checks retain NEI without policy changes.
+
+Full PostgreSQL backend 1,534 passed / 5 existing native OCR skips; frontend
+125/build; Ruff/mypy 204 pass. Desktop/mobile and keyboard source-disclosure
+checks completed. Both services deployed locally. Medical thresholds, models,
+prompts, source integrity and production gates remain unchanged. Model latency,
+non-PMID source admission and clinical production qualification remain open.
+See [results, exact runs, timing, tokens and limits](RETRIEVAL_V2_RESULTS_20261019.md).
+
+## Document study versions and attributed medical claims (2026-10-15)
+
+Trace of `699edaa0-e483-4fb2-931d-ad15c1d5c330`: study identity did not use exact
+publication metadata with distinctive findings; commentary classification skipped
+three factual propositions; unrelated giant abstracts inflated prompts and synchronous
+preparation blocked model deadlines. Generic version matching now requires independent
+bibliographic and literal population-bound numeric clues; ambiguous versions remain
+uncertain. Attributed medical content remains checkable with exact source/context.
+Shared-reference ownership and linked dose/endpoint grounding are repaired without
+copying dosage or weakening medical readiness.
+
+Evidence 1.1, planner prompt 1.2-2026-10-15, plan normalization 1.3, group input 1.2
+and validator 1.3 retain older audit paths. Complete selected passages/quantities remain;
+repeated parser reasons use lossless dictionary encoding. Reporting-only preparation
+omits irrelevant clinical axes, runs off the event loop, and requires finding
+attributions. One invalid-item-only coverage repair stays inside the existing deadline
+and two-call bound. Failed/zero-assessed reader state no longer announces success.
+
+Final real UI run `b40b06f3-796b-4cdd-ae59-fe621ebc833f`: 202.381s, 8 assessed /
+2 unavailable; all 13 model requests responded on attempt 1. Original report replay
+remains unchanged. All three commentator claims entered evaluation; the stronger-dose
+claim still lacks the high-risk quorum, and the immune-system interpretation remains
+unavailable. No labels forced, model/threshold/clinical policy change or production approval.
+Backend 1,510 passed / 5 skipped, frontend 123/build, Ruff and mypy 200 pass.
+See [exact outcomes, timing, tokens and limitations](DOCUMENT_VITAMIN_C_RELIABILITY_20261015.md).
+
+## Reader-first integration (2026-10-14)
+
+The approved fixture preview is now connected to the normal document result page.
+`reader-view-1.0` is a deterministic, read-only projection added **after** the
+existing report audit and historical reconstruction. Saved `document-report-1.3`
+artifacts, hashes, positions, retention and production gates remain unchanged.
+The answer leads; question-based evidence and exact excerpts open on demand;
+the original report, complete frozen passages, traces and debug replies remain
+in the advanced view. Short-claim reports retain their existing screen.
+
+The retained incomplete report still has four assessed, three unavailable and
+four background assertions. Its adjustment result is visibly flagged for review,
+not relabelled or promoted into a summary fact. Empty reporting attribution
+coverage and same-model adjustment proof remain separate backend correctness
+work; this integration does not fix or conceal them.
+
+Models/prompts/medical versions remain unchanged. Frontend 122 tests/build,
+126 relevant backend tests, Ruff and mypy 199 pass. Real Chrome desktop/mobile,
+keyboard, contrast, 200% text reflow and clipboard checks completed. No paid calls
+or human comprehension study. See [integration results](READER_FIRST_INTEGRATION_20261014.md).
+
+## Document report clarity baseline (2026-10-08)
+
+Current reading report is `document-report-1.3`, with exact historical 1.0/1.1/1.2
+reconstruction before a read-only upgrade. Source artifacts, hashes, retention,
+qualified positions, medical rules, quorum and release gates are unchanged.
+The vanilla TS/Vite page leads with a deterministic traced takeaway, unresolved
+details, qualified matches and relevant limits. Reporting badges describe fidelity
+to the paper; medical labels remain canonical. Assessed/unavailable/background/
+pending counts come from actual states, and full frozen passages are pooled.
+
+Empty grounded retrieval groups no longer trip the oversized-group adapter guard;
+failed source searches stay distinct from not found. Plan normalization 1.2 repairs
+only uniquely linked existing study ownership and separates unattributed details,
+preserving exact IDs/spans and strict ambiguous/foreign ownership rejection.
+No model or prompt change. Group input 1.1, judge 1.0, validator 1.2 and reporting
+position 1.0 remain; workflow/plan/evidence 1.0 and clinical versions below remain.
+
+Retained main report now shows seven assessed, one unavailable and three background
+items without changing its results. Five live submissions made 26 paid calls:
+fresh paragraph report HTTP 200 at 128.636 s backend/141.223 s client; unidentified
+source and mixed-topic reports also return explicit unavailable checks. Mixed-topic
+clinical validators returned empty attribution/axes arrays and failed strict
+qualification. Reporting validators also showed real bound/ID defects. These remain
+open provider-contract reliability limits, not production readiness.
+
+Models remain Paratera DeepSeek-V4.1-Flash planner/extraction/J1, provisional
+Qwen3.5-Plus J2, GLM-4.7 J3, Qwen3.8-Flash validator with thinking disabled.
+Development/debug stays enabled. Final full PostgreSQL-backed backend 1,491
+tests pass without skips/failures; frontend 102/build, Ruff and mypy 198 pass.
+Both services rebuilt/restarted; visual browser QA unavailable in this session.
+See [root causes, retained/live results and versions](DOCUMENT_REPORT_CLARITY_RESULTS_20261008.md).
+
+## Earlier document-mode snapshot and planner failure repair (2026-10-08)
 
 Paragraph inputs now preserve exact assertions, study attribution and explicit
 context links in document-plan-1.0 instead of disconnected atomic investigations.

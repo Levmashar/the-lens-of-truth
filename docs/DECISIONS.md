@@ -1,5 +1,112 @@
 # Architecture Decisions
 
+## ADR-064 - Bounded adaptive discovery with source-owned scope ceilings
+
+**Decision (2026-10-19):** Separate discovery vocabulary from the exact medical
+question. Retrieval/query-plan/Evidence Pack 2.0 use bounded terminology,
+exposure-core, endpoint-stage and design recall with complementary scholarly
+and official indexes. Hydrate scholarly leads through canonical NCBI records;
+match identity and retain full provenance, publication type and integrity.
+Deduplicate provider hits before hydration; never identify a study by topic alone.
+
+Newly discovered official pages require approved HTTPS origin, canonical/title
+identity and substantive frozen medical-body content. They remain background
+with unknown clinical approval, distinct from reviewed manifest assessments.
+One verified reference hop permits controlled society discovery. Unapproved
+URLs, snippets and unidentifiable content are excluded. The general-search RSS
+experiment ignored domain operators and was removed, not silently trusted.
+
+All PICO qualifiers remain source-owned. Indirect/background findings cannot
+supply material support/opposition even when model axes are strong. Medical
+exclusions apply to the representative source unit; a sibling/title diversity
+exclusion cannot downgrade an otherwise direct reviewed source. Clinical
+qualification/design/quantity/integrity rules and independent-judge quorum
+remain unchanged. No model or prompt changes.
+
+Bound/cache public work, record real provider attempts/latencies and actual
+reported usage, and distinguish technical retrieval failure from scoped
+scientific insufficiency. Version the new source graph and preserve old
+hashes/audits. A read-only reading guide explains retrieval coverage without
+rewriting saved labels or approving production release.
+
+**Verification:** frozen original phone hash unchanged; older retained document
+export replays unchanged with no external calls. Fresh phone NEI, smoking and
+sunscreen Supported; other evaluated NEI positions retained. Backend 1,534
+passed / 5 native OCR skips; frontend 125/build; lint/types and real browser QA.
+See [full results](RETRIEVAL_V2_RESULTS_20261019.md).
+
+## ADR-063 - Source-version evidence, attributed content and bounded coverage repair
+
+**Decision (2026-10-15):** Identify publication versions only with independent
+bibliographic clues and multiple exact source-grounded result fingerprints, retaining
+ambiguity rather than rounding or choosing by topic/recency. Preserve factual medical
+content under attribution and explicitly grounded context without converting a report
+of a study into clinical causation. Require ownership per link/owner, not only over
+their union; retain only uniquely literal coordinated dependencies.
+
+**Transport:** retain complete selected evidence/quantities and frozen provenance,
+remove irrelevant reporting selection and losslessly encode repeated parser reasons.
+Move deterministic preparation off the async loop; reporting checks do not need
+clinical-axis prompts/preparation. Validator 1.3 enforces finding-attribution coverage
+and permits one invalid-item-only repair inside the existing deadline/attempt budget.
+Audit request hashes/repair/valid-sibling merging; preserve all older contracts.
+
+**Constraints:** no model changes, weakened integrity/qualification/quorum/treatment
+safeguards, forced labels, historical rewrites, invented attributions or production
+approval. Transport success does not establish semantic qualification. Failed,
+zero-assessed results must visibly fail rather than announce successful completion.
+
+**Verification:** final real frontend submission checked 8/10 assertions, retained
+two unavailable; all 13 requests responded first try. Original frozen report audit
+unchanged; full backend 1,510 passed / 5 skipped, frontend 123/build and lint/types.
+See [measurements and remaining semantic limitations](DOCUMENT_VITAMIN_C_RELIABILITY_20261015.md).
+
+## ADR-062 - Independently versioned reader projection after audit
+
+**Decision (2026-10-14):** Following fixture preview and user approval, connect the
+reader-first screen through a deterministic `reader-view-1.0` API extension after
+existing exact historical report audits. Keep saved report 1.3 unchanged; do not
+introduce an AI summarizer or requalify historical evidence for UI wording.
+Lead with the answer/limits, reveal question-based exact evidence, and preserve
+the entire original report and development diagnostics in an advanced view.
+
+**Constraints:** no model/prompt/retrieval/medical/quorum/production change. An
+unfinished specific assertion cannot become a verified claim because a broad
+statement succeeded. Correctness review flags retain the saved position and avoid
+summarizing a disputed detail as established. Missing validator coverage and
+simultaneous-adjustment proof remain separate proposed backend fixes.
+
+**Verification:** full frontend 122/build, relevant backend 126, Ruff/mypy,
+real Chrome desktop/mobile and keyboard/clipboard/reflow checks. Retained report
+projection is exactly unchanged after removing the extension; stored hash unchanged.
+See [integration results](READER_FIRST_INTEGRATION_20261014.md).
+
+## ADR-061 - Traced document reading view without new evidence votes
+
+**Decision (2026-10-08):** Project qualified document positions, validated field
+codes and frozen source quantities into controlled plain-language explanations
+and a short traced takeaway. Separate reporting-fidelity badges from medical
+labels; count assessed, unavailable, background and pending states independently.
+Lead with unresolved details, then qualified matches and relevant limits. Pool
+full passages while preserving exact excerpts, ownership, all assertion IDs/spans,
+explicit context links and differing outcomes.
+
+**Constraint:** no summary model, new numeric-prose parser, arbitrary ratio-to-risk
+conversion, truth score, forced verdict, changed medical eligibility/quorum or
+production approval. The retained 292% detail and adjustment disagreement remain
+unresolved for their specific validated reasons. Empty retrieval means no eligible
+question, not an oversized group; exceptions must not become source-not-found.
+Only exact uniquely resolved existing study ownership can be repaired, and null
+attribution stays null when separated into a context group.
+
+**History:** report 1.3 dispatches exact earlier 1.0/1.1/1.2 projections before a
+read-only upgrade. Original hashes, audits, decisions and retention remain intact.
+Plan normalization is 1.2; all models and prompts remain unchanged. Fresh live
+mixed-topic validators returned empty clinical axes and remain unavailable rather
+than using supportive prose as evidence. Reporting contract variability and
+performance/production/browser-QA limits remain explicit. See
+[results and verification](DOCUMENT_REPORT_CLARITY_RESULTS_20261008.md).
+
 ## ADR-060 - Context-aware document evidence and reporting fidelity
 
 **Decision (2026-10-08):** Use an exact-spanned document plan and frozen shared

@@ -1,0 +1,1727 @@
+{
+  "analysis": {
+    "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+    "status": "failed",
+    "stage": "building_report",
+    "completed_stages": [
+      "extracting",
+      "normalizing",
+      "retrieving",
+      "judging",
+      "validating",
+      "aggregating",
+      "building_report"
+    ],
+    "stage_timestamps": {
+      "judging": {
+        "started_at": "2026-10-08T15:03:13.371341+00:00",
+        "completed_at": "2026-10-08T15:03:31.106027+00:00"
+      },
+      "document": {
+        "mode": "document",
+        "version": "document-workflow-1.0"
+      },
+      "extracting": {
+        "started_at": "2026-10-08T15:02:17.002178+00:00",
+        "completed_at": "2026-10-08T15:02:21.968656+00:00"
+      },
+      "retrieving": {
+        "started_at": "2026-10-08T15:03:02.488640+00:00",
+        "completed_at": "2026-10-08T15:03:13.368435+00:00"
+      },
+      "validating": {
+        "started_at": "2026-10-08T15:03:31.102926+00:00",
+        "completed_at": "2026-10-08T15:03:31.108466+00:00"
+      },
+      "aggregating": {
+        "completed_at": "2026-10-08T15:03:31.110873+00:00"
+      },
+      "normalizing": {
+        "completed_at": "2026-10-08T15:02:21.970995+00:00"
+      },
+      "building_report": {
+        "started_at": "2026-10-08T15:03:31.112968+00:00",
+        "completed_at": "2026-10-08T15:03:31.124030+00:00"
+      }
+    },
+    "claim_count": 4,
+    "completed_claims": 0,
+    "failure_code": "document_assessments_unavailable",
+    "language": "auto",
+    "input_type": "text",
+    "claims": [],
+    "screenshot_ocr": null,
+    "updated_at": "2026-10-08T15:03:31.124030Z",
+    "debug_enabled": true,
+    "document_mode": true,
+    "debug_models": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "status": "responded",
+        "failure_type": null,
+        "origin": "analysis"
+      }
+    ],
+    "debug_events": [
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "extraction",
+        "provider": "openai_compatible_claim_extractor",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 4933,
+        "response_excerpt": "{\n  \"assertions\": [\n    {\n\"assertion_id\": \"A1\",\n\"kind\": \"general_medical_assertion\",\n\"spans\": [\n{\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": \"Cigarette smoking\",\n\"comparator\": null,\n\"outcome\": \"lung cancer\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"causal\"\n},\n\"study_id\": null,\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A2\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 34, \"end\": 111, \"text\": \"The statement concerns people smoking cigarettes and developing lung cancer.\"}\n],\n\"pico\": {\n\"population\": \"people\",\n\"intervention_or_exposure\": \"smoking cigarettes\",\n\"comparator\": null,\n\"outcome\": \"developing lung cancer\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"other\"\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L1\"],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A3\",\n\"kind\": \"general_medical_assertion\",\n\"spans\": [\n{\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": \"Antibiotics\",\n\"comparator\": null,\n\"outcome\": \"bacterial pneumonia\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"causal\"\n},\n\"study_id\": null,\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A4\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 156, \"end\": 320, \"text\": \"The statement concerns people with a bacterial pneumonia infection receiving an antibiotic as treatment, rather than prevention of a future infection.\"}\n],\n\"pico\": {\n\"population\": \"people with a bacterial pneumonia infection\",\n\"intervention_or_exposure\": \"receiving an antibiotic as treatment\",\n\"comparator\": \"prevention of a future infection\",\n\"outcome\": null,\n\"timeframe\": null\n    ,\n\"claim_type\": \"other\"\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L2\"],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n\"group_id\": \"G1\",\n\"title\": \"Cigarette smoking and lung cancer\",\n\"assertion_ids\": [\"A1\", \"A2\"],\n\"study_id\": null,\n\"study_clues\": [],\n\"context_spans\": [\n{\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"}\n]\n    },\n    {\n\"group_id\": \"G2\",\n\"title\": \"Antibiotics and bacterial pneumonia\",\n\"assertion_ids\": [\"A3\", \"A4\"],\n\"study_id\": null,\n\"study_clues\": [],\n\"context_spans\": [\n{\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"}\n]\n    }\n  ],\n  \"context_links\": [\n    {\n\"link_id\": \"L1\",\n\"reference\":  {\"start\": 38, \"end\": 48, \"text\": \"The statement\"},\n\"target\": {\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"},\n\"relationship\": \"same_topic\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L2\",\n\"reference\":  {\"start\": 160, \"end\": 170, \"text\": \"The statement\"},\n\"target\": {\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"},\n\"relationship\": \"same_topic\",\n\"resolved\": true\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": null,
+        "operation_kind": "document_planning",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "prompt_version": "document-planner-1.1-2026-10-08",
+          "queue_wait_ms": 0,
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 711,
+            "completion_tokens": 954,
+            "total_tokens": 1665
+          },
+          "provider": "openai_compatible_claim_extractor",
+          "model": "DeepSeek-V4.1-Flash",
+          "latency_ms": 4933,
+          "attempt_count": 1,
+          "raw_response": "{\n  \"assertions\": [\n    {\n\"assertion_id\": \"A1\",\n\"kind\": \"general_medical_assertion\",\n\"spans\": [\n{\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": \"Cigarette smoking\",\n\"comparator\": null,\n\"outcome\": \"lung cancer\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"causal\"\n},\n\"study_id\": null,\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A2\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 34, \"end\": 111, \"text\": \"The statement concerns people smoking cigarettes and developing lung cancer.\"}\n],\n\"pico\": {\n\"population\": \"people\",\n\"intervention_or_exposure\": \"smoking cigarettes\",\n\"comparator\": null,\n\"outcome\": \"developing lung cancer\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"other\"\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L1\"],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A3\",\n\"kind\": \"general_medical_assertion\",\n\"spans\": [\n{\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"}\n],\n\"pico\": {\n\"population\": null,\n\"intervention_or_exposure\": \"Antibiotics\",\n\"comparator\": null,\n\"outcome\": \"bacterial pneumonia\",\n\"timeframe\": null\n    ,\n\"claim_type\": \"causal\"\n},\n\"study_id\": null,\n\"risk_class\": \"high\",\n\"context_link_ids\": [],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    },\n    {\n\"assertion_id\": \"A4\",\n\"kind\": \"commentary\",\n\"spans\": [\n{\"start\": 156, \"end\": 320, \"text\": \"The statement concerns people with a bacterial pneumonia infection receiving an antibiotic as treatment, rather than prevention of a future infection.\"}\n],\n\"pico\": {\n\"population\": \"people with a bacterial pneumonia infection\",\n\"intervention_or_exposure\": \"receiving an antibiotic as treatment\",\n\"comparator\": \"prevention of a future infection\",\n\"outcome\": null,\n\"timeframe\": null\n    ,\n\"claim_type\": \"other\"\n},\n\"study_id\": null,\n\"risk_class\": \"standard\",\n\"context_link_ids\": [\"L2\"],\n\"duplicate_of\": null\n    ,\n\"uncertainty_reasons\": []\n    }\n  ],\n  \"groups\": [\n    {\n\"group_id\": \"G1\",\n\"title\": \"Cigarette smoking and lung cancer\",\n\"assertion_ids\": [\"A1\", \"A2\"],\n\"study_id\": null,\n\"study_clues\": [],\n\"context_spans\": [\n{\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"}\n]\n    },\n    {\n\"group_id\": \"G2\",\n\"title\": \"Antibiotics and bacterial pneumonia\",\n\"assertion_ids\": [\"A3\", \"A4\"],\n\"study_id\": null,\n\"study_clues\": [],\n\"context_spans\": [\n{\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"}\n]\n    }\n  ],\n  \"context_links\": [\n    {\n\"link_id\": \"L1\",\n\"reference\":  {\"start\": 38, \"end\": 48, \"text\": \"The statement\"},\n\"target\": {\"start\": 0, \"end\": 33, \"text\": \"Cigarette smoking causes lung cancer.\"},\n\"relationship\": \"same_topic\",\n\"resolved\": true\n    },\n    {\n\"link_id\": \"L2\",\n\"reference\":  {\"start\": 160, \"end\": 170, \"text\": \"The statement\"},\n\"target\": {\"start\": 112, \"end\": 155, \"text\": \"Antibiotics can treat bacterial pneumonia.\"},\n\"relationship\": \"same_topic\",\n\"resolved\": true\n    }\n  ]\n}",
+          "normalization_version": "document-plan-normalization-1.2"
+        }
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "52de310e-291f-4286-ab03-81cbcd1f0315",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "6517a10a-172a-4d53-88d0-249a801e2045",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "e624631e-4dc2-4c85-8996-9ca88d051868",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 6132,
+        "response_excerpt": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G1\",\"items\":[{\"assertion_id\":\"A1\",\"status\":\"completed\",\"statements\":[{\"statement_id\":\"S1\",\"text\":\"The NCI PDQ source states that the relationship between cigarette smoking and lung cancer, and other smoking-associated malignancies, is strongly dose-dependent.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E18.U1\"],\"qualitative_finding\":\"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\"source_quantity_ids\":[],\"numeric_dependency\":false},{\"statement_id\":\"S2\",\"text\":\"A review of the literature describes the buccal epithelium as a potential surrogate marker for the field effect in cigarette smokers and a noninvasive, reliable lung cancer screening method.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E53.U1\"],\"qualitative_finding\":\"The buccal epithelium has potential as a surrogate marker for the field effect in cigarette smokers and as a noninvasive lung cancer screening method.\",\"source_quantity_ids\":[],\"numeric_dependency\":false},{\"statement_id\":\"S3\",\"text\":\"A stochastic multi-stage modeling paper reports that the risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer and that cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E73.U1\"],\"qualitative_finding\":\"Cigarette smoking plays a pivotal role in increasing lung cancer incidence rates and stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\"source_quantity_ids\":[],\"numeric_dependency\":false}],\"conclusion\":\"The cited sources consistently address the association between cigarette smoking and lung cancer, describing a strong dose-dependent relationship, a proposed screening marker, and a role in increasing incidence and driver mutations; none of the supplied sources establishes a formal causal mechanism sufficient to prove the causal claim as stated.\",\"uncertainty_reasons\":[\"The supplied sources report associations and modeling findings rather than a definitive causal demonstration.\",\"The assertion is a general causal claim, while the sources describe dose-dependence, screening potential, and mutation modeling.\"]}]}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "52de310e-291f-4286-ab03-81cbcd1f0315",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 3184,
+          "output_tokens": 454
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "4e3ec06e-2c1d-41fa-8119-c149992b1a20",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 9795,
+        "response_excerpt": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The NCI authoritative source states that the relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"qualitative_finding\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E18.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"A modeling study using data from the Nurses' Health Study and Health Professionals Follow-up Study found that cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"qualitative_finding\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S3\",\n          \"text\": \"A literature review notes that the field effect is a well-supported phenomenon where a noxious stimulus like cigarette smoking triggers genetic and molecular changes throughout the exposed organ system leading to lung cancer.\",\n          \"qualitative_finding\": \"The field effect is a well-supported phenomenon wherein a noxious stimulus triggers genetic, epigenetic and molecular changes that are widespread throughout the entire exposed organ system.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E53.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The provided sources consistently describe a strong, dose-dependent relationship and biological mechanisms linking cigarette smoking to lung cancer, supporting the association described in the assertion.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "6517a10a-172a-4d53-88d0-249a801e2045",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 3452,
+          "output_tokens": 501
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "f2dc206b-9fbe-4e69-8358-c2a0033305cd",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 5324,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [],\n      \"reason\": \"The provided sources support the claim that cigarette smoking causes lung cancer. Source E18 (NCI PDQ) explicitly states the relationship is 'strongly dose-dependent', which supports a causal link where increased exposure leads to increased risk. Source E73 describes modeling of smoking-induced lung cancer, stating smoking 'stimulates the number of driver mutations' and plays a 'pivotal role in increasing incidence rates'. This provides mechanistic and epidemiological context supporting causality. Source E53 discusses screening markers but does not directly address the causal mechanism or strength as clearly as the others, though it acknowledges the field effect caused by smoking. The combination of established dose-dependency (E18) and mechanistic modeling of carcinogenesis (E73) constitutes strong evidence for the causal claim.\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "4e3ec06e-2c1d-41fa-8119-c149992b1a20",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 2,
+          "input_tokens": 6549,
+          "output_tokens": 288
+        }
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 16544,
+        "response_excerpt": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"qualitative_finding\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E18.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"The risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer.\",\n          \"qualitative_finding\": \"The risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S3\",\n          \"text\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"qualitative_finding\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The sources consistently support a strong, dose-dependent relationship and increased incidence risk between cigarette smoking and lung cancer, though they frame it as an association or risk factor rather than making a direct causal claim.\",\n      \"uncertainty_reasons\": [\n        \"The assertion makes a direct causal claim ('causes'), while the sources describe a strongly dose-dependent relationship and a pivotal role in increasing incidence, which supports causation but uses associative language.\"\n      ]\n    }\n  ]\n}\n```",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "e624631e-4dc2-4c85-8996-9ca88d051868",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 3150,
+          "output_tokens": 455
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "23378da1-90e5-4a93-9cd0-a9e4fc950695",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 7243,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The NCI source establishes a dose-dependent relationship but does not provide specific effect sizes or risk ratios in the cited text.\",\n       \"The modeling study (E73) describes mechanistic pathways (driver mutations) rather than direct epidemiological incidence rates, serving as supporting mechanistic evidence.\",\n       \"The review (E53) discusses the 'field effect' as a general phenomenon of noxious stimuli, providing context for susceptibility but not direct causal proof for smoking specifically.\"\n      ],\n      \"reason\": \"The claim that cigarette smoking causes lung cancer is supported by authoritative public health sources stating a strongly dose-dependent relationship (S1). Mechanistic evidence from modeling studies indicates smoking stimulates driver mutations during tumorigenesis (S2), and reviews describe the field effect where noxious stimuli trigger widespread genetic changes (S3). While S2 and S3 are mechanistic/contextual, they align with and support the causal assertion established by S1. No contradictory material evidence is present.\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "f2dc206b-9fbe-4e69-8358-c2a0033305cd",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 2,
+          "input_tokens": 6396,
+          "output_tokens": 322
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 5426,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E18 is an authoritative summary establishing dose-dependence but not a primary trial.\",\n       \"E73 uses stochastic modeling of cohort data to infer mutation mechanisms, which supports causality via temporality and biological plausibility rather than direct experimental manipulation.\"\n      ],\n      \"reason\": \"The claim 'Cigarette smoking causes lung cancer' is supported by the provided sources. S1 (E18) establishes a strong dose-dependent relationship, a key criterion for causality. S2 and S3 (E73) describe cigarette smoking as playing a pivotal role in increasing incidence and stimulating driver mutations during tumorigenesis, providing mechanistic and epidemiological support for the causal link. The evidence aligns with the original claim's scope and direction.\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "23378da1-90e5-4a93-9cd0-a9e4fc950695",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 2,
+          "input_tokens": 6436,
+          "output_tokens": 279
+        }
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "f4a2faf1-c650-4b3e-b387-d044db7457e7",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "48b97f17-e712-4d9d-8d3b-54ef8c489558",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "284a12bb-033c-4bfd-b00d-bd4aec2bf58f",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_1",
+        "provider": "paratera",
+        "model": "DeepSeek-V4.1-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 4588,
+        "response_excerpt": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G2\",\"items\":[{\"assertion_id\":\"A3\",\"status\":\"completed\",\"statements\":[{\"statement_id\":\"S1\",\"text\":\"A meta-analysis of 12 studies in 2408 patients with community-acquired pneumonia reported that serum procalcitonin had a sensitivity of 0.55 and specificity of 0.76 for distinguishing bacterial from viral pneumonia, and concluded that a procalcitonin level is unlikely to reliably mandate or withhold antibiotics in these patients.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E8.U1\"],\"qualitative_finding\":\"Serum procalcitonin had limited sensitivity and specificity for distinguishing bacterial from viral pneumonia, so it is unlikely to reliably guide antibiotic administration or withholding in patients with community-acquired pneumonia.\",\"source_quantity_ids\":[\"E8.U1.Q1\",\"E8.U1.Q2\",\"E8.U1.Q3\",\"E8.U1.Q9\"],\"numeric_dependency\":true},{\"statement_id\":\"S2\",\"text\":\"A single-cell transcriptome study of 444,146 bronchoalveolar lavage fluid cells from 74 individuals, including 58 patients with bacterial pneumonia, described immune response heterogeneity and potential therapeutic targets but did not evaluate antibiotic treatment efficacy.\",\"kind\":\"study_method\",\"source_unit_ids\":[\"E21.U1\"],\"qualitative_finding\":\"A large single-cell study characterized immune responses in bacterial pneumonia and highlighted potential therapeutic targets without assessing antibiotic treatment efficacy.\",\"source_quantity_ids\":[\"E21.U1.Q1\",\"E21.U1.Q3\",\"E21.U1.Q4\"],\"numeric_dependency\":true},{\"statement_id\":\"S3\",\"text\":\"A review of new β-lactam/β-lactamase inhibitor combination antibiotics reported that cefepime/enmetazobactam, aztreonam/avibactam, and sulbactam/durlobactam are indicated for treating various infections including hospital-acquired and ventilator-associated pneumonia due to specific Gram-negative pathogens.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E41.U1\"],\"qualitative_finding\":\"New β-lactam/β-lactamase inhibitor combination antibiotics are indicated for treating several infections including hospital-acquired and ventilator-associated pneumonia caused by specific Gram-negative bacteria.\",\"source_quantity_ids\":[],\"numeric_dependency\":false}],\"conclusion\":\"The supplied sources address antibiotic use in bacterial pneumonia indirectly: one meta-analysis questions procalcitonin's ability to guide antibiotic therapy, one characterizes immune responses without testing antibiotics, and one review lists antibiotic indications for pneumonia. None directly tests whether antibiotics can treat bacterial pneumonia as a general causal claim.\",\"uncertainty_reasons\":[\"No source directly evaluates the general causal assertion that antibiotics can treat bacterial pneumonia.\",\"The meta-analysis focuses on procalcitonin's diagnostic performance rather than antibiotic efficacy.\",\"The single-cell study and review describe disease biology and drug indications, not comparative treatment outcomes.\"]}]}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "f4a2faf1-c650-4b3e-b387-d044db7457e7",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 4340,
+          "output_tokens": 619
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "436b0845-5bab-4c09-9821-0c1a098d1cd2",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_2",
+        "provider": "paratera",
+        "model": "Qwen3.5-Plus",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 7748,
+        "response_excerpt": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"A review of new antibiotic combinations indicates that specific agents like sulbactam/durlobactam are approved for the treatment of adult patients with hospital-acquired bacterial pneumonia.\",\n          \"qualitative_finding\": \"Specific antibiotic combinations are approved for the treatment of adult patients with hospital-acquired bacterial pneumonia.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E41.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"Another source notes that current therapeutic strategies for bacterial pneumonia include antibiotics, while highlighting the need for deeper understanding due to limited options beyond these treatments.\",\n          \"qualitative_finding\": \"Current therapeutic strategies for bacterial pneumonia include antibiotics but remain limited beyond these treatments.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E21.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The provided sources confirm that antibiotics are a current therapeutic strategy and that specific new antibiotic combinations are indicated for treating bacterial pneumonia, supporting the assertion that antibiotics can treat the condition.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "48b97f17-e712-4d9d-8d3b-54ef8c489558",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 4894,
+          "output_tokens": 367
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "5ebf41ff-fc88-4585-8108-0418cff093c9",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "judge_3",
+        "provider": "paratera",
+        "model": "GLM-4.7",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 10844,
+        "response_excerpt": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"A meta-analysis of procalcitonin-guided therapy trials states that bacterial pneumonia requires antibiotic therapy, whereas viral pneumonia does not.\",\n          \"qualitative_finding\": \"A meta-analysis of procalcitonin-guided therapy trials states that bacterial pneumonia requires antibiotic therapy, whereas viral pneumonia does not.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E8.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"New beta-lactam/beta-lactamase inhibitor combination antibiotics are indicated for the treatment of hospital-acquired bacterial pneumonia and ventilator-associated bacterial pneumonia due to specific resistant pathogens.\",\n          \"qualitative_finding\": \"New beta-lactam/beta-lactamase inhibitor combination antibiotics are indicated for the treatment of hospital-acquired bacterial pneumonia and ventilator-associated bacterial pneumonia due to specific resistant pathogens.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E41.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The sources support the assertion that antibiotics treat bacterial pneumonia: E8 explicitly states bacterial pneumonia requires antibiotic therapy, and E41 details specific newly approved antibiotic indications for hospital-acquired and ventilator-associated bacterial pneumonia.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "284a12bb-033c-4bfd-b00d-bd4aec2bf58f",
+        "operation_kind": "document_judge",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 1,
+          "input_tokens": 4373,
+          "output_tokens": 375
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "calling",
+        "failure_type": null,
+        "http_status": null,
+        "elapsed_ms": 0,
+        "response_excerpt": null,
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "1153bf20-0c48-4fab-9314-509538eeeda1",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": null
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 3993,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E41 is a review of approved indications, not a randomized trial demonstrating efficacy.\",\n       \"E21 describes the landscape of treatment options but does not provide direct evidence of antibiotic efficacy.\"\n      ],\n      \"reason\": \"The claim 'Antibiotics can treat bacterial pneumonia' is supported by E41, which lists specific antibiotics (e.g., sulbactam/durlobactam) as indicated for hospital-acquired bacterial pneumonia. This establishes that antibiotics are used for this purpose. E21 supports the context that antibiotics are current therapeutic strategies. The evidence aligns with the claim's scope regarding treatment capability.\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "5ebf41ff-fc88-4585-8108-0418cff093c9",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 2,
+          "input_tokens": 7540,
+          "output_tokens": 252
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 7297,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The provided sources discuss diagnostic limitations of procalcitonin, immune pathogenesis mechanisms, and specific indications for new antibiotics against resistant bacteria.\",\n       \"No source directly evaluates the general efficacy of standard antibiotic treatment for bacterial pneumonia compared to no treatment or placebo.\",\n       \"E41 confirms that specific antibiotics are indicated for treating certain types of bacterial pneumonia (HAP/VAP), which supports the claim's capability but does not provide broad clinical trial evidence for all cases.\"\n      ],\n      \"reason\": \"The original claim 'Antibiotics can treat bacterial pneumonia' is a general medical fact. The frozen sources do not contain direct comparative efficacy data (e.g., RCTs of antibiotics vs placebo) for this general claim. E8 discusses diagnostics, E21 discusses pathogenesis, and E41 lists indications for specific new antibiotics. While E41 implies treatment capability for specific severe infections, it does not establish the general causal effect of antibiotics on bacterial pneumonia outcomes in a way that validates the broad claim with high strength. The findings are largely contextual or limited to specific sub-scenarios (diagnostics, mechanism, specific drug approvals).\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "436b0845-5bab-4c09-9821-0c1a098d1cd2",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 2,
+          "input_tokens": 8049,
+          "output_tokens": 353
+        }
+      },
+      {
+        "role": "semantic_validator",
+        "provider": "paratera",
+        "model": "Qwen3.8-Flash",
+        "attempt": 1,
+        "status": "responded",
+        "failure_type": null,
+        "http_status": 200,
+        "elapsed_ms": 6718,
+        "response_excerpt": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E8 establishes the clinical premise that bacterial pneumonia requires antibiotics but does not provide direct efficacy data for the treatment itself.\",\n       \"E41 confirms regulatory indications for specific antibiotic combinations in resistant bacterial pneumonia, supporting the capability claim without establishing universal efficacy.\"\n      ],\n      \"reason\": \"The original claim asserts that antibiotics can treat bacterial pneumonia. Source E8 (meta-analysis) explicitly states that 'bacterial pneumonia... requires antibiotic therapy,' establishing the medical necessity and standard of care context. Source E41 (review) details specific beta-lactam/beta-lactamase inhibitor combinations indicated for the treatment of hospital-acquired and ventilator-associated bacterial pneumonia caused by resistant pathogens. Together, these sources support the claim that antibiotics are used to treat bacterial pneumonia. E8 provides the diagnostic/therapeutic rationale (distinguishing bacterial from viral), while E41 provides concrete examples of approved treatments for specific bacterial etiologies. The evidence supports the general capability ('can treat') rather than a universal guarantee for all cases, which aligns with the claim's scope.\"\n    }\n  ]\n}",
+        "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+        "claim_id": null,
+        "judge_run_id": null,
+        "statement_ids": [],
+        "evidence_ids": [],
+        "validation_run_id": null,
+        "call_id": "1153bf20-0c48-4fab-9314-509538eeeda1",
+        "operation_kind": "document_validation",
+        "semantic_revision_number": 0,
+        "response_metadata": {
+          "queue_wait_ms": 3,
+          "input_tokens": 7608,
+          "output_tokens": 339
+        }
+      }
+    ]
+  },
+  "document_http": 200,
+  "document": {
+    "groups": [
+      {
+        "title": "Cigarette smoking and lung cancer",
+        "counts": {
+          "total": 2,
+          "pending": 0,
+          "assessed": 0,
+          "processed": 2,
+          "background": 1,
+          "unavailable": 1
+        },
+        "status": "completed",
+        "sources": [],
+        "group_id": "G1",
+        "assertions": [
+          {
+            "kind": "general_medical_assertion",
+            "text": "Cigarette smoking causes lung cancer.",
+            "status": "unavailable",
+            "heading": "Medical claim: lung cancer",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+            "assertion_id": "A1",
+            "duplicate_of": null,
+            "failure_kind": "insufficient_validated_assessments",
+            "reason_codes": [],
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 37,
+                "text": "Cigarette smoking causes lung cancer.",
+                "start": 0
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "medical_evidence",
+            "field_diagnostics": [],
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "association_caveat": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "display_parent_group_id": null
+          },
+          {
+            "kind": "commentary",
+            "text": "The statement concerns people smoking cigarettes and developing lung cancer.",
+            "status": "not_checkable",
+            "heading": "Background wording",
+            "citations": [],
+            "explanation": "This wording was retained as background, not independently assessed. Comparative or interpretive wording here has not been verified.",
+            "assertion_id": "A2",
+            "duplicate_of": null,
+            "failure_kind": null,
+            "reason_codes": [],
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 114,
+                "text": "The statement concerns people smoking cigarettes and developing lung cancer.",
+                "start": 38
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "medical_evidence",
+            "field_diagnostics": [],
+            "aggregation_reason": "",
+            "association_caveat": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null,
+            "display_parent_group_id": null
+          }
+        ],
+        "source_match": {
+          "url": null,
+          "title": null,
+          "reason": "No reported study is attributed.",
+          "status": "not_applicable",
+          "candidates": [],
+          "search_state": "not_applicable",
+          "discrepancies": []
+        },
+        "processing_status": "finished",
+        "display_parent_group_id": null
+      },
+      {
+        "title": "Antibiotics and bacterial pneumonia",
+        "counts": {
+          "total": 2,
+          "pending": 0,
+          "assessed": 0,
+          "processed": 2,
+          "background": 1,
+          "unavailable": 1
+        },
+        "status": "completed",
+        "sources": [],
+        "group_id": "G2",
+        "assertions": [
+          {
+            "kind": "general_medical_assertion",
+            "text": "Antibiotics can treat bacterial pneumonia.",
+            "status": "unavailable",
+            "heading": "Medical claim: bacterial pneumonia",
+            "citations": [],
+            "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+            "assertion_id": "A3",
+            "duplicate_of": null,
+            "failure_kind": "insufficient_validated_assessments",
+            "reason_codes": [],
+            "result_label": "unable_to_verify_reliably",
+            "source_spans": [
+              {
+                "end": 157,
+                "text": "Antibiotics can treat bacterial pneumonia.",
+                "start": 115
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "medical_evidence",
+            "field_diagnostics": [],
+            "aggregation_reason": "INSUFFICIENT_QUALIFIED_JUDGES",
+            "association_caveat": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "qualified_assessments": 0,
+            "medical_interpretation": {
+              "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+              "result_label": "unable_to_verify_reliably"
+            },
+            "display_parent_group_id": null
+          },
+          {
+            "kind": "commentary",
+            "text": "The statement concerns people with a bacterial pneumonia infection receiving an antibiotic as treatment, rather than prevention of a future infection.",
+            "status": "not_checkable",
+            "heading": "Background wording",
+            "citations": [],
+            "explanation": "This wording was retained as background, not independently assessed. Comparative or interpretive wording here has not been verified.",
+            "assertion_id": "A4",
+            "duplicate_of": null,
+            "failure_kind": null,
+            "reason_codes": [],
+            "result_label": null,
+            "source_spans": [
+              {
+                "end": 308,
+                "text": "The statement concerns people with a bacterial pneumonia infection receiving an antibiotic as treatment, rather than prevention of a future infection.",
+                "start": 158
+              }
+            ],
+            "numeric_detail": null,
+            "partial_detail": null,
+            "source_reports": null,
+            "assessment_target": "medical_evidence",
+            "field_diagnostics": [],
+            "aggregation_reason": "",
+            "association_caveat": null,
+            "reporting_fidelity": null,
+            "interpretation_limits": [],
+            "medical_interpretation": null,
+            "display_parent_group_id": null
+          }
+        ],
+        "source_match": {
+          "url": null,
+          "title": null,
+          "reason": "No reported study is attributed.",
+          "status": "not_applicable",
+          "candidates": [],
+          "search_state": "not_applicable",
+          "discrepancies": []
+        },
+        "processing_status": "finished",
+        "display_parent_group_id": null
+      }
+    ],
+    "status": "failed",
+    "version": "document-report-1.2",
+    "progress": {
+      "total": 4,
+      "pending": 0,
+      "assessed": 0,
+      "processed": 4,
+      "background": 2,
+      "unavailable": 2,
+      "groups_total": 2,
+      "assertions_total": 4,
+      "groups_completed": 2,
+      "assertions_completed": 0
+    },
+    "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+    "completion_text": "Finished with limitations",
+    "reading_summary": {
+      "limits": [],
+      "matches": [],
+      "attention": [
+        {
+          "text": "Medical claim: lung cancer",
+          "status": "unavailable",
+          "evidence": [],
+          "group_ids": [
+            "G1"
+          ],
+          "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+          "result_label": "unable_to_verify_reliably",
+          "assertion_ids": [
+            "A1"
+          ]
+        },
+        {
+          "text": "Medical claim: bacterial pneumonia",
+          "status": "unavailable",
+          "evidence": [],
+          "group_ids": [
+            "G2"
+          ],
+          "explanation": "Too few independently validated assessments completed this check. This is a processing limitation, not a finding that the claim is false.",
+          "result_label": "unable_to_verify_reliably",
+          "assertion_ids": [
+            "A3"
+          ]
+        }
+      ],
+      "main_takeaway": [
+        {
+          "text": "No statement has a qualified matching or supporting result yet.",
+          "evidence": [],
+          "group_ids": [],
+          "assertion_ids": []
+        },
+        {
+          "text": "Checks for medical claim: lung cancer; medical claim: bacterial pneumonia could not be completed. 2 background or repeated items were retained without an independent assessment.",
+          "evidence": [],
+          "group_ids": [
+            "G1",
+            "G2"
+          ],
+          "assertion_ids": [
+            "A1",
+            "A3"
+          ]
+        }
+      ]
+    },
+    "production_qualified": false,
+    "debug_group_runs": [
+      {
+        "slot": 1,
+        "items": {
+          "A1": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "DeepSeek-V4.1-Flash",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "deepseek",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 1,
+            "model": "DeepSeek-V4.1-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "52de310e-291f-4286-ab03-81cbcd1f0315",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:02:40.387081+00:00",
+            "input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+            "started_at": "2026-10-08T15:02:40.387206+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:02:46.519256+00:00",
+            "input_tokens": 3184,
+            "raw_response": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G1\",\"items\":[{\"assertion_id\":\"A1\",\"status\":\"completed\",\"statements\":[{\"statement_id\":\"S1\",\"text\":\"The NCI PDQ source states that the relationship between cigarette smoking and lung cancer, and other smoking-associated malignancies, is strongly dose-dependent.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E18.U1\"],\"qualitative_finding\":\"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\"source_quantity_ids\":[],\"numeric_dependency\":false},{\"statement_id\":\"S2\",\"text\":\"A review of the literature describes the buccal epithelium as a potential surrogate marker for the field effect in cigarette smokers and a noninvasive, reliable lung cancer screening method.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E53.U1\"],\"qualitative_finding\":\"The buccal epithelium has potential as a surrogate marker for the field effect in cigarette smokers and as a noninvasive lung cancer screening method.\",\"source_quantity_ids\":[],\"numeric_dependency\":false},{\"statement_id\":\"S3\",\"text\":\"A stochastic multi-stage modeling paper reports that the risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer and that cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E73.U1\"],\"qualitative_finding\":\"Cigarette smoking plays a pivotal role in increasing lung cancer incidence rates and stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\"source_quantity_ids\":[],\"numeric_dependency\":false}],\"conclusion\":\"The cited sources consistently address the association between cigarette smoking and lung cancer, describing a strong dose-dependent relationship, a proposed screening marker, and a role in increasing incidence and driver mutations; none of the supplied sources establishes a formal causal mechanism sufficient to prove the causal claim as stated.\",\"uncertainty_reasons\":[\"The supplied sources report associations and modeling findings rather than a definitive causal demonstration.\",\"The assertion is a general causal claim, while the sources describe dose-dependence, screening potential, and mutation modeling.\"]}]}",
+            "finish_reason": "stop",
+            "output_tokens": 454,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 6132
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "4e3ec06e-2c1d-41fa-8119-c149992b1a20",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:02:46.621306+00:00",
+          "input_hash": "8c6f3f53be234b2c028b47cb5340dfe50f74488377659ada6f47dd22b1f9643f",
+          "started_at": "2026-10-08T15:02:46.621472+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:02:51.945004+00:00",
+          "input_tokens": 6549,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [],\n      \"reason\": \"The provided sources support the claim that cigarette smoking causes lung cancer. Source E18 (NCI PDQ) explicitly states the relationship is 'strongly dose-dependent', which supports a causal link where increased exposure leads to increased risk. Source E73 describes modeling of smoking-induced lung cancer, stating smoking 'stimulates the number of driver mutations' and plays a 'pivotal role in increasing incidence rates'. This provides mechanistic and epidemiological context supporting causality. Source E53 discusses screening markers but does not directly address the causal mechanism or strength as clearly as the others, though it acknowledges the field effect caused by smoking. The combination of established dose-dependency (E18) and mechanistic modeling of carcinogenesis (E73) constitutes strong evidence for the causal claim.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 288,
+          "queue_wait_ms": 2,
+          "provider_latency_ms": 5324
+        },
+        "group_input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "813b29647cd21c4ba7e9b8a521e8e76c2d25b345cfb840824265dd9f4af36a98",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "4e3ec06e-2c1d-41fa-8119-c149992b1a20",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:02:46.621306+00:00",
+            "input_hash": "8c6f3f53be234b2c028b47cb5340dfe50f74488377659ada6f47dd22b1f9643f",
+            "started_at": "2026-10-08T15:02:46.621472+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:02:51.945004+00:00",
+            "input_tokens": 6549,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [],\n      \"reason\": \"The provided sources support the claim that cigarette smoking causes lung cancer. Source E18 (NCI PDQ) explicitly states the relationship is 'strongly dose-dependent', which supports a causal link where increased exposure leads to increased risk. Source E73 describes modeling of smoking-induced lung cancer, stating smoking 'stimulates the number of driver mutations' and plays a 'pivotal role in increasing incidence rates'. This provides mechanistic and epidemiological context supporting causality. Source E53 discusses screening markers but does not directly address the causal mechanism or strength as clearly as the others, though it acknowledges the field effect caused by smoking. The combination of established dose-dependency (E18) and mechanistic modeling of carcinogenesis (E73) constitutes strong evidence for the causal claim.\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 288,
+            "queue_wait_ms": 2,
+            "provider_latency_ms": 5324
+          }
+        ]
+      },
+      {
+        "slot": 2,
+        "items": {
+          "A1": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "Qwen3.5-Plus",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "qwen",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 2,
+            "model": "Qwen3.5-Plus",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "6517a10a-172a-4d53-88d0-249a801e2045",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:02:40.391456+00:00",
+            "input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+            "started_at": "2026-10-08T15:02:40.391541+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:02:50.186854+00:00",
+            "input_tokens": 3452,
+            "raw_response": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The NCI authoritative source states that the relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"qualitative_finding\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E18.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"A modeling study using data from the Nurses' Health Study and Health Professionals Follow-up Study found that cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"qualitative_finding\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S3\",\n          \"text\": \"A literature review notes that the field effect is a well-supported phenomenon where a noxious stimulus like cigarette smoking triggers genetic and molecular changes throughout the exposed organ system leading to lung cancer.\",\n          \"qualitative_finding\": \"The field effect is a well-supported phenomenon wherein a noxious stimulus triggers genetic, epigenetic and molecular changes that are widespread throughout the entire exposed organ system.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E53.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The provided sources consistently describe a strong, dose-dependent relationship and biological mechanisms linking cigarette smoking to lung cancer, supporting the association described in the assertion.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 501,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 9795
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "f2dc206b-9fbe-4e69-8358-c2a0033305cd",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:02:50.287077+00:00",
+          "input_hash": "3483ce5b97dda2b3d77791b2ca3908375b5273d450376b4f4a3bd9d5dd956e29",
+          "started_at": "2026-10-08T15:02:50.287241+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:02:57.529956+00:00",
+          "input_tokens": 6396,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The NCI source establishes a dose-dependent relationship but does not provide specific effect sizes or risk ratios in the cited text.\",\n       \"The modeling study (E73) describes mechanistic pathways (driver mutations) rather than direct epidemiological incidence rates, serving as supporting mechanistic evidence.\",\n       \"The review (E53) discusses the 'field effect' as a general phenomenon of noxious stimuli, providing context for susceptibility but not direct causal proof for smoking specifically.\"\n      ],\n      \"reason\": \"The claim that cigarette smoking causes lung cancer is supported by authoritative public health sources stating a strongly dose-dependent relationship (S1). Mechanistic evidence from modeling studies indicates smoking stimulates driver mutations during tumorigenesis (S2), and reviews describe the field effect where noxious stimuli trigger widespread genetic changes (S3). While S2 and S3 are mechanistic/contextual, they align with and support the causal assertion established by S1. No contradictory material evidence is present.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 322,
+          "queue_wait_ms": 2,
+          "provider_latency_ms": 7243
+        },
+        "group_input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "813b29647cd21c4ba7e9b8a521e8e76c2d25b345cfb840824265dd9f4af36a98",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "f2dc206b-9fbe-4e69-8358-c2a0033305cd",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:02:50.287077+00:00",
+            "input_hash": "3483ce5b97dda2b3d77791b2ca3908375b5273d450376b4f4a3bd9d5dd956e29",
+            "started_at": "2026-10-08T15:02:50.287241+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:02:57.529956+00:00",
+            "input_tokens": 6396,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The NCI source establishes a dose-dependent relationship but does not provide specific effect sizes or risk ratios in the cited text.\",\n       \"The modeling study (E73) describes mechanistic pathways (driver mutations) rather than direct epidemiological incidence rates, serving as supporting mechanistic evidence.\",\n       \"The review (E53) discusses the 'field effect' as a general phenomenon of noxious stimuli, providing context for susceptibility but not direct causal proof for smoking specifically.\"\n      ],\n      \"reason\": \"The claim that cigarette smoking causes lung cancer is supported by authoritative public health sources stating a strongly dose-dependent relationship (S1). Mechanistic evidence from modeling studies indicates smoking stimulates driver mutations during tumorigenesis (S2), and reviews describe the field effect where noxious stimuli trigger widespread genetic changes (S3). While S2 and S3 are mechanistic/contextual, they align with and support the causal assertion established by S1. No contradictory material evidence is present.\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 322,
+            "queue_wait_ms": 2,
+            "provider_latency_ms": 7243
+          }
+        ]
+      },
+      {
+        "slot": 3,
+        "items": {
+          "A1": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "GLM-4.7",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "glm",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 3,
+            "model": "GLM-4.7",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "e624631e-4dc2-4c85-8996-9ca88d051868",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:02:40.396071+00:00",
+            "input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+            "started_at": "2026-10-08T15:02:40.396206+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:02:56.940029+00:00",
+            "input_tokens": 3150,
+            "raw_response": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent.\",\n          \"qualitative_finding\": \"The relationship between cigarette smoking and lung cancer is strongly dose-dependent\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E18.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"The risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer.\",\n          \"qualitative_finding\": \"The risk of cigarette smoking plays a pivotal role in increasing the incidence rates of lung cancer\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S3\",\n          \"text\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes.\",\n          \"qualitative_finding\": \"Cigarette smoking stimulates the number of driver mutations during lung tumorigenesis in both sexes\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E73.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The sources consistently support a strong, dose-dependent relationship and increased incidence risk between cigarette smoking and lung cancer, though they frame it as an association or risk factor rather than making a direct causal claim.\",\n      \"uncertainty_reasons\": [\n        \"The assertion makes a direct causal claim ('causes'), while the sources describe a strongly dose-dependent relationship and a pivotal role in increasing incidence, which supports causation but uses associative language.\"\n      ]\n    }\n  ]\n}\n```",
+            "finish_reason": "stop",
+            "output_tokens": 455,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 16544
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "23378da1-90e5-4a93-9cd0-a9e4fc950695",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:02:57.040482+00:00",
+          "input_hash": "b22d945f982bbc85e5513f556130070ea61b49c0b5c23d2af5afe3c0c8a9ac2a",
+          "started_at": "2026-10-08T15:02:57.040643+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:03:02.466416+00:00",
+          "input_tokens": 6436,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E18 is an authoritative summary establishing dose-dependence but not a primary trial.\",\n       \"E73 uses stochastic modeling of cohort data to infer mutation mechanisms, which supports causality via temporality and biological plausibility rather than direct experimental manipulation.\"\n      ],\n      \"reason\": \"The claim 'Cigarette smoking causes lung cancer' is supported by the provided sources. S1 (E18) establishes a strong dose-dependent relationship, a key criterion for causality. S2 and S3 (E73) describe cigarette smoking as playing a pivotal role in increasing incidence and stimulating driver mutations during tumorigenesis, providing mechanistic and epidemiological support for the causal link. The evidence aligns with the original claim's scope and direction.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 279,
+          "queue_wait_ms": 2,
+          "provider_latency_ms": 5426
+        },
+        "group_input_hash": "3a19e7f188005762f1b673f0425fdaf82320556b0563f9026cc11ff1473073db",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "813b29647cd21c4ba7e9b8a521e8e76c2d25b345cfb840824265dd9f4af36a98",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "23378da1-90e5-4a93-9cd0-a9e4fc950695",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:02:57.040482+00:00",
+            "input_hash": "b22d945f982bbc85e5513f556130070ea61b49c0b5c23d2af5afe3c0c8a9ac2a",
+            "started_at": "2026-10-08T15:02:57.040643+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:02.466416+00:00",
+            "input_tokens": 6436,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G1\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A1\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E18 is an authoritative summary establishing dose-dependence but not a primary trial.\",\n       \"E73 uses stochastic modeling of cohort data to infer mutation mechanisms, which supports causality via temporality and biological plausibility rather than direct experimental manipulation.\"\n      ],\n      \"reason\": \"The claim 'Cigarette smoking causes lung cancer' is supported by the provided sources. S1 (E18) establishes a strong dose-dependent relationship, a key criterion for causality. S2 and S3 (E73) describe cigarette smoking as playing a pivotal role in increasing incidence and stimulating driver mutations during tumorigenesis, providing mechanistic and epidemiological support for the causal link. The evidence aligns with the original claim's scope and direction.\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 279,
+            "queue_wait_ms": 2,
+            "provider_latency_ms": 5426
+          }
+        ]
+      },
+      {
+        "slot": 2,
+        "items": {
+          "A3": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "Qwen3.5-Plus",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "qwen",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 2,
+            "model": "Qwen3.5-Plus",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "48b97f17-e712-4d9d-8d3b-54ef8c489558",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:03:13.426239+00:00",
+            "input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+            "started_at": "2026-10-08T15:03:13.426364+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:21.174065+00:00",
+            "input_tokens": 4894,
+            "raw_response": "{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"A review of new antibiotic combinations indicates that specific agents like sulbactam/durlobactam are approved for the treatment of adult patients with hospital-acquired bacterial pneumonia.\",\n          \"qualitative_finding\": \"Specific antibiotic combinations are approved for the treatment of adult patients with hospital-acquired bacterial pneumonia.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E41.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"Another source notes that current therapeutic strategies for bacterial pneumonia include antibiotics, while highlighting the need for deeper understanding due to limited options beyond these treatments.\",\n          \"qualitative_finding\": \"Current therapeutic strategies for bacterial pneumonia include antibiotics but remain limited beyond these treatments.\",\n          \"kind\": \"study_method\",\n          \"source_unit_ids\": [\n            \"E21.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The provided sources confirm that antibiotics are a current therapeutic strategy and that specific new antibiotic combinations are indicated for treating bacterial pneumonia, supporting the assertion that antibiotics can treat the condition.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 367,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 7748
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "5ebf41ff-fc88-4585-8108-0418cff093c9",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:03:21.261434+00:00",
+          "input_hash": "7ca89734d7ff00ec8841a9ba3577f9e95abcc0c4824afa5e0651e88af94aa799",
+          "started_at": "2026-10-08T15:03:21.261605+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:03:25.254559+00:00",
+          "input_tokens": 7540,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E41 is a review of approved indications, not a randomized trial demonstrating efficacy.\",\n       \"E21 describes the landscape of treatment options but does not provide direct evidence of antibiotic efficacy.\"\n      ],\n      \"reason\": \"The claim 'Antibiotics can treat bacterial pneumonia' is supported by E41, which lists specific antibiotics (e.g., sulbactam/durlobactam) as indicated for hospital-acquired bacterial pneumonia. This establishes that antibiotics are used for this purpose. E21 supports the context that antibiotics are current therapeutic strategies. The evidence aligns with the claim's scope regarding treatment capability.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 252,
+          "queue_wait_ms": 2,
+          "provider_latency_ms": 3993
+        },
+        "group_input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "1a6e33638e33962f227a007cc327ed3473fb06241d08c8b309c873f8aac21fe0",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "5ebf41ff-fc88-4585-8108-0418cff093c9",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:03:21.261434+00:00",
+            "input_hash": "7ca89734d7ff00ec8841a9ba3577f9e95abcc0c4824afa5e0651e88af94aa799",
+            "started_at": "2026-10-08T15:03:21.261605+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:25.254559+00:00",
+            "input_tokens": 7540,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E41 is a review of approved indications, not a randomized trial demonstrating efficacy.\",\n       \"E21 describes the landscape of treatment options but does not provide direct evidence of antibiotic efficacy.\"\n      ],\n      \"reason\": \"The claim 'Antibiotics can treat bacterial pneumonia' is supported by E41, which lists specific antibiotics (e.g., sulbactam/durlobactam) as indicated for hospital-acquired bacterial pneumonia. This establishes that antibiotics are used for this purpose. E21 supports the context that antibiotics are current therapeutic strategies. The evidence aligns with the claim's scope regarding treatment capability.\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 252,
+            "queue_wait_ms": 2,
+            "provider_latency_ms": 3993
+          }
+        ]
+      },
+      {
+        "slot": 1,
+        "items": {
+          "A3": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "DeepSeek-V4.1-Flash",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "deepseek",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 1,
+            "model": "DeepSeek-V4.1-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "f4a2faf1-c650-4b3e-b387-d044db7457e7",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:03:13.421386+00:00",
+            "input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+            "started_at": "2026-10-08T15:03:13.421538+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:18.009901+00:00",
+            "input_tokens": 4340,
+            "raw_response": "{\"version\":\"document-judge-1.0\",\"group_id\":\"G2\",\"items\":[{\"assertion_id\":\"A3\",\"status\":\"completed\",\"statements\":[{\"statement_id\":\"S1\",\"text\":\"A meta-analysis of 12 studies in 2408 patients with community-acquired pneumonia reported that serum procalcitonin had a sensitivity of 0.55 and specificity of 0.76 for distinguishing bacterial from viral pneumonia, and concluded that a procalcitonin level is unlikely to reliably mandate or withhold antibiotics in these patients.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E8.U1\"],\"qualitative_finding\":\"Serum procalcitonin had limited sensitivity and specificity for distinguishing bacterial from viral pneumonia, so it is unlikely to reliably guide antibiotic administration or withholding in patients with community-acquired pneumonia.\",\"source_quantity_ids\":[\"E8.U1.Q1\",\"E8.U1.Q2\",\"E8.U1.Q3\",\"E8.U1.Q9\"],\"numeric_dependency\":true},{\"statement_id\":\"S2\",\"text\":\"A single-cell transcriptome study of 444,146 bronchoalveolar lavage fluid cells from 74 individuals, including 58 patients with bacterial pneumonia, described immune response heterogeneity and potential therapeutic targets but did not evaluate antibiotic treatment efficacy.\",\"kind\":\"study_method\",\"source_unit_ids\":[\"E21.U1\"],\"qualitative_finding\":\"A large single-cell study characterized immune responses in bacterial pneumonia and highlighted potential therapeutic targets without assessing antibiotic treatment efficacy.\",\"source_quantity_ids\":[\"E21.U1.Q1\",\"E21.U1.Q3\",\"E21.U1.Q4\"],\"numeric_dependency\":true},{\"statement_id\":\"S3\",\"text\":\"A review of new β-lactam/β-lactamase inhibitor combination antibiotics reported that cefepime/enmetazobactam, aztreonam/avibactam, and sulbactam/durlobactam are indicated for treating various infections including hospital-acquired and ventilator-associated pneumonia due to specific Gram-negative pathogens.\",\"kind\":\"study_finding\",\"source_unit_ids\":[\"E41.U1\"],\"qualitative_finding\":\"New β-lactam/β-lactamase inhibitor combination antibiotics are indicated for treating several infections including hospital-acquired and ventilator-associated pneumonia caused by specific Gram-negative bacteria.\",\"source_quantity_ids\":[],\"numeric_dependency\":false}],\"conclusion\":\"The supplied sources address antibiotic use in bacterial pneumonia indirectly: one meta-analysis questions procalcitonin's ability to guide antibiotic therapy, one characterizes immune responses without testing antibiotics, and one review lists antibiotic indications for pneumonia. None directly tests whether antibiotics can treat bacterial pneumonia as a general causal claim.\",\"uncertainty_reasons\":[\"No source directly evaluates the general causal assertion that antibiotics can treat bacterial pneumonia.\",\"The meta-analysis focuses on procalcitonin's diagnostic performance rather than antibiotic efficacy.\",\"The single-cell study and review describe disease biology and drug indications, not comparative treatment outcomes.\"]}]}",
+            "finish_reason": "stop",
+            "output_tokens": 619,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 4588
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "436b0845-5bab-4c09-9821-0c1a098d1cd2",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:03:18.097028+00:00",
+          "input_hash": "a232ad75e159faf01dd72f92765d9636112c385835b6c9478d7961208d4e682a",
+          "started_at": "2026-10-08T15:03:18.097232+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:03:25.394085+00:00",
+          "input_tokens": 8049,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The provided sources discuss diagnostic limitations of procalcitonin, immune pathogenesis mechanisms, and specific indications for new antibiotics against resistant bacteria.\",\n       \"No source directly evaluates the general efficacy of standard antibiotic treatment for bacterial pneumonia compared to no treatment or placebo.\",\n       \"E41 confirms that specific antibiotics are indicated for treating certain types of bacterial pneumonia (HAP/VAP), which supports the claim's capability but does not provide broad clinical trial evidence for all cases.\"\n      ],\n      \"reason\": \"The original claim 'Antibiotics can treat bacterial pneumonia' is a general medical fact. The frozen sources do not contain direct comparative efficacy data (e.g., RCTs of antibiotics vs placebo) for this general claim. E8 discusses diagnostics, E21 discusses pathogenesis, and E41 lists indications for specific new antibiotics. While E41 implies treatment capability for specific severe infections, it does not establish the general causal effect of antibiotics on bacterial pneumonia outcomes in a way that validates the broad claim with high strength. The findings are largely contextual or limited to specific sub-scenarios (diagnostics, mechanism, specific drug approvals).\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 353,
+          "queue_wait_ms": 2,
+          "provider_latency_ms": 7297
+        },
+        "group_input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "1a6e33638e33962f227a007cc327ed3473fb06241d08c8b309c873f8aac21fe0",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "436b0845-5bab-4c09-9821-0c1a098d1cd2",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:03:18.097028+00:00",
+            "input_hash": "a232ad75e159faf01dd72f92765d9636112c385835b6c9478d7961208d4e682a",
+            "started_at": "2026-10-08T15:03:18.097232+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:25.394085+00:00",
+            "input_tokens": 8049,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"The provided sources discuss diagnostic limitations of procalcitonin, immune pathogenesis mechanisms, and specific indications for new antibiotics against resistant bacteria.\",\n       \"No source directly evaluates the general efficacy of standard antibiotic treatment for bacterial pneumonia compared to no treatment or placebo.\",\n       \"E41 confirms that specific antibiotics are indicated for treating certain types of bacterial pneumonia (HAP/VAP), which supports the claim's capability but does not provide broad clinical trial evidence for all cases.\"\n      ],\n      \"reason\": \"The original claim 'Antibiotics can treat bacterial pneumonia' is a general medical fact. The frozen sources do not contain direct comparative efficacy data (e.g., RCTs of antibiotics vs placebo) for this general claim. E8 discusses diagnostics, E21 discusses pathogenesis, and E41 lists indications for specific new antibiotics. While E41 implies treatment capability for specific severe infections, it does not establish the general causal effect of antibiotics on bacterial pneumonia outcomes in a way that validates the broad claim with high strength. The findings are largely contextual or limited to specific sub-scenarios (diagnostics, mechanism, specific drug approvals).\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 353,
+            "queue_wait_ms": 2,
+            "provider_latency_ms": 7297
+          }
+        ]
+      },
+      {
+        "slot": 3,
+        "items": {
+          "A3": {
+            "failure": "2 validation errors for ValidationItem12\nsemantic.attributions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nsemantic.assessments\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short",
+            "position": null,
+            "exception_type": "ValueError"
+          }
+        },
+        "model": "GLM-4.7",
+        "version": "document-judge-audit-1.0",
+        "provider": "paratera",
+        "model_family": "glm",
+        "judge_version": "document-judge-1.0",
+        "judge_attempts": [
+          {
+            "slot": 3,
+            "model": "GLM-4.7",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "284a12bb-033c-4bfd-b00d-bd4aec2bf58f",
+            "provider": "paratera",
+            "operation": "document_judge",
+            "queued_at": "2026-10-08T15:03:13.430419+00:00",
+            "input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+            "started_at": "2026-10-08T15:03:13.430537+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:24.274510+00:00",
+            "input_tokens": 4373,
+            "raw_response": "```json\n{\n  \"version\": \"document-judge-1.0\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"statements\": [\n        {\n          \"statement_id\": \"S1\",\n          \"text\": \"A meta-analysis of procalcitonin-guided therapy trials states that bacterial pneumonia requires antibiotic therapy, whereas viral pneumonia does not.\",\n          \"qualitative_finding\": \"A meta-analysis of procalcitonin-guided therapy trials states that bacterial pneumonia requires antibiotic therapy, whereas viral pneumonia does not.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E8.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        },\n        {\n          \"statement_id\": \"S2\",\n          \"text\": \"New beta-lactam/beta-lactamase inhibitor combination antibiotics are indicated for the treatment of hospital-acquired bacterial pneumonia and ventilator-associated bacterial pneumonia due to specific resistant pathogens.\",\n          \"qualitative_finding\": \"New beta-lactam/beta-lactamase inhibitor combination antibiotics are indicated for the treatment of hospital-acquired bacterial pneumonia and ventilator-associated bacterial pneumonia due to specific resistant pathogens.\",\n          \"kind\": \"study_finding\",\n          \"source_unit_ids\": [\n            \"E41.U1\"\n          ],\n          \"source_quantity_ids\": [],\n          \"numeric_dependency\": false\n        }\n      ],\n      \"conclusion\": \"The sources support the assertion that antibiotics treat bacterial pneumonia: E8 explicitly states bacterial pneumonia requires antibiotic therapy, and E41 details specific newly approved antibiotic indications for hospital-acquired and ventilator-associated bacterial pneumonia.\",\n      \"uncertainty_reasons\": []\n    }\n  ]\n}\n```",
+            "finish_reason": "stop",
+            "output_tokens": 375,
+            "queue_wait_ms": 1,
+            "provider_latency_ms": 10844
+          }
+        ],
+        "document_sha256": "d34589eb79298d2b7f835175b0d0043835bea9fcc76adbc04a57d5eb534bdc1f",
+        "validation_call": {
+          "slot": 3,
+          "model": "Qwen3.8-Flash",
+          "status": "responded",
+          "attempt": 1,
+          "call_id": "1153bf20-0c48-4fab-9314-509538eeeda1",
+          "provider": "paratera",
+          "operation": "document_validation",
+          "queued_at": "2026-10-08T15:03:24.360023+00:00",
+          "input_hash": "d99134560489e777427645805aae79c661a70b50c42a2562b4aea4647c3b150c",
+          "started_at": "2026-10-08T15:03:24.360229+00:00",
+          "http_status": 200,
+          "completed_at": "2026-10-08T15:03:31.078234+00:00",
+          "input_tokens": 7608,
+          "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E8 establishes the clinical premise that bacterial pneumonia requires antibiotics but does not provide direct efficacy data for the treatment itself.\",\n       \"E41 confirms regulatory indications for specific antibiotic combinations in resistant bacterial pneumonia, supporting the capability claim without establishing universal efficacy.\"\n      ],\n      \"reason\": \"The original claim asserts that antibiotics can treat bacterial pneumonia. Source E8 (meta-analysis) explicitly states that 'bacterial pneumonia... requires antibiotic therapy,' establishing the medical necessity and standard of care context. Source E41 (review) details specific beta-lactam/beta-lactamase inhibitor combinations indicated for the treatment of hospital-acquired and ventilator-associated bacterial pneumonia caused by resistant pathogens. Together, these sources support the claim that antibiotics are used to treat bacterial pneumonia. E8 provides the diagnostic/therapeutic rationale (distinguishing bacterial from viral), while E41 provides concrete examples of approved treatments for specific bacterial etiologies. The evidence supports the general capability ('can treat') rather than a universal guarantee for all cases, which aligns with the claim's scope.\"\n    }\n  ]\n}",
+          "finish_reason": "stop",
+          "output_tokens": 339,
+          "queue_wait_ms": 3,
+          "provider_latency_ms": 6718
+        },
+        "group_input_hash": "bece0a0bc6fb1c0e00c983f8b5daa896cf6af2ecfe92f8833371c135bd18be74",
+        "validation_version": "document-validation-1.2",
+        "group_evidence_hash": "1a6e33638e33962f227a007cc327ed3473fb06241d08c8b309c873f8aac21fe0",
+        "validation_attempts": [
+          {
+            "slot": 3,
+            "model": "Qwen3.8-Flash",
+            "status": "responded",
+            "attempt": 1,
+            "call_id": "1153bf20-0c48-4fab-9314-509538eeeda1",
+            "provider": "paratera",
+            "operation": "document_validation",
+            "queued_at": "2026-10-08T15:03:24.360023+00:00",
+            "input_hash": "d99134560489e777427645805aae79c661a70b50c42a2562b4aea4647c3b150c",
+            "started_at": "2026-10-08T15:03:24.360229+00:00",
+            "http_status": 200,
+            "completed_at": "2026-10-08T15:03:31.078234+00:00",
+            "input_tokens": 7608,
+            "raw_response": "{\n  \"version\": \"document-validation-1.2\",\n  \"group_id\": \"G2\",\n  \"items\": [\n    {\n      \"assertion_id\": \"A3\",\n      \"status\": \"completed\",\n      \"attributions\": [],\n      \"semantic\": {\n       \"attributions\": [\n       ],\n       \"assessments\": [\n       ],\n       \"missing_material_evidence\": false\n      },\n      \"reporting_checks\": [],\n      \"interpretation_limits\": [\n       \"E8 establishes the clinical premise that bacterial pneumonia requires antibiotics but does not provide direct efficacy data for the treatment itself.\",\n       \"E41 confirms regulatory indications for specific antibiotic combinations in resistant bacterial pneumonia, supporting the capability claim without establishing universal efficacy.\"\n      ],\n      \"reason\": \"The original claim asserts that antibiotics can treat bacterial pneumonia. Source E8 (meta-analysis) explicitly states that 'bacterial pneumonia... requires antibiotic therapy,' establishing the medical necessity and standard of care context. Source E41 (review) details specific beta-lactam/beta-lactamase inhibitor combinations indicated for the treatment of hospital-acquired and ventilator-associated bacterial pneumonia caused by resistant pathogens. Together, these sources support the claim that antibiotics are used to treat bacterial pneumonia. E8 provides the diagnostic/therapeutic rationale (distinguishing bacterial from viral), while E41 provides concrete examples of approved treatments for specific bacterial etiologies. The evidence supports the general capability ('can treat') rather than a universal guarantee for all cases, which aligns with the claim's scope.\"\n    }\n  ]\n}",
+            "finish_reason": "stop",
+            "output_tokens": 339,
+            "queue_wait_ms": 3,
+            "provider_latency_ms": 6718
+          }
+        ]
+      }
+    ],
+    "debug_errors": []
+  },
+  "claims": {
+    "analysis_id": "b23b81eb-06d9-408c-8cbe-523a671d2cc9",
+    "claims": []
+  },
+  "reports": [],
+  "elapsed_ms": 79874,
+  "history": [
+    {
+      "elapsed_ms": 2107,
+      "status": "running",
+      "stage": "extracting",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 8137,
+      "status": "running",
+      "stage": "retrieving",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 26256,
+      "status": "running",
+      "stage": "judging",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 38512,
+      "status": "running",
+      "stage": "validating",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 49188,
+      "status": "running",
+      "stage": "retrieving",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 60334,
+      "status": "running",
+      "stage": "judging",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 70993,
+      "status": "running",
+      "stage": "validating",
+      "completed": 0
+    },
+    {
+      "elapsed_ms": 77884,
+      "status": "failed",
+      "stage": "building_report",
+      "completed": 0
+    }
+  ],
+  "document_history": [
+    {
+      "elapsed_ms": 2112,
+      "http_status": 404,
+      "progress": null
+    },
+    {
+      "elapsed_ms": 8144,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 14196,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 20232,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 26359,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 32485,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 38755,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 45170,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 2,
+        "assessed": 0,
+        "processed": 2,
+        "background": 2,
+        "unavailable": 0,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 0,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 51751,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 1,
+        "assessed": 0,
+        "processed": 3,
+        "background": 2,
+        "unavailable": 1,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 1,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 58324,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 1,
+        "assessed": 0,
+        "processed": 3,
+        "background": 2,
+        "unavailable": 1,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 1,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 64963,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 1,
+        "assessed": 0,
+        "processed": 3,
+        "background": 2,
+        "unavailable": 1,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 1,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 71851,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 1,
+        "assessed": 0,
+        "processed": 3,
+        "background": 2,
+        "unavailable": 1,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 1,
+        "assertions_completed": 0
+      }
+    },
+    {
+      "elapsed_ms": 78908,
+      "http_status": 200,
+      "progress": {
+        "total": 4,
+        "pending": 0,
+        "assessed": 0,
+        "processed": 4,
+        "background": 2,
+        "unavailable": 2,
+        "groups_total": 2,
+        "assertions_total": 4,
+        "groups_completed": 2,
+        "assertions_completed": 0
+      }
+    }
+  ]
+}

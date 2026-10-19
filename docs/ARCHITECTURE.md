@@ -1,5 +1,86 @@
 # Architecture
 
+## Adaptive retrieval contracts (2026-10-19)
+
+`retrieval/v2.py` freezes Evidence Pack/query-plan 2.0 after bounded PubMed,
+Europe PMC/OpenAlex discovery and official NHS/NLM discovery. Scholarly leads
+require canonical NCBI content and matching PMID/title/DOI before inclusion;
+providers never supply judge votes. Deduplicate canonical IDs before hydration.
+Discovery-query metadata is hash-bound to its document. Existing PubMed/Crossref
+publication-type and integrity checks still govern clinical qualification.
+Unindexed leads stay diagnostic; search snippets are never evidence.
+
+Specific, exposure-core, endpoint-stage and design queries preserve the original
+PICO. Limits are five PubMed searches, two searches per scholarly provider,
+forty canonical records, two official index searches and three verified page
+fetches including at most one published-reference hop. Providers run concurrently
+where independent; NCBI throttling and Crossref concurrency/deadlines remain.
+Public results/metadata/HTML are cached; clinical verdicts are not.
+
+Frozen `retrieval_context` separates direct candidates, related indirect sources,
+background guidance and irrelevant material. A direct candidate is not support.
+The semantic qualifier neutralizes findings backed only by indirect/background
+sources, including strong model axes. Newly discovered guidance has unknown
+clinical approval/currency and cannot become decisive. Reviewed-manifest source
+roles remain governed by existing clinical policy. Title-diversification flags
+are not medical scope mismatches.
+
+Document groups use document-evidence-2.0, the existing twelve-query union and
+two supplementary discovery questions, retaining all assertion/source/quantity
+ownership. Group input, validator and medical contracts are unchanged. Pack
+1.0–1.5 and document-evidence 1.0/1.1 retain historical reconstruction; future
+retrieval changes must preserve the 2.0 interpretation for frozen artifacts.
+
+An optional retrieval-coverage-2.0 reading-guide projection follows the existing
+report/provenance/release checks. It distinguishes search failure, no usable
+sources, related-only coverage and matching candidates without changing saved
+verdicts. Partial source failures and missing PICO detail remain visible.
+See [verification](RETRIEVAL_V2_RESULTS_20261019.md).
+
+## Document reliability contracts (2026-10-15)
+
+New evidence snapshots use 1.1; old 1.0 snapshots remain parseable and audited under
+their frozen source match. New matching uses exact publication title/independent
+metadata and multiple literal population-bound numeric fingerprints to discriminate
+versions; topic similarity and recency are insufficient. Reporting selection stays
+on the identified publication or conservative publication-level context.
+
+Planner prompt 1.2 and normalization 1.3 preserve attributed medical propositions,
+per-assertion link ownership, uniquely literal coordinated antecedents and explicit
+shared medical context. Atomic normalization cannot erase a grounded document link;
+generic dose ellipsis can inherit one uniquely linked terminology-grounded agent and
+endpoint while preserving its own wording and without inheriting numeric dosage.
+
+Group input 1.2 losslessly dictionary-encodes repeated quantity normalization reasons.
+Input 1.0/1.1 and quantity-table 1.0 continue to reconstruct exactly. New reporting
+preparation omits irrelevant clinical-axis work; preparation/qualification run off
+the async event loop. Validator 1.3 separates completed attribution from genuine
+unavailability. An invalid-item-only repair may run once within the existing 75-second
+deadline/two-attempt bound; request hashes and merged replies are audited, valid
+siblings retained. Validator 1.0/1.1/1.2 keep their original qualification paths.
+
+Judge independence, maximum account concurrency three, clinical policy/quantity
+guards/quorum, report 1.3, reader 1.0 and production gates remain unchanged.
+See [live verification](DOCUMENT_VITAMIN_C_RELIABILITY_20261015.md).
+
+## Reader presentation projection (2026-10-14)
+
+`document/reader.py` derives `reader-view-1.0` only after document GET passes the
+existing exact audit/reconstruction. This ephemeral API extension owns presentation
+topics, sentences with field/assertion/owned-source references, questions and exact
+citation excerpts. It performs no model call, qualification, numeric conversion or
+artifact write. Existing structured claim numeric text may be shown explicitly as
+unverified, with a plan-field reference. Presentation states distinguish unfinished
+checks from completed inconclusive assessments; they are not a new verdict enum.
+
+The shared vanilla TS reader validates presentation references, renders evidence
+disclosures and keeps the existing complete report/debug components in an advanced
+view. Raw replies remain behind the backend development gate. Poll updates preserve
+disclosures and focus. Old responses without this extension retain the original
+renderer; invalid reader references visibly fall back to that verified original.
+Pure background groups remain accessible there. Fixture data is excluded from the
+normal production bundle. See [integration](READER_FIRST_INTEGRATION_20261014.md).
+
 ## Context-aware document mode (development/test, 2026-10-08)
 
 `document/` owns exact-spanned plans, source-grounded context links, per-group
@@ -37,11 +118,23 @@ I/O before serving the saved public projection. Changed provenance/results fail
 closed. Source-view 1.0 and validator 1.0/1.1 dispatch retain historical behavior.
 Consent, redaction, retention and ordinary V2.4/V2.5 audits remain intact.
 
-Current contracts: document workflow/plan/evidence/report 1.0, planner prompt
-1.1-2026-10-08, group input 1.1, group judge 1.0, validator 1.2. The existing
+The read-only report 1.3 projection first verifies and exactly reconstructs the
+saved report under its own 1.0/1.1/1.2/1.3 contract. Earlier projections then receive
+the current reading view without rewriting artifacts or performing external I/O.
+Qualified field/reason codes and owned frozen quantities feed controlled templates
+and a traced takeaway. Reporting display labels are distinct from medical labels;
+counts separate assessed, unavailable, background and pending states. Excerpts keep
+whole sentences/table context and link to pooled full passages. No summary model,
+new medical vote or document-wide score is introduced. Empty eligible retrieval
+groups skip searches/fetches while oversized groups retain the existing bounds.
+Plan normalization 1.2 repairs uniquely resolved study ownership only and separates
+unattributed details without inventing bibliographic/medical facts.
+
+Current contracts: document workflow/plan/evidence 1.0, report 1.3, planner prompt
+1.1-2026-10-08, plan normalization 1.2, group input 1.1, group judge 1.0, validator 1.2. The existing
 vanilla TS/Vite UI renders expandable source/reporting/medical views, literal
 citations, uncertainty and partial progress. See
-[live timeline, tests and remaining release/performance limits](DOCUMENT_MODE_RESULTS_20261008.md).
+[current reading view, tests and remaining release/performance limits](DOCUMENT_REPORT_CLARITY_RESULTS_20261008.md).
 
 ## V2.4 structured numeric transport (current development/test)
 

@@ -89,10 +89,13 @@ def test_saved_document_progress_and_readable_report_require_no_calls(document_c
     response = client.get(f"/v1/analyses/{session.run.id}/document")
     assert response.status_code == 200
     report = response.json()
-    assert report["version"] == "document-report-1.0"
+    assert report["version"] == "document-report-1.3"
     assert report["progress"]["assertions_total"] == 2
     assert len(report["groups"][0]["assertions"]) == 2
     assert "debug_group_runs" not in report
+    assert report["reader_view"]["version"] == "reader-view-1.0"
+    assert report["reader_view"]["topics"]
+    assert "raw_response" not in str(report["reader_view"])
 
 
 def test_debug_group_responses_exclude_request_prompts(document_client) -> None:
@@ -108,6 +111,47 @@ def test_debug_group_responses_exclude_request_prompts(document_client) -> None:
         "group_input" not in run and "validation_input" not in run
         for run in report["debug_group_runs"]
     )
+
+
+@pytest.mark.parametrize(
+    "saved_version", ["document-report-1.0", "document-report-1.1", "document-report-1.2"]
+)
+def test_historical_report_get_upgrades_only_after_exact_audit_without_mutation(
+    document_client, saved_version
+):
+    from app.document.models import DocumentPlan
+    from app.document.report import build_document_report
+
+    client, session = document_client
+    plan_row = next(row for row in session.rows if row.kind == "plan")
+    evidence = {
+        row.group_id: row.snapshot_json for row in session.rows if row.kind == "group_evidence"
+    }
+    runs = {"G1": [row.snapshot_json for row in session.rows if row.kind == "group_judge"]}
+    report_row = next(row for row in session.rows if row.kind == "report")
+    legacy = build_document_report(
+        session.run.id,
+        DocumentPlan.model_validate(plan_row.snapshot_json),
+        evidence,
+        runs,
+        app_env="test",
+        status="completed",
+        version=saved_version,
+    )
+    report_row.snapshot_json = legacy
+    report_row.version = legacy["version"]
+    report_row.snapshot_hash = canonical_document_hash(legacy)
+    before_hash = report_row.snapshot_hash
+    response = client.get(f"/v1/analyses/{session.run.id}/document")
+    assert response.status_code == 200
+    assert response.json()["version"] == "document-report-1.3"
+    assert response.json()["historical_projection"] == {
+        "version": saved_version,
+        "snapshot_hash": before_hash,
+    }
+    assert report_row.snapshot_json == legacy
+    assert report_row.snapshot_hash == before_hash
+    assert canonical_document_hash(report_row.snapshot_json) == before_hash
 
 
 @pytest.mark.parametrize("state", ["missing", "expired"])

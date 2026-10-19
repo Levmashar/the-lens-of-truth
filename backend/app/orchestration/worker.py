@@ -17,6 +17,7 @@ from app.dependencies import (
     get_authoritative_adapter,
     get_claim_extractor,
     get_crossref_adapter,
+    get_discovery_adapters,
     get_pubmed_adapter,
 )
 from app.judging.config import configured_slots, is_search_enabled_model
@@ -26,7 +27,7 @@ from app.models.analysis_run import AnalysisRunRecord
 from app.models.claim import Claim
 from app.orchestration.service import AnalysisOrchestrator
 from app.retrieval.models import ClaimSnapshot, EvidencePack, RetrievalResult
-from app.retrieval.service import retrieve_pubmed
+from app.retrieval.v2 import retrieve_adaptive
 from app.schemas.analysis import CreateAnalysisRequest
 from app.services.analysis_ingestion import AnalysisIngestionService
 from app.validation.joint import validate_joint
@@ -104,8 +105,9 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
     )
 
     async def retrieval(claim: ClaimSnapshot) -> RetrievalResult:
-        return await retrieve_pubmed(
-            claim, get_pubmed_adapter(settings),
+        discovery, web = get_discovery_adapters(settings)
+        return await retrieve_adaptive(
+            claim, get_pubmed_adapter(settings), discovery=discovery, web=web,
             selected_limit=settings.pubmed_selected_evidence_limit,
             max_per_document=settings.pubmed_max_passages_per_document,
             crossref=get_crossref_adapter(settings),
@@ -155,7 +157,8 @@ def build_orchestrator(settings: Settings) -> AnalysisOrchestrator:
         with SessionLocal() as risk_session:
             claim_record = risk_session.get(Claim, judge.claim_id)
             risk_class = claim_record.risk_class if claim_record else "unknown"
-        if settings.app_env in {"development", "test"} and pack.evidence_pack_version == "1.5":
+        if (settings.app_env in {"development", "test"}
+                and pack.evidence_pack_version in {"1.5", "2.0"}):
             # Measured single checker; it is never a judge vote. Reuse the existing
             # third slot's transport/credentials, not another account or model API.
             checker = configured_development_validator(settings, timeout_seconds=75)

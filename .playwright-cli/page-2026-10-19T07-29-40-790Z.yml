@@ -1,0 +1,19 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - button "The Lens of Truth, home" [ref=f1e5] [cursor=pointer]
+      - generic [ref=f1e7]:
+        - link "How it works" [ref=f1e8] [cursor=pointer]:
+          - /url: /#method
+        - button "Switch to dark mode" [ref=f1e9] [cursor=pointer]:
+          - generic [ref=f1e11]: Dark mode
+  - main [ref=f1e12]:
+    - generic [ref=f1e13]:
+      - heading "Your claim check" [level=1] [ref=f1e15]
+      - status [ref=f1e16]
+      - generic "Loading analysis" [ref=f1e18]
+      - button "Check another claim" [ref=f1e21] [cursor=pointer]
+  - contentinfo [ref=f1e22]:
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]: The Lens of Truth
+      - generic [ref=f1e25]: Health claims, checked against research.

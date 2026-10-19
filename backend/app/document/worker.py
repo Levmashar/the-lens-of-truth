@@ -15,6 +15,7 @@ from app.dependencies import (
     build_entity_linker,
     get_authoritative_adapter,
     get_crossref_adapter,
+    get_discovery_adapters,
     get_pubmed_adapter,
 )
 from app.document.evaluation import evaluate_group
@@ -155,6 +156,7 @@ async def run_document(
                         continue
                     checkpoint(analysis_id, "retrieving")
                     async with asyncio.timeout(settings.analysis_retrieval_timeout_seconds):
+                        discovery, web = get_discovery_adapters(settings)
                         snapshot = await retrieve_document_group(
                             analysis_id,
                             plan,
@@ -165,6 +167,7 @@ async def run_document(
                             fulltext=fulltext,
                             linker=linker,
                             source_cache=source_cache,
+                            discovery=discovery, web=web,
                         )
                     evidence[group.group_id] = snapshot.model_dump(mode="json")
                     persist(analysis_id, "group_evidence", evidence[group.group_id], group.group_id)

@@ -35,6 +35,7 @@ class RetrievalQuery(FrozenModel):
     family: Literal[
         "mesh", "lexical", "relation", "distinctive", "endpoint",
         "automatic", "lay_variant",
+        "expanded", "broad_context", "discovery",
     ]
     query: str
     source_fields: tuple[str, ...]
@@ -42,7 +43,7 @@ class RetrievalQuery(FrozenModel):
 
 
 class QueryPlan(FrozenModel):
-    version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"] = "1.2"
+    version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "2.0"] = "1.2"
     source: Literal["pubmed"] = "pubmed"
     claim_type: ClaimType | None = None
     queries: tuple[RetrievalQuery, ...]
@@ -197,6 +198,17 @@ class PubMedDocument(FrozenModel):
     authoritative: AuthoritativeMetadata | None = None
     relationship_analysis: RelationshipAnalysis | None = None
     evidence_role_hint: Literal["direct", "contextual", "incompatible"] | None = None
+    retrieval_context: "RetrievalContext | None" = Field(
+        default=None, exclude_if=lambda value: value is None)
+
+
+class RetrievalContext(FrozenModel):
+    """Search relevance only; direct never means scientifically established."""
+    classification: Literal["direct", "related_indirect", "background_guidance", "irrelevant"]
+    matched_fields: tuple[str, ...] = ()
+    missing_qualifiers: tuple[str, ...] = ()
+    discovery_providers: tuple[str, ...] = ()
+    identity_basis: str
 
 
 class PubMedFetchResult(FrozenModel):
@@ -246,7 +258,7 @@ class RankedPassage(FrozenModel):
 
 
 class RetrievalDiagnostics(FrozenModel):
-    status: Literal["ok", "no_results", "partial_metadata"]
+    status: Literal["ok", "no_results", "partial_metadata", "failed"]
     query_count: int
     cache_hits: int = 0
     pmids_found: int = 0
@@ -259,6 +271,7 @@ class RetrievalDiagnostics(FrozenModel):
     doi_coverage: int = 0
     search_executions: tuple["QueryExecution", ...] = ()
     authoritative_statuses: dict[str, str] = Field(default_factory=dict)
+    adaptive: dict[str, object] | None = Field(default=None, exclude_if=lambda value: value is None)
 
 
 class QueryExecution(FrozenModel):
@@ -273,7 +286,7 @@ class QueryExecution(FrozenModel):
 
 
 class EvidencePack(FrozenModel):
-    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"] = "1.4"
+    evidence_pack_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "2.0"] = "1.4"
     claim_id: UUID
     claim_snapshot: ClaimSnapshot
     query_plan: QueryPlan

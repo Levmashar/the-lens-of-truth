@@ -35,7 +35,8 @@ from app.pipeline.claim_types import ClaimType
 from app.pipeline.numeric_effect import numeric_effect
 from app.pipeline.pico import NormalizedPico
 
-DOCUMENT_PLANNER_PROMPT_VERSION = "document-planner-1.1-2026-10-08"
+DOCUMENT_PLANNER_PROMPT_VERSION = "document-planner-1.2-2026-10-15"
+DOCUMENT_PLAN_NORMALIZATION_VERSION = "document-plan-normalization-1.3"
 _SENTENCE = re.compile(r"[^.!?]+(?:[.!?]+|$)", re.S)
 
 
@@ -115,7 +116,19 @@ Groups preferably have no more than eight checkable assertions; every assertion 
 to exactly one group. Include exact study_clues and useful context_spans. Repeated
 verbatim assertions may identify duplicate_of while retaining every occurrence.
 Never merge different endpoints, numbers, polarities, populations or studies.
-Commentary remains represented and visibly not-checkable. No truth labels.
+Quoted, attributed and indirect MEDICAL assertions remain independently checkable.
+'Some commentators argue that drug X prevents disease Y' contains a factual
+general_medical_assertion, not uncheckable commentary. Preserve the attribution
+in the exact source span; assess the medical proposition separately from whether
+someone said it. Do not attribute a commentator's inference to a study. A source
+note or a purely subjective opinion may remain commentary. Do not turn speculative
+wording into established facts. Resolve 'higher doses', 'protection' and omitted
+agents/endpoints using explicit context links, never guessed medical context.
+Resolving a speaker ('they' -> commentators) does not resolve a medical agent or
+endpoint. Link inherited medical wording to the preceding medical clause itself.
+Separate population-specific numerical findings (e.g. adults vs children) while
+retaining each result's complete subject, endpoint and population through links.
+No truth labels.
 Classify risk_class as standard/high/unknown. Retain high-risk medical-treatment
 or safety framing; ordinary study-reporting/method/sample facts can be standard.
 """
@@ -231,7 +244,7 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
         if start > previous_end:
             gap = text[previous_end:start]
             words = re.findall(r"\w+", gap.casefold())
-            if words and all(word in {"a", "an", "the"} for word in words):
+            if words and all(word in {"a", "an", "the", "and"} for word in words):
                 revised = SourceSpan(
                     start=previous_end, end=span.end, text=text[previous_end : span.end]
                 )
@@ -245,6 +258,9 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
     owner_link_ids = {
         item.assertion_id: list(item.context_link_ids) for item in proposal.assertions
     }
+    next_link_number = (
+        max((int(link.link_id[1:]) for link in proposal.context_links), default=0) + 1
+    )
     for link in proposal.context_links:
         owners = tuple(
             item
@@ -292,6 +308,60 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
                 unresolved_owners.update(owner.assertion_id for owner in owners)
                 warnings.append(f"unresolved_context_reference:{link.link_id}")
                 continue
+        # Membership in the UNION of owners does not establish ownership for
+        # each assertion. Preserve a uniquely adjacent coordinated ellipsis
+        # only through a new exact reference to its literal preceding clause.
+        containing = tuple(
+            owner
+            for owner in owners
+            if any(
+                span.start <= reference.start < reference.end <= span.end
+                for span in source_spans[owner.assertion_id]
+            )
+        )
+        for owner in owners:
+            if owner in containing:
+                continue
+            owner_link_ids[owner.assertion_id].remove(link.link_id)
+            coordinated_target = (
+                source_spans[containing[0].assertion_id][0] if len(containing) == 1 else None
+            )
+            coordinated_span = source_spans[owner.assertion_id][0]
+            connector = (
+                text[coordinated_target.end : coordinated_span.start]
+                if coordinated_target and coordinated_target.end <= coordinated_span.start
+                else ""
+            )
+            coordinated = bool(
+                coordinated_target
+                and owner.study_id == containing[0].study_id
+                and coordinated_target.end <= coordinated_span.start
+                and (
+                    connector.strip() == "and"
+                    or (
+                        not connector.strip() and re.match(r"\s*and\b", coordinated_span.text, re.I)
+                    )
+                )
+            )
+            if coordinated:
+                new_id = f"L{next_link_number}"
+                next_link_number += 1
+                repaired_links.append(
+                    ContextLink(
+                        link_id=new_id,
+                        reference=coordinated_span,
+                        target=coordinated_target,
+                        relationship="reported_result",
+                        resolved=True,
+                    )
+                )
+                owner_link_ids[owner.assertion_id].append(new_id)
+                warnings.append(f"literal_coordinated_context:{owner.assertion_id}:{new_id}")
+            else:
+                unresolved_owners.add(owner.assertion_id)
+                warnings.append(f"unresolved_context_owner:{owner.assertion_id}:{link.link_id}")
+        owners = containing
+        owner_spans = tuple(span for owner in owners for span in source_spans[owner.assertion_id])
         antecedent_span = None
         if link.target is not None:
             preceding = tuple(
@@ -325,7 +395,15 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
                     try:
                         antecedent_span = _span_in_owners(link.target, text, preceding)
                     except ValueError:
-                        warnings.append(f"unresolved_context_target:{link.link_id}")
+                        try:
+                            # Explicit literal antecedents may span coordinated
+                            # assertions. Unique source text is still required.
+                            literal_target = _span(link.target, text)
+                            if literal_target.end > reference.start:
+                                raise ValueError("Context antecedent must precede reference")
+                            antecedent_span = literal_target
+                        except ValueError:
+                            warnings.append(f"unresolved_context_target:{link.link_id}")
         repaired_links.append(
             link.model_copy(
                 update={
@@ -344,7 +422,7 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
     assertions: list[DocumentAssertion] = []
     for item in proposal.assertions:
         spans = source_spans[item.assertion_id]
-        proposed_link_ids = {link.link_id for link in proposal.context_links}
+        proposed_link_ids = {link.link_id for link in proposal.context_links} | set(link_map)
         if any(lid not in proposed_link_ids for lid in owner_link_ids[item.assertion_id]):
             raise ValueError("Unknown proposed context link")
         kept_link_ids = tuple(lid for lid in owner_link_ids[item.assertion_id] if lid in link_map)
@@ -376,11 +454,27 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
         unresolved = item.assertion_id in unresolved_owners or any(
             not link_map[lid].resolved for lid in kept_link_ids
         )
+        kind = item.kind
+        if (
+            kind == "commentary"
+            and fields["intervention_or_exposure"]
+            and fields["outcome"]
+            and claim_type not in {None, ClaimType.OTHER, ClaimType.METHODOLOGY}
+            and re.search(
+                r"\b(?:prevent|treat|cure|reduce|increase|cut|halve|protect|cause|provide|shorten)\w*\b",
+                spans[0].text,
+                re.I,
+            )
+        ):
+            # A factual medical proposition does not become uncheckable merely
+            # because its original speaker/attribution is preserved in the span.
+            kind = "general_medical_assertion"
+            warnings.append(f"attributed_medical_assertion:{item.assertion_id}")
         assertions.append(
             DocumentAssertion(
                 assertion_id=item.assertion_id,
                 ordinal=len(assertions) + 1,
-                kind=item.kind,
+                kind=kind,
                 spans=spans,
                 normalized_text=spans[0].text,
                 pico=pico,
@@ -393,7 +487,7 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
                 context_link_ids=kept_link_ids,
                 duplicate_of=item.duplicate_of,
                 planning_status="not_checkable"
-                if item.kind == "commentary"
+                if kind == "commentary"
                 else "unresolved"
                 if unresolved
                 else "ready",
@@ -404,7 +498,8 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
     groups: list[DocumentGroup] = []
     if len({group.group_id for group in proposal.groups}) != len(proposal.groups):
         raise ValueError("Duplicate proposed group ID")
-    for group_item in proposal.groups:
+    proposed_groups = _restore_linked_study_owner(proposal.groups, assertions, links, warnings)
+    for group_item in proposed_groups:
         for aid in group_item.assertion_ids:
             if aid not in proposed_ids or aid in group_owners:
                 raise ValueError("Invalid or multiply owned group assertion")
@@ -597,7 +692,102 @@ def build_document_plan(text: str, proposal: DocumentPlanProposal) -> DocumentPl
         groups=tuple(groups),
         context_links=links,
         warnings=tuple(warnings),
+        planning_audit={"normalization_version": DOCUMENT_PLAN_NORMALIZATION_VERSION},
     )
+
+
+def _restore_linked_study_owner(
+    groups: tuple[ProposedGroup, ...],
+    assertions: list[DocumentAssertion],
+    links: tuple[ContextLink, ...],
+    warnings: list[str],
+) -> tuple[ProposedGroup, ...]:
+    """Repair only a null-group placement proved by an exact study reference.
+
+    Never change the assertion's study ID, guess a study, accept a foreign-study
+    group, repair ambiguous ownership or exceed the ordinary downstream bounds.
+    """
+    members = {group.group_id: list(group.assertion_ids) for group in groups}
+    grouped = [aid for group in groups for aid in group.assertion_ids]
+    by_id = {assertion.assertion_id: assertion for assertion in assertions}
+    if len(grouped) != len(set(grouped)) or set(grouped) != set(by_id):
+        return groups  # existing explicit ownership checks report the defect
+    link_map = {link.link_id: link for link in links}
+    for group in groups:
+        if group.study_id is not None:
+            continue
+        for aid in group.assertion_ids:
+            assertion = by_id[aid]
+            if not assertion.checkable or assertion.study_id is None:
+                continue
+            targets = [
+                link_map[lid].target
+                for lid in assertion.context_link_ids
+                if link_map[lid].resolved and link_map[lid].relationship == "study_reference"
+            ]
+            if not targets:
+                continue
+            candidates = [
+                candidate
+                for candidate in groups
+                if candidate.study_id == assertion.study_id
+                and all(
+                    target is not None
+                    and any(
+                        span.start <= target.start and target.end <= span.end
+                        for owner in candidate.assertion_ids
+                        for span in by_id[owner].spans
+                    )
+                    for target in targets
+                )
+            ]
+            if len(candidates) == 1:
+                target_group = candidates[0].group_id
+                members[group.group_id].remove(aid)
+                members[target_group].append(aid)
+                warnings.append(
+                    f"literal_study_owner_restored:{aid}:{group.group_id}->{target_group}"
+                )
+    result = list(
+        group.model_copy(update={"assertion_ids": tuple(members[group.group_id])})
+        for group in groups
+        if members[group.group_id]
+    )
+    next_id = max(int(group.group_id[1:]) for group in groups) + 1
+    for index, group in enumerate(tuple(result)):
+        # A mixed group can retain factual details with explicitly absent study
+        # attribution. Separate them; never fill in that missing study ID.
+        if group.study_id is None or not any(
+            by_id[aid].checkable and by_id[aid].study_id == group.study_id
+            for aid in group.assertion_ids
+        ):
+            continue
+        unattached = tuple(
+            aid
+            for aid in group.assertion_ids
+            if by_id[aid].checkable and by_id[aid].study_id is None
+        )
+        if not unattached:
+            continue
+        result[index] = group.model_copy(
+            update={
+                "assertion_ids": tuple(aid for aid in group.assertion_ids if aid not in unattached),
+            }
+        )
+        result.append(
+            ProposedGroup(
+                group_id=f"G{next_id}",
+                title="Unattributed document details",
+                assertion_ids=unattached,
+                study_id=None,
+                context_spans=tuple(span for aid in unattached for span in by_id[aid].spans),
+            )
+        )
+        next_id += 1
+        warnings.extend(
+            f"unattributed_detail_separated:{aid}:{group.group_id}" for aid in unattached
+        )
+    return tuple(result)
 
 
 def _merge_study_groups(
@@ -791,6 +981,7 @@ async def plan_document(text: str, settings: Settings, *, language: str = "auto"
                     "latency_ms": round((monotonic() - started) * 1000),
                     "attempt_count": 1,
                     "raw_response": content,
+                    "normalization_version": DOCUMENT_PLAN_NORMALIZATION_VERSION,
                 }
             )
             plan = plan.model_copy(update={"planning_audit": metadata})

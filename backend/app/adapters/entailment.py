@@ -168,7 +168,11 @@ class OpenAICompatibleEntailmentValidator:
                         headers=headers, json=body,
                     )
                 response.raise_for_status()
-            content = response.json()["choices"][0]["message"]["content"]
+            payload = response.json()
+            content = payload["choices"][0]["message"]["content"]
+            usage = payload.get('usage')
+            if not isinstance(usage, dict):
+                usage = {}
             if not isinstance(content, str) or not content.strip():
                 raise ValueError("semantic completion content is not text")
         except asyncio.CancelledError:
@@ -204,6 +208,10 @@ class OpenAICompatibleEntailmentValidator:
             statement_ids=prepared.statement_ids, evidence_ids=prepared.evidence_ids,
             operation_kind=prepared.operation, call_id=call_id,
             validation_run_id=prepared.validation_run_id,
+            response_metadata={"usage": {
+                key: value for key in ('prompt_tokens', 'completion_tokens', 'total_tokens')
+                if isinstance((value := usage.get(key)), int)
+                and not isinstance(value, bool) and value >= 0}},
         )
         return content
 

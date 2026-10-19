@@ -8,10 +8,13 @@ from app.document.models import DocumentPlan
 from app.judging.source_units import SourceUnit
 from app.retrieval.models import EvidencePack
 
-VERSION = "document-report-1.0"
+LEGACY_VERSION = "document-report-1.0"
+READING_VERSION = "document-report-1.1"
+PARTIAL_READING_VERSION = "document-report-1.2"
+VERSION = "document-report-1.3"
 
 
-def build_document_report(
+def build_legacy_document_report(
     analysis_id: UUID,
     plan: DocumentPlan,
     evidence: dict[str, dict[str, Any]],
@@ -259,7 +262,7 @@ def build_document_report(
             }
         )
     return {
-        "version": VERSION,
+        "version": LEGACY_VERSION,
         "analysis_id": str(analysis_id),
         "status": status,
         "production_qualified": False,
@@ -271,3 +274,31 @@ def build_document_report(
             "assertions_completed": completed,
         },
     }
+
+
+def build_document_report(
+    analysis_id: UUID,
+    plan: DocumentPlan,
+    evidence: dict[str, dict[str, Any]],
+    runs: dict[str, list[dict[str, Any]]],
+    *,
+    app_env: str,
+    status: str,
+    failures: dict[str, str] | None = None,
+    version: str = VERSION,
+) -> dict[str, Any]:
+    """Version the presentation without changing historical decisions or audits."""
+    legacy = build_legacy_document_report(
+        analysis_id, plan, evidence, runs, app_env=app_env, status=status, failures=failures
+    )
+    if version == LEGACY_VERSION:
+        return legacy
+    if version == READING_VERSION:
+        from app.document.clarity11 import clarify_report as clarify_historical
+
+        return clarify_historical(legacy, plan, evidence, runs, failures or {})
+    if version not in {PARTIAL_READING_VERSION, VERSION}:
+        raise ValueError("unknown_document_report_version")
+    from app.document.clarity import clarify_report
+
+    return clarify_report(legacy, plan, evidence, runs, failures or {}, version=version)

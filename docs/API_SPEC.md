@@ -1,5 +1,69 @@
 # API Specification
 
+## Retrieval V2 additions (2026-10-19)
+
+New retrieval snapshots use Evidence Pack/query-plan `2.0`; older snapshots
+remain readable. `documents[].retrieval_context` records classification
+(`direct`, `related_indirect`, `background_guidance`, `irrelevant`), matched fields,
+missing qualifiers, discovery providers and identity basis. These are search
+relevance facts, not extra verdict labels. Canonical PMID records retain the
+existing source envelope, quantity ownership and integrity checks. Newly
+retrieved official guidance is background-only and has no invented PMID.
+
+Development evidence preview uses the same adaptive retrieval service. Its
+`diagnostics.status` additionally accepts `failed`, distinguishing operational
+search failure. Optional `diagnostics.adaptive` contains provider executions,
+query/cache/latency information, discovery-lead verification, source HTTP counts,
+coverage and bounds. Discovery queries are also retained in hash-bound document
+metadata. No model/planning call is added to retrieval. Semantic validator debug
+events retain safe numeric provider usage when supplied; no keys or prompts are
+added to public reports.
+
+The existing `.../report/reading-guide` can return optional `retrieval` with
+`version: retrieval-coverage-2.0`, a state (`search_incomplete`,
+`no_eligible_sources`, `related_only`, `direct_candidates`), plain-English
+explanation and source titles/URLs/classifications/missing qualifiers. It follows
+existing provenance/release checks and never changes the saved report/verdict.
+Old reading guides omit it. Normal reader output never exposes raw replies.
+
+New document source artifacts use `document-evidence-2.0` with frozen
+`discovery_audit`; group input 1.2, grouped judge 1.0, validator 1.3 and public
+report contracts remain. No migration, model, threshold or release-gate change.
+See [results](RETRIEVAL_V2_RESULTS_20261019.md).
+
+## Document reliability update (2026-10-15)
+
+Public request/report versions and labels are unchanged. New frozen internals use
+document evidence 1.1, planner prompt 1.2, normalization 1.3, group input 1.2 and
+validator 1.3. Exact older report/parent reconstruction still runs before reader view.
+Development grouped-call diagnostics add payload/system/schema character sizes,
+configured/effective deadline, preparation latency and precise attribution-coverage
+errors. Invalid-item repair requests are hash-bound in the audit, and their request
+payload is omitted from public/development response views just like other model inputs;
+raw responses remain development-gated. No new public label or success translation.
+
+The frontend distinguishes backend `failed` with zero assessed assertions from a
+successfully completed check, including when stage remains unchanged. Live evidence,
+source/claim traceability and incomplete warnings are preserved. See
+[before/after run](DOCUMENT_VITAMIN_C_RELIABILITY_20261015.md).
+
+## Reader view extension (2026-10-14)
+
+Audited document GET responses additionally expose `reader_view` with independent
+version `reader-view-1.0` and `topics`. Each topic includes a presentation `state`
+(`completed`, `inconclusive`, `incomplete`), scope (`study_reporting`,
+`medical_evidence`, `mixed`), traced headline/established/limitation sentences,
+selected assertion IDs and question-based checks with exact owned excerpts.
+Sentence references identify assertion IDs, source-unit IDs and supporting fields;
+structured unverified numeric wording also references the saved plan field.
+Optional `correctnessFlag` warns about evidence review without changing a label.
+
+This is a read-only post-audit extension, not a new saved report version or overall
+verdict. `document-report-1.3`, original projection/hashes, canonical labels and
+production gates remain unchanged. No raw response is added to this reader model;
+existing development-only debug payload gating still applies. Clients lacking the
+extension can render the original report. See [results](READER_FIRST_INTEGRATION_20261014.md).
+
 ## Context-aware document reports (development/test, 2026-10-08)
 
 Existing consent-required `POST /v1/analyses` accepts text and reviewed screenshot
@@ -7,7 +71,7 @@ text as before. Paragraph-sized input enters document mode automatically;
 `GET /v1/analyses/{analysis_id}` adds `document_mode: true`. The existing status,
 stage and progress fields remain. Ordinary short-claim responses are unchanged.
 
-`GET /v1/analyses/{analysis_id}/document` returns `document-report-1.0` with:
+`GET /v1/analyses/{analysis_id}/document` returns `document-report-1.3` with:
 
 - analysis identity/status and production qualification;
 - assertion/group progress and expandable group source matches;
@@ -15,6 +79,22 @@ stage and progress fields remain. Ordinary short-claim responses are unchanged.
 - separate reporting fidelity and medical interpretation;
 - result/explanation, exact citations and backend-derived scientific limitations;
 - duplicate links or explicit commentary/unavailable details.
+
+The reading view also includes `reading_summary` (main_takeaway/attention/matches/
+limits), with assertion/group IDs and qualified source-unit references;
+`completion_text`; disjoint `progress` total/assessed/unavailable/background/pending/
+processed counts; and per-assertion heading/assessment_target/reason_codes/
+field_diagnostics/numeric_detail/failure_kind/association_caveat. Partial validated
+limitations may explain an unavailable check without changing its result.
+Group source states distinguish identified, uncertain, pending, not_found,
+not_applicable and failed, with separate search_state. Groups pool `sources`;
+citations retain full exact_text plus exact excerpt/half-open offsets. Display-parent
+IDs attach explicit context without changing assertion ownership.
+
+Saved 1.0/1.1/1.2 reports first undergo their exact original audit and projection
+reconstruction. A current read-only view then includes `historical_projection`
+(original version/snapshot_hash). No artifact is rewritten or expired capture
+restored. The underlying canonical labels and all production checks remain.
 
 There is no averaged score or forced single verdict for mixed documents. A partially
 completed report can be returned while remaining chains are in flight. The endpoint

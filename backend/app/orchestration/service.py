@@ -301,7 +301,7 @@ class AnalysisOrchestrator:
         # V2 judgments use the new contract. No legacy free text is remapped.
         policy = (POLICY_V1 if active_judges and all(
             judge.input_snapshot_version is None for judge in active_judges
-        ) else POLICY_V4 if pack.evidence_pack_version == "1.5" else POLICY_V3)
+        ) else POLICY_V4 if pack.evidence_pack_version in {"1.5", "2.0"} else POLICY_V3)
         request = AggregationInput(
             claim_id=claim.id, evidence_pack_id=pack_row.id,
             evidence_pack_hash=pack_row.snapshot_hash,

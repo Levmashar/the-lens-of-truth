@@ -5,12 +5,16 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Literal
 
-SourceProvider = Literal["pubmed", "pmc", "crossref", "authoritative"]
+SourceProvider = Literal[
+    "pubmed", "pmc", "crossref", "authoritative", "europe_pmc", "openalex", "official_web",
+]
 SourceOperation = Literal["search", "fetch", "link", "work", "document"]
 _ALLOWED = frozenset({
     ("pubmed", "search"), ("pubmed", "fetch"), ("pubmed", "link"),
     ("pmc", "search"), ("pmc", "fetch"), ("pmc", "link"),
     ("crossref", "work"), ("authoritative", "document"),
+    ("europe_pmc", "search"), ("openalex", "search"),
+    ("official_web", "search"), ("official_web", "document"),
 })
 _ACTIVE: ContextVar[dict[str, int] | None] = ContextVar("source_http_counts", default=None)
 

@@ -1,81 +1,115 @@
 import type { LensReport, ReportReadingGuide } from "../types/report";
 import { createEvidenceCard } from "./evidenceCard";
 import { append, element, labeledValue, safeExternalUrl } from "../utils/dom";
-import { readableToken, verdictLabels } from "../utils/format";
+import { readableToken } from "../utils/format";
+import { claimQuestion, readerAnswer, readerVerdictLabels } from "../utils/readerPresentation";
 import { showDevelopmentUi } from "../utils/uiMode";
 
 export function createClaimResult(report: LensReport, analysisId: string, claimId: string,
   debugEnabled = false, readingGuide?: ReportReadingGuide): HTMLElement {
-  const article = element("article", "report-card");
+  const article = element("article", "report-card consumer-report");
   article.dataset.verdict = report.verdict;
   const guide = readingGuide?.verdict_run_id === report.verdict_run_id
     && readingGuide.report_semantic_hash === report.semantic_hash ? readingGuide : undefined;
   const developmentUi = showDevelopmentUi(debugEnabled);
+  const verdict = element("section", "consumer-answer");
+  verdict.setAttribute("aria-label", "Research assessment");
+  verdict.append(element("h2", "verdict-label", readerVerdictLabels[report.verdict]));
+  verdict.append(element("p", "claim-question", claimQuestion(report.claim.text)));
+  const answer = readerAnswer(report, guide);
+  const summary = element("p", "verdict-summary", answer.text);
+  summary.dataset.reportReferences = answer.references.join(" ");
+  verdict.append(summary);
+  if (report.verdict === "not_enough_evidence") {
+    verdict.append(element("p", "consumer-uncertainty", "Not established doesn't mean disproven."));
+  }
+  article.append(verdict);
+  if (guide?.retrieval?.state === "search_incomplete") {
+    verdict.append(element("p", "consumer-search-warning", "The source search could not be completed. This limits what this check can tell you."));
+  }
 
   if (!report.production_qualified) {
     const notice = element("aside", "qualification-notice");
-    append(notice, element("h4", "notice-title", developmentUi ? "Development / evaluation result" : "Verification status"),
-      element("p", "", developmentUi
-        ? report.verification_status.development_notice ?? "This result is not production qualified."
-        : "This report has not yet met the checks required for public release."));
+    notice.append(element("p", "", developmentUi
+      ? "Development preview. Not qualified for medical use."
+      : "This report has not yet met the checks required for public release."));
+    if (report.judge_summary.excluded > 0) notice.append(element("p", "",
+      "Some assessments could not be verified; the result uses only those that passed."));
     article.append(notice);
   }
 
-  const verdict = element("section", "verdict-card");
-  verdict.dataset.verdict = report.verdict;
-  const label = verdictLabels[report.verdict];
-  verdict.append(element("p", "verdict-label", label));
-  if (report.headline.trim().toLowerCase() !== label.toLowerCase()) {
-    verdict.append(element("p", "verdict-headline", report.headline));
-  }
-  const summary = report.verdict_explanation?.summary ?? report.short_summary;
-  if (summary.trim().toLowerCase() !== label.toLowerCase()
-      && summary.trim().toLowerCase() !== report.headline.trim().toLowerCase()) {
-    verdict.append(element("p", "verdict-summary", summary));
-  }
-  if (report.verdict === "not_enough_evidence") {
-    const explanation = report.verdict_explanation;
-    if (explanation?.established || explanation?.unresolved) {
-      const details = element("dl", "evidence-clarity");
-      if (explanation.established) details.append(labeledValue("What the evidence tells us", explanation.established));
-      if (explanation.unresolved) details.append(labeledValue("What remains unclear", explanation.unresolved));
-      verdict.append(details);
-    }
-  }
+  const evidence = element("details", "consumer-evidence");
+  evidence.dataset.documentDisclosure = `claim-evidence-${claimId}`;
+  evidence.append(element("summary", "consumer-disclosure", "See the evidence"));
+  const evidenceBody = element("div", "consumer-evidence-body");
   if (guide?.findings.length) {
     const findings = element("section", "case-explanation");
-    findings.append(element("h4", "meaning-title", "What the checked sources found"));
+    findings.append(element("h3", "meaning-title", "What the checked sources found"));
     for (const finding of guide.findings) {
       const paragraph = element("p", "case-finding", finding.text);
       const citations = element("span", "finding-citations");
       for (const evidenceId of finding.evidence_ids) {
-        const link = element("a", "finding-citation", evidenceId);
+        const owner = report.key_evidence.findIndex(source => source.evidence_id === evidenceId
+          || source.excerpts?.some(excerpt => excerpt.evidence_id === evidenceId));
+        if (owner < 0) continue;
+        const link = element("a", "finding-citation", `Source ${owner + 1}`);
         link.href = `#source-${claimId}-${evidenceId}`;
-        link.setAttribute("aria-label", `Read source ${evidenceId}`);
+        link.setAttribute("aria-label", `Read source ${owner + 1}: ${report.key_evidence[owner].title}`);
+        link.addEventListener("click", () => {
+          const target = article.querySelector<HTMLElement>(`[id="source-${claimId}-${evidenceId}"]`);
+          for (let parent = target?.parentElement; parent; parent = parent.parentElement) {
+            if (parent instanceof HTMLDetailsElement) parent.open = true;
+          }
+          if (target) { target.tabIndex = -1; target.focus({ preventScroll: true }); }
+        });
         citations.append(link);
       }
       append(paragraph, document.createTextNode(" "), citations);
       findings.append(paragraph);
     }
-    verdict.append(findings);
+    evidenceBody.append(findings);
   }
-  article.append(verdict);
 
-  const why = element("section", "report-section");
-  append(why, element("h4", "card-title", "Why this result"));
-  const reasons = element("ul", "reason-list");
-  for (const reason of report.why_this_result) reasons.append(element("li", "", reason.text));
-  why.append(reasons);
-  article.append(why);
+  if (guide?.retrieval?.version === "retrieval-coverage-2.0") {
+    const coverage = element("section", "limitations-card");
+    const titles = { search_incomplete: "The search was incomplete",
+      no_eligible_sources: "No usable sources found in this search",
+      related_only: "Related evidence has limits", direct_candidates: "What the search found" };
+    append(coverage, element("h4", "card-title", titles[guide.retrieval.state]),
+      element("p", "", guide.retrieval.explanation));
+    if (guide.retrieval.sources.length) {
+      const disclosure = element("details", "assessment-details");
+      disclosure.append(element("summary", "details-summary", "Explore the sources found"));
+      const body = element("div", "details-body");
+      for (const source of guide.retrieval.sources) {
+        const url = safeExternalUrl(source.url);
+        if (!url) continue;
+        const row = element("p", "");
+        const label = source.classification === "direct" ? "Matching research candidate"
+          : source.classification === "background_guidance" ? "Background clinical guidance"
+          : "Related, indirect research";
+        row.append(element("span", "muted-copy", `${label}: `));
+        const link = element("a", "source-link", source.title);
+        link.href = url; link.target = "_blank"; link.rel = "noopener noreferrer";
+        row.append(link);
+        body.append(row);
+      }
+      disclosure.append(body); coverage.append(disclosure);
+    }
+    evidenceBody.append(coverage);
+  }
 
-  const evidence = element("section", "report-section");
-  append(evidence, element("h4", "card-title", "Key evidence"));
   if (report.key_evidence.length) {
     const cards = element("div", "evidence-grid");
-    for (const source of report.key_evidence) cards.append(createEvidenceCard(source, guide?.highlights, claimId));
-    evidence.append(cards);
-  } else evidence.append(element("p", "muted-copy", "No source excerpts qualified for display in this report."));
-  article.append(evidence);
+    for (const [index, source] of report.key_evidence.entries()) {
+      const disclosure = element("details", "consumer-source");
+      disclosure.dataset.documentDisclosure = `claim-source-${claimId}-${index}`;
+      disclosure.append(element("summary", "consumer-source-title", source.title),
+        createEvidenceCard(source, guide?.highlights, claimId));
+      cards.append(disclosure);
+    }
+    evidenceBody.append(cards);
+  } else evidenceBody.append(element("p", "muted-copy", "No source excerpts qualified for display in this report."));
 
   if (report.verdict === "unable_to_verify_reliably" &&
       !report.production_qualified && report.neutral_retrieved_sources?.length) {
@@ -101,7 +135,32 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
       }
       neutral.append(card);
     }
-    article.append(neutral);
+    evidenceBody.append(neutral);
+  }
+
+  evidence.append(evidenceBody);
+  article.append(evidence);
+
+  const about = element("details", "consumer-about");
+  about.dataset.documentDisclosure = `claim-about-${claimId}`;
+  about.append(element("summary", "consumer-disclosure", "About this check"));
+  const aboutBody = element("div", "consumer-about-body");
+  append(aboutBody, element("h3", "card-title", "Claim checked"), element("p", "original-claim", report.claim.text));
+  if (report.verdict_explanation?.established || report.verdict_explanation?.unresolved) {
+    const clarity = element("dl", "evidence-clarity");
+    if (report.verdict_explanation.established) clarity.append(labeledValue("What was established", report.verdict_explanation.established));
+    if (report.verdict_explanation.unresolved) clarity.append(labeledValue("What remains unclear", report.verdict_explanation.unresolved));
+    aboutBody.append(clarity);
+  }
+  if (report.why_this_result.length) {
+    const why = element("section", "report-section");
+    why.append(element("h3", "card-title", "Why this result"));
+    const reasons = element("ul", "reason-list");
+    for (const reason of report.why_this_result) reasons.append(element("li", "", reason.text));
+    why.append(reasons); aboutBody.append(why);
+  }
+  if (!report.production_qualified && report.verification_status.development_notice) {
+    aboutBody.append(element("p", "full-qualification-notice", report.verification_status.development_notice));
   }
 
   if (report.evidence_limitations.length) {
@@ -110,7 +169,7 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     const list = element("ul", "reason-list");
     for (const item of report.evidence_limitations) list.append(element("li", "", item));
     limits.append(list);
-    article.append(limits);
+    aboutBody.append(limits);
   }
 
   const assessment = element("details", "assessment-details");
@@ -134,7 +193,7 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
   if (counts.length) assessmentBody.append(element("p", "muted-copy",
     `Validated assessments: ${counts.map(([label, count]) => `${readableToken(label)} ${count}`).join(" · ")}`));
   assessment.append(assessmentBody);
-  article.append(assessment);
+  aboutBody.append(assessment);
 
   if (report.sources.length > report.key_evidence.length) {
     const sources = element("section", "report-section");
@@ -154,13 +213,10 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
       }
     }
     sources.append(list);
-    article.append(sources);
+    evidenceBody.append(sources);
   }
 
-  const safety = element("aside", "safety-notice");
-  append(safety, element("h4", "card-title", "Health information safety"),
-    element("p", "", report.safety_notice));
-  article.append(safety);
+
 
   const technical = element("details", "technical-details");
   technical.append(element("summary", "details-summary", "Technical details"));
@@ -187,6 +243,8 @@ export function createClaimResult(report: LensReport, analysisId: string, claimI
     diagnostics.append(facts);
     technical.append(diagnostics);
   }
-  if (developmentUi) article.append(technical);
+  if (developmentUi) aboutBody.append(technical);
+  about.append(aboutBody);
+  article.append(about, element("p", "consumer-safety", report.safety_notice));
   return article;
 }

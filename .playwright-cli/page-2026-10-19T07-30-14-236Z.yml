@@ -1,0 +1,32 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - button "The Lens of Truth, home" [ref=f1e5] [cursor=pointer]
+      - button "Switch to dark mode" [ref=f1e9] [cursor=pointer]
+  - main [ref=f1e12]:
+    - generic [ref=f1e13]:
+      - heading "Your claim check" [level=1] [ref=f1e15]
+      - status [ref=f1e16]: Analysis finished
+      - generic [ref=f1e17]:
+        - article [ref=f1e28]:
+          - region "Research assessment" [ref=f1e29]:
+            - paragraph [ref=f1e30]: Does using your phone while lying on your side worsen myopia?
+            - heading "Not established by research" [level=2] [ref=f1e31]
+            - paragraph [ref=f1e32]: Related research exists, but it does not establish this specific claim. The studies did not separately test whether using a phone while lying on your side affects how quickly short-sightedness gets worse.
+            - paragraph [ref=f1e33]: Not established doesn't mean disproven.
+          - complementary [ref=f1e34]:
+            - paragraph [ref=f1e35]: Development preview. Not qualified for medical use.
+            - paragraph [ref=f1e36]: Some assessments could not be verified; the result uses only those that passed.
+          - group [ref=f1e37]:
+            - generic "See the evidence +" [active] [ref=f1e38] [cursor=pointer]
+            - text: ⌄ ⌄
+          - group [ref=f1e39]:
+            - generic "About this check +" [ref=f1e40] [cursor=pointer]
+          - paragraph [ref=f1e41]: This report summarizes retrieved evidence, not personal diagnosis or treatment advice. For urgent symptoms or personal medical decisions, seek appropriate professional care.
+        - group [ref=f1e42]:
+          - generic "Developer diagnostics +" [ref=f1e43] [cursor=pointer]
+      - button "Check another claim" [ref=f1e21] [cursor=pointer]
+  - contentinfo [ref=f1e22]:
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]: The Lens of Truth
+      - generic [ref=f1e25]: Health claims, checked against research.
